@@ -1,0 +1,25 @@
+{
+  "benchmark": "Zynrax",
+  "targetApproximateCommands": 541,
+  "verifiedReferenceCommands": 318,
+  "status": "Initial official-docs inventory complete; not the full advertised 541-command help inventory.",
+  "checkedAt": "2026-10-10",
+  "observedCountClaims": [
+    {
+      "source": "https://www.zynrax.site",
+      "method": "text fetch",
+      "count": "539+"
+    },
+    {
+      "source": "https://www.zynrax.site/",
+      "method": "browser settled animation",
+      "count": "541+"
+    }
+  ],
+  "sources": [
+    "https://top.gg/bot/1402377137087840378",
+    "https://discordbotlist.com/bots/zynrax",
+    "https://www.zynrax.site/"
+  ],
+  "publicMarkdownPagesRead": 34
+}

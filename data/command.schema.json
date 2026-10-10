@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "category",
+      "syntax",
+      "description",
+      "parameters",
+      "userPermissions",
+      "botPermissions",
+      "aliases",
+      "referenceVerified",
+      "implemented",
+      "tested",
+      "notes",
+      "source"
+    ],
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "category": {
+        "type": "string"
+      },
+      "syntax": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "notes": {
+        "type": "string"
+      },
+      "source": {
+        "type": "string"
+      },
+      "parameters": {
+        "type": "array"
+      },
+      "userPermissions": {
+        "type": "array"
+      },
+      "botPermissions": {
+        "type": "array"
+      },
+      "aliases": {
+        "type": "array"
+      },
+      "referenceVerified": {
+        "type": "boolean"
+      },
+      "implemented": {
+        "type": "boolean"
+      },
+      "tested": {
+        "type": "boolean"
+      }
+    }
+  }
+}

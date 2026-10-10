@@ -1,0 +1,30 @@
+{
+  "name": "coldy",
+  "version": "0.1.0",
+  "description": "Luna: modular multipurpose Discord bot, phased implementation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test --experimental-test-coverage test/*.test.js",
+    "check": "node scripts/check.js",
+    "inventory": "node scripts/inventory.js",
+    "register:preview": "node scripts/register.js",
+    "register:guild": "node scripts/register.js --apply"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "better-sqlite3": "13.0.3",
+    "discord.js": "14.27.0",
+    "dotenv": "18.0.7",
+    "pino": "10.4.0",
+    "zod": "4.6.5"
+  },
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0 <23 || >=24 <25"
+  }
+}

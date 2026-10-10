@@ -1,0 +1,388 @@
+
+> coldy@0.1.0 test
+> node --test --experimental-test-coverage test/*.test.js
+
+TAP version 13
+# Subtest: logs disabled by default, enabled logs omit content/reasons and suppress pings
+ok 1 - logs disabled by default, enabled logs omit content/reasons and suppress pings
+  ---
+  duration_ms: 20.750847
+  type: 'test'
+  ...
+# Subtest: welcome and goodbye are separately gated, mentions narrowly allowed, failures contained
+ok 2 - welcome and goodbye are separately gated, mentions narrowly allowed, failures contained
+  ---
+  duration_ms: 4.197803
+  type: 'test'
+  ...
+# Subtest: valid config has defaults and parsed owner IDs
+ok 3 - valid config has defaults and parsed owner IDs
+  ---
+  duration_ms: 5.895809
+  type: 'test'
+  ...
+# Subtest: invalid config names fields without secret input
+ok 4 - invalid config names fields without secret input
+  ---
+  duration_ms: 1.570855
+  type: 'test'
+  ...
+# Subtest: invalid owner and guild IDs rejected
+ok 5 - invalid owner and guild IDs rejected
+  ---
+  duration_ms: 0.60177
+  type: 'test'
+  ...
+# Subtest: empty optional guild is accepted
+ok 6 - empty optional guild is accepted
+  ---
+  duration_ms: 0.157001
+  type: 'test'
+  ...
+# Subtest: logging setup, enable, config, test and disable persist
+ok 7 - logging setup, enable, config, test and disable persist
+  ---
+  duration_ms: 15.506643
+  type: 'test'
+  ...
+# Subtest: welcome enable requires runtime member events and destination
+ok 8 - welcome enable requires runtime member events and destination
+  ---
+  duration_ms: 5.200709
+  type: 'test'
+  ...
+# Subtest: cooldowns expire, isolate users and stay bounded
+ok 9 - cooldowns expire, isolate users and stay bounded
+  ---
+  duration_ms: 1.356178
+  type: 'test'
+  ...
+# Subtest: migrations are idempotent and guild data survives reopening
+ok 10 - migrations are idempotent and guild data survives reopening
+  ---
+  duration_ms: 24.684914
+  type: 'test'
+  ...
+# Subtest: parameterized settings do not execute injected IDs
+ok 11 - parameterized settings do not execute injected IDs
+  ---
+  duration_ms: 1.72842
+  type: 'test'
+  ...
+# Subtest: Luna brand and polished error styles apply with Discord length bounds
+ok 12 - Luna brand and polished error styles apply with Discord length bounds
+  ---
+  duration_ms: 3.996335
+  type: 'test'
+  ...
+# Subtest: deferred failures edit original response
+ok 13 - deferred failures edit original response
+  ---
+  duration_ms: 4.136861
+  type: 'test'
+  ...
+# Subtest: already replied failures use follow-up; failed delivery contained
+ok 14 - already replied failures use follow-up; failed delivery contained
+  ---
+  duration_ms: 0.843588
+  type: 'test'
+  ...
+# Subtest: validated nested settings preserve sections and reject invalid input
+ok 15 - validated nested settings preserve sections and reject invalid input
+  ---
+  duration_ms: 14.707488
+  type: 'test'
+  ...
+# Subtest: templates replace known placeholders without code execution and stay bounded
+ok 16 - templates replace known placeholders without code execution and stay bounded
+  ---
+  duration_ms: 0.367547
+  type: 'test'
+  ...
+# Subtest: destination check refuses foreign, voice, missing and denied channels
+ok 17 - destination check refuses foreign, voice, missing and denied channels
+  ---
+  duration_ms: 0.834737
+  type: 'test'
+  ...
+# Subtest: dispatch executes and rate limits
+ok 18 - dispatch executes and rate limits
+  ---
+  duration_ms: 3.876303
+  type: 'test'
+  ...
+# Subtest: internal error is not disclosed
+ok 19 - internal error is not disclosed
+  ---
+  duration_ms: 0.504265
+  type: 'test'
+  ...
+# Subtest: non-command events are ignored
+ok 20 - non-command events are ignored
+  ---
+  duration_ms: 0.169627
+  type: 'test'
+  ...
+# Subtest: reference inventory has sources, no implementation claims, and deduplicated aliases
+ok 21 - reference inventory has sources, no implementation claims, and deduplicated aliases
+  ---
+  duration_ms: 8.826364
+  type: 'test'
+  ...
+# Subtest: locale keys aligned and placeholders strict
+ok 22 - locale keys aligned and placeholders strict
+  ---
+  duration_ms: 1.900341
+  type: 'test'
+  ...
+# Subtest: per-guild language isolates and localized config executes
+ok 23 - per-guild language isolates and localized config executes
+  ---
+  duration_ms: 15.295794
+  type: 'test'
+  ...
+# Subtest: logger redacts structured secrets from actual emitted output
+ok 24 - logger redacts structured secrets from actual emitted output
+  ---
+  duration_ms: 4.739626
+  type: 'test'
+  ...
+# Subtest: duration validation bounds and units
+ok 25 - duration validation bounds and units
+  ---
+  duration_ms: 1.818549
+  type: 'test'
+  ...
+# Subtest: warning records are transactional, guild scoped and duplicate guarded
+ok 26 - warning records are transactional, guild scoped and duplicate guarded
+  ---
+  duration_ms: 9.991068
+  type: 'test'
+  ...
+# Subtest: permission denied before any external write or case
+ok 27 - permission denied before any external write or case
+  ---
+  duration_ms: 1.526747
+  type: 'test'
+  ...
+# Subtest: bot permission denial, hierarchy and owner protections
+ok 28 - bot permission denial, hierarchy and owner protections
+  ---
+  duration_ms: 3.078544
+  type: 'test'
+  ...
+# Subtest: timeout refuses administrator and bot
+ok 29 - timeout refuses administrator and bot
+  ---
+  duration_ms: 2.278409
+  type: 'test'
+  ...
+# Subtest: external action recorded completed without deleting prior messages
+ok 30 - external action recorded completed without deleting prior messages
+  ---
+  duration_ms: 1.424303
+  type: 'test'
+  ...
+# Subtest: API rejection and ambiguous network failures never auto-retry
+ok 31 - API rejection and ambiguous network failures never auto-retry
+  ---
+  duration_ms: 2.963653
+  type: 'test'
+  ...
+# Subtest: database failure prevents external action
+ok 32 - database failure prevents external action
+  ---
+  duration_ms: 1.28773
+  type: 'test'
+  ...
+# Subtest: completed Discord action with case-finalization failure does not report action failure
+ok 33 - completed Discord action with case-finalization failure does not report action failure
+  ---
+  duration_ms: 1.427101
+  type: 'test'
+  ...
+# Subtest: unban does not require target membership but checks permission
+ok 34 - unban does not require target membership but checks permission
+  ---
+  duration_ms: 1.30538
+  type: 'test'
+  ...
+# Subtest: moderation slash wrapper defers, selects validated inputs and edits without mentions
+ok 35 - moderation slash wrapper defers, selects validated inputs and edits without mentions
+  ---
+  duration_ms: 8.14566
+  type: 'test'
+  ...
+# Subtest: successful timeout and untimeout call the matching Discord method
+ok 36 - successful timeout and untimeout call the matching Discord method
+  ---
+  duration_ms: 1.677548
+  type: 'test'
+  ...
+# Subtest: warnings is read-only and invalid inputs never make a case
+ok 37 - warnings is read-only and invalid inputs never make a case
+  ---
+  duration_ms: 1.601496
+  type: 'test'
+  ...
+# Subtest: guild only, owner only, and user permissions fail closed
+ok 38 - guild only, owner only, and user permissions fail closed
+  ---
+  duration_ms: 1.666002
+  type: 'test'
+  ...
+# Subtest: bot permissions required separately
+ok 39 - bot permissions required separately
+  ---
+  duration_ms: 0.262268
+  type: 'test'
+  ...
+# Subtest: permissioned owner passes
+ok 40 - permissioned owner passes
+  ---
+  duration_ms: 0.346955
+  type: 'test'
+  ...
+# Subtest: hierarchy protects owner, self, equal roles and bot role
+ok 41 - hierarchy protects owner, self, equal roles and bot role
+  ---
+  duration_ms: 0.380787
+  type: 'test'
+  ...
+# Subtest: installed command names and option limits validate
+ok 42 - installed command names and option limits validate
+  ---
+  duration_ms: 546.12606
+  type: 'test'
+  ...
+# Subtest: foundation and utility commands execute mock replies
+ok 43 - foundation and utility commands execute mock replies
+  ---
+  duration_ms: 8.171276
+  type: 'test'
+  ...
+# Subtest: unsafe roles are denied separately
+ok 44 - unsafe roles are denied separately
+  ---
+  duration_ms: 13.094575
+  type: 'test'
+  ...
+# Subtest: panel publication persists message and rejects duplicate source interaction
+ok 45 - panel publication persists message and rejects duplicate source interaction
+  ---
+  duration_ms: 4.612442
+  type: 'test'
+  ...
+# Subtest: unconfirmed panel send recorded uncertain and no retry
+ok 46 - unconfirmed panel send recorded uncertain and no retry
+  ---
+  duration_ms: 2.285182
+  type: 'test'
+  ...
+# Subtest: button grant and revoke revalidate safe role; cooldown prevents repeats
+ok 47 - button grant and revoke revalidate safe role; cooldown prevents repeats
+  ---
+  duration_ms: 3.122308
+  type: 'test'
+  ...
+# Subtest: copied messages, foreign/disabled panels and edited dangerous roles refuse grants
+ok 48 - copied messages, foreign/disabled panels and edited dangerous roles refuse grants
+  ---
+  duration_ms: 7.171182
+  type: 'test'
+  ...
+# Subtest: role API failure is contained and external button ignored
+ok 49 - role API failure is contained and external button ignored
+  ---
+  duration_ms: 1.624704
+  type: 'test'
+  ...
+# Subtest: new or lesser-known staff permission flags fail closed
+ok 50 - new or lesser-known staff permission flags fail closed
+  ---
+  duration_ms: 3.298985
+  type: 'test'
+  ...
+# Subtest: role panel slash create, list, disable wrapper handles persisted records
+ok 51 - role panel slash create, list, disable wrapper handles persisted records
+  ---
+  duration_ms: 7.443826
+  type: 'test'
+  ...
+1..51
+# tests 51
+# suites 0
+# pass 51
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7254.014738
+# start of coverage report
+# -----------------------------------------------------------------------------
+# file                         | line % | branch % | funcs % | uncovered lines
+# -----------------------------------------------------------------------------
+# src                          |        |          |         | 
+#  commands                    |        |          |         | 
+#   general                    |        |          |         | 
+#    about.js                  | 100.00 |   100.00 |  100.00 | 
+#    config.js                 | 100.00 |    87.50 |  100.00 | 
+#    help.js                   | 100.00 |    88.89 |  100.00 | 
+#    ping.js                   | 100.00 |    66.67 |  100.00 | 
+#    uptime.js                 | 100.00 |   100.00 |  100.00 | 
+#   logging                    |        |          |         | 
+#    logging.js                | 100.00 |    81.25 |  100.00 | 
+#   moderation                 |        |          |         | 
+#    moderation.js             | 100.00 |    63.16 |   85.71 | 
+#   reactionroles              |        |          |         | 
+#    reactionroles.js          | 100.00 |    86.67 |  100.00 | 
+#   utility                    |        |          |         | 
+#    avatar.js                 | 100.00 |   100.00 |  100.00 | 
+#    serverinfo.js             | 100.00 |   100.00 |  100.00 | 
+#    stats.js                  | 100.00 |    80.00 |  100.00 | 
+#    userinfo.js               | 100.00 |   100.00 |  100.00 | 
+#   welcomer                   |        |          |         | 
+#    welcome.js                | 100.00 |    84.38 |  100.00 | 
+#  config                      |        |          |         | 
+#   env.js                     | 100.00 |   100.00 |  100.00 | 
+#  database                    |        |          |         | 
+#   index.js                   | 100.00 |   100.00 |  100.00 | 
+#  events                      |        |          |         | 
+#   interactionCreate.js       | 100.00 |    85.71 |  100.00 | 
+#   memberMessages.js          | 100.00 |   100.00 |  100.00 | 
+#  services                    |        |          |         | 
+#   cooldowns.js               | 100.00 |   100.00 |  100.00 | 
+#   guildConfig.js             | 100.00 |    95.45 |  100.00 | 
+#   localization.js            | 100.00 |    93.75 |  100.00 | 
+#   logging.js                 | 100.00 |   100.00 |  100.00 | 
+#   moderation.js              | 100.00 |    90.91 |  100.00 | 
+#   registry.js                | 100.00 |    61.11 |  100.00 | 
+#   rolePanels.js              | 100.00 |    86.21 |  100.00 | 
+#  utils                       |        |          |         | 
+#   embeds.js                  | 100.00 |    75.00 |  100.00 | 
+#   errors.js                  | 100.00 |    75.00 |  100.00 | 
+#   logger.js                  | 100.00 |   100.00 |  100.00 | 
+#   permissions.js             | 100.00 |   100.00 |  100.00 | 
+# test                         |        |          |         | 
+#  communityMessages.test.js   | 100.00 |   100.00 |  100.00 | 
+#  config.test.js              | 100.00 |   100.00 |  100.00 | 
+#  configCommands.test.js      | 100.00 |   100.00 |   92.86 | 
+#  cooldowns.test.js           | 100.00 |   100.00 |  100.00 | 
+#  database.test.js            | 100.00 |   100.00 |  100.00 | 
+#  embeds.test.js              | 100.00 |   100.00 |  100.00 | 
+#  errors.test.js              | 100.00 |   100.00 |  100.00 | 
+#  guildConfig.test.js         | 100.00 |   100.00 |  100.00 | 
+#  helpers                     |        |          |         | 
+#   guild.js                   | 100.00 |   100.00 |  100.00 | 
+#  interaction.test.js         | 100.00 |   100.00 |   91.67 | 
+#  inventory.test.js           | 100.00 |   100.00 |  100.00 | 
+#  localization.test.js        | 100.00 |   100.00 |  100.00 | 
+#  logger.test.js              | 100.00 |   100.00 |  100.00 | 
+#  moderation.test.js          | 100.00 |    98.36 |  100.00 | 
+#  permissions.test.js         | 100.00 |   100.00 |   95.00 | 
+#  registry.test.js            | 100.00 |    92.86 |  100.00 | 
+#  rolePanels.test.js          | 100.00 |   100.00 |   96.36 | 
+# -----------------------------------------------------------------------------
+# all files                    | 100.00 |    91.93 |   98.26 | 
+# -----------------------------------------------------------------------------
+# end of coverage report

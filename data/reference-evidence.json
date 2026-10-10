@@ -1,0 +1,2263 @@
+[
+  {
+    "category": "automod",
+    "name": "antibot add",
+    "syntax": ",antibot add #channel",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "antibot remove",
+    "syntax": ",antibot remove #channel",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "antibot config",
+    "syntax": ",antibot config",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "antibot reset",
+    "syntax": ",antibot reset",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "antibot wl add",
+    "syntax": ",antibot wl add @bot",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "antibot wl remove",
+    "syntax": ",antibot wl remove @bot",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "react add",
+    "syntax": ",react add (trigger) (emojis)",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "react remove",
+    "syntax": ",react remove (trigger)",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "react list",
+    "syntax": ",react list",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "react reset",
+    "syntax": ",react reset",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "autoresponder",
+    "name": "autoresponder create",
+    "syntax": ",autoresponder create (trigger) (response)",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "autoresponder",
+    "name": "autoresponder edit",
+    "syntax": ",autoresponder edit (trigger) (new_response)",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "autoresponder",
+    "name": "autoresponder delete",
+    "syntax": ",autoresponder delete (trigger)",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "autoresponder",
+    "name": "autoresponder config",
+    "syntax": ",autoresponder config",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "event setup",
+    "syntax": ",event setup",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "event enable",
+    "syntax": ",event enable",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "event disable",
+    "syntax": ",event disable",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "event reset",
+    "syntax": ",event reset",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore command add",
+    "syntax": ",ignore command add (command_name)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore command remove",
+    "syntax": ",ignore command remove (command_name)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore command show",
+    "syntax": ",ignore command show",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore channel add",
+    "syntax": ",ignore channel add (channel)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore channel remove",
+    "syntax": ",ignore channel remove (channel)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore user add",
+    "syntax": ",ignore user add (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore user remove",
+    "syntax": ",ignore user remove (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore bypass add",
+    "syntax": ",ignore bypass add (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore bypass remove",
+    "syntax": ",ignore bypass remove (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "ignore bypass show",
+    "syntax": ",ignore bypass show",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "msgleaderboard on",
+    "syntax": ",msgleaderboard on",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "msgleaderboard off",
+    "syntax": ",msgleaderboard off",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "msgstats",
+    "syntax": ",msgstats [member]",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "leaderboard messages",
+    "syntax": ",leaderboard messages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "leaderboard dailymessages",
+    "syntax": ",leaderboard dailymessages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "leaderboard weeklymessages",
+    "syntax": ",leaderboard weeklymessages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "blacklistchannel",
+    "syntax": ",blacklistchannel (channel)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "blacklistcategory",
+    "syntax": ",blacklistcategory (category)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "setmessagerole",
+    "syntax": ",setmessagerole (messages) (role)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "clearmsgs",
+    "syntax": ",clearmsgs",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "clearmsgs",
+    "syntax": ",clearmsgs (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "resetmymessages",
+    "syntax": ",resetmymessages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "voicelb on",
+    "syntax": ",voicelb on",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "voicelb off",
+    "syntax": ",voicelb off",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "vcstats",
+    "syntax": ",vcstats [member]",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "voiceleaderboard",
+    "syntax": ",voiceleaderboard",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "dailyvoice",
+    "syntax": ",dailyvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "weeklyvoice",
+    "syntax": ",weeklyvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "addvctime",
+    "syntax": ",addvctime (member) (time)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "reducevctime",
+    "syntax": ",reducevctime (member) (time)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "clearvoice",
+    "syntax": ",clearvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "resetmyvoice",
+    "syntax": ",resetmyvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "invitelb on",
+    "syntax": ",invitelb on",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "invitelb off",
+    "syntax": ",invitelb off",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "invites",
+    "syntax": ",invites [member]",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "inviteleaderboard",
+    "syntax": ",inviteleaderboard",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "inviteleaderboard regular",
+    "syntax": ",inviteleaderboard regular",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "inviteleaderboard fake",
+    "syntax": ",inviteleaderboard fake",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "inviter",
+    "syntax": ",inviter (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "invited",
+    "syntax": ",invited (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "inviteinfo",
+    "syntax": ",inviteinfo (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "setinviterole",
+    "syntax": ",setinviterole (invites) (role)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "setaltthreshold",
+    "syntax": ",setaltthreshold (days)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "clearinvites",
+    "syntax": ",clearinvites",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "leaderboard",
+    "name": "resetmyinvites",
+    "syntax": ",resetmyinvites",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "logging",
+    "name": "logging setup",
+    "syntax": ",logging setup",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "logging",
+    "name": "logging auto setup",
+    "syntax": ",logging auto setup",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "logging",
+    "name": "logging enable",
+    "syntax": ",logging enable",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "logging",
+    "name": "logging disable",
+    "syntax": ",logging disable",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "logging",
+    "name": "logging config",
+    "syntax": ",logging config",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "logging",
+    "name": "logging reset",
+    "syntax": ",logging reset",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "media setup",
+    "syntax": ",media setup (channel)",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "media remove",
+    "syntax": ",media remove",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "media config",
+    "syntax": ",media config",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "media bypass add",
+    "syntax": ",media bypass add (member)",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "media bypass remove",
+    "syntax": ",media bypass remove (member)",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "media bypass show",
+    "syntax": ",media bypass show",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole humans add",
+    "syntax": ",autorole humans add @Member",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Add Role theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole humans remove",
+    "syntax": ",autorole humans remove @Member",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Remove Role theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole reset humans",
+    "syntax": ",autorole reset humans",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Reset theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole bots add",
+    "syntax": ",autorole bots add @Bots",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Add Role theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole bots remove",
+    "syntax": ",autorole bots remove @Bots",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Remove Role theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole reset bots",
+    "syntax": ",autorole reset bots",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Reset theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole config",
+    "syntax": ",autorole config",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash View All theme={null}"
+  },
+  {
+    "category": "automations",
+    "name": "autorole reset all",
+    "syntax": ",autorole reset all",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "evidenceType": "Labelled documentation code block: bash Reset All theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup staff",
+    "syntax": ",setup staff <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup vip",
+    "syntax": ",setup vip <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup girl",
+    "syntax": ",setup girl <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup guest",
+    "syntax": ",setup guest <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup friend",
+    "syntax": ",setup friend <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup reqrole",
+    "syntax": ",setup reqrole <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup config",
+    "syntax": ",setup config",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup create",
+    "syntax": ",setup create <name> <@role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup delete",
+    "syntax": ",setup delete <name>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "setup list",
+    "syntax": ",setup list",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "staff",
+    "syntax": ",staff @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Predefined Toggles theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "vip",
+    "syntax": ",vip @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Predefined Toggles theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "girl",
+    "syntax": ",girl @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Predefined Toggles theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "guest",
+    "syntax": ",guest @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Predefined Toggles theme={null}"
+  },
+  {
+    "category": "customrole",
+    "name": "friend",
+    "syntax": ",friend @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "evidenceType": "Labelled documentation code block: bash Predefined Toggles theme={null}"
+  },
+  {
+    "category": "vanityroles",
+    "name": "guildtag setup",
+    "syntax": ",guildtag setup <@role> <#channel>",
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "vanityroles",
+    "name": "guildtag show",
+    "syntax": ",guildtag show",
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "vanityroles",
+    "name": "guildtag reset",
+    "syntax": ",guildtag reset",
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "reactionroles",
+    "name": "reactionrole add",
+    "syntax": ",reactionrole add (message_id) (emoji) (role)",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "reactionroles",
+    "name": "reactionrole remove",
+    "syntax": ",reactionrole remove (message_id) (emoji)",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "reactionroles",
+    "name": "reactionrole list",
+    "syntax": ",reactionrole list",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "evidenceType": "Labelled documentation code block: bash View All theme={null}"
+  },
+  {
+    "category": "reactionroles",
+    "name": "reactionrole reset",
+    "syntax": ",reactionrole reset",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "evidenceType": "Labelled documentation code block: bash Reset theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "vcrole add",
+    "syntax": ",vcrole add <@role>",
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "vcrole remove",
+    "syntax": ",vcrole remove",
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "vcrole show",
+    "syntax": ",vcrole show",
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "evidenceType": "Labelled documentation code block: bash Command theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket setup",
+    "syntax": ",ticket setup",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket staff",
+    "syntax": ",ticket staff (role)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket transcript",
+    "syntax": ",ticket transcript (channel)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket panel",
+    "syntax": ",ticket panel (channel)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket addcategory",
+    "syntax": ",ticket addcategory",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket categories",
+    "syntax": ",ticket categories",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket removecategory",
+    "syntax": ",ticket removecategory (id)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket adduser",
+    "syntax": ",ticket adduser (user)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Add User theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket removeuser",
+    "syntax": ",ticket removeuser (user)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Remove User theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket config",
+    "syntax": ",ticket config",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket edit",
+    "syntax": ",ticket edit",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket reset",
+    "syntax": ",ticket reset",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "ticket",
+    "name": "ticket close",
+    "syntax": ",ticket close",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Documented command table."
+  },
+  {
+    "category": "ticket",
+    "name": "ticket delete",
+    "syntax": ",ticket delete",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Documented command table."
+  },
+  {
+    "category": "ticket",
+    "name": "ticket transcript",
+    "syntax": ",ticket transcript",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "evidenceType": "Documented command table."
+  },
+  {
+    "category": "voicemaster",
+    "name": "voicemaster setup",
+    "syntax": ",voicemaster setup",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voicemaster",
+    "name": "voicemaster buttons",
+    "syntax": ",voicemaster buttons",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voicemaster",
+    "name": "voicemaster config",
+    "syntax": ",voicemaster config",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voicemaster",
+    "name": "voicemaster reset",
+    "syntax": ",voicemaster reset",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet enable",
+    "syntax": ",greet enable",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet disable",
+    "syntax": ",greet disable",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet channel",
+    "syntax": ",greet channel #channel",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet autodelete",
+    "syntax": ",greet autodelete (seconds)",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet test",
+    "syntax": ",greet test",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet config",
+    "syntax": ",greet config",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "welcomer",
+    "name": "greet reset",
+    "syntax": ",greet reset",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "embed",
+    "syntax": ",embed",
+    "source": "https://docs.zynrax.site/miscellaneous/embed",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "truth",
+    "syntax": ",truth",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Truth theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "dare",
+    "syntax": ",dare",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Dare theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "8ball",
+    "syntax": ",8ball (question)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "howgay",
+    "syntax": ",howgay (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash How Gay theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "lesbian",
+    "syntax": ",lesbian (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Lesbian theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "horny",
+    "syntax": ",horny (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Horny theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "cute",
+    "syntax": ",cute (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Cute theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "iq",
+    "syntax": ",iq (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash IQ theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "tharki",
+    "syntax": ",tharki (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Tharki theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "chutiya",
+    "syntax": ",chutiya (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Chutiya theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "hug",
+    "syntax": ",hug [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Hug theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "kiss",
+    "syntax": ",kiss [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Kiss theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "pat",
+    "syntax": ",pat [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Pat theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "cuddle",
+    "syntax": ",cuddle [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Cuddle theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "lappillow",
+    "syntax": ",lappillow [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Lap Pillow theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "handhold",
+    "syntax": ",handhold [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Handhold theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "slap",
+    "syntax": ",slap (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Slap theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "punch",
+    "syntax": ",punch [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Punch theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "kick",
+    "syntax": ",kick [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Kick theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "kill",
+    "syntax": ",kill (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Kill theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "yeet",
+    "syntax": ",yeet (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Yeet theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "bonk",
+    "syntax": ",bonk (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Bonk theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "spank",
+    "syntax": ",spank (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Spank theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "smile",
+    "syntax": ",smile",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Smile theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "happy",
+    "syntax": ",happy",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Happy theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "cry",
+    "syntax": ",cry",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Cry theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "dance",
+    "syntax": ",dance",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Dance theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "wave",
+    "syntax": ",wave [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Wave theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "poke",
+    "syntax": ",poke [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Poke theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "tickle",
+    "syntax": ",tickle [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Tickle theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "highfive",
+    "syntax": ",highfive [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Highfive theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "stare",
+    "syntax": ",stare [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Stare theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "smug",
+    "syntax": ",smug",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Smug theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "image",
+    "syntax": ",image (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "fun",
+    "name": "gif",
+    "syntax": ",gif (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gstart",
+    "syntax": ",gstart (time) (winners) (prize)",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gend",
+    "syntax": ",gend [message_id]",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "greroll",
+    "syntax": ",greroll",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gembed set",
+    "syntax": ",gembed set (url/upload)",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Set Image theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gembed reset",
+    "syntax": ",gembed reset",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Reset theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gstaff role",
+    "syntax": ",gstaff role @GiveawayManager",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Set Role theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gstaff reset",
+    "syntax": ",gstaff reset",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash Reset theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "gconfig",
+    "syntax": ",gconfig",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash View All theme={null}"
+  },
+  {
+    "category": "giveaway",
+    "name": "glist",
+    "syntax": ",glist",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "evidenceType": "Labelled documentation code block: bash List active theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "join",
+    "syntax": ",join",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "play",
+    "syntax": ",play (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "search",
+    "syntax": ",search (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "disconnect",
+    "syntax": ",disconnect",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "nowplaying",
+    "syntax": ",nowplaying",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "pause",
+    "syntax": ",pause",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "resume",
+    "syntax": ",resume",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "stop",
+    "syntax": ",stop",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "replay",
+    "syntax": ",replay",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "seek",
+    "syntax": ",seek (percentage)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "volume",
+    "syntax": ",volume (level)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "queue",
+    "syntax": ",queue",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "skip",
+    "syntax": ",skip",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "shuffle",
+    "syntax": ",shuffle",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "clearqueue",
+    "syntax": ",clearqueue",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "autoplay",
+    "syntax": ",autoplay",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "loop",
+    "syntax": ",loop",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "247",
+    "syntax": ",247",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Toggle theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "filter enable",
+    "syntax": ",filter enable",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Enable theme={null}"
+  },
+  {
+    "category": "music",
+    "name": "filter disable",
+    "syntax": ",filter disable",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "evidenceType": "Labelled documentation code block: bash Disable theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "serverinfo",
+    "syntax": ",serverinfo",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "userinfo",
+    "syntax": ",userinfo [member]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "avatar",
+    "syntax": ",avatar [member]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "banner",
+    "syntax": ",banner [member]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "roleinfo",
+    "syntax": ",roleinfo (role)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "boostcount",
+    "syntax": ",boostcount",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "membercount",
+    "syntax": ",membercount",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "stats",
+    "syntax": ",stats",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "uptime",
+    "syntax": ",uptime",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "invite",
+    "syntax": ",invite",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list boosters",
+    "syntax": ",list boosters",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Boosters theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list admins",
+    "syntax": ",list admins",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Admins theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list bots",
+    "syntax": ",list bots",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Bots theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list inrole",
+    "syntax": ",list inrole (role)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash In Role theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list roles",
+    "syntax": ",list roles",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Roles theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list emojis",
+    "syntax": ",list emojis",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Emojis theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "list bans",
+    "syntax": ",list bans",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Bans theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "poll",
+    "syntax": "/poll (question) (answers) [duration] [multiple]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "urban",
+    "syntax": ",urban (phrase)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "translate",
+    "syntax": ",translate (language) [text]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "weather",
+    "syntax": ",weather (city)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "uptime",
+    "syntax": ",uptime",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "steal",
+    "syntax": ",steal (emoji)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "say",
+    "syntax": ",say (channel) (message)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "setupi",
+    "syntax": ",setupi (slot) (upi id)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Setup Slot theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "showupi",
+    "syntax": ",showupi",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash View My Slots theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "removeupi",
+    "syntax": ",removeupi [slot]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Delete Slot theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "makeqr",
+    "syntax": ",makeqr (slot)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Any Amount theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "makeqr",
+    "syntax": ",makeqr (slot) (amount)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Fixed Amount theme={null}"
+  },
+  {
+    "category": "utility",
+    "name": "afk",
+    "syntax": ",afk [reason]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "prefix",
+    "syntax": "?prefix (new prefix)",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "customize avatar",
+    "syntax": ",customize avatar (image URL)",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "customize banner",
+    "syntax": ",customize banner (image URL)",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "customize resetavatar",
+    "syntax": ",customize resetavatar",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "evidenceType": "Labelled documentation code block: bash Reset Avatar theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "customize resetbanner",
+    "syntax": ",customize resetbanner",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "evidenceType": "Labelled documentation code block: bash Reset Banner theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "customize reset",
+    "syntax": ",customize reset",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "evidenceType": "Labelled documentation code block: bash Global Reset theme={null}"
+  },
+  {
+    "category": "general",
+    "name": "security",
+    "syntax": "?security",
+    "source": "https://docs.zynrax.site/overview/setup",
+    "evidenceType": "Inline command mention; no parameters established."
+  },
+  {
+    "category": "antinuke",
+    "name": "extraowner set",
+    "syntax": ",extraowner set (user)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "antinuke",
+    "name": "whitelist add",
+    "syntax": ",whitelist add (user)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "antinuke",
+    "name": "antilimit",
+    "syntax": ",antilimit (event) (limit)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "antinuke",
+    "name": "antipunish",
+    "syntax": ",antipunish (event) (punishment)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "antinuke",
+    "name": "anticonfig",
+    "syntax": ",anticonfig",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "antinuke",
+    "name": "whitelist show",
+    "syntax": ",whitelist show",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "antinuke",
+    "name": "whitelist remove",
+    "syntax": ",whitelist remove (user)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod enable",
+    "syntax": ",automod enable",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Enable theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod disable",
+    "syntax": ",automod disable",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Disable theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod punishment",
+    "syntax": ",automod punishment",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod ignore channel",
+    "syntax": ",automod ignore channel #channel",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Ignore Channel theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod ignore role",
+    "syntax": ",automod ignore role @role",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Ignore Role theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod ignore reset",
+    "syntax": ",automod ignore reset",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Reset Whitelist theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod logging",
+    "syntax": ",automod logging #channel",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash Set Logging theme={null}"
+  },
+  {
+    "category": "automod",
+    "name": "automod config",
+    "syntax": ",automod config",
+    "source": "https://docs.zynrax.site/security/automod",
+    "evidenceType": "Labelled documentation code block: bash View Config theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "jail setup",
+    "syntax": ",jail setup",
+    "source": "https://docs.zynrax.site/security/jail",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "jail config",
+    "syntax": ",jail config",
+    "source": "https://docs.zynrax.site/security/jail",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "jail reset",
+    "syntax": ",jail reset",
+    "source": "https://docs.zynrax.site/security/jail",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "jail",
+    "syntax": ",jail (member) [duration] [reason]",
+    "source": "https://docs.zynrax.site/security/jail",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unjail",
+    "syntax": ",unjail (member) [reason]",
+    "source": "https://docs.zynrax.site/security/jail",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "jail list",
+    "syntax": ",jail list",
+    "source": "https://docs.zynrax.site/security/jail",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "mainrole add",
+    "syntax": ",mainrole add (role)",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "mainrole remove",
+    "syntax": ",mainrole remove (role)",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "mainrole list",
+    "syntax": ",mainrole list",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "mainrole reset",
+    "syntax": ",mainrole reset",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "permit",
+    "name": "whitelist",
+    "syntax": ",whitelist (user)",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "ban",
+    "syntax": ",ban (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unban",
+    "syntax": ",unban (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unbanall",
+    "syntax": ",unbanall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "kick",
+    "syntax": ",kick (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "mute",
+    "syntax": ",mute (member) (duration) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unmute",
+    "syntax": ",unmute (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unmuteall",
+    "syntax": ",unmuteall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "warn",
+    "syntax": ",warn (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "clearwarns",
+    "syntax": ",clearwarns (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "purge",
+    "syntax": ",purge (amount)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "purge user",
+    "syntax": ",purge user @user [amount]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "purge",
+    "syntax": ",purge (filter) [amount]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "pb",
+    "syntax": ",pb [amount]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "snipe",
+    "syntax": ",snipe",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "lock",
+    "syntax": ",lock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unlock",
+    "syntax": ",unlock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "hide",
+    "syntax": ",hide",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unhide",
+    "syntax": ",unhide",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "slowmode",
+    "syntax": ",slowmode (seconds)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "lockall",
+    "syntax": ",lockall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unlockall",
+    "syntax": ",unlockall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "hideall",
+    "syntax": ",hideall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unhideall",
+    "syntax": ",unhideall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "nuke",
+    "syntax": ",nuke",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "clone",
+    "syntax": ",clone (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice kick",
+    "syntax": ",voice kick (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice kickall",
+    "syntax": ",voice kickall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice mute",
+    "syntax": ",voice mute (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice unmute",
+    "syntax": ",voice unmute (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice muteall",
+    "syntax": ",voice muteall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice unmuteall",
+    "syntax": ",voice unmuteall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice deafen",
+    "syntax": ",voice deafen (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice undeafen",
+    "syntax": ",voice undeafen (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice deafenall",
+    "syntax": ",voice deafenall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice undeafenall",
+    "syntax": ",voice undeafenall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice move",
+    "syntax": ",voice move (member) (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice moveall",
+    "syntax": ",voice moveall (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice pull",
+    "syntax": ",voice pull (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice pullall",
+    "syntax": ",voice pullall (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice lock",
+    "syntax": ",voice lock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice unlock",
+    "syntax": ",voice unlock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice private",
+    "syntax": ",voice private",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "voice",
+    "name": "voice unprivate",
+    "syntax": ",voice unprivate",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role",
+    "syntax": ",role (member) (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role create",
+    "syntax": ",role create (name)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role delete",
+    "syntax": ",role delete (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role rename",
+    "syntax": ",role rename (role) (name)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role all",
+    "syntax": ",role all (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role humans",
+    "syntax": ",role humans (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role bots",
+    "syntax": ",role bots (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "role unverified",
+    "syntax": ",role unverified (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "removerole all",
+    "syntax": ",removerole all (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "removerole humans",
+    "syntax": ",removerole humans (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "removerole bots",
+    "syntax": ",removerole bots (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "delemoji",
+    "syntax": ",delemoji [emoji]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "delsticker",
+    "syntax": ",delsticker [reply]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "roleicon",
+    "syntax": ",roleicon (role) [icon]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "enlarge",
+    "syntax": ",enlarge (emoji)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "nick",
+    "syntax": ",nick (member) [new_nick]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Labelled documentation code block: bash Syntax theme={null}"
+  },
+  {
+    "category": "moderation",
+    "name": "unslowmode",
+    "syntax": ",unslowmode",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "evidenceType": "Inline command mention; no parameters established."
+  },
+  {
+    "category": "general",
+    "name": "prefixset",
+    "syntax": "?prefixset (symbol)",
+    "source": "https://docs.zynrax.site/",
+    "evidenceType": "Home-page explicit inline syntax."
+  }
+]

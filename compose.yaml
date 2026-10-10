@@ -1,0 +1,11 @@
+services:
+  luna:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - luna-data:/app/var
+    init: true
+    stop_grace_period: 20s
+volumes:
+  luna-data:
