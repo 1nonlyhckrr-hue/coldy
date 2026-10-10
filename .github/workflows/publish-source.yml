@@ -1,0 +1,140 @@
+name: Publish audited source
+on:
+  workflow_dispatch:
+    inputs:
+      download_url:
+        description: HTTPS direct download URL of reviewed Luna source ZIP
+        required: true
+        type: string
+      sha256:
+        description: Exact SHA256 of reviewed source archive
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: source-publication
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      base: ${{ steps.base.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download and validate checksum,paths and resource bounds
+        env:
+          ARCHIVE_URL: ${{ inputs.download_url }}
+          ARCHIVE_SHA: ${{ inputs.sha256 }}
+        run: |
+          python3 - <<'PYCODE'
+          import os,re,pathlib,urllib.parse,urllib.request,hashlib,zipfile,stat,shutil
+          url=os.environ['ARCHIVE_URL']; digest=os.environ['ARCHIVE_SHA']
+          assert re.fullmatch('[0-9a-fA-F]{64}',digest),'Invalid digest'
+          parsed=urllib.parse.urlparse(url)
+          assert parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password,'HTTPS URL required'
+          # Public file hosts only;no intranet,loopback or arbitrary URL fetches.
+          assert parsed.hostname.endswith('.gofile.io') or parsed.hostname=='gofile.io','Approved source archive host required'
+          class SafeRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                  dest=urllib.parse.urlparse(newurl)
+                  assert dest.scheme=='https' and (dest.hostname or '').endswith('.gofile.io'),'Unsafe redirect'
+                  return super().redirect_request(req,fp,code,msg,headers,newurl)
+          opener=urllib.request.build_opener(SafeRedirect())
+          archive=pathlib.Path('/tmp/source.zip')
+          with opener.open(url,timeout=60) as response,archive.open('wb') as out:
+              total=0
+              while True:
+                  chunk=response.read(65536)
+                  if not chunk:break
+                  total+=len(chunk);assert total<=10*1024*1024,'Archive too large';out.write(chunk)
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==digest.lower(),'Checksum mismatch'
+          root=pathlib.Path('/tmp/audited-tree');root.mkdir()
+          seen=set();expanded=0
+          allowed_dirs={'src','scripts','test','data','docs'}
+          allowed_root={'README.md','LICENSE','CONTRIBUTING.md','package.json','package-lock.json','.gitignore','.env.example','.prettierrc.json','.prettierignore','eslint.config.js','COMMAND_INDEX.md','CONFIGURATION.md','DEPLOYMENT.md','INSTALLATION.md','SECURITY.md','TROUBLESHOOTING.md','Dockerfile','.dockerignore','docker-compose.yml','.nvmrc','ARCHITECTURE.md','ROADMAP.md','compose.yaml'}
+          with zipfile.ZipFile(archive) as z:
+              assert 1<=len(z.infolist())<=1000,'File count bound'
+              for entry in z.infolist():
+                  path=pathlib.PurePosixPath(entry.filename)
+                  assert not path.is_absolute() and '..' not in path.parts and '\\' not in entry.filename and '\x00' not in entry.filename,'Unsafe path'
+                  assert path.parts and entry.filename not in seen,'Duplicate path';seen.add(entry.filename)
+                  assert not stat.S_ISLNK(entry.external_attr>>16),'Symlink rejected'
+                  assert not entry.flag_bits&1,'Encrypted ZIP rejected'
+                  if entry.is_dir():continue
+                  # Workflows are bootstrapped/reviewed via owner UI,never from an executable source archive.
+                  if path.parts[0]=='.github':continue
+                  assert path.parts[0] in allowed_dirs or (len(path.parts)==1 and path.name in allowed_root),'Unapproved source path'
+                  assert not any(part in {'.git','node_modules','var','__pycache__'} for part in path.parts),'Forbidden directory'
+                  assert not path.name.startswith('.env') or path.name=='.env.example','Secret environment file'
+                  assert not any(path.name.endswith(s) for s in ['.sqlite','.sqlite-wal','.sqlite-shm','.log','.pem','.key']),'Private file extension'
+                  expanded+=entry.file_size;assert entry.file_size<=3*1024*1024 and expanded<=25*1024*1024,'Expansion bound'
+                  target=root.joinpath(*path.parts);target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(z.read(entry))
+          for needed in ['package.json','package-lock.json','src/index.js','README.md']:assert root.joinpath(needed).is_file(),'Missing source'
+          for child in root.iterdir():
+              target=pathlib.Path(child.name)
+              if child.is_dir():shutil.copytree(child,target,dirs_exist_ok=True)
+              else:shutil.copyfile(child,target)
+          PYCODE
+      - run: npm ci --ignore-scripts
+      - name: Build reviewed native database module without repository hooks
+        run: npm rebuild better-sqlite3
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run inventory
+      - run: npm run inventory:luna
+      - run: npm run register:preview
+      - run: npm audit
+      - name: Check regenerated inventory agrees with reviewed archive
+        run: |
+          cmp data/commands.csv /tmp/audited-tree/data/commands.csv
+          cmp data/luna-commands.json /tmp/audited-tree/data/luna-commands.json
+          cmp data/luna-commands.csv /tmp/audited-tree/data/luna-commands.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audited-source
+          path: /tmp/audited-tree/
+          include-hidden-files: true
+          retention-days: 1
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: audited-source
+          path: /tmp/audited-source
+      - name: Commit verified source once,never execute artifact code with write token
+        env:
+          VERIFIED_BASE: ${{ needs.verify.outputs.base }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$VERIFIED_BASE" || { echo 'Repository changed during validation;dispatch fresh reviewed checkpoint'; exit 1; }
+          python3 - <<'PYCODE'
+          import pathlib,shutil
+          root=pathlib.Path('/tmp/audited-source')
+          assert not root.joinpath('.git').exists() and not root.joinpath('.github').exists(),'Forbidden artifact path'
+          for child in root.iterdir():
+              target=pathlib.Path(child.name)
+              if child.is_dir():shutil.copytree(child,target,dirs_exist_ok=True)
+              else:shutil.copyfile(child,target)
+          PYCODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- . ':!.github'
+          if ! git diff --cached --quiet; then
+            git -c core.hooksPath=/dev/null commit -m 'Publish verified Luna source checkpoint'
+            git -c core.hooksPath=/dev/null push origin HEAD:main
+          fi
