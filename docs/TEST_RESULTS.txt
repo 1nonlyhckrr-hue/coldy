@@ -3,639 +3,1161 @@
 > node --test --experimental-test-coverage test/*.test.js
 
 TAP version 13
-# Subtest: explicit timezone parser refuses naive/invalid calendar times
-ok 1 - explicit timezone parser refuses naive/invalid calendar times
+# Subtest: antinuke off by default and requires configured channel
+ok 1 - antinuke off by default and requires configured channel
   ---
-  duration_ms: 1.934091
+  duration_ms: 14.134665
+  type: 'test'
+  ...
+# Subtest: audit mixed-action threshold is replay safe and one incident per actor/window
+ok 2 - audit mixed-action threshold is replay safe and one incident per actor/window
+  ---
+  duration_ms: 4.621121
+  type: 'test'
+  ...
+# Subtest: owner bot trust and unrelated/stale/unknown executor events excluded
+ok 3 - owner bot trust and unrelated/stale/unknown executor events excluded
+  ---
+  duration_ms: 3.244208
+  type: 'test'
+  ...
+# Subtest: audit config validates thresholds/trust limits and cleanup preserves current records
+ok 4 - audit config validates thresholds/trust limits and cleanup preserves current records
+  ---
+  duration_ms: 8.693083
+  type: 'test'
+  ...
+# Subtest: audit handler sends localized no-ping alert once without any punishment API
+ok 5 - audit handler sends localized no-ping alert once without any punishment API
+  ---
+  duration_ms: 5.755009
+  type: 'test'
+  ...
+# Subtest: alert channel rejection and uncertain send never repeat
+ok 6 - alert channel rejection and uncertain send never repeat
+  ---
+  duration_ms: 6.723298
+  type: 'test'
+  ...
+# Subtest: all six antinuke slash paths execute in three locales with fresh authorization
+ok 7 - all six antinuke slash paths execute in three locales with fresh authorization
+  ---
+  duration_ms: 12.294646
+  type: 'test'
+  ...
+# Subtest: audit runtime and View Audit Log gate prevent enabling
+ok 8 - audit runtime and View Audit Log gate prevent enabling
+  ---
+  duration_ms: 2.927537
+  type: 'test'
+  ...
+# Subtest: stale trusted user can be removed without current member but adding still verifies
+ok 9 - stale trusted user can be removed without current member but adding still verifies
+  ---
+  duration_ms: 3.565666
+  type: 'test'
+  ...
+# Subtest: explicit timezone parser refuses naive/invalid calendar times
+ok 10 - explicit timezone parser refuses naive/invalid calendar times
+  ---
+  duration_ms: 1.70182
   type: 'test'
   ...
 # Subtest: schedule bounds, duplicate source, guild isolation and cancellation
-ok 2 - schedule bounds, duplicate source, guild isolation and cancellation
+ok 11 - schedule bounds, duplicate source, guild isolation and cancellation
   ---
-  duration_ms: 13.500031
+  duration_ms: 12.903492
   type: 'test'
   ...
 # Subtest: claim-before-send prevents duplicate delivery after success or uncertain failure
-ok 3 - claim-before-send prevents duplicate delivery after success or uncertain failure
+ok 12 - claim-before-send prevents duplicate delivery after success or uncertain failure
   ---
-  duration_ms: 6.81184
+  duration_ms: 7.058893
   type: 'test'
   ...
 # Subtest: missed repeating sends skip backlog and maintain interval phase
-ok 4 - missed repeating sends skip backlog and maintain interval phase
+ok 13 - missed repeating sends skip backlog and maintain interval phase
   ---
-  duration_ms: 3.290375
+  duration_ms: 3.377236
   type: 'test'
   ...
 # Subtest: restart turns in-flight jobs uncertain and timer starts only once
-ok 5 - restart turns in-flight jobs uncertain and timer starts only once
+ok 14 - restart turns in-flight jobs uncertain and timer starts only once
   ---
-  duration_ms: 2.915462
+  duration_ms: 3.033832
   type: 'test'
   ...
 # Subtest: all four schedule commands execute with ISO time and locale
-ok 6 - all four schedule commands execute with ISO time and locale
+ok 15 - all four schedule commands execute with ISO time and locale
   ---
-  duration_ms: 5.965856
+  duration_ms: 5.526468
   type: 'test'
   ...
 # Subtest: AutoMod defaults off, guild isolation and literal phrase CRUD
-ok 7 - AutoMod defaults off, guild isolation and literal phrase CRUD
+ok 16 - AutoMod defaults off, guild isolation and literal phrase CRUD
   ---
-  duration_ms: 15.016568
+  duration_ms: 16.567262
   type: 'test'
   ...
 # Subtest: all six rules detect bounded literal content without substring false positives
-ok 8 - all six rules detect bounded literal content without substring false positives
+ok 17 - all six rules detect bounded literal content without substring false positives
   ---
-  duration_ms: 4.003505
+  duration_ms: 4.921373
   type: 'test'
   ...
 # Subtest: staff, bots, webhooks and exempt roles never trigger destructive actions
-ok 9 - staff, bots, webhooks and exempt roles never trigger destructive actions
+ok 18 - staff, bots, webhooks and exempt roles never trigger destructive actions
   ---
-  duration_ms: 2.384195
+  duration_ms: 3.179835
   type: 'test'
   ...
 # Subtest: warnings persist once and suppress autoresponder processing
-ok 10 - warnings persist once and suppress autoresponder processing
+ok 19 - warnings persist once and suppress autoresponder processing
   ---
-  duration_ms: 2.833578
+  duration_ms: 3.610851
   type: 'test'
   ...
 # Subtest: unconfirmed delete never automatically retries and content is not stored
-ok 11 - unconfirmed delete never automatically retries and content is not stored
+ok 20 - unconfirmed delete never automatically retries and content is not stored
   ---
-  duration_ms: 2.41798
+  duration_ms: 3.194899
   type: 'test'
   ...
 # Subtest: eight management paths enforce runtime, save settings and localize results
-ok 12 - eight management paths enforce runtime, save settings and localize results
+ok 21 - eight management paths enforce runtime, save settings and localize results
   ---
-  duration_ms: 7.805785
+  duration_ms: 8.619108
   type: 'test'
   ...
 # Subtest: replayed messages do not inflate spam thresholds
-ok 13 - replayed messages do not inflate spam thresholds
+ok 22 - replayed messages do not inflate spam thresholds
   ---
-  duration_ms: 1.926936
+  duration_ms: 2.636452
   type: 'test'
   ...
 # Subtest: literal Unicode matching normalizes case and spaces without regex injection
-ok 14 - literal Unicode matching normalizes case and spaces without regex injection
+ok 23 - literal Unicode matching normalizes case and spaces without regex injection
   ---
-  duration_ms: 2.516089
+  duration_ms: 2.288162
   type: 'test'
   ...
 # Subtest: responder CRUD validates, isolates guilds and enforces unique normalized triggers
-ok 15 - responder CRUD validates, isolates guilds and enforces unique normalized triggers
+ok 24 - responder CRUD validates, isolates guilds and enforces unique normalized triggers
   ---
-  duration_ms: 13.67435
+  duration_ms: 14.522879
   type: 'test'
   ...
 # Subtest: 50 trigger limit does not create partial extra rows
-ok 16 - 50 trigger limit does not create partial extra rows
+ok 25 - 50 trigger limit does not create partial extra rows
   ---
-  duration_ms: 8.790256
+  duration_ms: 9.092119
   type: 'test'
   ...
 # Subtest: claims prefer exact matches, persist cooldown and block replay after restart
-ok 17 - claims prefer exact matches, persist cooldown and block replay after restart
+ok 26 - claims prefer exact matches, persist cooldown and block replay after restart
   ---
-  duration_ms: 12.37912
+  duration_ms: 15.389928
   type: 'test'
   ...
 # Subtest: message handler ignores bots, webhooks, stale events and denied channels
-ok 18 - message handler ignores bots, webhooks, stale events and denied channels
+ok 27 - message handler ignores bots, webhooks, stale events and denied channels
   ---
-  duration_ms: 2.639753
+  duration_ms: 3.314751
   type: 'test'
   ...
 # Subtest: responses use locale embeds, suppress mentions and deliver once
-ok 19 - responses use locale embeds, suppress mentions and deliver once
+ok 28 - responses use locale embeds, suppress mentions and deliver once
   ---
-  duration_ms: 5.926799
+  duration_ms: 6.571998
   type: 'test'
   ...
 # Subtest: uncertain sends are recorded and not blindly retried
-ok 20 - uncertain sends are recorded and not blindly retried
+ok 29 - uncertain sends are recorded and not blindly retried
   ---
-  duration_ms: 2.500161
+  duration_ms: 3.051298
   type: 'test'
   ...
 # Subtest: four management paths execute and runtime guard blocks creating inactive triggers
-ok 21 - four management paths execute and runtime guard blocks creating inactive triggers
+ok 30 - four management paths execute and runtime guard blocks creating inactive triggers
   ---
-  duration_ms: 3.465254
+  duration_ms: 4.386478
   type: 'test'
   ...
 # Subtest: logs disabled by default, enabled logs omit content/reasons and suppress pings
-ok 22 - logs disabled by default, enabled logs omit content/reasons and suppress pings
+ok 31 - logs disabled by default, enabled logs omit content/reasons and suppress pings
   ---
-  duration_ms: 16.237169
+  duration_ms: 16.689591
   type: 'test'
   ...
 # Subtest: welcome and goodbye are separately gated, mentions narrowly allowed, failures contained
-ok 23 - welcome and goodbye are separately gated, mentions narrowly allowed, failures contained
+ok 32 - welcome and goodbye are separately gated, mentions narrowly allowed, failures contained
   ---
-  duration_ms: 3.770878
+  duration_ms: 4.469126
   type: 'test'
   ...
 # Subtest: valid config has defaults and parsed owner IDs
-ok 24 - valid config has defaults and parsed owner IDs
+ok 33 - valid config has defaults and parsed owner IDs
   ---
-  duration_ms: 5.265861
+  duration_ms: 4.882616
   type: 'test'
   ...
 # Subtest: invalid config names fields without secret input
-ok 25 - invalid config names fields without secret input
+ok 34 - invalid config names fields without secret input
   ---
-  duration_ms: 1.364161
+  duration_ms: 1.402302
   type: 'test'
   ...
 # Subtest: invalid owner and guild IDs rejected
-ok 26 - invalid owner and guild IDs rejected
+ok 35 - invalid owner and guild IDs rejected
   ---
-  duration_ms: 0.490718
+  duration_ms: 0.42264
   type: 'test'
   ...
 # Subtest: empty optional guild is accepted
-ok 27 - empty optional guild is accepted
+ok 36 - empty optional guild is accepted
   ---
-  duration_ms: 0.142923
+  duration_ms: 0.146551
   type: 'test'
   ...
 # Subtest: logging setup, enable, config, test and disable persist
-ok 28 - logging setup, enable, config, test and disable persist
+ok 37 - logging setup, enable, config, test and disable persist
   ---
-  duration_ms: 21.225895
+  duration_ms: 16.983166
   type: 'test'
   ...
 # Subtest: welcome enable requires runtime member events and destination
-ok 29 - welcome enable requires runtime member events and destination
+ok 38 - welcome enable requires runtime member events and destination
   ---
-  duration_ms: 7.86805
+  duration_ms: 6.35061
   type: 'test'
   ...
 # Subtest: Hindi welcome and log configuration replies use localized embeds
-ok 30 - Hindi welcome and log configuration replies use localized embeds
+ok 39 - Hindi welcome and log configuration replies use localized embeds
   ---
-  duration_ms: 3.264849
+  duration_ms: 3.721772
   type: 'test'
   ...
 # Subtest: branded output channels require Embed Links permission
-ok 31 - branded output channels require Embed Links permission
+ok 40 - branded output channels require Embed Links permission
   ---
-  duration_ms: 3.60792
+  duration_ms: 3.491475
   type: 'test'
   ...
 # Subtest: cooldowns expire, isolate users and stay bounded
-ok 32 - cooldowns expire, isolate users and stay bounded
+ok 41 - cooldowns expire, isolate users and stay bounded
   ---
-  duration_ms: 1.026875
+  duration_ms: 0.992863
+  type: 'test'
+  ...
+# Subtest: custom mappings/gate persist and isolate guilds
+ok 42 - custom mappings/gate persist and isolate guilds
+  ---
+  duration_ms: 20.494126
+  type: 'test'
+  ...
+# Subtest: mapping validation limits, unique roles and gate overlap fail closed
+ok 43 - mapping validation limits, unique roles and gate overlap fail closed
+  ---
+  duration_ms: 5.524872
+  type: 'test'
+  ...
+# Subtest: claim/release are explicit idempotent states and record real effects
+ok 44 - claim/release are explicit idempotent states and record real effects
+  ---
+  duration_ms: 5.21006
+  type: 'test'
+  ...
+# Subtest: claim gate requires current role and release remains possible after gate loss
+ok 45 - claim gate requires current role and release remains possible after gate loss
+  ---
+  duration_ms: 3.583208
+  type: 'test'
+  ...
+# Subtest: edited unsafe roles, bot hierarchy and missing permissions cannot grant
+ok 46 - edited unsafe roles, bot hierarchy and missing permissions cannot grant
+  ---
+  duration_ms: 14.990848
+  type: 'test'
+  ...
+# Subtest: duplicate, busy and database failure never repeat or begin external change
+ok 47 - duplicate, busy and database failure never repeat or begin external change
+  ---
+  duration_ms: 3.635956
+  type: 'test'
+  ...
+# Subtest: role API rejection/uncertainty and finalization failure are no-retry
+ok 48 - role API rejection/uncertainty and finalization failure are no-retry
+  ---
+  duration_ms: 9.465517
+  type: 'test'
+  ...
+# Subtest: config race during member fetch refuses old mapping
+ok 49 - config race during member fetch refuses old mapping
+  ---
+  duration_ms: 2.818632
+  type: 'test'
+  ...
+# Subtest: CustomRole slash six paths execute in each locale with private branded replies
+ok 50 - CustomRole slash six paths execute in each locale with private branded replies
+  ---
+  duration_ms: 12.590439
+  type: 'test'
+  ...
+# Subtest: custom administration uses fresh Manage Roles and hierarchy checks
+ok 51 - custom administration uses fresh Manage Roles and hierarchy checks
+  ---
+  duration_ms: 2.910782
   type: 'test'
   ...
 # Subtest: migrations are idempotent and guild data survives reopening
-ok 33 - migrations are idempotent and guild data survives reopening
+ok 52 - migrations are idempotent and guild data survives reopening
   ---
-  duration_ms: 18.743631
+  duration_ms: 20.631809
   type: 'test'
   ...
 # Subtest: parameterized settings do not execute injected IDs
-ok 34 - parameterized settings do not execute injected IDs
+ok 53 - parameterized settings do not execute injected IDs
   ---
-  duration_ms: 1.854765
+  duration_ms: 2.365242
   type: 'test'
   ...
 # Subtest: Luna brand and polished error styles apply with Discord length bounds
-ok 35 - Luna brand and polished error styles apply with Discord length bounds
+ok 54 - Luna brand and polished error styles apply with Discord length bounds
   ---
-  duration_ms: 3.842569
+  duration_ms: 3.932745
   type: 'test'
   ...
 # Subtest: deferred failures edit original response
-ok 36 - deferred failures edit original response
+ok 55 - deferred failures edit original response
   ---
-  duration_ms: 2.787686
+  duration_ms: 3.021096
   type: 'test'
   ...
 # Subtest: already replied failures use follow-up; failed delivery contained
-ok 37 - already replied failures use follow-up; failed delivery contained
+ok 56 - already replied failures use follow-up; failed delivery contained
   ---
-  duration_ms: 0.783658
+  duration_ms: 0.715633
+  type: 'test'
+  ...
+# Subtest: random selection includes first/last and rejects invalid RNG outputs
+ok 57 - random selection includes first/last and rejects invalid RNG outputs
+  ---
+  duration_ms: 1.416984
+  type: 'test'
+  ...
+# Subtest: dice enforces bounds and deterministic sums without off-by-one
+ok 58 - dice enforces bounds and deterministic sums without off-by-one
+  ---
+  duration_ms: 1.318337
+  type: 'test'
+  ...
+# Subtest: choices require distinct bounded entries and reject empty/control input
+ok 59 - choices require distinct bounded entries and reject empty/control input
+  ---
+  duration_ms: 0.615825
+  type: 'test'
+  ...
+# Subtest: RPS computes all nine outcomes
+ok 60 - RPS computes all nine outcomes
+  ---
+  duration_ms: 0.277328
+  type: 'test'
+  ...
+# Subtest: fun serializes seven real paths and bounded input options
+ok 61 - fun serializes seven real paths and bounded input options
+  ---
+  duration_ms: 0.631399
+  type: 'test'
+  ...
+# Subtest: all fun commands reply in all locales with ephemeral branded embeds and no pings
+ok 62 - all fun commands reply in all locales with ephemeral branded embeds and no pings
+  ---
+  duration_ms: 3.845631
+  type: 'test'
+  ...
+# Subtest: fun rejects malformed runtime values without replying
+ok 63 - fun rejects malformed runtime values without replying
+  ---
+  duration_ms: 0.494966
+  type: 'test'
+  ...
+# Subtest: all fixed answers and prompts exist with no placeholders in each locale
+ok 64 - all fixed answers and prompts exist with no placeholders in each locale
+  ---
+  duration_ms: 0.317637
   type: 'test'
   ...
 # Subtest: giveaway sampling is unique, bounded and uses an explicit random source
-ok 38 - giveaway sampling is unique, bounded and uses an explicit random source
+ok 65 - giveaway sampling is unique, bounded and uses an explicit random source
   ---
-  duration_ms: 1.97124
+  duration_ms: 2.219733
   type: 'test'
   ...
 # Subtest: giveaway schema, duplicates and guild isolation fail closed
-ok 39 - giveaway schema, duplicates and guild isolation fail closed
+ok 66 - giveaway schema, duplicates and guild isolation fail closed
   ---
-  duration_ms: 13.817879
+  duration_ms: 14.754374
   type: 'test'
   ...
 # Subtest: entries deduplicate, reject late/foreign joins and preserve draw version
-ok 40 - entries deduplicate, reject late/foreign joins and preserve draw version
+ok 67 - entries deduplicate, reject late/foreign joins and preserve draw version
   ---
-  duration_ms: 3.89211
+  duration_ms: 4.365147
   type: 'test'
   ...
 # Subtest: rerolls exclude previous winners and can honestly have no eligible winners
-ok 41 - rerolls exclude previous winners and can honestly have no eligible winners
+ok 68 - rerolls exclude previous winners and can honestly have no eligible winners
   ---
-  duration_ms: 3.088639
+  duration_ms: 3.486023
   type: 'test'
   ...
 # Subtest: publication verifies permissions and preserves uncertain sends without repeat
-ok 42 - publication verifies permissions and preserves uncertain sends without repeat
+ok 69 - publication verifies permissions and preserves uncertain sends without repeat
   ---
-  duration_ms: 7.041065
+  duration_ms: 7.401505
   type: 'test'
   ...
 # Subtest: button validates original message, current role and membership before join
-ok 43 - button validates original message, current role and membership before join
+ok 70 - button validates original message, current role and membership before join
   ---
-  duration_ms: 4.556718
+  duration_ms: 4.654498
   type: 'test'
   ...
 # Subtest: runner revalidates entrants and preserves winners across edit failures
-ok 44 - runner revalidates entrants and preserves winners across edit failures
+ok 71 - runner revalidates entrants and preserves winners across edit failures
   ---
-  duration_ms: 4.659149
+  duration_ms: 4.689378
   type: 'test'
   ...
 # Subtest: unverifiable eligibility pauses without choosing winners
-ok 45 - unverifiable eligibility pauses without choosing winners
+ok 72 - unverifiable eligibility pauses without choosing winners
   ---
-  duration_ms: 3.807694
+  duration_ms: 3.1754
   type: 'test'
   ...
 # Subtest: due runner recovers ending records, avoids duplicate timers and localizes results
-ok 46 - due runner recovers ending records, avoids duplicate timers and localizes results
+ok 73 - due runner recovers ending records, avoids duplicate timers and localizes results
   ---
-  duration_ms: 7.487815
+  duration_ms: 5.909369
   type: 'test'
   ...
 # Subtest: management five paths execute actual runner and paginated storage
-ok 47 - management five paths execute actual runner and paginated storage
+ok 74 - management five paths execute actual runner and paginated storage
   ---
-  duration_ms: 4.580459
+  duration_ms: 5.458366
   type: 'test'
   ...
 # Subtest: validated nested settings preserve sections and reject invalid input
-ok 48 - validated nested settings preserve sections and reject invalid input
+ok 75 - validated nested settings preserve sections and reject invalid input
   ---
-  duration_ms: 16.236259
+  duration_ms: 16.398163
   type: 'test'
   ...
 # Subtest: templates replace known placeholders without code execution and stay bounded
-ok 49 - templates replace known placeholders without code execution and stay bounded
+ok 76 - templates replace known placeholders without code execution and stay bounded
   ---
-  duration_ms: 0.334658
+  duration_ms: 0.290371
   type: 'test'
   ...
 # Subtest: destination check refuses foreign, voice, missing and denied channels
-ok 50 - destination check refuses foreign, voice, missing and denied channels
+ok 77 - destination check refuses foreign, voice, missing and denied channels
   ---
-  duration_ms: 0.716766
+  duration_ms: 0.732155
+  type: 'test'
+  ...
+# Subtest: primary guild identity is exact ID, tri-state unknown fails safe
+ok 78 - primary guild identity is exact ID, tri-state unknown fails safe
+  ---
+  duration_ms: 1.108358
+  type: 'test'
+  ...
+# Subtest: grant then verified tag change removes only Luna-owned role
+ok 79 - grant then verified tag change removes only Luna-owned role
+  ---
+  duration_ms: 11.161196
+  type: 'test'
+  ...
+# Subtest: preexisting independent role never becomes owned or revoked
+ok 80 - preexisting independent role never becomes owned or revoked
+  ---
+  duration_ms: 2.958566
+  type: 'test'
+  ...
+# Subtest: unknown identity, dangerous role edits, app permission loss and config race refuse changes
+ok 81 - unknown identity, dangerous role edits, app permission loss and config race refuse changes
+  ---
+  duration_ms: 11.33667
+  type: 'test'
+  ...
+# Subtest: uncertain grant/restart recovery blocks repeats, retains grant record
+ok 82 - uncertain grant/restart recovery blocks repeats, retains grant record
+  ---
+  duration_ms: 3.656974
+  type: 'test'
+  ...
+# Subtest: guildtag config refuses silent role migration; reset never revokes grants
+ok 83 - guildtag config refuses silent role migration; reset never revokes grants
+  ---
+  duration_ms: 3.346665
+  type: 'test'
+  ...
+# Subtest: database gate, duplicate interaction and mutex prevent repeat effects
+ok 84 - database gate, duplicate interaction and mutex prevent repeat effects
+  ---
+  duration_ms: 3.256332
+  type: 'test'
+  ...
+# Subtest: four guildtag paths execute private localized replies and config authorization
+ok 85 - four guildtag paths execute private localized replies and config authorization
+  ---
+  duration_ms: 12.20283
   type: 'test'
   ...
 # Subtest: dispatch executes and rate limits
-ok 51 - dispatch executes and rate limits
+ok 86 - dispatch executes and rate limits
   ---
-  duration_ms: 3.408048
+  duration_ms: 4.038152
   type: 'test'
   ...
 # Subtest: internal error is not disclosed
-ok 52 - internal error is not disclosed
+ok 87 - internal error is not disclosed
   ---
-  duration_ms: 0.460748
+  duration_ms: 0.50623
   type: 'test'
   ...
 # Subtest: non-command events are ignored
-ok 53 - non-command events are ignored
+ok 88 - non-command events are ignored
   ---
-  duration_ms: 0.19531
+  duration_ms: 0.219297
   type: 'test'
   ...
 # Subtest: reference inventory has sources, no implementation claims, and deduplicated aliases
-ok 54 - reference inventory has sources, no implementation claims, and deduplicated aliases
+ok 89 - reference inventory has sources, no implementation claims, and deduplicated aliases
   ---
-  duration_ms: 7.343093
+  duration_ms: 7.420649
+  type: 'test'
+  ...
+# Subtest: ranks off by default, enabled future counts are replay safe and guild scoped
+ok 90 - ranks off by default, enabled future counts are replay safe and guild scoped
+  ---
+  duration_ms: 12.067394
+  type: 'test'
+  ...
+# Subtest: bots, webhooks, stale/future and invalid event ids are ignored
+ok 91 - bots, webhooks, stale/future and invalid event ids are ignored
+  ---
+  duration_ms: 2.921528
+  type: 'test'
+  ...
+# Subtest: exclusions apply to channel, category and thread ancestor with bounded config
+ok 92 - exclusions apply to channel, category and thread ancestor with bounded config
+  ---
+  duration_ms: 5.955225
+  type: 'test'
+  ...
+# Subtest: UTC calendar ranges, tie sorting and pagination are deterministic
+ok 93 - UTC calendar ranges, tie sorting and pagination are deterministic
+  ---
+  duration_ms: 4.573268
+  type: 'test'
+  ...
+# Subtest: retention clears older days/replay ids, resetmine leaves other users and replay guard
+ok 94 - retention clears older days/replay ids, resetmine leaves other users and replay guard
+  ---
+  duration_ms: 3.297972
+  type: 'test'
+  ...
+# Subtest: per-user daily contribution limit and transaction failure do not partly record
+ok 95 - per-user daily contribution limit and transaction failure do not partly record
+  ---
+  duration_ms: 3.359629
+  type: 'test'
+  ...
+# Subtest: message handler contains storage failure without logging content
+ok 96 - message handler contains storage failure without logging content
+  ---
+  duration_ms: 0.316423
+  type: 'test'
+  ...
+# Subtest: all seven leaderboard commands execute localized private replies
+ok 97 - all seven leaderboard commands execute localized private replies
+  ---
+  duration_ms: 11.727088
+  type: 'test'
+  ...
+# Subtest: leaderboard configuration fresh authorization/runtime gate and foreign channel fail
+ok 98 - leaderboard configuration fresh authorization/runtime gate and foreign channel fail
+  ---
+  duration_ms: 3.229864
+  type: 'test'
+  ...
+# Subtest: message counts and opt-in config survive restart with duplicate protection
+ok 99 - message counts and opt-in config survive restart with duplicate protection
+  ---
+  duration_ms: 12.76882
   type: 'test'
   ...
 # Subtest: locale keys aligned and placeholders strict
-ok 55 - locale keys aligned and placeholders strict
+ok 100 - locale keys aligned and placeholders strict
   ---
-  duration_ms: 1.796385
+  duration_ms: 1.976167
   type: 'test'
   ...
 # Subtest: per-guild language isolates and localized config executes
-ok 56 - per-guild language isolates and localized config executes
+ok 101 - per-guild language isolates and localized config executes
   ---
-  duration_ms: 15.380847
+  duration_ms: 15.227167
   type: 'test'
   ...
 # Subtest: welcome defaults follow locale while user templates stay verbatim
-ok 57 - welcome defaults follow locale while user templates stay verbatim
+ok 102 - welcome defaults follow locale while user templates stay verbatim
   ---
-  duration_ms: 3.079649
+  duration_ms: 3.593837
   type: 'test'
   ...
 # Subtest: all locale placeholder sets match English templates
-ok 58 - all locale placeholder sets match English templates
+ok 103 - all locale placeholder sets match English templates
   ---
-  duration_ms: 4.445732
+  duration_ms: 5.141857
   type: 'test'
   ...
 # Subtest: logger redacts structured secrets from actual emitted output
-ok 59 - logger redacts structured secrets from actual emitted output
+ok 104 - logger redacts structured secrets from actual emitted output
   ---
-  duration_ms: 4.90156
+  duration_ms: 4.898675
   type: 'test'
   ...
 # Subtest: duration validation bounds and units
-ok 60 - duration validation bounds and units
+ok 105 - duration validation bounds and units
   ---
-  duration_ms: 1.488453
+  duration_ms: 1.404225
   type: 'test'
   ...
 # Subtest: warning records are transactional, guild scoped and duplicate guarded
-ok 61 - warning records are transactional, guild scoped and duplicate guarded
+ok 106 - warning records are transactional, guild scoped and duplicate guarded
   ---
-  duration_ms: 10.578337
+  duration_ms: 11.013788
   type: 'test'
   ...
 # Subtest: permission denied before any external write or case
-ok 62 - permission denied before any external write or case
+ok 107 - permission denied before any external write or case
   ---
-  duration_ms: 2.10998
+  duration_ms: 2.745856
   type: 'test'
   ...
 # Subtest: bot permission denial, hierarchy and owner protections
-ok 63 - bot permission denial, hierarchy and owner protections
+ok 108 - bot permission denial, hierarchy and owner protections
   ---
-  duration_ms: 5.32754
+  duration_ms: 7.455529
   type: 'test'
   ...
 # Subtest: timeout refuses administrator and bot
-ok 64 - timeout refuses administrator and bot
+ok 109 - timeout refuses administrator and bot
   ---
-  duration_ms: 3.607449
+  duration_ms: 4.845257
   type: 'test'
   ...
 # Subtest: external action recorded completed without deleting prior messages
-ok 65 - external action recorded completed without deleting prior messages
+ok 110 - external action recorded completed without deleting prior messages
   ---
-  duration_ms: 2.039596
+  duration_ms: 2.710433
   type: 'test'
   ...
 # Subtest: API rejection and ambiguous network failures never auto-retry
-ok 66 - API rejection and ambiguous network failures never auto-retry
+ok 111 - API rejection and ambiguous network failures never auto-retry
   ---
-  duration_ms: 6.424697
+  duration_ms: 5.644163
   type: 'test'
   ...
 # Subtest: database failure prevents external action
-ok 67 - database failure prevents external action
+ok 112 - database failure prevents external action
   ---
-  duration_ms: 1.90446
+  duration_ms: 2.669423
   type: 'test'
   ...
 # Subtest: completed Discord action with case-finalization failure does not report action failure
-ok 68 - completed Discord action with case-finalization failure does not report action failure
+ok 113 - completed Discord action with case-finalization failure does not report action failure
   ---
-  duration_ms: 2.257357
+  duration_ms: 4.591384
   type: 'test'
   ...
 # Subtest: unban does not require target membership but checks permission
-ok 69 - unban does not require target membership but checks permission
+ok 114 - unban does not require target membership but checks permission
   ---
-  duration_ms: 1.994966
+  duration_ms: 2.534518
   type: 'test'
   ...
 # Subtest: moderation slash wrapper defers, selects validated inputs and edits without mentions
-ok 70 - moderation slash wrapper defers, selects validated inputs and edits without mentions
+ok 115 - moderation slash wrapper defers, selects validated inputs and edits without mentions
   ---
-  duration_ms: 8.526891
+  duration_ms: 9.102825
   type: 'test'
   ...
 # Subtest: successful timeout and untimeout call the matching Discord method
-ok 71 - successful timeout and untimeout call the matching Discord method
+ok 116 - successful timeout and untimeout call the matching Discord method
   ---
-  duration_ms: 2.085167
+  duration_ms: 2.620918
   type: 'test'
   ...
 # Subtest: warnings is read-only and invalid inputs never make a case
-ok 72 - warnings is read-only and invalid inputs never make a case
+ok 117 - warnings is read-only and invalid inputs never make a case
   ---
-  duration_ms: 2.226366
+  duration_ms: 2.765347
   type: 'test'
   ...
 # Subtest: Hindi moderation replies and default reasons follow guild locale
-ok 73 - Hindi moderation replies and default reasons follow guild locale
+ok 118 - Hindi moderation replies and default reasons follow guild locale
   ---
-  duration_ms: 2.35245
+  duration_ms: 3.062273
+  type: 'test'
+  ...
+# Subtest: catalog requires explicit reviewed rights and direct safe HTTPS file, not arbitrary user URLs
+ok 119 - catalog requires explicit reviewed rights and direct safe HTTPS file, not arbitrary user URLs
+  ---
+  duration_ms: 7.310263
+  type: 'test'
+  ...
+# Subtest: node requires stable4.2+ and HTTP source support, not genericV4 claim
+ok 120 - node requires stable4.2+ and HTTP source support, not genericV4 claim
+  ---
+  duration_ms: 0.412103
+  type: 'test'
+  ...
+# Subtest: music joins once, enqueues bounded queue and only matching finished event advances
+ok 121 - music joins once, enqueues bounded queue and only matching finished event advances
+  ---
+  duration_ms: 1.665425
+  type: 'test'
+  ...
+# Subtest: finished queue leaves unless24/7 stay is explicitly enabled
+ok 122 - finished queue leaves unless24/7 stay is explicitly enabled
+  ---
+  duration_ms: 0.523143
+  type: 'test'
+  ...
+# Subtest: provider play/join uncertainty freezes without retry/cascade
+ok 123 - provider play/join uncertainty freezes without retry/cascade
+  ---
+  duration_ms: 1.190279
+  type: 'test'
+  ...
+# Subtest: track exception freezes queue, pause failure contained and stop clears only after leave
+ok 124 - track exception freezes queue, pause failure contained and stop clears only after leave
+  ---
+  duration_ms: 0.53059
+  type: 'test'
+  ...
+# Subtest: pause/resume, catalog/queue/channel/session limits and lock gates work
+ok 125 - pause/resume, catalog/queue/channel/session limits and lock gates work
+  ---
+  duration_ms: 0.662428
+  type: 'test'
+  ...
+# Subtest: adapter resolves only exact direct HTTP audio, refuses substituted tracks/playlists
+ok 126 - adapter resolves only exact direct HTTP audio, refuses substituted tracks/playlists
+  ---
+  duration_ms: 0.501578
+  type: 'test'
+  ...
+# Subtest: adapter uses server-echoed per-play userData token so repeated encoded tracks cannot consume stale ends
+ok 127 - adapter uses server-echoed per-play userData token so repeated encoded tracks cannot consume stale ends
+  ---
+  duration_ms: 1.640106
+  type: 'test'
+  ...
+# Subtest: failed resolve releases newly reserved queue capacity without joining
+ok 128 - failed resolve releases newly reserved queue capacity without joining
+  ---
+  duration_ms: 0.313131
   type: 'test'
   ...
 # Subtest: guild only, owner only, and user permissions fail closed
-ok 74 - guild only, owner only, and user permissions fail closed
+ok 129 - guild only, owner only, and user permissions fail closed
   ---
-  duration_ms: 1.548678
+  duration_ms: 1.385346
   type: 'test'
   ...
 # Subtest: bot permissions required separately
-ok 75 - bot permissions required separately
+ok 130 - bot permissions required separately
   ---
-  duration_ms: 0.179313
+  duration_ms: 0.160837
   type: 'test'
   ...
 # Subtest: permissioned owner passes
-ok 76 - permissioned owner passes
+ok 131 - permissioned owner passes
   ---
-  duration_ms: 0.197336
+  duration_ms: 0.201272
   type: 'test'
   ...
 # Subtest: hierarchy protects owner, self, equal roles and bot role
-ok 77 - hierarchy protects owner, self, equal roles and bot role
+ok 132 - hierarchy protects owner, self, equal roles and bot role
   ---
-  duration_ms: 0.292854
+  duration_ms: 0.252999
+  type: 'test'
+  ...
+# Subtest: restrictions persist after restart and isolate guilds
+ok 133 - restrictions persist after restart and isolate guilds
+  ---
+  duration_ms: 23.304683
+  type: 'test'
+  ...
+# Subtest: restriction validation and recovery commands fail closed
+ok 134 - restriction validation and recovery commands fail closed
+  ---
+  duration_ms: 2.983169
+  type: 'test'
+  ...
+# Subtest: bounded restrictions are idempotent and clear only selected command
+ok 135 - bounded restrictions are idempotent and clear only selected command
+  ---
+  duration_ms: 13.978728
+  type: 'test'
+  ...
+# Subtest: enforcement refreshes member and blocks users/roles but not unrelated commands
+ok 136 - enforcement refreshes member and blocks users/roles but not unrelated commands
+  ---
+  duration_ms: 4.089849
+  type: 'test'
+  ...
+# Subtest: owner always retains restriction recovery but bot owner is no bypass
+ok 137 - owner always retains restriction recovery but bot owner is no bypass
+  ---
+  duration_ms: 2.793968
+  type: 'test'
+  ...
+# Subtest: dispatch restrictions deny execution and do not replace Discord permissions
+ok 138 - dispatch restrictions deny execution and do not replace Discord permissions
+  ---
+  duration_ms: 5.286864
+  type: 'test'
+  ...
+# Subtest: Permit paths execute localized private replies and fresh management check
+ok 139 - Permit paths execute localized private replies and fresh management check
+  ---
+  duration_ms: 11.209884
+  type: 'test'
+  ...
+# Subtest: Permit rejects owner, everyone, managed roles, protected/unknown command and bad page
+ok 140 - Permit rejects owner, everyone, managed roles, protected/unknown command and bad page
+  ---
+  duration_ms: 3.156253
+  type: 'test'
+  ...
+# Subtest: Permit metadata exposes six paths and runtime role loss takes effect
+ok 141 - Permit metadata exposes six paths and runtime role loss takes effect
+  ---
+  duration_ms: 3.200374
   type: 'test'
   ...
 # Subtest: installed command names and option limits validate
-ok 78 - installed command names and option limits validate
+ok 142 - installed command names and option limits validate
   ---
-  duration_ms: 542.540195
+  duration_ms: 517.823658
   type: 'test'
   ...
 # Subtest: foundation and utility commands execute mock replies
-ok 79 - foundation and utility commands execute mock replies
+ok 143 - foundation and utility commands execute mock replies
   ---
-  duration_ms: 10.484999
+  duration_ms: 10.843746
   type: 'test'
   ...
 # Subtest: unsafe roles are denied separately
-ok 80 - unsafe roles are denied separately
+ok 144 - unsafe roles are denied separately
   ---
-  duration_ms: 18.736365
+  duration_ms: 21.286861
   type: 'test'
   ...
 # Subtest: panel publication persists message and rejects duplicate source interaction
-ok 81 - panel publication persists message and rejects duplicate source interaction
+ok 145 - panel publication persists message and rejects duplicate source interaction
   ---
-  duration_ms: 6.302366
+  duration_ms: 5.782569
   type: 'test'
   ...
 # Subtest: unconfirmed panel send recorded uncertain and no retry
-ok 82 - unconfirmed panel send recorded uncertain and no retry
+ok 146 - unconfirmed panel send recorded uncertain and no retry
   ---
-  duration_ms: 3.647658
+  duration_ms: 3.328494
   type: 'test'
   ...
 # Subtest: button grant and revoke revalidate safe role; cooldown prevents repeats
-ok 83 - button grant and revoke revalidate safe role; cooldown prevents repeats
+ok 147 - button grant and revoke revalidate safe role; cooldown prevents repeats
   ---
-  duration_ms: 5.481179
+  duration_ms: 4.433547
   type: 'test'
   ...
 # Subtest: copied messages, foreign/disabled panels and edited dangerous roles refuse grants
-ok 84 - copied messages, foreign/disabled panels and edited dangerous roles refuse grants
+ok 148 - copied messages, foreign/disabled panels and edited dangerous roles refuse grants
   ---
-  duration_ms: 12.714492
+  duration_ms: 13.77364
   type: 'test'
   ...
 # Subtest: role API failure is contained and external button ignored
-ok 85 - role API failure is contained and external button ignored
+ok 149 - role API failure is contained and external button ignored
   ---
-  duration_ms: 2.514184
+  duration_ms: 3.069196
   type: 'test'
   ...
 # Subtest: new or lesser-known staff permission flags fail closed
-ok 86 - new or lesser-known staff permission flags fail closed
+ok 150 - new or lesser-known staff permission flags fail closed
   ---
-  duration_ms: 6.456071
+  duration_ms: 9.267349
   type: 'test'
   ...
 # Subtest: role panel slash create, list, disable wrapper handles persisted records
-ok 87 - role panel slash create, list, disable wrapper handles persisted records
+ok 151 - role panel slash create, list, disable wrapper handles persisted records
   ---
-  duration_ms: 8.18579
+  duration_ms: 8.726109
   type: 'test'
   ...
 # Subtest: Hindi role-panel publication and button results follow locale
-ok 88 - Hindi role-panel publication and button results follow locale
+ok 152 - Hindi role-panel publication and button results follow locale
   ---
-  duration_ms: 2.629169
+  duration_ms: 3.711109
   type: 'test'
   ...
 # Subtest: ticket overwrites deny everyone and closed owners cannot write
-ok 89 - ticket overwrites deny everyone and closed owners cannot write
+ok 153 - ticket overwrites deny everyone and closed owners cannot write
   ---
-  duration_ms: 2.186535
+  duration_ms: 2.113027
   type: 'test'
   ...
 # Subtest: one unresolved ticket per owner, guild isolation and source deduplication
-ok 90 - one unresolved ticket per owner, guild isolation and source deduplication
+ok 154 - one unresolved ticket per owner, guild isolation and source deduplication
   ---
-  duration_ms: 9.681954
+  duration_ms: 10.866825
   type: 'test'
   ...
 # Subtest: ticket opening uses explicit overwrites and verifies returned privacy
-ok 91 - ticket opening uses explicit overwrites and verifies returned privacy
+ok 155 - ticket opening uses explicit overwrites and verifies returned privacy
   ---
-  duration_ms: 3.674295
+  duration_ms: 4.317699
   type: 'test'
   ...
 # Subtest: ambiguous channel create blocks repeats and privacy mismatch fails closed
-ok 92 - ambiguous channel create blocks repeats and privacy mismatch fails closed
+ok 156 - ambiguous channel create blocks repeats and privacy mismatch fails closed
   ---
-  duration_ms: 4.742404
+  duration_ms: 6.28618
   type: 'test'
   ...
 # Subtest: privacy checks reject added overwrite and leaked everyone permissions
-ok 93 - privacy checks reject added overwrite and leaked everyone permissions
+ok 157 - privacy checks reject added overwrite and leaked everyone permissions
   ---
-  duration_ms: 2.347462
+  duration_ms: 3.135143
   type: 'test'
   ...
 # Subtest: close saves transcript, makes owner read-only and staff can reopen
-ok 94 - close saves transcript, makes owner read-only and staff can reopen
+ok 158 - close saves transcript, makes owner read-only and staff can reopen
   ---
-  duration_ms: 3.718624
+  duration_ms: 4.472942
   type: 'test'
   ...
 # Subtest: transcript exports literal JSON safely, bounds size and labels truncation
-ok 95 - transcript exports literal JSON safely, bounds size and labels truncation
+ok 159 - transcript exports literal JSON safely, bounds size and labels truncation
   ---
-  duration_ms: 1.02683
+  duration_ms: 1.024409
   type: 'test'
   ...
 # Subtest: private transcript denies unrelated users and does not use public channel sends
-ok 96 - private transcript denies unrelated users and does not use public channel sends
+ok 160 - private transcript denies unrelated users and does not use public channel sends
   ---
-  duration_ms: 2.745217
+  duration_ms: 3.56837
   type: 'test'
   ...
 # Subtest: panels bind buttons to source messages and refuse copies
-ok 97 - panels bind buttons to source messages and refuse copies
+ok 161 - panels bind buttons to source messages and refuse copies
   ---
-  duration_ms: 7.814037
+  duration_ms: 8.364706
   type: 'test'
   ...
 # Subtest: eight management paths execute with current access checks
-ok 98 - eight management paths execute with current access checks
+ok 162 - eight management paths execute with current access checks
   ---
-  duration_ms: 7.30452
+  duration_ms: 7.901301
+  type: 'test'
+  ...
+# Subtest: all six voice effects use exact Discord method and persistent completed cases
+ok 163 - all six voice effects use exact Discord method and persistent completed cases
+  ---
+  duration_ms: 26.450242
+  type: 'test'
+  ...
+# Subtest: actor, bot, app and channel permissions fail before case or effect
+ok 164 - actor, bot, app and channel permissions fail before case or effect
+  ---
+  duration_ms: 12.632373
+  type: 'test'
+  ...
+# Subtest: voice refuses protected target, bots and unsafe hierarchy
+ok 165 - voice refuses protected target, bots and unsafe hierarchy
+  ---
+  duration_ms: 11.654705
+  type: 'test'
+  ...
+# Subtest: voice refuses absent, stage, foreign, same and full channels
+ok 166 - voice refuses absent, stage, foreign, same and full channels
+  ---
+  duration_ms: 13.693317
+  type: 'test'
+  ...
+# Subtest: voice refuses membership/channel race without following target
+ok 167 - voice refuses membership/channel race without following target
+  ---
+  duration_ms: 2.91686
+  type: 'test'
+  ...
+# Subtest: voice duplicate IDs and storage failure prevent repeat effects
+ok 168 - voice duplicate IDs and storage failure prevent repeat effects
+  ---
+  duration_ms: 3.436803
+  type: 'test'
+  ...
+# Subtest: voice ambiguous failure is no-retry and definite rejection remains failed
+ok 169 - voice ambiguous failure is no-retry and definite rejection remains failed
+  ---
+  duration_ms: 7.008676
+  type: 'test'
+  ...
+# Subtest: voice reports accepted action with failed final storage without repeating
+ok 170 - voice reports accepted action with failed final storage without repeating
+  ---
+  duration_ms: 3.181662
+  type: 'test'
+  ...
+# Subtest: voice input validation and command schema limits
+ok 171 - voice input validation and command schema limits
+  ---
+  duration_ms: 3.356753
+  type: 'test'
+  ...
+# Subtest: voice wrapper executes all six paths in every locale without pings
+ok 172 - voice wrapper executes all six paths in every locale without pings
+  ---
+  duration_ms: 46.042897
+  type: 'test'
+  ...
+# Subtest: voice rechecks current target hierarchy and destination access after refresh
+ok 173 - voice rechecks current target hierarchy and destination access after refresh
+  ---
+  duration_ms: 5.374911
+  type: 'test'
+  ...
+# Subtest: private voice overwrites deny everyone and grant owner only minimal access
+ok 174 - private voice overwrites deny everyone and grant owner only minimal access
+  ---
+  duration_ms: 1.78783
+  type: 'test'
+  ...
+# Subtest: private channel created with stored ownership, one per user, no movement side effect
+ok 175 - private channel created with stored ownership, one per user, no movement side effect
+  ---
+  duration_ms: 13.499061
+  type: 'test'
+  ...
+# Subtest: private voice permission/category/identity checks prevent reservation and create
+ok 176 - private voice permission/category/identity checks prevent reservation and create
+  ---
+  duration_ms: 16.706836
+  type: 'test'
+  ...
+# Subtest: create uncertainty/privacy mismatch blocks repeated creation and recovery never replays
+ok 177 - create uncertainty/privacy mismatch blocks repeated creation and recovery never replays
+  ---
+  duration_ms: 8.521382
+  type: 'test'
+  ...
+# Subtest: owner rename/limit/empty close are recorded with exact methods
+ok 178 - owner rename/limit/empty close are recorded with exact methods
+  ---
+  duration_ms: 5.541564
+  type: 'test'
+  ...
+# Subtest: nonempty, edited access, foreign and unowned channel cannot be deleted
+ok 179 - nonempty, edited access, foreign and unowned channel cannot be deleted
+  ---
+  duration_ms: 13.943915
+  type: 'test'
+  ...
+# Subtest: channel access bitfield/type drift is refused
+ok 180 - channel access bitfield/type drift is refused
+  ---
+  duration_ms: 2.547885
+  type: 'test'
+  ...
+# Subtest: duplicate action and uncertain delete are never retried
+ok 181 - duplicate action and uncertain delete are never retried
+  ---
+  duration_ms: 3.407545
+  type: 'test'
+  ...
+# Subtest: name/limit bounds and storage failure prevent effect
+ok 182 - name/limit bounds and storage failure prevent effect
+  ---
+  duration_ms: 3.403353
+  type: 'test'
+  ...
+# Subtest: all six VoiceMaster slash paths reply privately in all locales
+ok 183 - all six VoiceMaster slash paths reply privately in all locales
+  ---
+  duration_ms: 15.193197
+  type: 'test'
+  ...
+# Subtest: created channel ID retained for privacy failure and ownership survives restart
+ok 184 - created channel ID retained for privacy failure and ownership survives restart
+  ---
+  duration_ms: 17.62608
   type: 'test'
   ...
 # Subtest: restart policy backs off, resets after stable run and trips crash loops
-ok 99 - restart policy backs off, resets after stable run and trips crash loops
+ok 185 - restart policy backs off, resets after stable run and trips crash loops
   ---
-  duration_ms: 2.177958
+  duration_ms: 1.998198
   type: 'test'
   ...
 # Subtest: watchdog contains spawn errors and duplicate exit/error events
-ok 100 - watchdog contains spawn errors and duplicate exit/error events
+ok 186 - watchdog contains spawn errors and duplicate exit/error events
   ---
-  duration_ms: 0.741753
+  duration_ms: 0.735544
   type: 'test'
   ...
 # Subtest: watchdog signal shutdown cancels timer and never restarts
-ok 101 - watchdog signal shutdown cancels timer and never restarts
+ok 187 - watchdog signal shutdown cancels timer and never restarts
   ---
-  duration_ms: 0.31016
+  duration_ms: 0.343885
   type: 'test'
   ...
 # Subtest: synchronous spawn failure uses bounded restart then fails clearly
-ok 102 - synchronous spawn failure uses bounded restart then fails clearly
+ok 188 - synchronous spawn failure uses bounded restart then fails clearly
   ---
-  duration_ms: 0.204224
+  duration_ms: 0.318723
   type: 'test'
   ...
-1..102
-# tests 102
+1..188
+# tests 188
 # suites 0
-# pass 102
+# pass 188
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 9589.202276
+# duration_ms 14937.599527
 # start of coverage report
 # -----------------------------------------------------------------------------
 # file                         | line % | branch % | funcs % | uncovered lines
 # -----------------------------------------------------------------------------
 # src                          |        |          |         | 
 #  commands                    |        |          |         | 
+#   antinuke                   |        |          |         | 
+#    antinuke.js               |  95.45 |    89.74 |   92.86 | 20
 #   automations                |        |          |         | 
 #    automation.js             | 100.00 |    81.82 |  100.00 | 
 #   automod                    |        |          |         | 
 #    automod.js                | 100.00 |    86.05 |   95.24 | 
 #   autoresponder              |        |          |         | 
 #    autoresponder.js          | 100.00 |    88.46 |  100.00 | 
+#   customrole                 |        |          |         | 
+#    customrole.js             | 100.00 |    80.65 |  100.00 | 
+#   fun                        |        |          |         | 
+#    fun.js                    | 100.00 |   100.00 |  100.00 | 
 #   general                    |        |          |         | 
 #    about.js                  | 100.00 |   100.00 |  100.00 | 
 #    config.js                 | 100.00 |    87.50 |  100.00 | 
@@ -644,10 +1166,14 @@ ok 102 - synchronous spawn failure uses bounded restart then fails clearly
 #    uptime.js                 | 100.00 |   100.00 |  100.00 | 
 #   giveaway                   |        |          |         | 
 #    giveaway.js               | 100.00 |    83.33 |  100.00 | 
+#   leaderboard                |        |          |         | 
+#    leaderboard.js            |  96.00 |    86.84 |   92.86 | 23
 #   logging                    |        |          |         | 
 #    logging.js                | 100.00 |    88.89 |  100.00 | 
 #   moderation                 |        |          |         | 
 #    moderation.js             | 100.00 |    68.18 |   87.50 | 
+#   permit                     |        |          |         | 
+#    permit.js                 | 100.00 |    93.02 |   90.00 | 
 #   reactionroles              |        |          |         | 
 #    reactionroles.js          | 100.00 |    82.35 |  100.00 | 
 #   ticket                     |        |          |         | 
@@ -657,6 +1183,12 @@ ok 102 - synchronous spawn failure uses bounded restart then fails clearly
 #    serverinfo.js             | 100.00 |   100.00 |  100.00 | 
 #    stats.js                  | 100.00 |    80.00 |  100.00 | 
 #    userinfo.js               | 100.00 |   100.00 |  100.00 | 
+#   vanityroles                |        |          |         | 
+#    guildtag.js               |  94.12 |    88.89 |  100.00 | 15
+#   voice                      |        |          |         | 
+#    voice.js                  | 100.00 |    76.92 |  100.00 | 
+#   voicemaster                |        |          |         | 
+#    voicemaster.js            |  94.74 |    81.48 |  100.00 | 17
 #   welcomer                   |        |          |         | 
 #    welcome.js                | 100.00 |    88.89 |  100.00 | 
 #  config                      |        |          |         | 
@@ -665,24 +1197,35 @@ ok 102 - synchronous spawn failure uses bounded restart then fails clearly
 #   index.js                   | 100.00 |   100.00 |  100.00 | 
 #  events                      |        |          |         | 
 #   autoresponderMessages.js   | 100.00 |    94.44 |  100.00 | 
-#   interactionCreate.js       | 100.00 |    85.71 |  100.00 | 
+#   interactionCreate.js       | 100.00 |    87.50 |  100.00 | 
 #   memberMessages.js          | 100.00 |   100.00 |  100.00 | 
 #  services                    |        |          |         | 
+#   antinuke.js                | 100.00 |    92.16 |  100.00 | 
 #   automations.js             | 100.00 |    89.36 |   93.75 | 
 #   automod.js                 |  97.96 |    82.93 |   86.96 | 44
 #   autoresponder.js           | 100.00 |    88.37 |   93.33 | 
 #   cooldowns.js               | 100.00 |   100.00 |  100.00 | 
+#   customRoles.js             | 100.00 |    91.94 |  100.00 | 
+#   fun.js                     | 100.00 |   100.00 |  100.00 | 
 #   giveawayDelivery.js        | 100.00 |    67.80 |   90.91 | 
 #   giveaways.js               | 100.00 |    85.37 |   94.44 | 
 #   guildConfig.js             | 100.00 |    97.14 |  100.00 | 
+#   guildTags.js               | 100.00 |    89.19 |  100.00 | 
+#   lavalinkAdapter.js         |  75.00 |    88.24 |   63.64 | 6-10
+#   leaderboard.js             | 100.00 |    92.75 |  100.00 | 
 #   localization.js            | 100.00 |    93.75 |  100.00 | 
 #   logging.js                 | 100.00 |   100.00 |  100.00 | 
 #   moderation.js              | 100.00 |    91.14 |  100.00 | 
+#   musicPolicy.js             | 100.00 |    90.32 |  100.00 | 
+#   musicQueue.js              | 100.00 |    86.67 |  100.00 | 
+#   permit.js                  | 100.00 |    94.29 |  100.00 | 
 #   registry.js                | 100.00 |    61.11 |  100.00 | 
-#   rolePanels.js              | 100.00 |    87.30 |  100.00 | 
+#   rolePanels.js              | 100.00 |    89.06 |  100.00 | 
 #   ticketDelivery.js          | 100.00 |    72.50 |  100.00 | 
 #   tickets.js                 | 100.00 |    80.70 |   95.83 | 
 #   ticketTranscripts.js       | 100.00 |    65.38 |   83.33 | 
+#   voice.js                   | 100.00 |    93.55 |  100.00 | 
+#   voiceMaster.js             | 100.00 |    88.54 |  100.00 | 
 #   watchdog.js                | 100.00 |    95.83 |   90.00 | 
 #  utils                       |        |          |         | 
 #   embeds.js                  | 100.00 |    75.00 |  100.00 | 
@@ -690,6 +1233,7 @@ ok 102 - synchronous spawn failure uses bounded restart then fails clearly
 #   logger.js                  | 100.00 |   100.00 |  100.00 | 
 #   permissions.js             | 100.00 |   100.00 |  100.00 | 
 # test                         |        |          |         | 
+#  antinuke.test.js            | 100.00 |   100.00 |   97.06 | 
 #  automations.test.js         | 100.00 |   100.00 |  100.00 | 
 #  automod.test.js             | 100.00 |   100.00 |   92.86 | 
 #  autoresponder.test.js       | 100.00 |   100.00 |  100.00 | 
@@ -697,24 +1241,32 @@ ok 102 - synchronous spawn failure uses bounded restart then fails clearly
 #  config.test.js              | 100.00 |   100.00 |  100.00 | 
 #  configCommands.test.js      | 100.00 |   100.00 |   94.74 | 
 #  cooldowns.test.js           | 100.00 |   100.00 |  100.00 | 
+#  customRoles.test.js         | 100.00 |   100.00 |   95.65 | 
 #  database.test.js            | 100.00 |   100.00 |  100.00 | 
 #  embeds.test.js              | 100.00 |   100.00 |  100.00 | 
 #  errors.test.js              | 100.00 |   100.00 |  100.00 | 
+#  fun.test.js                 | 100.00 |   100.00 |   91.89 | 
 #  giveaways.test.js           | 100.00 |   100.00 |   89.29 | 
 #  guildConfig.test.js         | 100.00 |   100.00 |  100.00 | 
+#  guildTags.test.js           | 100.00 |   100.00 |   95.65 | 
 #  helpers                     |        |          |         | 
 #   guild.js                   | 100.00 |   100.00 |  100.00 | 
 #  interaction.test.js         | 100.00 |   100.00 |   91.67 | 
 #  inventory.test.js           | 100.00 |   100.00 |  100.00 | 
+#  leaderboard.test.js         | 100.00 |   100.00 |   95.35 | 
 #  localization.test.js        | 100.00 |   100.00 |  100.00 | 
 #  logger.test.js              | 100.00 |   100.00 |  100.00 | 
 #  moderation.test.js          | 100.00 |    98.53 |  100.00 | 
+#  musicQueue.test.js          | 100.00 |   100.00 |  100.00 | 
 #  permissions.test.js         | 100.00 |   100.00 |   95.00 | 
+#  permit.test.js              | 100.00 |   100.00 |   93.88 | 
 #  registry.test.js            | 100.00 |    92.86 |  100.00 | 
 #  rolePanels.test.js          | 100.00 |   100.00 |   96.49 | 
 #  tickets.test.js             | 100.00 |   100.00 |   96.15 | 
+#  voice.test.js               | 100.00 |   100.00 |  100.00 | 
+#  voiceMaster.test.js         | 100.00 |   100.00 |   97.06 | 
 #  watchdog.test.js            | 100.00 |   100.00 |   85.00 | 
 # -----------------------------------------------------------------------------
-# all files                    |  99.92 |    89.96 |   96.21 | 
+# all files                    |  99.53 |    92.14 |   96.38 | 
 # -----------------------------------------------------------------------------
 # end of coverage report

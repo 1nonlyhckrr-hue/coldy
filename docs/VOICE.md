@@ -1,0 +1,11 @@
+# Voice moderation
+
+Six paths: `/voice mute`, `unmute`, `deafen`, `undeafen`, `disconnect`, `move`. Each affects one current non-bot server member. Optional reason (1-400 characters) and required destination for move. Standard guild voice channels only; Stage channels not supported.
+
+Fresh actor, bot and target fetch; current native permissions for the requested action, app permissions and actor/bot hierarchy checked. Server owner, actor and bot cannot be targeted. Source channel must be viewable and support the action for actor and bot. Move requires visible/connectable destination for actor, bot and target, separate from source and not full. The bot will not bypass normal channel capacity. A second target fetch immediately before reservation refuses channel races, rechecks hierarchy and bot status, and never follows the target automatically. Discord still owns final enforcement; a last-millisecond concurrent change can make it reject.
+
+Cases persist before effects. Duplicate interaction IDs block repeats. One Discord call, no retry. Definite API rejection recorded failed; ambiguous network failure recorded uncertain. Storage failure after accepted effect clearly warns not to repeat. Restart does not replay cases. Existing case-log delivery contains no reason or voice content. Replies are localized, ephemeral shared embeds with mentions disabled. Five-second dispatch cooldown.
+
+This is server mute/deafen, not client self-mute/self-deafen; removing a server mute does not override a member's own microphone controls. No voice content recording. No bulk actions, channel privacy overwrite changes, join-role system, persistent player connection or VoiceMaster in this batch.
+
+Eleven new tests, 130 total project tests pass: all six exact method effects, permission/hierarchy denial, channel validity/capacity, races, duplicates/database gates, uncertain/definite failure, finalization failure, input/schema bounds all six paths in EN/HI/Hinglish, and second-fetch target hierarchy/destination-access rechecks. First negative hierarchy test found a mock comparator closed over old position rather than current position; fixture corrected and full suite rerun. No live Discord voice test or pixel verification. Reference syntax differs and rows are not promoted as exact equivalents.

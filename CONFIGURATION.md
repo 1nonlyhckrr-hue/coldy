@@ -11,6 +11,8 @@ Copy `.env.example` into a private `.env`. Schema validation refuses missing/mal
 | DATABASE_PATH | No | Default `./var/luna.sqlite` |
 | LOG_LEVEL | No | `info`; trace/debug/warn/error/fatal/silent supported |
 | ENABLE_MEMBER_EVENTS | No | Default false. Set true only after authorizing Server Members intent for welcome/goodbye events |
+| ENABLE_AUDIT_EVENTS | No | Default false. GuildModeration intent and bot View Audit Log for opt-in Antinuke alerts only |
+| ENABLE_MESSAGE_EVENTS | No | Default false. Shared opt-in GuildMessages/MessageContent for AutoMod, autoresponder and message metrics |
 | NODE_ENV | No | development, test, or production |
 
 Configure the owner's Discord ID privately in OWNER_IDS. Validate it with the owner before granting any future privileged command. Being the bot owner must not override server role hierarchy or grant authority in other servers.

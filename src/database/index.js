@@ -63,6 +63,41 @@ export function openDatabase(path) {
       CREATE INDEX automod_incidents_guild ON automod_incidents(guild_id,created_at);`);
       db.prepare('INSERT INTO schema_migrations VALUES (8, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 9').get()) {
+      db.exec(`CREATE TABLE command_restrictions(guild_id TEXT NOT NULL,command_name TEXT NOT NULL,subject_kind TEXT NOT NULL CHECK(subject_kind IN ('user','role')),subject_id TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(guild_id,command_name,subject_kind,subject_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES (9, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 10').get()) {
+      db.exec(`CREATE TABLE custom_role_config(guild_id TEXT PRIMARY KEY,required_role_id TEXT);
+      CREATE TABLE custom_role_mappings(guild_id TEXT NOT NULL,name TEXT NOT NULL,role_id TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(guild_id,name),UNIQUE(guild_id,role_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES (10, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 11').get()) {
+      db.exec(`CREATE TABLE message_rank_config(guild_id TEXT PRIMARY KEY,enabled INTEGER NOT NULL DEFAULT 0,excluded_json TEXT NOT NULL DEFAULT '[]');
+      CREATE TABLE message_rank_daily(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,day TEXT NOT NULL,count INTEGER NOT NULL,PRIMARY KEY(guild_id,user_id,day));
+      CREATE INDEX message_rank_day ON message_rank_daily(day);
+      CREATE TABLE message_rank_seen(message_id TEXT PRIMARY KEY,created_at INTEGER NOT NULL);
+      CREATE INDEX message_rank_seen_age ON message_rank_seen(created_at);`);
+      db.prepare('INSERT INTO schema_migrations VALUES (11, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 12').get()) {
+      db.exec(`CREATE TABLE antinuke_config(guild_id TEXT PRIMARY KEY,settings_json TEXT NOT NULL);
+      CREATE TABLE antinuke_events(entry_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,actor_id TEXT NOT NULL,action INTEGER NOT NULL,created_at INTEGER NOT NULL);
+      CREATE INDEX antinuke_events_window ON antinuke_events(guild_id,actor_id,created_at);
+      CREATE TABLE antinuke_incidents(id INTEGER PRIMARY KEY AUTOINCREMENT,guild_id TEXT NOT NULL,actor_id TEXT NOT NULL,action INTEGER NOT NULL,event_count INTEGER NOT NULL,status TEXT NOT NULL CHECK(status IN ('recorded','alerted','uncertain','unavailable')),created_at INTEGER NOT NULL);`);
+      db.prepare('INSERT INTO schema_migrations VALUES (12, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 13').get()) {
+      db.exec(`CREATE TABLE guild_tag_config(guild_id TEXT PRIMARY KEY,role_id TEXT NOT NULL,updated_at INTEGER NOT NULL);
+      CREATE TABLE guild_tag_grants(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,role_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('pending','granted','uncertain')),PRIMARY KEY(guild_id,user_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES (13, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 14').get()) {
+      db.exec(`CREATE TABLE voice_master_config(guild_id TEXT PRIMARY KEY,category_id TEXT NOT NULL);
+      CREATE TABLE voice_master_channels(id INTEGER PRIMARY KEY AUTOINCREMENT,guild_id TEXT NOT NULL,owner_id TEXT NOT NULL,channel_id TEXT UNIQUE,status TEXT NOT NULL CHECK(status IN ('creating','active','deleting','closed','uncertain')),interaction_id TEXT NOT NULL UNIQUE,created_at INTEGER NOT NULL);
+      CREATE UNIQUE INDEX voice_master_live_owner ON voice_master_channels(guild_id,owner_id) WHERE status!='closed';`);
+      db.prepare('INSERT INTO schema_migrations VALUES (14, ?)').run(Date.now());
+    }
   })();
   return db;
 }

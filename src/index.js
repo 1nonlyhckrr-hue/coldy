@@ -1,3 +1,9 @@
+import { VoiceMaster } from './services/voiceMaster.js';
+import { GuildTags } from './services/guildTags.js';
+import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
+import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
+import { CustomRoles } from './services/customRoles.js';
+import { CommandRestrictions } from './services/permit.js';
 import {AutoMod,createAutoModHandler} from './services/automod.js';
 import {MessageSchedules,AutomationRunner} from './services/automations.js';
 import { Tickets } from './services/tickets.js';
@@ -24,13 +30,20 @@ import { createInteractionHandler } from './events/interactionCreate.js';
 const config = loadConfig();
 const logger = createLogger(config.logLevel);
 const db = openDatabase(config.databasePath);
-const client = new Client({intents:[GatewayIntentBits.Guilds,...(config.messageEventsEnabled?[GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent]:[]),...(config.memberEventsEnabled?[GatewayIntentBits.GuildMembers]:[])], allowedMentions:{parse:[],repliedUser:false}});
+const client = new Client({intents:[GatewayIntentBits.Guilds,...(config.auditEventsEnabled?[GatewayIntentBits.GuildModeration]:[]),...(config.messageEventsEnabled?[GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent]:[]),...(config.memberEventsEnabled?[GatewayIntentBits.GuildMembers]:[])], allowedMentions:{parse:[],repliedUser:false}});
 const commands = await loadCommands();
 const context = {config,logger,db,settings:new GuildSettings(db),commands,cooldowns:new Cooldowns(),cases:new ModerationCases(db),version:'0.1.0'};
+context.voiceMaster = new VoiceMaster(db);context.voiceMaster.recover();
+context.guildTags = new GuildTags(db);context.guildTags.recover();
+context.antinuke = new AntinukeAlerts(db);context.antinuke.cleanup();
+if(config.auditEventsEnabled)client.on(Events.GuildAuditLogEntryCreate,createAntinukeHandler(context));
+context.messageRanks = new MessageRanks(db);context.messageRanks.cleanup();
+context.customRoles = new CustomRoles(db);
+context.commandRestrictions = new CommandRestrictions(db);
 context.autoresponders = new Autoresponders(db);
 context.autoresponders.recover();context.autoresponders.cleanup();
 context.automod=new AutoMod(db);context.automod.recover();context.automod.cleanup();
-if(config.messageEventsEnabled){const autoMod=createAutoModHandler(context),respond=createAutoresponderHandler(context);client.on(Events.MessageCreate,async message=>{if(!await autoMod(message))await respond(message);});}
+if(config.messageEventsEnabled){const autoMod=createAutoModHandler(context),respond=createAutoresponderHandler(context),rank=createMessageRankHandler(context);client.on(Events.MessageCreate,async message=>{rank(message);if(!await autoMod(message))await respond(message);});}
 context.giveaways = new Giveaways(db);context.giveaways.recover();
 context.giveawayRunner = new GiveawayRunner(context,client);
 client.on(Events.InteractionCreate,createGiveawayButtonHandler(context));

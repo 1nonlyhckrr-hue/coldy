@@ -1,0 +1,11 @@
+# Permit
+
+Six original paths: `/permit blockuser`, `unblockuser`, `blockrole`, `unblockrole`, `list`, `clear`. Command names are installed top-level slash names without /. A restriction covers every subcommand beneath that name. `clear command` removes only that command's restrictions, not Discord permission requirements.
+
+Only members with current Manage Server can configure restrictions; authorization is refreshed from the server before changes. Restrictions are persistent, per guild, additive denials. They never grant a Discord permission, exempt an owner-only command, override role hierarchy or create Antinuke trust. Normal native Discord checks still run first. Bot-owner configuration does not bypass restrictions. Server owner bypasses this extra deny layer only; Help and Permit cannot be restricted, preserving recovery. No broad trusted-role exemptions.
+
+At execution, configured restrictions force a current member fetch. Missing/unverifiable member or storage/API failure fails closed. A denied user ID or held role ID blocks the whole command. Removal of a restricted role from a member takes effect at the next command. Restriction-free commands do not add a member-fetch round trip. This applies to slash-command dispatch, not message rules, giveaway/ticket/role buttons or background jobs. Those have their own authorization.
+
+100 restrictions per guild. Insert/remove is idempotent; list has ten entries per page. Managed roles and @everyone are refused. User edits require current guild membership; role edits require a current valid role. To remove stale departed-member/deleted-role records, use `/permit clear command`. Configuration IDs are visible only in ephemeral replies with all mentions disabled. No wildcard, per-channel or per-subcommand restrictions in this batch. Metadata remains English; Luna replies use the persisted EN/HI/Hinglish locale.
+
+SQLite migration v9 creates command_restrictions. Nine distinct new tests, 119 project tests pass: restart/guild isolation, validation, limits/idempotence, current member/roles, recovery, dispatch permission separation, all six paths and three locales, invalid subjects and metadata. No Discord live testing or visual embed verification. Similar reference rows remain reference-only, not marked exact equivalents.

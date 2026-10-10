@@ -8,6 +8,7 @@ const schema = z.object({
   DATABASE_PATH: z.string().min(1).default('./var/luna.sqlite'),
   LOG_LEVEL: z.enum(['fatal','error','warn','info','debug','trace','silent']).default('info'),
   ENABLE_MESSAGE_EVENTS: z.enum(['true','false']).default('false'),
+  ENABLE_AUDIT_EVENTS: z.enum(['true','false']).default('false'),
   ENABLE_MEMBER_EVENTS: z.enum(['true','false']).default('false'),
   NODE_ENV: z.enum(['development','test','production']).default('development'),
 });
@@ -20,5 +21,5 @@ export function loadConfig(env = process.env) {
   }
   const c = result.data;
   return Object.freeze({token:c.DISCORD_TOKEN, clientId:c.DISCORD_CLIENT_ID, guildId:c.DISCORD_GUILD_ID,
-    ownerIds:Object.freeze(c.OWNER_IDS), messageEventsEnabled:c.ENABLE_MESSAGE_EVENTS==='true', memberEventsEnabled:c.ENABLE_MEMBER_EVENTS==='true', databasePath:c.DATABASE_PATH, logLevel:c.LOG_LEVEL, environment:c.NODE_ENV});
+    ownerIds:Object.freeze(c.OWNER_IDS), auditEventsEnabled:c.ENABLE_AUDIT_EVENTS==='true', messageEventsEnabled:c.ENABLE_MESSAGE_EVENTS==='true', memberEventsEnabled:c.ENABLE_MEMBER_EVENTS==='true', databasePath:c.DATABASE_PATH, logLevel:c.LOG_LEVEL, environment:c.NODE_ENV});
 }
