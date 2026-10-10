@@ -42,11 +42,11 @@ jobs:
           parsed=urllib.parse.urlparse(url)
           assert parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password,'HTTPS URL required'
           # Public file hosts only;no intranet,loopback or arbitrary URL fetches.
-          assert parsed.hostname.endswith('.gofile.io') or parsed.hostname=='gofile.io','Approved source archive host required'
+          assert parsed.hostname=='github.com' and parsed.path.startswith('/1nonlyhckrr-hue/coldy/releases/download/') and not parsed.query and not parsed.fragment,'Exact repository release-asset URL required'
           class SafeRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self,req,fp,code,msg,headers,newurl):
                   dest=urllib.parse.urlparse(newurl)
-                  assert dest.scheme=='https' and (dest.hostname or '').endswith('.gofile.io'),'Unsafe redirect'
+                  assert dest.scheme=='https' and dest.hostname in {'github.com','release-assets.githubusercontent.com','objects.githubusercontent.com'},'Unsafe redirect'
                   return super().redirect_request(req,fp,code,msg,headers,newurl)
           opener=urllib.request.build_opener(SafeRedirect())
           archive=pathlib.Path('/tmp/source.zip')
