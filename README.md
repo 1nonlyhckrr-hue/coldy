@@ -4,7 +4,7 @@ Professional multipurpose Discord bot project. Repository name: `coldy`. Node.js
 
 ## Honest status
 
-Phase 1 public research and Phase 2 foundation are available. **This is not a finished 541-command bot.** Twenty-six top-level slash commands provide 110 executable paths, including moderation, welcome/goodbye configuration, case logs, button-role panels, utilities, and persistent autoresponders, and persistent giveaways, and private tickets, scheduled messages, opt-in AutoMod, and seven safe solo Fun paths, and additive per-command Permit restrictions, and six single-member Voice moderation paths, and six safe CustomRole mapping paths, and seven opt-in message Leaderboard paths, and six alert-only Antinuke paths (no prevention/recovery yet), and four manual GuildTag reward paths and six private explicit VoiceMaster paths. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Other category directories reserve the modular layout; empty directories are not implemented modules.
+**This is not a finished 541-command bot.** Twenty-six top-level slash commands provide 110 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music queue/adapter core is tested but not activated or counted as commands. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
 
 The official Zynrax documentation yields 318 distinct documented command paths after shortcut deduplication. These are reference-only rows, not Luna implementations. The reference inventory is not advertised as the complete 541-command list. Aliases do not count as separate commands. Examples and parameter values do not count as new commands.
 
@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover config validation, SQLite migrations and restart persistence, guild isolation, parameterized storage, permissions and role hierarchy, cooldowns, command serialization/mock execution, dispatch and error responses. These are automated local tests, not Discord integration tests. No Discord token was supplied. The earlier 51-test public checkpoint passed GitHub-hosted CI on Node 22 and 24. The 102-test module checkpoint is now published. The newer newer module checkpoint has 188 passing local tests and is not yet published. The public 102-test checkpoint passed final Node 22/24 CI. Docker and live Discord execution remain unverified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All188 distinct automated tests pass locally; these are not live Discord integration tests. The newer public tree's own CI must be checked separately before calling it verified. Earlier checkpoints passed Node22/24 CI, but those results do not certify new changes. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
