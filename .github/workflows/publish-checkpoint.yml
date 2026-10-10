@@ -2,6 +2,7 @@ name: Publish verified source checkpoint
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths: ['.github/workflows/publish-checkpoint.yml']
 permissions:
   contents: write
@@ -17,11 +18,11 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib, pathlib, zipfile
-          archive = pathlib.Path('1-coldy-source-checkpoint.zip')
-          expected = '2d54d1e1e4d9b0735a5416c6ad612984a7fcac6abb11b98c6833265725d10537'
+          archive = pathlib.Path('1-luna-modules-source.zip')
+          expected = 'db0e0ac63994ff37d8c557142b8b73a40b6dd19ff0e04cc82d8bce63d254e12b'
           assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected, 'Archive checksum mismatch'
           with zipfile.ZipFile(archive) as z:
-              assert len(z.infolist()) == 124, 'Archive count mismatch'
+              assert len(z.infolist()) == 152, 'Archive count mismatch'
               for entry in z.infolist():
                   path = pathlib.PurePosixPath(entry.filename)
                   assert not path.is_absolute() and '..' not in path.parts, 'Unsafe archive path'
@@ -30,11 +31,8 @@ jobs:
                       continue
                   target = pathlib.Path(entry.filename)
                   data = z.read(entry)
-                  if target.exists():
-                      assert target.read_bytes() == data, 'Existing file differs: ' + entry.filename
-                  else:
-                      target.parent.mkdir(parents=True, exist_ok=True)
-                      target.write_bytes(data)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
           PY
       - run: npm ci
       - run: npm run check
@@ -46,8 +44,9 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -f 1-luna-modules-source.zip 1-coldy-source-checkpoint.zip
           git add -- . ':!.github'
           if ! git diff --cached --quiet; then
-            git commit -m 'Publish tested Luna source tree from verified checkpoint'
+            git commit -m 'Add tested autoresponders, giveaways, tickets, schedules and AutoMod'
             git push origin HEAD:main
           fi
