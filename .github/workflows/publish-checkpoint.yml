@@ -1,0 +1,53 @@
+name: Publish verified source checkpoint
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/publish-checkpoint.yml']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify and expand audited source archive
+        run: |
+          python3 - <<'PY'
+          import hashlib, pathlib, zipfile
+          archive = pathlib.Path('1-coldy-source-checkpoint.zip')
+          expected = '2d54d1e1e4d9b0735a5416c6ad612984a7fcac6abb11b98c6833265725d10537'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected, 'Archive checksum mismatch'
+          with zipfile.ZipFile(archive) as z:
+              assert len(z.infolist()) == 124, 'Archive count mismatch'
+              for entry in z.infolist():
+                  path = pathlib.PurePosixPath(entry.filename)
+                  assert not path.is_absolute() and '..' not in path.parts, 'Unsafe archive path'
+                  assert path.parts[0] not in ('.git', 'node_modules'), 'Forbidden archive path'
+                  if entry.is_dir() or entry.filename.startswith('.github/'):
+                      continue
+                  target = pathlib.Path(entry.filename)
+                  data = z.read(entry)
+                  if target.exists():
+                      assert target.read_bytes() == data, 'Existing file differs: ' + entry.filename
+                  else:
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      target.write_bytes(data)
+          PY
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run inventory
+      - run: npm run register:preview
+      - run: npm audit --omit=dev
+      - name: Commit verified expanded source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- . ':!.github'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish tested Luna source tree from verified checkpoint'
+            git push origin HEAD:main
+          fi
