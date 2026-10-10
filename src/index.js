@@ -1,15 +1,20 @@
+import { VoiceReadiness } from './services/voiceReadiness.js';
+import { AfkStates, createAfkHandler } from './services/afk.js';
+import { Polls } from './services/polls.js';
+import { PurgePlans } from './services/purge.js';
+import { EventLogDelivery, createMetadataLogHandler } from './services/eventLogs.js';
 import { VoiceMaster } from './services/voiceMaster.js';
 import { GuildTags } from './services/guildTags.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
 import { CustomRoles } from './services/customRoles.js';
 import { CommandRestrictions } from './services/permit.js';
-import {AutoMod,createAutoModHandler} from './services/automod.js';
-import {MessageSchedules,AutomationRunner} from './services/automations.js';
+import { AutoMod, createAutoModHandler } from './services/automod.js';
+import { MessageSchedules, AutomationRunner } from './services/automations.js';
 import { Tickets } from './services/tickets.js';
 import { createTicketButtonHandler } from './services/ticketDelivery.js';
 import { Giveaways } from './services/giveaways.js';
-import { GiveawayRunner,createGiveawayButtonHandler } from './services/giveawayDelivery.js';
+import { GiveawayRunner, createGiveawayButtonHandler } from './services/giveawayDelivery.js';
 import { Autoresponders } from './services/autoresponder.js';
 import { createAutoresponderHandler } from './events/autoresponderMessages.js';
 import 'dotenv/config';
@@ -30,42 +35,138 @@ import { createInteractionHandler } from './events/interactionCreate.js';
 const config = loadConfig();
 const logger = createLogger(config.logLevel);
 const db = openDatabase(config.databasePath);
-const client = new Client({intents:[GatewayIntentBits.Guilds,...(config.auditEventsEnabled?[GatewayIntentBits.GuildModeration]:[]),...(config.messageEventsEnabled?[GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent]:[]),...(config.memberEventsEnabled?[GatewayIntentBits.GuildMembers]:[])], allowedMentions:{parse:[],repliedUser:false}});
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    ...(config.voiceEventsEnabled ? [GatewayIntentBits.GuildVoiceStates] : []),
+    ...(config.auditEventsEnabled ? [GatewayIntentBits.GuildModeration] : []),
+    ...(config.messageEventsEnabled
+      ? [GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
+      : []),
+    ...(config.memberEventsEnabled ? [GatewayIntentBits.GuildMembers] : []),
+  ],
+  allowedMentions: { parse: [], repliedUser: false },
+});
 const commands = await loadCommands();
-const context = {config,logger,db,settings:new GuildSettings(db),commands,cooldowns:new Cooldowns(),cases:new ModerationCases(db),version:'0.1.0'};
-context.voiceMaster = new VoiceMaster(db);context.voiceMaster.recover();
-context.guildTags = new GuildTags(db);context.guildTags.recover();
-context.antinuke = new AntinukeAlerts(db);context.antinuke.cleanup();
-if(config.auditEventsEnabled)client.on(Events.GuildAuditLogEntryCreate,createAntinukeHandler(context));
-context.messageRanks = new MessageRanks(db);context.messageRanks.cleanup();
+const context = {
+  config,
+  logger,
+  db,
+  settings: new GuildSettings(db),
+  commands,
+  cooldowns: new Cooldowns(),
+  cases: new ModerationCases(db),
+  version: '0.1.0',
+};
+context.eventLogs = new EventLogDelivery(db);
+context.eventLogs.recover();
+context.eventLogs.cleanup();
+context.voiceReadiness = new VoiceReadiness();
+client.on(Events.ShardDisconnect, (_event, id) => context.voiceReadiness.disconnected(id));
+client.on(Events.ShardReconnecting, (id) => context.voiceReadiness.disconnected(id));
+context.voiceMaster = new VoiceMaster(db);
+context.voiceMaster.recover();
+context.guildTags = new GuildTags(db);
+context.guildTags.recover();
+context.antinuke = new AntinukeAlerts(db);
+context.antinuke.cleanup();
+if (config.auditEventsEnabled)
+  client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
+context.messageRanks = new MessageRanks(db);
+context.messageRanks.cleanup();
 context.customRoles = new CustomRoles(db);
 context.commandRestrictions = new CommandRestrictions(db);
 context.autoresponders = new Autoresponders(db);
-context.autoresponders.recover();context.autoresponders.cleanup();
-context.automod=new AutoMod(db);context.automod.recover();context.automod.cleanup();
-if(config.messageEventsEnabled){const autoMod=createAutoModHandler(context),respond=createAutoresponderHandler(context),rank=createMessageRankHandler(context);client.on(Events.MessageCreate,async message=>{rank(message);if(!await autoMod(message))await respond(message);});}
-context.giveaways = new Giveaways(db);context.giveaways.recover();
-context.giveawayRunner = new GiveawayRunner(context,client);
-client.on(Events.InteractionCreate,createGiveawayButtonHandler(context));
-context.tickets = new Tickets(db);context.tickets.recover();
-client.on(Events.InteractionCreate,createTicketButtonHandler(context));
-context.messageSchedules = new MessageSchedules(db);context.messageSchedules.recover();
-context.automationRunner = new AutomationRunner(context,client);
+context.autoresponders.recover();
+context.autoresponders.cleanup();
+context.afk = new AfkStates(db);
+context.afk.cleanup();
+context.automod = new AutoMod(db);
+context.automod.recover();
+context.automod.cleanup();
+if (config.messageEventsEnabled) {
+  const autoMod = createAutoModHandler(context),
+    respond = createAutoresponderHandler(context),
+    rank = createMessageRankHandler(context),
+    afk = createAfkHandler(context);
+  client.on(Events.MessageCreate, async (message) => {
+    rank(message);
+    if (!(await autoMod(message))) {
+      await afk(message);
+      await respond(message);
+    }
+  });
+}
+context.giveaways = new Giveaways(db);
+context.giveaways.recover();
+context.giveawayRunner = new GiveawayRunner(context, client);
+client.on(Events.InteractionCreate, createGiveawayButtonHandler(context));
+context.tickets = new Tickets(db);
+context.tickets.recover();
+client.on(Events.InteractionCreate, createTicketButtonHandler(context));
+context.messageSchedules = new MessageSchedules(db);
+context.messageSchedules.recover();
+context.automationRunner = new AutomationRunner(context, client);
+context.polls = new Polls(db);
+context.polls.recover();
+context.purgePlans = new PurgePlans(db);
+context.purgePlans.recover();
 context.rolePanels = new RolePanels(db);
-context.handleInteractionError = (error,i,logger)=>handleInteractionError(error,i,logger,context.localization);
+context.rolePanels.recover();
+context.handleInteractionError = (error, i, logger) =>
+  handleInteractionError(error, i, logger, context.localization);
 const roleButtonHandler = createRoleButtonHandler(context);
-client.on(Events.InteractionCreate,roleButtonHandler);
+client.on(Events.InteractionCreate, roleButtonHandler);
 context.guildConfig = new GuildConfig(context.settings);
 context.localization = new Localization(context.guildConfig);
-context.serverLogs = new ServerLogs(context.guildConfig,logger);
-if(config.memberEventsEnabled){client.on(Events.GuildMemberAdd,createMemberMessageHandler(context,'welcome'));client.on(Events.GuildMemberRemove,createMemberMessageHandler(context,'goodbye'));}
-client.on(Events.InteractionCreate,createInteractionHandler(context));
-client.once(Events.ClientReady, ready => {logger.info({botId:ready.user.id,commands:commands.size}, 'Luna ready');context.giveawayRunner.start();context.automationRunner.start();});
-client.on(Events.Error, e => logger.error({kind:e.name},'Discord client error'));
+context.serverLogs = new ServerLogs(context.guildConfig, logger);
+if (config.memberEventsEnabled) {
+  client.on(Events.GuildMemberAdd, createMemberMessageHandler(context, 'welcome'));
+  client.on(Events.GuildMemberRemove, createMemberMessageHandler(context, 'goodbye'));
+}
+client.on(Events.InteractionCreate, createInteractionHandler(context));
+for (const [event, kind] of [
+  [Events.GuildRoleCreate, 'rolecreate'],
+  [Events.GuildRoleDelete, 'roledelete'],
+  [Events.ChannelCreate, 'channelcreate'],
+  [Events.ChannelDelete, 'channeldelete'],
+])
+  client.on(event, createMetadataLogHandler(context, kind));
+if (config.memberEventsEnabled) {
+  client.on(Events.GuildMemberAdd, createMetadataLogHandler(context, 'memberjoin'));
+  client.on(Events.GuildMemberRemove, createMetadataLogHandler(context, 'memberleave'));
+}
+
+client.once(Events.ClientReady, (ready) => {
+  context.voiceReadiness.initialReady();
+  logger.info({ botId: ready.user.id, commands: commands.size }, 'Luna ready');
+  context.giveawayRunner.start();
+  context.automationRunner.start();
+});
+client.on(Events.Error, (e) => logger.error({ kind: e.name }, 'Discord client error'));
 let stopping = false;
-async function stop(code = 0) { if (stopping) return; stopping = true; context.giveawayRunner.stop();context.automationRunner.stop(); client.destroy(); db.close(); process.exitCode = code; }
-process.once('SIGINT',() => void stop());
-process.once('SIGTERM',() => void stop());
-process.on('unhandledRejection',() => { logger.fatal('Unhandled rejection; shutting down'); void stop(1); });
-process.once('uncaughtException',() => { logger.fatal('Uncaught exception; shutting down'); void stop(1); });
-try { await client.login(config.token); } catch { logger.error('Login failed; check Discord credentials and connectivity.'); await stop(1); }
+async function stop(code = 0) {
+  if (stopping) return;
+  stopping = true;
+  context.giveawayRunner.stop();
+  context.automationRunner.stop();
+  client.destroy();
+  db.close();
+  process.exitCode = code;
+}
+process.once('SIGINT', () => void stop());
+process.once('SIGTERM', () => void stop());
+process.on('unhandledRejection', () => {
+  logger.fatal('Unhandled rejection; shutting down');
+  void stop(1);
+});
+process.once('uncaughtException', () => {
+  logger.fatal('Uncaught exception; shutting down');
+  void stop(1);
+});
+try {
+  await client.login(config.token);
+} catch {
+  logger.error('Login failed; check Discord credentials and connectivity.');
+  await stop(1);
+}

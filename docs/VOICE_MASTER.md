@@ -11,3 +11,21 @@ Per-owner/guild mutex. Mutation case reserved before effect; duplicate interacti
 Private localized Luna embeds, no mentions,10-second dispatch cooldown. SQLitev14 stores category and owner/channel state; moderation cases carry effect outcomes. Eleven new tests,178 project tests pass: exact private grants, owner reservation/dedup, creation gates, uncertain/privacy state, rename/limit/empty-delete calls, access drift/foreign/nonempty refusal, bounds/storage gates, every path/locale and restart state. No Discord gateway/visual test.
 
 Remaining feature work: public join-to-create, invited access, lock/unlock, supported ownership controls/transfer, safe automatic orphan cleanup and recovery. These are not marked done by the first six paths.
+
+## Explicit audience controls
+
+`lock` restores owner-only view/connect. `unlock share:true` explicitly allows every server member view/connect on tracked channel,only when empty. No silent public default,no member movement. Capacity unchanged;owner should review capacity before making public. Channel exact stored audience shape verified before effect,current bot Manage Channels+Manage Roles,forced native post-write validation. Case written/state marked uncertain before overwrite. Native/provider/storage failures block further edit until observed-state repair/operator review. Unknown changed audience is not guessed by reconciliation. SQLitev22 stores public_access default0,migrates existing private channels unchanged.
+
+Empty-member cache is not proof no concurrent voice joins happened after check;live gateway race testing required before release. No automatic empty cleanup.3newtests253total.32top-level133paths. Existing private-first description means explicit creation is private,not that unlocked rooms remain private. Access shape exact minimal privileges,not arbitrary guest invite permission. No join-to-create,transfer/invites,lock held-room eviction,or automatic orphan delete.
+
+## Required voice-state runtime
+
+ENABLE_VOICE_EVENTS must be true to subscribe GuildVoiceStates before any open/edit/repair. Earlier local source lacked this intent and was not safe to treat empty channel caches as live occupancy. Fixed fail-closed runtime gate,three new regression tests,total256. Native gateway startup/reconnect/cache race verification still required;no claim mock tests prove actual empty rooms. Nonprivileged intent,not presence tracking.
+
+## Reconnect safety stop
+
+Native initial ready and available guild/client required. Voice effects blocked for any shard that disconnects/reconnects until fresh process startup;resume is not assumed to restore a trustworthy occupancy cache. Operator inspect gateway health before restart. Readiness rechecked just before effect. Conservative availability loss is intended. Two readiness tests,total258. Real event/cache completeness/concurrent joins still release-blocking.
+
+## Raw voice-state occupancy
+
+Native discord.js channel.members skips voice states when member is not cached. Empty check now counts raw guild.voiceStates cache channel IDs instead,not member list. Missing voice cache blocks. Also used by move destination capacity. Two new tests,total260,uncached connected member blocks close/unlock. Real gateway state completeness/concurrent join race still unresolved by local tests.

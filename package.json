@@ -11,7 +11,11 @@
     "inventory": "node scripts/inventory.js",
     "register:preview": "node scripts/register.js",
     "register:guild": "node scripts/register.js --apply",
-    "start:watchdog": "node scripts/watchdog.js"
+    "start:watchdog": "node scripts/watchdog.js",
+    "inventory:luna": "node scripts/installed-inventory.js",
+    "format": "prettier --write src scripts test package.json .prettierrc.json .github/workflows/ci.yml eslint.config.js",
+    "format:check": "prettier --check src scripts test package.json .prettierrc.json .github/workflows/ci.yml eslint.config.js",
+    "lint": "eslint src scripts test"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +31,10 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=22.12.0 <23 || >=24 <25"
+    "node": ">=22.13.0 <23 || >=24 <25"
+  },
+  "devDependencies": {
+    "eslint": "10.12.0",
+    "prettier": "3.9.10"
   }
 }

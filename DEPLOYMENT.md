@@ -24,4 +24,4 @@ Use SQLite's online backup API or stop the bot cleanly before copying the databa
 
 ## CI
 
-The GitHub Actions workflow runs npm ci, syntax checks, local tests, inventory export/diff, command registration preview and dependency audit on Node 22 and 24. It needs no token. The workflow has not run on GitHub because the public `coldy` repo is not created/pushed yet.
+The GitHub Actions workflow runs npm ci, syntax checks, local tests, inventory export/diff, command registration preview and dependency audit on Node 22 and 24. It needs no token. The public repository exists and earlier/new source checkpoints passed GitHub CI. Inspect the latest head run on the repository Actions page rather than treating old checkpoint results as current. CI needs no Discord token and is not live Discord/deployment validation.

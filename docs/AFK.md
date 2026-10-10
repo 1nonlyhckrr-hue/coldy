@@ -1,0 +1,7 @@
+# Explicit own away status
+
+`afk set reason share:true` stores own server/user/channel/reason/time for up to7days. Reason supplied by user must be suitable for exact current-channel disclosure. Notice sends only when mentioned in that same channel,not in another channel or DM. Public no-ping localized embed includes user ID,reason and elapsed minutes. Names/profile/contents of triggering messages not stored. No nickname changes. `status` privately shows own record. `clear` erases it. Up to1000active records/server.
+
+Next new eligible message from that user in any channel of same server clears status without a return announcement. Bots/webhooks/system/stale replay ignored. AFK runs only when AutoMod did not intercept the event;blocked/moderated messages do not clear it. Notice considers at most5mentioned users,10reservations/min/server,one/channel/30seconds. Stored incoming message-ID reservation prevents repeating failed/uncertain notice.24hour notice-ID retention;statuses expire7days on startup/access. Not forensic secure erase;backups may retain copies. Policy is explicit exact-channel disclosure,not claimed prefix parity or cross-channel away reason broadcast.
+
+SQLitev21. Five new tests;243project tests pass,31top-level129paths. No live mention/gateway/privacy/visual test. Runtime Message Content/GuildMessages needed already opt-in,not secretly enabled. Unknown sends contained,no auto retry. Member presence not tracked,no account status inference.

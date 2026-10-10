@@ -1,0 +1,9 @@
+# Metadata event logs
+
+`/logging event kind enabled` adds one configuration path. Six selected native events: memberjoin/memberleave, rolecreate/roledelete, channelcreate/channeldelete. Logging master toggle and valid destination must also be enabled. Member events require the separate opted-in Server Members runtime. No message-delete/edit contents, role/channel overwrite bodies, names, profile text or guessed actor attribution. IDs and event kind only. Partial message update events are not handled.
+
+Configuration now checks current Manage Server on every command, not only interaction snapshot. Defaults events empty, preserving existing case-only behavior. Output uses current guild locale, shared embeds and no mentions. Staff should select a staff-only destination; output permission validation does not certify its audience privacy.
+
+SQLite v15 stores delivery keys/state for30 days. Reserve before send, no automatic retry after unknown send/storage failure. Startup reserved states become uncertain.20 event sends/reservations per minute per guild; later high-volume events deliberately dropped, not buffered. Dedup keys: role/channel create/delete ID+kind, member joins include joined timestamp (fallback UTC day), member leaves per member+UTC day. A same-day leave/rejoin/leave can lose the second leave alert by design rather than risk duplicate delivery. No claim of complete audit history. After30-day replay-key expiry, old resource events could be sent again if manually replayed; native gateway delivery/recovery must be tested before release.
+
+Six distinct new tests,194 project tests pass: all selected event kinds/locales, disabled/unselected state, rate bound, unavailable/uncertain send replay, retention/recovery and slash event selection/runtime/current authorization. No live gateway, rate-limit or visual verification. Public previous188-test checkpoint remains verified separately; this expansion is local until next publication.

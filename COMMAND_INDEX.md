@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-26 top-level commands, 110 executable paths. 188 local tests pass. No live Discord test or deployment. Reference equivalence is a separate check. Antinuke alert-only; GuildTag manual refresh; VoiceMaster private explicit channels.
+32 top-level commands, 133 executable paths.261 local tests pass. No live Discord test or deployment. Reference equivalence is a separate check. Antinuke alert-only; GuildTag manual refresh; VoiceMaster explicit tracked channels.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -13,10 +13,12 @@
 | /antinuke config | Show alert settings and limitations. | Local mock/unit only |
 | /antinuke incidents | Show20 recent stored audit burst alerts. | Local mock/unit only |
 | /automation create | Schedule one message or a fixed elapsed-time repeat. | Local mock/unit only |
+| /automation createzone | Schedule one message using explicit local date/time and named timezone. | Local mock/unit only |
 | /automation cancel | Cancel a pending or uncertain schedule. | Local mock/unit only |
 | /automation list | List recent schedule records. | Local mock/unit only |
 | /automation config | Show schedule limits and restart policy. | Local mock/unit only |
 | /automod enable | Enable configured rules; all rules start disabled. | Local mock/unit only |
+| /automod timeoutminutes | Set automatic timeout duration1-60 minutes;does not enable rules. | Local mock/unit only |
 | /automod disable | Stop automatic message moderation. | Local mock/unit only |
 | /automod rule | Enable or disable one rule. | Local mock/unit only |
 | /automod wordadd | Add a literal word/phrase to the filter. | Local mock/unit only |
@@ -58,11 +60,15 @@
 | /leaderboard config | View tracking status and excluded IDs. | Local mock/unit only |
 | /leaderboard stats | Show your own retained message counts. | Local mock/unit only |
 | /leaderboard top | Show retained message ranks, ten per page. | Local mock/unit only |
+| /leaderboard optout | Stop counting your future messages and erase your counts. | Local mock/unit only |
+| /leaderboard optin | Allow future counts when this server has tracking enabled. | Local mock/unit only |
+| /leaderboard eraseuser | Manage Server: erase one user retained counts, not their preference. | Local mock/unit only |
 | /leaderboard resetmine | Delete only your retained message counts. | Local mock/unit only |
 | /logging channel | Choose the server log channel. | Local mock/unit only |
 | /logging enable | Enable case logs after configuring a channel. | Local mock/unit only |
 | /logging disable | Disable delivery without deleting config. | Local mock/unit only |
 | /logging config | Show case-log settings. | Local mock/unit only |
+| /logging event | Enable/disable one metadata event, no message content. | Local mock/unit only |
 | /logging test | Send one test log to the configured channel. | Local mock/unit only |
 | /moderation warn | warn: one member, checked and recorded. | Local mock/unit only |
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
@@ -72,6 +78,8 @@
 | /moderation kick | kick: one member, checked and recorded. | Local mock/unit only |
 | /moderation ban | ban: one member, checked and recorded. | Local mock/unit only |
 | /moderation unban | unban: one member, checked and recorded. | Local mock/unit only |
+| /moderation purgepreview | Preview exact IDs among up to 10 recent messages, no deletion. | Local mock/unit only |
+| /moderation purgeconfirm | Delete only your exact previewed IDs, expires in2 minutes. | Local mock/unit only |
 | /permit blockuser | Block a user for one entire command. | Local mock/unit only |
 | /permit unblockuser | Unblock a user for one entire command. | Local mock/unit only |
 | /permit blockrole | Block a role for one entire command. | Local mock/unit only |
@@ -79,6 +87,7 @@
 | /permit list | Show configured restrictions, ten per page. | Local mock/unit only |
 | /permit clear | Remove all restrictions for one command. | Local mock/unit only |
 | /reactionroles create | Publish one role toggle button. | Local mock/unit only |
+| /reactionroles multi | Publish 2-5 independent safe role toggle buttons. | Local mock/unit only |
 | /reactionroles list | List the newest 20 panel records. | Local mock/unit only |
 | /reactionroles disable | Disable a panel in storage; its old button becomes inactive. | Local mock/unit only |
 | /ticket setup | Set the category and role that can view new tickets. | Local mock/unit only |
@@ -88,8 +97,19 @@
 | /ticket close | Store transcript and make the owner read-only. | Local mock/unit only |
 | /ticket reopen | Restore the ticket owner write access. | Local mock/unit only |
 | /ticket transcript | Export current ticket history privately. | Local mock/unit only |
+| /ticket retention | Manage Server: set stored transcript maximum age 1-30 days. | Local mock/unit only |
+| /ticket forgettranscript | Erase stored snapshot for this ticket, not native messages. | Local mock/unit only |
 | /ticket config | Show ticket configuration to server managers. | Local mock/unit only |
+| /afk set | Set status up to7days,clear on your next eligible server message. | Local mock/unit only |
+| /afk clear | Erase your status and reason here. | Local mock/unit only |
+| /afk status | Privately view your status and disclosure channel. | Local mock/unit only |
 | /avatar | Show a public avatar link. | Local mock/unit only |
+| /banner | Fetch a public user profile banner link,no guild membership assumption. | Local mock/unit only |
+| /boostcount | Fetch current server boost count and premium tier. | Local mock/unit only |
+| /list roles | List current server roles,ten per page. | Local mock/unit only |
+| /list emojis | List current server emojis,ten per page. | Local mock/unit only |
+| /poll | Manage Server: publish a native Discord poll with2-10 answers. | Local mock/unit only |
+| /roleinfo | Read current role ID,color,position and permission flags. | Local mock/unit only |
 | /serverinfo | Show basic information about this server. | Local mock/unit only |
 | /stats | Show build command counts and process memory usage. | Local mock/unit only |
 | /userinfo | Show public user information. | Local mock/unit only |
@@ -108,6 +128,9 @@
 | /voicemaster open | Create your own private standard voice channel. | Local mock/unit only |
 | /voicemaster rename | Rename your own tracked private channel. | Local mock/unit only |
 | /voicemaster limit | Set your channel capacity; access stays private. | Local mock/unit only |
+| /voicemaster lock | Empty tracked channel: restore owner-only view/connect access. | Local mock/unit only |
+| /voicemaster unlock | Empty tracked channel: explicitly allow all server members view/connect. | Local mock/unit only |
+| /voicemaster reconcile | Recheck your recorded channel, safely repair stored ownership state. | Local mock/unit only |
 | /voicemaster close | Delete only your tracked empty private channel. | Local mock/unit only |
 | /welcome channel | Choose the destination. | Local mock/unit only |
 | /welcome message | Set welcome template. | Local mock/unit only |
@@ -119,7 +142,7 @@
 
 ## Zynrax reference inventory
 
-`data/commands.json` and `data/commands.csv` contain **318 documented command paths**, not 318 Luna commands. Documented shortcuts live in aliases and are not counted as commands. Each row preserves source URL, original syntax, description and verification flags. Parameters preserve documented brackets, not invented types. `referenceVerified` means the named syntax exists in fetched public docs, not that Zynrax behavior was tested. `implemented` and `tested` are false for all reference rows until an equivalent Luna implementation and relevant tests exist. `/serverinfo` is a foundation implementation with narrower behavior, so its richer reference row remains false.
+`data/commands.json` and `data/commands.csv` contain **319 documented command paths**, not 319 Luna commands. Documented shortcuts live in aliases and are not counted as commands. Each row preserves source URL, original syntax, description and verification flags. Parameters preserve documented brackets, not invented types. `referenceVerified` means the named syntax exists in fetched public docs, not that Zynrax behavior was tested. `implemented` and `tested` are false for all reference rows until an equivalent Luna implementation and relevant tests exist. `/serverinfo` is a foundation implementation with narrower behavior, so its richer reference row remains false.
 
 | Category | Documented paths |
 | --- | --- |

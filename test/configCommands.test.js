@@ -1,13 +1,126 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { openDatabase,GuildSettings } from '../src/database/index.js';
+import { openDatabase, GuildSettings } from '../src/database/index.js';
 import { GuildConfig } from '../src/services/guildConfig.js';
 import { ServerLogs } from '../src/services/logging.js';
 import logging from '../src/commands/logging/logging.js';
 import welcome from '../src/commands/welcomer/welcome.js';
 import { makeGuild } from './helpers/guild.js';
-function setup(){const db=openDatabase(':memory:'),guildConfig=new GuildConfig(new GuildSettings(db)),s=makeGuild(),replies=[];s.guild.members.fetch=async()=>({id:'100000000000000002',user:{username:'Tester'},guild:s.guild});const c={guildConfig,config:{memberEventsEnabled:true},serverLogs:new ServerLogs(guildConfig,{warn:()=>{}})};let sub='config';const i={guild:s.guild,guildId:'g',user:{id:'100000000000000002'},deferReply:async()=>{},editReply:async v=>replies.push(v),options:{getSubcommand:()=>sub,getChannel:()=>({id:'100000000000000001'}),getString:()=> 'Hello {user}',getBoolean:()=>true}};return {db,c,i,s,replies,setSub:v=>sub=v};}
-test('logging setup, enable, config, test and disable persist',async()=>{const x=setup();try{for(const sub of ['channel','enable','config','test','disable']){x.setSub(sub);await logging.execute(x.i,x.c);}assert.equal(x.replies.length,5);assert.equal(x.s.sent.length,1);assert.equal(x.c.guildConfig.get('g').logging.enabled,false);}finally{x.db.close();}});
-test('welcome enable requires runtime member events and destination',async()=>{const x=setup();try{x.setSub('enable');await assert.rejects(()=>welcome.execute(x.i,x.c),/welcomeChannelRequired/);x.setSub('channel');await welcome.execute(x.i,x.c);x.c.config.memberEventsEnabled=false;x.setSub('enable');await assert.rejects(()=>welcome.execute(x.i,x.c),/memberEventsDisabled/);x.c.config.memberEventsEnabled=true;for(const sub of ['message','enable','goodbye','test','config','disable']){x.setSub(sub);await welcome.execute(x.i,x.c);}assert.equal(x.s.sent.length,1);assert.equal(x.c.guildConfig.get('g').welcome.enabled,false);assert.equal(x.c.guildConfig.get('g').welcome.goodbyeEnabled,true);}finally{x.db.close();}});
-test('Hindi welcome and log configuration replies use localized embeds',async()=>{const x=setup();try{x.c.guildConfig.setLanguage('g','hi');x.setSub('config');await welcome.execute(x.i,x.c);await logging.execute(x.i,x.c);assert.match(x.replies[0].embeds[0].data.description,/स्वागत/);assert.match(x.replies[1].embeds[0].data.description,/स्थिति/);assert.match(x.replies[0].embeds[0].data.footer.text,/सर्वर/);}finally{x.db.close();}});
-test('branded output channels require Embed Links permission',async()=>{const {PermissionFlagsBits:P}=await import('discord.js');const {validateOutputChannel}=await import('../src/services/guildConfig.js');const x=setup();try{x.s.channel.permissionsFor=()=>({has:permissions=>!permissions.includes(P.EmbedLinks)});await assert.rejects(()=>validateOutputChannel(x.s.guild,'100000000000000001'),/channelPermissionMissing/);}finally{x.db.close();}});
+function setup() {
+  const db = openDatabase(':memory:'),
+    guildConfig = new GuildConfig(new GuildSettings(db)),
+    s = makeGuild(),
+    replies = [];
+  s.guild.members.fetch = async () => ({
+    id: '100000000000000002',
+    permissions: { has: () => true },
+    user: { username: 'Tester' },
+    guild: s.guild,
+  });
+  const c = {
+    guildConfig,
+    config: { memberEventsEnabled: true },
+    serverLogs: new ServerLogs(guildConfig, { warn: () => {} }),
+  };
+  let sub = 'config';
+  const i = {
+    guild: s.guild,
+    guildId: 'g',
+    user: { id: '100000000000000002' },
+    deferReply: async () => {},
+    editReply: async (v) => replies.push(v),
+    options: {
+      getSubcommand: () => sub,
+      getChannel: () => ({ id: '100000000000000001' }),
+      getString: () => 'Hello {user}',
+      getBoolean: () => true,
+    },
+  };
+  return { db, c, i, s, replies, setSub: (v) => (sub = v) };
+}
+test('logging setup, enable, config, test and disable persist', async () => {
+  const x = setup();
+  try {
+    for (const sub of ['channel', 'enable', 'config', 'test', 'disable']) {
+      x.setSub(sub);
+      await logging.execute(x.i, x.c);
+    }
+    assert.equal(x.replies.length, 5);
+    assert.equal(x.s.sent.length, 1);
+    assert.equal(x.c.guildConfig.get('g').logging.enabled, false);
+  } finally {
+    x.db.close();
+  }
+});
+test('welcome enable requires runtime member events and destination', async () => {
+  const x = setup();
+  try {
+    x.setSub('enable');
+    await assert.rejects(() => welcome.execute(x.i, x.c), /welcomeChannelRequired/);
+    x.setSub('channel');
+    await welcome.execute(x.i, x.c);
+    x.c.config.memberEventsEnabled = false;
+    x.setSub('enable');
+    await assert.rejects(() => welcome.execute(x.i, x.c), /memberEventsDisabled/);
+    x.c.config.memberEventsEnabled = true;
+    for (const sub of ['message', 'enable', 'goodbye', 'test', 'config', 'disable']) {
+      x.setSub(sub);
+      await welcome.execute(x.i, x.c);
+    }
+    assert.equal(x.s.sent.length, 1);
+    assert.equal(x.c.guildConfig.get('g').welcome.enabled, false);
+    assert.equal(x.c.guildConfig.get('g').welcome.goodbyeEnabled, true);
+  } finally {
+    x.db.close();
+  }
+});
+test('Hindi welcome and log configuration replies use localized embeds', async () => {
+  const x = setup();
+  try {
+    x.c.guildConfig.setLanguage('g', 'hi');
+    x.setSub('config');
+    await welcome.execute(x.i, x.c);
+    await logging.execute(x.i, x.c);
+    assert.match(x.replies[0].embeds[0].data.description, /स्वागत/);
+    assert.match(x.replies[1].embeds[0].data.description, /स्थिति/);
+    assert.match(x.replies[0].embeds[0].data.footer.text, /सर्वर/);
+  } finally {
+    x.db.close();
+  }
+});
+test('branded output channels require Embed Links permission', async () => {
+  const { PermissionFlagsBits: P } = await import('discord.js');
+  const { validateOutputChannel } = await import('../src/services/guildConfig.js');
+  const x = setup();
+  try {
+    x.s.channel.permissionsFor = () => ({
+      has: (permissions) => !permissions.includes(P.EmbedLinks),
+    });
+    await assert.rejects(
+      () => validateOutputChannel(x.s.guild, '100000000000000001'),
+      /channelPermissionMissing/,
+    );
+  } finally {
+    x.db.close();
+  }
+});
+
+test('logging event selection persists and enforces runtime plus current authority', async () => {
+  const x = setup();
+  try {
+    x.setSub('event');
+    x.i.options.getString = () => 'memberjoin';
+    x.c.config.memberEventsEnabled = false;
+    await assert.rejects(() => logging.execute(x.i, x.c), /logMemberRuntime/);
+    x.c.config.memberEventsEnabled = true;
+    await logging.execute(x.i, x.c);
+    assert.deepEqual(x.c.guildConfig.get('g').logging.events, ['memberjoin']);
+    x.i.options.getBoolean = () => false;
+    await logging.execute(x.i, x.c);
+    assert.deepEqual(x.c.guildConfig.get('g').logging.events, []);
+    x.s.guild.members.fetch = async () => ({ permissions: { has: () => false } });
+    await assert.rejects(() => logging.execute(x.i, x.c), /userPermission/);
+  } finally {
+    x.db.close();
+  }
+});

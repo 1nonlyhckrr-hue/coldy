@@ -1,5 +1,9 @@
 export class Cooldowns {
-  constructor(now = Date.now, maxEntries = 10000) { this.entries = new Map(); this.now = now; this.maxEntries = maxEntries; }
+  constructor(now = Date.now, maxEntries = 10000) {
+    this.entries = new Map();
+    this.now = now;
+    this.maxEntries = maxEntries;
+  }
   acquire(key, durationMs) {
     const now = this.now();
     for (const [k, until] of this.entries) if (until <= now) this.entries.delete(k);

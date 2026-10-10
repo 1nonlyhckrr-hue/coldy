@@ -41,6 +41,21 @@
     "source": "https://docs.zynrax.site/security/antinuke"
   },
   {
+    "name": "antinuke",
+    "category": "antinuke",
+    "syntax": ",antinuke",
+    "description": "Open Antinuke configuration buttons; image shows Enable,Disable,Back and current status.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "aliases": [],
+    "referenceVerified": true,
+    "implemented": false,
+    "tested": false,
+    "notes": "Visually verified official documentation screenshot shows ,antinuke opening Enable/Disable/Back configuration buttons with current Disabled state. No additional arguments or individual module paths established. Image source: https://mintcdn.com/zynraxdevelopment-9bbc81fc/wDzxParB8NBY4q1h/images/antinuke.png?fit=max&auto=format&n=wDzxParB8NBY4q1h&q=85&s=faa093bb6950b4d511bd27a8c9f638a7. Not a live-tested Zynrax command. Permissions/aliases not stated by image are unknown. Owner-only configuration scope is stated on source page,not bypassed.",
+    "source": "https://docs.zynrax.site/security/antinuke"
+  },
+  {
     "name": "antipunish",
     "category": "antinuke",
     "syntax": ",antipunish (event) (punishment)",

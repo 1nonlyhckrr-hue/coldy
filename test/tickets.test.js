@@ -1,23 +1,373 @@
-import {test} from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {PermissionFlagsBits as P} from 'discord.js';
-import {openDatabase,GuildSettings} from '../src/database/index.js';
-import {GuildConfig} from '../src/services/guildConfig.js';
-import {Tickets,ticketOverwrites,verifyTicketPrivacy} from '../src/services/tickets.js';
-import {openTicket,changeTicketState,exportTicketTranscript,publishTicketPanel,createTicketButtonHandler} from '../src/services/ticketDelivery.js';
-import {collectTicketTranscript} from '../src/services/ticketTranscripts.js';
-import {handleInteractionError} from '../src/utils/errors.js';
+import { PermissionFlagsBits as P } from 'discord.js';
+import { openDatabase, GuildSettings } from '../src/database/index.js';
+import { GuildConfig } from '../src/services/guildConfig.js';
+import { Tickets, ticketOverwrites, verifyTicketPrivacy } from '../src/services/tickets.js';
+import {
+  openTicket,
+  changeTicketState,
+  exportTicketTranscript,
+  publishTicketPanel,
+  createTicketButtonHandler,
+} from '../src/services/ticketDelivery.js';
+import { collectTicketTranscript } from '../src/services/ticketTranscripts.js';
+import { handleInteractionError } from '../src/utils/errors.js';
 import command from '../src/commands/ticket/ticket.js';
-const ids={guild:'100000000000000001',bot:'100000000000000002',owner:'100000000000000003',role:'100000000000000004',channel:'100000000000000005',category:'100000000000000006'};
-function cache(rules){return new Map(rules.map(r=>[r.id,{type:r.type,allow:{bitfield:(r.allow??[]).reduce((a,b)=>a|b,0n)},deny:{bitfield:(r.deny??[]).reduce((a,b)=>a|b,0n)}}]));}
-function setup(){const db=openDatabase(':memory:'),tickets=new Tickets(db),guildConfig=new GuildConfig(new GuildSettings(db)),replies=[],sent=[];const owner={id:ids.owner,user:{bot:false},permissions:{has:()=>false},roles:{cache:new Map()}},bot={id:ids.bot,permissions:{has:()=>true}};const category={id:ids.category,guildId:ids.guild,type:4},role={id:ids.role,guild:{id:ids.guild},managed:false};const channel={id:ids.channel,guildId:ids.guild,type:0,permissionsFor:()=>({has:()=>true}),permissionOverwrites:{cache:new Map(),set:async rules=>{channel.permissionOverwrites.cache=cache(rules);}},messages:{fetch:async()=>new Map()},send:async p=>{sent.push(p);return {id:'panelMessage'};}};const creates=[];const guild={id:ids.guild,ownerId:'server-owner',members:{fetch:async()=>owner,fetchMe:async()=>bot},roles:{fetch:async()=>role},channels:{fetch:async id=>id===ids.category?category:channel,create:async options=>{creates.push(options);channel.permissionOverwrites.cache=cache(options.permissionOverwrites);return channel;}}};const c={tickets,guildConfig,logger:{error:()=>{},warn:()=>{}},handleInteractionError};const i={id:'i',guild,guildId:ids.guild,channelId:ids.channel,user:{id:ids.owner},isButton:()=>true,inGuild:()=>true,customId:'luna:ticket:1',message:{id:'panelMessage'},deferReply:async()=>{i.deferred=true;},editReply:async p=>replies.push(p),reply:async p=>replies.push(p)};tickets.configure(ids.guild,ids.category,ids.role);return {db,tickets,c,i,guild,owner,bot,role,category,channel,creates,replies,sent};}
-test('ticket overwrites deny everyone and closed owners cannot write',()=>{const rules=ticketOverwrites(ids.guild,ids.bot,ids.owner,ids.role,true);assert.deepEqual(rules[0].deny,[P.ViewChannel]);assert.equal(rules[3].deny[0],P.SendMessages);assert((rules[3].allow[0]&P.SendMessages)===0n);assert.throws(()=>ticketOverwrites(ids.guild,ids.bot,ids.owner,ids.guild));});
-test('one unresolved ticket per owner, guild isolation and source deduplication',()=>{const x=setup();try{const id=x.tickets.reserve(ids.guild,ids.owner,ids.role,'one');assert.equal(x.tickets.get(id,'foreign'),undefined);assert.throws(()=>x.tickets.reserve(ids.guild,ids.owner,ids.role,'two'),/ticketAlreadyOpen/);x.tickets.uncertain(id);assert.throws(()=>x.tickets.reserve(ids.guild,ids.owner,ids.role,'three'));x.tickets.recover();assert.equal(x.tickets.get(id,ids.guild).status,'uncertain');}finally{x.db.close();}});
-test('ticket opening uses explicit overwrites and verifies returned privacy',async()=>{const x=setup();try{const r=await openTicket(x.i,x.c);assert.equal(r.id,1);assert.equal(x.tickets.get(1,ids.guild).status,'open');assert.equal(x.creates[0].parent,ids.category);assert.equal(x.creates[0].permissionOverwrites.length,4);await assert.rejects(()=>openTicket(x.i,x.c),/ticketAlreadyOpen/);assert.equal(x.creates.length,1);}finally{x.db.close();}});
-test('ambiguous channel create blocks repeats and privacy mismatch fails closed',async()=>{for(const privacy of [false,true]){const x=setup();try{x.guild.channels.create=async()=>{if(!privacy)throw new Error('network');return x.channel;};await assert.rejects(()=>openTicket(x.i,x.c));assert.equal(x.tickets.get(1,ids.guild).status,'uncertain');await assert.rejects(()=>openTicket(x.i,x.c));}finally{x.db.close();}}});
-test('privacy checks reject added overwrite and leaked everyone permissions',async()=>{const x=setup();try{await openTicket(x.i,x.c);const record=x.tickets.get(1,ids.guild);x.channel.permissionOverwrites.cache.set('extra',{allow:{bitfield:P.ViewChannel},deny:{bitfield:0n}});await assert.rejects(()=>verifyTicketPrivacy(x.channel,record,ids.bot),/ticketPrivacyMismatch/);x.channel.permissionOverwrites.cache=cache(ticketOverwrites(ids.guild,ids.bot,ids.owner,ids.role));x.channel.permissionOverwrites.cache.get(ids.guild).allow.bitfield=P.ViewChannel;await assert.rejects(()=>verifyTicketPrivacy(x.channel,record,ids.bot));}finally{x.db.close();}});
-test('close saves transcript, makes owner read-only and staff can reopen',async()=>{const x=setup();try{await openTicket(x.i,x.c);await changeTicketState(x.i,x.c,true);assert.equal(x.tickets.get(1,ids.guild).status,'closed');assert(x.tickets.transcript(1));assert.equal(x.channel.permissionOverwrites.cache.get(ids.owner).deny.bitfield,P.SendMessages);await assert.rejects(()=>changeTicketState(x.i,x.c,false),/ticketAccessDenied/);x.owner.roles.cache.set(ids.role,{});await changeTicketState(x.i,x.c,false);assert.equal(x.tickets.get(1,ids.guild).status,'open');}finally{x.db.close();}});
-test('transcript exports literal JSON safely, bounds size and labels truncation',async()=>{const msg=n=>({id:String(100000000000000000n+BigInt(n)),createdTimestamp:0,author:{id:'author'},content:'<script>alert(1)</script>',attachments:new Map(),embeds:[]});let calls=0;const channel={id:ids.channel,messages:{fetch:async()=>new Map(Array.from({length:100},(_,n)=>[String(n),msg(++calls)]))}};const t=await collectTicketTranscript(channel,{limit:5,maxBytes:500});assert(t.truncated);assert(t.count<=5);assert.match(t.body,/PARTIAL/);assert.match(t.body,/<script>/);assert(!t.body.startsWith('<html'));});
-test('private transcript denies unrelated users and does not use public channel sends',async()=>{const x=setup();try{await openTicket(x.i,x.c);const r=await exportTicketTranscript(x.i,x.c);assert.match(r.file.name,/luna-ticket-1.txt/);assert.equal(x.sent.length,0);x.i.user.id='outsider';await assert.rejects(()=>exportTicketTranscript(x.i,x.c),/ticketAccessDenied/);}finally{x.db.close();}});
-test('panels bind buttons to source messages and refuse copies',async()=>{const x=setup();try{await publishTicketPanel(x.i,x.c,ids.channel);const h=createTicketButtonHandler(x.c);x.i.id='open-button';x.i.message.id='copy';await h(x.i);assert.equal(x.creates.length,0);x.i.message.id='panelMessage';await h(x.i);assert.equal(x.creates.length,1);assert.deepEqual(x.sent[0].allowedMentions.parse,[]);}finally{x.db.close();}});
-test('eight management paths execute with current access checks',async()=>{const x=setup();try{x.owner.permissions.has=()=>true;let sub='setup';x.i.options={getSubcommand:()=>sub,getChannel:name=>({id:name==='category'?ids.category:ids.channel}),getRole:()=>x.role};x.c.guildConfig.setLanguage(ids.guild,'hi');for(const action of ['setup','config','panel','open','claim','transcript','close','reopen']){sub=action;if(action==='open')x.i.id='open';await command.execute(x.i,x.c);}assert.equal(x.replies.length,8);assert.equal(x.tickets.get(1,ids.guild).claimed_by,ids.owner);assert.match(x.replies[0].embeds[0].data.description,/टिकट/);}finally{x.db.close();}});
+const ids = {
+  guild: '100000000000000001',
+  bot: '100000000000000002',
+  owner: '100000000000000003',
+  role: '100000000000000004',
+  channel: '100000000000000005',
+  category: '100000000000000006',
+};
+function cache(rules) {
+  return new Map(
+    rules.map((r) => [
+      r.id,
+      {
+        type: r.type,
+        allow: { bitfield: (r.allow ?? []).reduce((a, b) => a | b, 0n) },
+        deny: { bitfield: (r.deny ?? []).reduce((a, b) => a | b, 0n) },
+      },
+    ]),
+  );
+}
+function setup() {
+  const db = openDatabase(':memory:'),
+    tickets = new Tickets(db),
+    guildConfig = new GuildConfig(new GuildSettings(db)),
+    replies = [],
+    sent = [];
+  const owner = {
+      id: ids.owner,
+      user: { bot: false },
+      permissions: { has: () => false },
+      roles: { cache: new Map() },
+    },
+    bot = { id: ids.bot, permissions: { has: () => true } };
+  const category = { id: ids.category, guildId: ids.guild, type: 4 },
+    role = { id: ids.role, guild: { id: ids.guild }, managed: false };
+  const channel = {
+    id: ids.channel,
+    guildId: ids.guild,
+    type: 0,
+    permissionsFor: () => ({ has: () => true }),
+    permissionOverwrites: {
+      cache: new Map(),
+      set: async (rules) => {
+        channel.permissionOverwrites.cache = cache(rules);
+      },
+    },
+    messages: { fetch: async () => new Map() },
+    send: async (p) => {
+      sent.push(p);
+      return { id: 'panelMessage' };
+    },
+  };
+  const creates = [];
+  const guild = {
+    id: ids.guild,
+    ownerId: 'server-owner',
+    members: { fetch: async () => owner, fetchMe: async () => bot },
+    roles: { fetch: async () => role },
+    channels: {
+      fetch: async (id) => (id === ids.category ? category : channel),
+      create: async (options) => {
+        creates.push(options);
+        channel.permissionOverwrites.cache = cache(options.permissionOverwrites);
+        return channel;
+      },
+    },
+  };
+  const c = {
+    tickets,
+    guildConfig,
+    logger: { error: () => {}, warn: () => {} },
+    handleInteractionError,
+  };
+  const i = {
+    id: 'i',
+    guild,
+    guildId: ids.guild,
+    channelId: ids.channel,
+    user: { id: ids.owner },
+    isButton: () => true,
+    inGuild: () => true,
+    customId: 'luna:ticket:1',
+    message: { id: 'panelMessage' },
+    deferReply: async () => {
+      i.deferred = true;
+    },
+    editReply: async (p) => replies.push(p),
+    reply: async (p) => replies.push(p),
+  };
+  tickets.configure(ids.guild, ids.category, ids.role);
+  return { db, tickets, c, i, guild, owner, bot, role, category, channel, creates, replies, sent };
+}
+test('ticket overwrites deny everyone and closed owners cannot write', () => {
+  const rules = ticketOverwrites(ids.guild, ids.bot, ids.owner, ids.role, true);
+  assert.deepEqual(rules[0].deny, [P.ViewChannel]);
+  assert.equal(rules[3].deny[0], P.SendMessages);
+  assert((rules[3].allow[0] & P.SendMessages) === 0n);
+  assert.throws(() => ticketOverwrites(ids.guild, ids.bot, ids.owner, ids.guild));
+});
+test('one unresolved ticket per owner, guild isolation and source deduplication', () => {
+  const x = setup();
+  try {
+    const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'one');
+    assert.equal(x.tickets.get(id, 'foreign'), undefined);
+    assert.throws(
+      () => x.tickets.reserve(ids.guild, ids.owner, ids.role, 'two'),
+      /ticketAlreadyOpen/,
+    );
+    x.tickets.uncertain(id);
+    assert.throws(() => x.tickets.reserve(ids.guild, ids.owner, ids.role, 'three'));
+    x.tickets.recover();
+    assert.equal(x.tickets.get(id, ids.guild).status, 'uncertain');
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket opening uses explicit overwrites and verifies returned privacy', async () => {
+  const x = setup();
+  try {
+    const r = await openTicket(x.i, x.c);
+    assert.equal(r.id, 1);
+    assert.equal(x.tickets.get(1, ids.guild).status, 'open');
+    assert.equal(x.creates[0].parent, ids.category);
+    assert.equal(x.creates[0].permissionOverwrites.length, 4);
+    await assert.rejects(() => openTicket(x.i, x.c), /ticketAlreadyOpen/);
+    assert.equal(x.creates.length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+test('ambiguous channel create blocks repeats and privacy mismatch fails closed', async () => {
+  for (const privacy of [false, true]) {
+    const x = setup();
+    try {
+      x.guild.channels.create = async () => {
+        if (!privacy) throw new Error('network');
+        return x.channel;
+      };
+      await assert.rejects(() => openTicket(x.i, x.c));
+      assert.equal(x.tickets.get(1, ids.guild).status, 'uncertain');
+      await assert.rejects(() => openTicket(x.i, x.c));
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('privacy checks reject added overwrite and leaked everyone permissions', async () => {
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    const record = x.tickets.get(1, ids.guild);
+    x.channel.permissionOverwrites.cache.set('extra', {
+      allow: { bitfield: P.ViewChannel },
+      deny: { bitfield: 0n },
+    });
+    await assert.rejects(
+      () => verifyTicketPrivacy(x.channel, record, ids.bot),
+      /ticketPrivacyMismatch/,
+    );
+    x.channel.permissionOverwrites.cache = cache(
+      ticketOverwrites(ids.guild, ids.bot, ids.owner, ids.role),
+    );
+    x.channel.permissionOverwrites.cache.get(ids.guild).allow.bitfield = P.ViewChannel;
+    await assert.rejects(() => verifyTicketPrivacy(x.channel, record, ids.bot));
+  } finally {
+    x.db.close();
+  }
+});
+test('close saves transcript, makes owner read-only and staff can reopen', async () => {
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    await changeTicketState(x.i, x.c, true);
+    assert.equal(x.tickets.get(1, ids.guild).status, 'closed');
+    assert(x.tickets.transcript(1));
+    assert.equal(x.channel.permissionOverwrites.cache.get(ids.owner).deny.bitfield, P.SendMessages);
+    await assert.rejects(() => changeTicketState(x.i, x.c, false), /ticketAccessDenied/);
+    x.owner.roles.cache.set(ids.role, {});
+    await changeTicketState(x.i, x.c, false);
+    assert.equal(x.tickets.get(1, ids.guild).status, 'open');
+  } finally {
+    x.db.close();
+  }
+});
+test('transcript exports literal JSON safely, bounds size and labels truncation', async () => {
+  const msg = (n) => ({
+    id: String(100000000000000000n + BigInt(n)),
+    createdTimestamp: 0,
+    author: { id: 'author' },
+    content: '<script>alert(1)</script>',
+    attachments: new Map(),
+    embeds: [],
+  });
+  let calls = 0;
+  const channel = {
+    id: ids.channel,
+    messages: {
+      fetch: async () => new Map(Array.from({ length: 100 }, (_, n) => [String(n), msg(++calls)])),
+    },
+  };
+  const t = await collectTicketTranscript(channel, { limit: 5, maxBytes: 500 });
+  assert(t.truncated);
+  assert(t.count <= 5);
+  assert.match(t.body, /PARTIAL/);
+  assert.match(t.body, /<script>/);
+  assert(!t.body.startsWith('<html'));
+});
+test('private transcript denies unrelated users and does not use public channel sends', async () => {
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    const r = await exportTicketTranscript(x.i, x.c);
+    assert.match(r.file.name, /luna-ticket-1.txt/);
+    assert.equal(x.sent.length, 0);
+    x.i.user.id = 'outsider';
+    await assert.rejects(() => exportTicketTranscript(x.i, x.c), /ticketAccessDenied/);
+  } finally {
+    x.db.close();
+  }
+});
+test('panels bind buttons to source messages and refuse copies', async () => {
+  const x = setup();
+  try {
+    await publishTicketPanel(x.i, x.c, ids.channel);
+    const h = createTicketButtonHandler(x.c);
+    x.i.id = 'open-button';
+    x.i.message.id = 'copy';
+    await h(x.i);
+    assert.equal(x.creates.length, 0);
+    x.i.message.id = 'panelMessage';
+    await h(x.i);
+    assert.equal(x.creates.length, 1);
+    assert.deepEqual(x.sent[0].allowedMentions.parse, []);
+  } finally {
+    x.db.close();
+  }
+});
+test('eight management paths execute with current access checks', async () => {
+  const x = setup();
+  try {
+    x.owner.permissions.has = () => true;
+    let sub = 'setup';
+    x.i.options = {
+      getSubcommand: () => sub,
+      getChannel: (name) => ({ id: name === 'category' ? ids.category : ids.channel }),
+      getRole: () => x.role,
+    };
+    x.c.guildConfig.setLanguage(ids.guild, 'hi');
+    for (const action of [
+      'setup',
+      'config',
+      'panel',
+      'open',
+      'claim',
+      'transcript',
+      'close',
+      'reopen',
+    ]) {
+      sub = action;
+      if (action === 'open') x.i.id = 'open';
+      await command.execute(x.i, x.c);
+    }
+    assert.equal(x.replies.length, 8);
+    assert.equal(x.tickets.get(1, ids.guild).claimed_by, ids.owner);
+    assert.match(x.replies[0].embeds[0].data.description, /टिकट/);
+  } finally {
+    x.db.close();
+  }
+});
+test('stored transcripts expire under default and per-guild retention, old snapshot not exported', async () => {
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    await changeTicketState(x.i, x.c, true);
+    x.tickets.now = () => Date.now() + 31 * 86400000;
+    assert.equal(x.tickets.transcript(1), undefined);
+    await assert.rejects(() => exportTicketTranscript(x.i, x.c), /ticketTranscriptMissing/);
+    assert.equal(x.tickets.retention(ids.guild), 30);
+    x.tickets.now = () => Date.now();
+    x.tickets.saveTranscript(1, { body: 'secret', count: 1, truncated: false });
+    x.tickets.now = () => Date.now() + 2 * 86400000;
+    assert.equal(x.tickets.setRetention(ids.guild, 1), 1);
+    assert.equal(x.tickets.transcript(1), undefined);
+    for (const d of [0, 31, 1.5]) assert.throws(() => x.tickets.setRetention(ids.guild, d));
+  } finally {
+    x.db.close();
+  }
+});
+test('forget stored snapshot scoped by guild/current access/confirmation/privacy, native messages unchanged', async () => {
+  const { forgetTicketTranscript } = await import('../src/services/ticketDelivery.js');
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    await changeTicketState(x.i, x.c, true);
+    assert.equal(x.tickets.forgetTranscript(1, 'foreign'), 0);
+    assert(x.tickets.transcript(1));
+    await assert.rejects(
+      () => forgetTicketTranscript(x.i, x.c, { confirm: false }),
+      /ticketForgetConfirm/,
+    );
+    x.i.user.id = 'outsider';
+    await assert.rejects(
+      () => forgetTicketTranscript(x.i, x.c, { confirm: true }),
+      /ticketAccessDenied/,
+    );
+    x.i.user.id = ids.owner;
+    assert.equal((await forgetTicketTranscript(x.i, x.c, { confirm: true })).count, 1);
+    assert.equal(x.tickets.transcript(1), undefined);
+    assert.equal(x.tickets.get(1, ids.guild).status, 'closed');
+    assert.equal(x.creates.length, 1);
+    assert.equal(x.sent.length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket privacy validates recorded channel ID and overwrite principal type', async () => {
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    const row = x.tickets.get(1, ids.guild);
+    x.channel.permissionOverwrites.cache.get(ids.owner).type = 0;
+    await assert.rejects(() => verifyTicketPrivacy(x.channel, row, ids.bot));
+    x.channel.permissionOverwrites.cache = cache(
+      ticketOverwrites(ids.guild, ids.bot, ids.owner, ids.role),
+    );
+    x.channel.id = 'wrong';
+    await assert.rejects(() => verifyTicketPrivacy(x.channel, row, ids.bot));
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket retention/forget commands localize,confirm and current server permission enforced', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      await openTicket(x.i, x.c);
+      await changeTicketState(x.i, x.c, true);
+      x.c.guildConfig.setLanguage(ids.guild, locale);
+      let sub = 'retention',
+        confirm = true;
+      x.i.options = { getSubcommand: () => sub, getInteger: () => 7, getBoolean: () => confirm };
+      await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+      x.owner.permissions.has = () => true;
+      confirm = false;
+      await assert.rejects(() => command.execute(x.i, x.c), /ticketRetentionConfirm/);
+      confirm = true;
+      await command.execute(x.i, x.c);
+      assert.equal(x.tickets.retention(ids.guild), 7);
+      sub = 'forgettranscript';
+      await command.execute(x.i, x.c);
+      assert.equal(x.tickets.transcript(1), undefined);
+      for (const r of x.replies) assert.deepEqual(r.allowedMentions.parse, []);
+    } finally {
+      x.db.close();
+    }
+  }
+});

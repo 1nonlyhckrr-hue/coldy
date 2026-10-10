@@ -2,5 +2,102 @@ import { translate } from '../src/services/localization.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadCommands } from '../src/services/registry.js';
-test('installed command names and option limits validate',async()=>{const commands=await loadCommands();assert.deepEqual([...commands.keys()].sort(),['about','antinuke','automation','automod','autoresponder','avatar','config','customrole','fun','giveaway','guildtag','help','leaderboard','logging','moderation','permit','ping','reactionroles','serverinfo','stats','ticket','uptime','userinfo','voice','voicemaster','welcome']);for(const c of commands.values()){const data=c.data.toJSON();assert.equal(data.contexts[0],0);assert((data.options??[]).length<=25);assert(data.description.length<=100);}});
-test('foundation and utility commands execute mock replies',async()=>{const commands=await loadCommands();for(const c of commands.values()){if(['antinuke','automod','automation','ticket','giveaway','autoresponder','logging','welcome','moderation','reactionroles','voicemaster','guildtag','leaderboard','customrole','voice','permit','fun','config'].includes(c.data.name))continue;const calls=[];const user={id:'100000000000000001',username:'Test',bot:false,createdAt:new Date('2020-01-01'),displayAvatarURL:()=> 'https://cdn.discordapp.com/embed/avatars/0.png'};const i={user,options:{getUser:()=>null,getInteger:()=>null},client:{ws:{ping:42}},guild:{name:'Test',id:'1',memberCount:3},reply:async v=>calls.push(v)};await c.execute(i,{commands,version:'test',localization:{locale:()=> 'en',t:(_g,key,params)=>translate('en',key,params)}});assert.equal(calls.length,1);assert(calls[0].embeds[0].data.description.length<=2000);}});
+test('installed command names and option limits validate', async () => {
+  const commands = await loadCommands();
+  assert.deepEqual([...commands.keys()].sort(), [
+    'about',
+    'afk',
+    'antinuke',
+    'automation',
+    'automod',
+    'autoresponder',
+    'avatar',
+    'banner',
+    'boostcount',
+    'config',
+    'customrole',
+    'fun',
+    'giveaway',
+    'guildtag',
+    'help',
+    'leaderboard',
+    'list',
+    'logging',
+    'moderation',
+    'permit',
+    'ping',
+    'poll',
+    'reactionroles',
+    'roleinfo',
+    'serverinfo',
+    'stats',
+    'ticket',
+    'uptime',
+    'userinfo',
+    'voice',
+    'voicemaster',
+    'welcome',
+  ]);
+  for (const c of commands.values()) {
+    const data = c.data.toJSON();
+    assert.equal(data.contexts[0], 0);
+    assert((data.options ?? []).length <= 25);
+    assert(data.description.length <= 100);
+  }
+});
+test('foundation and utility commands execute mock replies', async () => {
+  const commands = await loadCommands();
+  for (const c of commands.values()) {
+    if (
+      [
+        'list',
+        'afk',
+        'poll',
+        'banner',
+        'boostcount',
+        'roleinfo',
+        'antinuke',
+        'automod',
+        'automation',
+        'ticket',
+        'giveaway',
+        'autoresponder',
+        'logging',
+        'welcome',
+        'moderation',
+        'reactionroles',
+        'voicemaster',
+        'guildtag',
+        'leaderboard',
+        'customrole',
+        'voice',
+        'permit',
+        'fun',
+        'config',
+      ].includes(c.data.name)
+    )
+      continue;
+    const calls = [];
+    const user = {
+      id: '100000000000000001',
+      username: 'Test',
+      bot: false,
+      createdAt: new Date('2020-01-01'),
+      displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png',
+    };
+    const i = {
+      user,
+      options: { getUser: () => null, getInteger: () => null },
+      client: { ws: { ping: 42 } },
+      guild: { name: 'Test', id: '1', memberCount: 3 },
+      reply: async (v) => calls.push(v),
+    };
+    await c.execute(i, {
+      commands,
+      version: 'test',
+      localization: { locale: () => 'en', t: (_g, key, params) => translate('en', key, params) },
+    });
+    assert.equal(calls.length, 1);
+    assert(calls[0].embeds[0].data.description.length <= 2000);
+  }
+});

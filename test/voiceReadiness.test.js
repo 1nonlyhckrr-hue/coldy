@@ -1,0 +1,44 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { VoiceReadiness, requireVoiceReady } from '../src/services/voiceReadiness.js';
+test('voice readiness requires initial native ready state and opts out before gateway startup', () => {
+  const v = new VoiceReadiness(),
+    i = { client: { isReady: () => true }, guild: { shardId: 0, available: true } },
+    c = { config: { voiceEventsEnabled: true }, voiceReadiness: v };
+  assert.throws(() => requireVoiceReady(i, c), /voiceStateUnavailable/);
+  v.initialReady();
+  requireVoiceReady(i, c);
+  i.client.isReady = () => false;
+  assert.throws(() => requireVoiceReady(i, c));
+  i.client.isReady = () => true;
+  i.guild.available = false;
+  assert.throws(() => requireVoiceReady(i, c));
+});
+test('lost shard stays unsafe after ready/resume to avoid guessing voice cache recovered', () => {
+  const v = new VoiceReadiness();
+  v.initialReady();
+  v.disconnected(1);
+  const c = { config: { voiceEventsEnabled: true }, voiceReadiness: v },
+    i = { client: { isReady: () => true }, guild: { shardId: 1 } };
+  assert.throws(() => requireVoiceReady(i, c));
+  v.initialReady();
+  assert.throws(() => requireVoiceReady(i, c));
+  i.guild.shardId = 0;
+  requireVoiceReady(i, c);
+  c.config.voiceEventsEnabled = false;
+  assert.throws(() => requireVoiceReady(i, c), /voiceRuntimeDisabled/);
+});
+test('occupancy counts native voice states even when corresponding members are not cached', async () => {
+  const { voiceOccupancy } = await import('../src/services/voiceReadiness.js');
+  const guild = {
+    voiceStates: {
+      cache: new Map([
+        ['uncached', { channelId: 'room', member: null }],
+        ['other', { channelId: 'other' }],
+        ['left', { channelId: null }],
+      ]),
+    },
+  };
+  assert.equal(voiceOccupancy(guild, 'room'), 1);
+  assert.throws(() => voiceOccupancy({}, 'room'), /voiceStateUnavailable/);
+});

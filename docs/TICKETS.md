@@ -13,3 +13,11 @@ Transcripts are UTF-8 JSON lines, not executable HTML. They include message cont
 Local tests cover exact overwrite sets, deny-everyone/read-only closure, guild isolation, duplicates, ambiguous creation, changed privacy, access denial, copied panels, transcript bounds, close/reopen, local language and eight command paths. No live Discord privacy test or rendered transcript UX test yet. HTML transcripts, added participants, multiple categories, delete/reset/edit/staff commands and retention tooling are not implemented. Reference inventory entries remain reference-only rather than marking a partial Luna module equivalent.
 
 Reference: https://docs.zynrax.site/configuration/tickets
+
+## Stored-content retention
+
+SQLitev19: stored transcript snapshots expire after30days by default. `retention days confirm` requires current Manage Server,days1-30,true confirmation. Applies this server policy,immediately prunes its expired snapshots. Cleanup also runs startup,before transcript save/access. No continuous cleanup clock yet;idle DB bytes may stay past expiry until next access/restart,though export always prunes first. SQLite deletes rows,not forensic secure erasure;backups/filesystem/exports may contain copies.
+
+`forgettranscript confirm` requires current owner/support/staff access to the current tracked ticket plus exact forced native channel/privacy checks. Deletes only stored snapshot. Does not alter native messages,access,channel or exported copies. Open close/export can capture history again later. Closed erased/expired snapshot returns missing instead of silently recapturing. Minimal ownership/case metadata retained. No full-user-erasure promise.
+
+Privacy checks now bind exact recorded channel ID and overwrite principal type,as well as bitfields. Four new tests;224 full-project tests pass. Live provider privacy and visual transcript flow still unverified. No HTML transcript,guest access,user add/remove,channel-delete,or uncertain-state adoption is implemented by this change.

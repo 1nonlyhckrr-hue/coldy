@@ -1,14 +1,302 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {PermissionFlagsBits as P} from 'discord.js';import {mkdtempSync,rmSync} from 'node:fs';import {tmpdir} from 'node:os';import {join} from 'node:path';
-import {openDatabase} from '../src/database/index.js';import {ModerationCases} from '../src/services/moderation.js';import {CustomRoles,customRoleEffect} from '../src/services/customRoles.js';import command from '../src/commands/customrole/customrole.js';import {translate} from '../src/services/localization.js';
-const ids={user:'100000000000000001',bot:'100000000000000002',role:'100000000000000003',gate:'100000000000000004',owner:'100000000000000005'};
-function setup(){const db=openDatabase(':memory:'),calls=[],customRoles=new CustomRoles(db);const role={id:ids.role,guild:{id:'g'},managed:false,permissions:{has:()=>false}},gate={id:ids.gate,guild:{id:'g'},managed:false};const member={id:ids.user,permissions:{has:()=>true},roles:{highest:{comparePositionTo:()=>5},cache:new Set(),add:async r=>calls.push(['add',r.id]),remove:async r=>calls.push(['remove',r.id])}},bot={id:ids.bot,permissions:{has:()=>true},roles:{highest:{comparePositionTo:()=>5}}};const i={id:'i1',user:{id:ids.user},guildId:'g',appPermissions:{has:()=>true},guild:{id:'g',ownerId:ids.owner,members:{fetch:async()=>member,fetchMe:async()=>bot},roles:{fetch:async id=>id===ids.gate?gate:role}}},c={customRoles,cases:new ModerationCases(db),localization:{locale:()=> 'en',t:(_g,k,p)=>translate('en',k,p)}};customRoles.map('g','member',ids.role);return{db,c,i,role,gate,member,bot,calls};}
-test('custom mappings/gate persist and isolate guilds',()=>{const dir=mkdtempSync(join(tmpdir(),'luna-custom-')),path=join(dir,'db');try{let db=openDatabase(path),r=new CustomRoles(db);r.map('g','member',ids.role);r.setRequired('g',ids.gate);db.close();db=openDatabase(path);r=new CustomRoles(db);assert.equal(r.get('g','member').role_id,ids.role);assert.equal(r.required('g'),ids.gate);assert.equal(r.list('other').length,0);assert.equal(r.unmap('other','member'),0);db.close();}finally{rmSync(dir,{recursive:true,force:true});}});
-test('mapping validation limits, unique roles and gate overlap fail closed',()=>{const db=openDatabase(':memory:');try{const r=new CustomRoles(db);for(const name of ['UPPER','1bad','a b','a'.repeat(25),"a'); DROP TABLE custom_role_mappings; --"])assert.throws(()=>r.map('g',name,ids.role));r.map('g','one',ids.role);assert.throws(()=>r.map('g','two',ids.role));assert.throws(()=>r.setRequired('g',ids.role));r.setRequired('g',ids.gate);assert.throws(()=>r.map('g','gate',ids.gate));for(let n=1;n<20;n++)r.map('g',`m${n}`,String(100000000000000100n+BigInt(n)));r.map('g','one',ids.role);assert.throws(()=>r.map('g','more','100000000000000999'));assert.equal(r.list('g').length,20);}finally{db.close();}});
-test('claim/release are explicit idempotent states and record real effects',async()=>{const s=setup();try{let r=await customRoleEffect(s.i,s.c,{name:'member',claim:true});assert(r.changed);assert.deepEqual(s.calls,[['add',ids.role]]);s.member.roles.cache.add(ids.role);r=await customRoleEffect(s.i,s.c,{name:'member',claim:true});assert.equal(r.changed,false);s.i.id='i2';await customRoleEffect(s.i,s.c,{name:'member',claim:false});assert.equal(s.calls[1][0],'remove');assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n,2);}finally{s.db.close();}});
-test('claim gate requires current role and release remains possible after gate loss',async()=>{const s=setup();try{s.c.customRoles.setRequired('g',ids.gate);await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}),/customRequiredMissing/);s.member.roles.cache.add(ids.gate);await customRoleEffect(s.i,s.c,{name:'member',claim:true});s.member.roles.cache.delete(ids.gate);s.member.roles.cache.add(ids.role);s.i.id='release';await customRoleEffect(s.i,s.c,{name:'member',claim:false});assert.equal(s.calls.length,2);}finally{s.db.close();}});
-test('edited unsafe roles, bot hierarchy and missing permissions cannot grant',async()=>{for(const change of [s=>s.role.permissions.has=p=>p===P.Administrator,s=>s.role.managed=true,s=>s.role.guild.id='other',s=>s.bot.roles.highest.comparePositionTo=()=>0,s=>s.bot.permissions.has=()=>false,s=>s.i.appPermissions.has=()=>false]){const s=setup();try{change(s);await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}));assert.equal(s.calls.length,0);}finally{s.db.close();}}});
-test('duplicate, busy and database failure never repeat or begin external change',async()=>{const s=setup();try{await customRoleEffect(s.i,s.c,{name:'member',claim:true});await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}));assert.equal(s.calls.length,1);s.c.customRoles.active.add(`g:${ids.user}`);await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}),/roleActionBusy/);s.c.customRoles.active.clear();s.i.id='new';s.c.cases.begin=()=>{throw new Error('db');};await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}));assert.equal(s.calls.length,1);}finally{s.db.close();}});
-test('role API rejection/uncertainty and finalization failure are no-retry',async()=>{for(const kind of ['network','rejected','storage']){const s=setup();let n=0;if(kind==='storage')s.c.cases.finish=()=>{throw new Error('db');};s.member.roles.add=async()=>{n++;if(kind!=='storage')throw Object.assign(new Error('SECRET'),kind==='rejected'?{code:50013,status:403}:{});};try{await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}),e=>!e.message.includes('SECRET'));await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}));assert.equal(n,1);assert.equal(s.c.customRoles.active.size,0);}finally{s.db.close();}}});
-test('config race during member fetch refuses old mapping',async()=>{const s=setup();s.i.guild.members.fetch=async()=>{s.c.customRoles.unmap('g','member');return s.member;};try{await assert.rejects(()=>customRoleEffect(s.i,s.c,{name:'member',claim:true}),/customConfigChanged/);assert.equal(s.calls.length,0);}finally{s.db.close();}});
-test('CustomRole slash six paths execute in each locale with private branded replies',async()=>{for(const locale of ['en','hi','hinglish']){const s=setup(),replies=[];s.c.localization={locale:()=>locale,t:(_g,k,p)=>translate(locale,k,p)};s.i.deferReply=async p=>assert.equal(p.flags,64);s.i.editReply=async p=>replies.push(p);let sub='map';s.i.options={getSubcommand:()=>sub,getString:()=> 'member',getRole:()=>sub==='required'?null:s.role};try{for(const action of ['map','required','list','claim','release','unmap']){sub=action;s.i.id=action;if(action==='release')s.member.roles.cache.add(ids.role);await command.execute(s.i,s.c);}assert.equal(replies.length,6);for(const r of replies){assert.equal(r.embeds.length,1);assert.deepEqual(r.allowedMentions.parse,[]);}}finally{s.db.close();}}});
-test('custom administration uses fresh Manage Roles and hierarchy checks',async()=>{const s=setup();s.i.deferReply=async()=>{};s.i.editReply=async()=>{};s.i.options={getSubcommand:()=> 'map',getString:()=> 'new',getRole:()=>s.role};try{s.member.permissions.has=()=>false;await assert.rejects(()=>command.execute(s.i,s.c),/roleActorPermission/);s.member.permissions.has=()=>true;s.member.roles.highest.comparePositionTo=()=>0;await assert.rejects(()=>command.execute(s.i,s.c),/roleActorHierarchy/);assert.equal(s.c.customRoles.list('g').length,1);}finally{s.db.close();}});
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { PermissionFlagsBits as P } from 'discord.js';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { openDatabase } from '../src/database/index.js';
+import { ModerationCases } from '../src/services/moderation.js';
+import { CustomRoles, customRoleEffect } from '../src/services/customRoles.js';
+import command from '../src/commands/customrole/customrole.js';
+import { translate } from '../src/services/localization.js';
+const ids = {
+  user: '100000000000000001',
+  bot: '100000000000000002',
+  role: '100000000000000003',
+  gate: '100000000000000004',
+  owner: '100000000000000005',
+};
+function setup() {
+  const db = openDatabase(':memory:'),
+    calls = [],
+    customRoles = new CustomRoles(db);
+  const role = {
+      id: ids.role,
+      guild: { id: 'g' },
+      managed: false,
+      permissions: { has: () => false },
+    },
+    gate = { id: ids.gate, guild: { id: 'g' }, managed: false };
+  const member = {
+      id: ids.user,
+      permissions: { has: () => true },
+      roles: {
+        highest: { comparePositionTo: () => 5 },
+        cache: new Set(),
+        add: async (r) => calls.push(['add', r.id]),
+        remove: async (r) => calls.push(['remove', r.id]),
+      },
+    },
+    bot = {
+      id: ids.bot,
+      permissions: { has: () => true },
+      roles: { highest: { comparePositionTo: () => 5 } },
+    };
+  const i = {
+      id: 'i1',
+      user: { id: ids.user },
+      guildId: 'g',
+      appPermissions: { has: () => true },
+      guild: {
+        id: 'g',
+        ownerId: ids.owner,
+        members: { fetch: async () => member, fetchMe: async () => bot },
+        roles: { fetch: async (id) => (id === ids.gate ? gate : role) },
+      },
+    },
+    c = {
+      customRoles,
+      cases: new ModerationCases(db),
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+    };
+  customRoles.map('g', 'member', ids.role);
+  return { db, c, i, role, gate, member, bot, calls };
+}
+test('custom mappings/gate persist and isolate guilds', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-custom-')),
+    path = join(dir, 'db');
+  try {
+    let db = openDatabase(path),
+      r = new CustomRoles(db);
+    r.map('g', 'member', ids.role);
+    r.setRequired('g', ids.gate);
+    db.close();
+    db = openDatabase(path);
+    r = new CustomRoles(db);
+    assert.equal(r.get('g', 'member').role_id, ids.role);
+    assert.equal(r.required('g'), ids.gate);
+    assert.equal(r.list('other').length, 0);
+    assert.equal(r.unmap('other', 'member'), 0);
+    db.close();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+test('mapping validation limits, unique roles and gate overlap fail closed', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new CustomRoles(db);
+    for (const name of [
+      'UPPER',
+      '1bad',
+      'a b',
+      'a'.repeat(25),
+      "a'); DROP TABLE custom_role_mappings; --",
+    ])
+      assert.throws(() => r.map('g', name, ids.role));
+    r.map('g', 'one', ids.role);
+    assert.throws(() => r.map('g', 'two', ids.role));
+    assert.throws(() => r.setRequired('g', ids.role));
+    r.setRequired('g', ids.gate);
+    assert.throws(() => r.map('g', 'gate', ids.gate));
+    for (let n = 1; n < 20; n++) r.map('g', `m${n}`, String(100000000000000100n + BigInt(n)));
+    r.map('g', 'one', ids.role);
+    assert.throws(() => r.map('g', 'more', '100000000000000999'));
+    assert.equal(r.list('g').length, 20);
+  } finally {
+    db.close();
+  }
+});
+test('claim/release are explicit idempotent states and record real effects', async () => {
+  const s = setup();
+  try {
+    let r = await customRoleEffect(s.i, s.c, { name: 'member', claim: true });
+    assert(r.changed);
+    assert.deepEqual(s.calls, [['add', ids.role]]);
+    s.member.roles.cache.add(ids.role);
+    r = await customRoleEffect(s.i, s.c, { name: 'member', claim: true });
+    assert.equal(r.changed, false);
+    s.i.id = 'i2';
+    await customRoleEffect(s.i, s.c, { name: 'member', claim: false });
+    assert.equal(s.calls[1][0], 'remove');
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 2);
+  } finally {
+    s.db.close();
+  }
+});
+test('claim gate requires current role and release remains possible after gate loss', async () => {
+  const s = setup();
+  try {
+    s.c.customRoles.setRequired('g', ids.gate);
+    await assert.rejects(
+      () => customRoleEffect(s.i, s.c, { name: 'member', claim: true }),
+      /customRequiredMissing/,
+    );
+    s.member.roles.cache.add(ids.gate);
+    await customRoleEffect(s.i, s.c, { name: 'member', claim: true });
+    s.member.roles.cache.delete(ids.gate);
+    s.member.roles.cache.add(ids.role);
+    s.i.id = 'release';
+    await customRoleEffect(s.i, s.c, { name: 'member', claim: false });
+    assert.equal(s.calls.length, 2);
+  } finally {
+    s.db.close();
+  }
+});
+test('edited unsafe roles, bot hierarchy and missing permissions cannot grant', async () => {
+  for (const change of [
+    (s) => (s.role.permissions.has = (p) => p === P.Administrator),
+    (s) => (s.role.managed = true),
+    (s) => (s.role.guild.id = 'other'),
+    (s) => (s.bot.roles.highest.comparePositionTo = () => 0),
+    (s) => (s.bot.permissions.has = () => false),
+    (s) => (s.i.appPermissions.has = () => false),
+  ]) {
+    const s = setup();
+    try {
+      change(s);
+      await assert.rejects(() => customRoleEffect(s.i, s.c, { name: 'member', claim: true }));
+      assert.equal(s.calls.length, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('duplicate, busy and database failure never repeat or begin external change', async () => {
+  const s = setup();
+  try {
+    await customRoleEffect(s.i, s.c, { name: 'member', claim: true });
+    await assert.rejects(() => customRoleEffect(s.i, s.c, { name: 'member', claim: true }));
+    assert.equal(s.calls.length, 1);
+    s.c.customRoles.active.add(`g:${ids.user}`);
+    await assert.rejects(
+      () => customRoleEffect(s.i, s.c, { name: 'member', claim: true }),
+      /roleActionBusy/,
+    );
+    s.c.customRoles.active.clear();
+    s.i.id = 'new';
+    s.c.cases.begin = () => {
+      throw new Error('db');
+    };
+    await assert.rejects(() => customRoleEffect(s.i, s.c, { name: 'member', claim: true }));
+    assert.equal(s.calls.length, 1);
+  } finally {
+    s.db.close();
+  }
+});
+test('role API rejection/uncertainty and finalization failure are no-retry', async () => {
+  for (const kind of ['network', 'rejected', 'storage']) {
+    const s = setup();
+    let n = 0;
+    if (kind === 'storage')
+      s.c.cases.finish = () => {
+        throw new Error('db');
+      };
+    s.member.roles.add = async () => {
+      n++;
+      if (kind !== 'storage')
+        throw Object.assign(
+          new Error('SECRET'),
+          kind === 'rejected' ? { code: 50013, status: 403 } : {},
+        );
+    };
+    try {
+      await assert.rejects(
+        () => customRoleEffect(s.i, s.c, { name: 'member', claim: true }),
+        (e) => !e.message.includes('SECRET'),
+      );
+      await assert.rejects(() => customRoleEffect(s.i, s.c, { name: 'member', claim: true }));
+      assert.equal(n, 1);
+      assert.equal(s.c.customRoles.active.size, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('config race during member fetch refuses old mapping', async () => {
+  const s = setup();
+  s.i.guild.members.fetch = async () => {
+    s.c.customRoles.unmap('g', 'member');
+    return s.member;
+  };
+  try {
+    await assert.rejects(
+      () => customRoleEffect(s.i, s.c, { name: 'member', claim: true }),
+      /customConfigChanged/,
+    );
+    assert.equal(s.calls.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('CustomRole slash six paths execute in each locale with private branded replies', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup(),
+      replies = [];
+    s.c.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+    s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+    s.i.editReply = async (p) => replies.push(p);
+    let sub = 'map';
+    s.i.options = {
+      getSubcommand: () => sub,
+      getString: () => 'member',
+      getRole: () => (sub === 'required' ? null : s.role),
+    };
+    try {
+      for (const action of ['map', 'required', 'list', 'claim', 'release', 'unmap']) {
+        sub = action;
+        s.i.id = action;
+        if (action === 'release') s.member.roles.cache.add(ids.role);
+        await command.execute(s.i, s.c);
+      }
+      assert.equal(replies.length, 6);
+      for (const r of replies) {
+        assert.equal(r.embeds.length, 1);
+        assert.deepEqual(r.allowedMentions.parse, []);
+      }
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('custom administration uses fresh Manage Roles and hierarchy checks', async () => {
+  const s = setup();
+  s.i.deferReply = async () => {};
+  s.i.editReply = async () => {};
+  s.i.options = { getSubcommand: () => 'map', getString: () => 'new', getRole: () => s.role };
+  try {
+    s.member.permissions.has = () => false;
+    await assert.rejects(() => command.execute(s.i, s.c), /roleActorPermission/);
+    s.member.permissions.has = () => true;
+    s.member.roles.highest.comparePositionTo = () => 0;
+    await assert.rejects(() => command.execute(s.i, s.c), /roleActorHierarchy/);
+    assert.equal(s.c.customRoles.list('g').length, 1);
+  } finally {
+    s.db.close();
+  }
+});
+test('custom role grant fetches authoritative mapping/gate IDs and refuses mismatched native identity', async () => {
+  const s = setup();
+  try {
+    s.c.customRoles.setRequired('g', ids.gate);
+    s.member.roles.cache.add(ids.gate);
+    const seen = [],
+      fetch = s.i.guild.roles.fetch;
+    s.i.guild.roles.fetch = async (id, options) => {
+      assert.equal(options.force, true);
+      seen.push(id);
+      return fetch(id);
+    };
+    await customRoleEffect(s.i, s.c, { name: 'member', claim: true });
+    assert.deepEqual(seen, [ids.role, ids.gate]);
+    s.i.id = 'bad';
+    s.i.guild.roles.fetch = async () => ({ ...s.role, id: 'other' });
+    await assert.rejects(
+      () => customRoleEffect(s.i, s.c, { name: 'member', claim: true }),
+      /roleInvalid/,
+    );
+    assert.equal(s.calls.length, 1);
+  } finally {
+    s.db.close();
+  }
+});

@@ -1,3 +1,33 @@
 import { lunaPayload } from '../../utils/embeds.js';
 import { SlashCommandBuilder, InteractionContextType, MessageFlags } from 'discord.js';
-export default {category:'utility',data:new SlashCommandBuilder().setName('stats').setDescription('Show build command counts and process memory usage.').setContexts(InteractionContextType.Guild),async execute(i,c){let paths=0;for(const command of c.commands.values()){const options=command.data.toJSON().options??[];const subs=options.filter(o=>o.type===1||o.type===2);paths+=subs.length?subs.reduce((n,o)=>n+(o.type===2?o.options.length:1),0):1;}await i.reply(lunaPayload({content:c.localization.t(i.guildId,'statsValue',{version:c.version,commands:c.commands.size,paths,memory:Math.round(process.memoryUsage().rss/1048576)}),flags:MessageFlags.Ephemeral},{locale:c.localization.locale(i.guildId)}));}};
+export default {
+  category: 'utility',
+  data: new SlashCommandBuilder()
+    .setName('stats')
+    .setDescription('Show build command counts and process memory usage.')
+    .setContexts(InteractionContextType.Guild),
+  async execute(i, c) {
+    let paths = 0;
+    for (const command of c.commands.values()) {
+      const options = command.data.toJSON().options ?? [];
+      const subs = options.filter((o) => o.type === 1 || o.type === 2);
+      paths += subs.length
+        ? subs.reduce((n, o) => n + (o.type === 2 ? o.options.length : 1), 0)
+        : 1;
+    }
+    await i.reply(
+      lunaPayload(
+        {
+          content: c.localization.t(i.guildId, 'statsValue', {
+            version: c.version,
+            commands: c.commands.size,
+            paths,
+            memory: Math.round(process.memoryUsage().rss / 1048576),
+          }),
+          flags: MessageFlags.Ephemeral,
+        },
+        { locale: c.localization.locale(i.guildId) },
+      ),
+    );
+  },
+};

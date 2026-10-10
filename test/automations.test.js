@@ -1,14 +1,196 @@
-import {test} from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {openDatabase,GuildSettings} from '../src/database/index.js';
-import {GuildConfig} from '../src/services/guildConfig.js';
-import {MessageSchedules,AutomationRunner,parseScheduledTime} from '../src/services/automations.js';
+import { openDatabase, GuildSettings } from '../src/database/index.js';
+import { GuildConfig } from '../src/services/guildConfig.js';
+import {
+  MessageSchedules,
+  AutomationRunner,
+  parseScheduledTime,
+} from '../src/services/automations.js';
 import command from '../src/commands/automations/automation.js';
-const channelId='100000000000000001';
-function setup(){const db=openDatabase(':memory:');let now=Date.now();const store=new MessageSchedules(db,()=>now),sent=[];const channel={guildId:'g',type:0,permissionsFor:()=>({has:()=>true}),send:async p=>sent.push(p)},guild={id:'g',members:{fetch:async()=>({permissions:{has:()=>true}}),fetchMe:async()=>({})},channels:{fetch:async()=>channel}},c={messageSchedules:store,guildConfig:new GuildConfig(new GuildSettings(db)),logger:{warn:()=>{}}};const runner=new AutomationRunner(c,{guilds:{fetch:async()=>guild}});const input={guildId:'g',channelId,body:'Hi @everyone',dueAt:now+60000,interactionId:'i'};return {db,store,c,guild,channel,runner,sent,input,advance:ms=>now+=ms,now:()=>now};}
-test('explicit timezone parser refuses naive/invalid calendar times',()=>{assert.equal(parseScheduledTime('2026-10-12T09:00:00+05:30'),Date.parse('2026-10-12T03:30:00Z'));for(const v of ['2026-10-12T09:00:00','2026-02-30T09:00:00Z','bad','2026-10-12T25:00:00Z'])assert.throws(()=>parseScheduledTime(v));});
-test('schedule bounds, duplicate source, guild isolation and cancellation',()=>{const x=setup();try{const id=x.store.create(x.input);assert.equal(x.store.get(id,'other'),undefined);assert.throws(()=>x.store.create(x.input));assert.throws(()=>x.store.create({...x.input,interactionId:'2',dueAt:x.now()}));assert.throws(()=>x.store.cancel(id,'other'));x.store.cancel(id,'g');assert.equal(x.store.get(id,'g').status,'cancelled');assert.throws(()=>x.store.cancel(id,'g'));}finally{x.db.close();}});
-test('claim-before-send prevents duplicate delivery after success or uncertain failure',async()=>{const x=setup();try{const id=x.store.create(x.input);x.advance(60001);await Promise.all([x.runner.tick(),x.runner.tick()]);assert.equal(x.sent.length,1);assert.equal(x.store.get(id,'g').status,'done');assert.deepEqual(x.sent[0].allowedMentions.parse,[]);x.store.create({...x.input,interactionId:'2',dueAt:x.now()+60000});x.advance(60001);x.channel.send=async()=>{throw new Error('network');};await x.runner.tick();assert.equal(x.store.get(2,'g').status,'uncertain');await x.runner.tick();assert.equal(x.store.get(2,'g').status,'uncertain');}finally{x.db.close();}});
-test('missed repeating sends skip backlog and maintain interval phase',async()=>{const x=setup();try{x.store.create({...x.input,repeatMs:600000});x.advance(4*600000);await x.runner.tick();assert.equal(x.sent.length,1);const r=x.store.get(1,'g');assert(r.due_at>x.now());assert.equal((r.due_at-x.input.dueAt)%600000,0);await x.runner.tick();assert.equal(x.sent.length,1);}finally{x.db.close();}});
-test('restart turns in-flight jobs uncertain and timer starts only once',()=>{const x=setup();try{x.store.create(x.input);x.advance(60001);assert(x.store.claim());x.store.recover();assert.equal(x.store.get(1,'g').status,'uncertain');assert.equal(x.store.claim(),null);x.runner.start();const timer=x.runner.timer;x.runner.start();assert.equal(x.runner.timer,timer);x.runner.stop();}finally{x.db.close();}});
-test('all four schedule commands execute with ISO time and locale',async()=>{const x=setup();try{x.c.guildConfig.setLanguage('g','hi');let sub='create';const replies=[],i={id:'i',guild:x.guild,guildId:'g',user:{id:'actor'},deferReply:async()=>{},editReply:async p=>replies.push(p),options:{getSubcommand:()=>sub,getChannel:()=>({id:channelId}),getString:name=>name==='at'?new Date(x.now()+120000).toISOString().replace(/\.\d{3}Z$/,'Z'):'Hi',getInteger:name=>name==='id'?1:null}};for(const s of ['create','list','config','cancel']){sub=s;await command.execute(i,x.c);}assert.equal(replies.length,4);assert.match(replies[0].embeds[0].data.description,/शेड्यूल/);}finally{x.db.close();}});
+const channelId = '100000000000000001';
+function setup() {
+  const db = openDatabase(':memory:');
+  let now = Date.now();
+  const store = new MessageSchedules(db, () => now),
+    sent = [];
+  const channel = {
+      guildId: 'g',
+      type: 0,
+      permissionsFor: () => ({ has: () => true }),
+      send: async (p) => sent.push(p),
+    },
+    guild = {
+      id: 'g',
+      members: {
+        fetch: async () => ({ permissions: { has: () => true } }),
+        fetchMe: async () => ({}),
+      },
+      channels: { fetch: async () => channel },
+    },
+    c = {
+      messageSchedules: store,
+      guildConfig: new GuildConfig(new GuildSettings(db)),
+      logger: { warn: () => {} },
+    };
+  const runner = new AutomationRunner(c, { guilds: { fetch: async () => guild } });
+  const input = {
+    guildId: 'g',
+    channelId,
+    body: 'Hi @everyone',
+    dueAt: now + 60000,
+    interactionId: 'i',
+  };
+  return {
+    db,
+    store,
+    c,
+    guild,
+    channel,
+    runner,
+    sent,
+    input,
+    advance: (ms) => (now += ms),
+    now: () => now,
+  };
+}
+test('explicit timezone parser refuses naive/invalid calendar times', () => {
+  assert.equal(parseScheduledTime('2026-10-12T09:00:00+05:30'), Date.parse('2026-10-12T03:30:00Z'));
+  for (const v of ['2026-10-12T09:00:00', '2026-02-30T09:00:00Z', 'bad', '2026-10-12T25:00:00Z'])
+    assert.throws(() => parseScheduledTime(v));
+});
+test('schedule bounds, duplicate source, guild isolation and cancellation', () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    assert.equal(x.store.get(id, 'other'), undefined);
+    assert.throws(() => x.store.create(x.input));
+    assert.throws(() => x.store.create({ ...x.input, interactionId: '2', dueAt: x.now() }));
+    assert.throws(() => x.store.cancel(id, 'other'));
+    x.store.cancel(id, 'g');
+    assert.equal(x.store.get(id, 'g').status, 'cancelled');
+    assert.throws(() => x.store.cancel(id, 'g'));
+  } finally {
+    x.db.close();
+  }
+});
+test('claim-before-send prevents duplicate delivery after success or uncertain failure', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    x.advance(60001);
+    await Promise.all([x.runner.tick(), x.runner.tick()]);
+    assert.equal(x.sent.length, 1);
+    assert.equal(x.store.get(id, 'g').status, 'done');
+    assert.deepEqual(x.sent[0].allowedMentions.parse, []);
+    x.store.create({ ...x.input, interactionId: '2', dueAt: x.now() + 60000 });
+    x.advance(60001);
+    x.channel.send = async () => {
+      throw new Error('network');
+    };
+    await x.runner.tick();
+    assert.equal(x.store.get(2, 'g').status, 'uncertain');
+    await x.runner.tick();
+    assert.equal(x.store.get(2, 'g').status, 'uncertain');
+  } finally {
+    x.db.close();
+  }
+});
+test('missed repeating sends skip backlog and maintain interval phase', async () => {
+  const x = setup();
+  try {
+    x.store.create({ ...x.input, repeatMs: 600000 });
+    x.advance(4 * 600000);
+    await x.runner.tick();
+    assert.equal(x.sent.length, 1);
+    const r = x.store.get(1, 'g');
+    assert(r.due_at > x.now());
+    assert.equal((r.due_at - x.input.dueAt) % 600000, 0);
+    await x.runner.tick();
+    assert.equal(x.sent.length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+test('restart turns in-flight jobs uncertain and timer starts only once', () => {
+  const x = setup();
+  try {
+    x.store.create(x.input);
+    x.advance(60001);
+    assert(x.store.claim());
+    x.store.recover();
+    assert.equal(x.store.get(1, 'g').status, 'uncertain');
+    assert.equal(x.store.claim(), null);
+    x.runner.start();
+    const timer = x.runner.timer;
+    x.runner.start();
+    assert.equal(x.runner.timer, timer);
+    x.runner.stop();
+  } finally {
+    x.db.close();
+  }
+});
+test('all four schedule commands execute with ISO time and locale', async () => {
+  const x = setup();
+  try {
+    x.c.guildConfig.setLanguage('g', 'hi');
+    let sub = 'create';
+    const replies = [],
+      i = {
+        id: 'i',
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'actor' },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => sub,
+          getChannel: () => ({ id: channelId }),
+          getString: (name) =>
+            name === 'at'
+              ? new Date(x.now() + 120000).toISOString().replace(/\.\d{3}Z$/, 'Z')
+              : 'Hi',
+          getInteger: (name) => (name === 'id' ? 1 : null),
+        },
+      };
+    for (const s of ['create', 'list', 'config', 'cancel']) {
+      sub = s;
+      await command.execute(i, x.c);
+    }
+    assert.equal(replies.length, 4);
+    assert.match(replies[0].embeds[0].data.description, /शेड्यूल/);
+  } finally {
+    x.db.close();
+  }
+});
+test('named zone create path persists one-time message and returns exact UTC in every locale', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      const local = new Date(x.now() + 120000).toISOString().slice(0, 19),
+        replies = [],
+        i = {
+          id: 'zone',
+          guild: x.guild,
+          guildId: 'g',
+          user: { id: 'actor' },
+          deferReply: async () => {},
+          editReply: async (p) => replies.push(p),
+          options: {
+            getSubcommand: () => 'createzone',
+            getChannel: () => ({ id: channelId }),
+            getString: (n) => (n === 'local' ? local : n === 'timezone' ? 'UTC' : 'text'),
+          },
+        };
+      await command.execute(i, x.c);
+      const row = x.store.get(1, 'g');
+      assert.equal(row.repeat_ms, null);
+      assert.equal(row.due_at, Date.parse(local + 'Z'));
+      assert(replies[0].embeds[0].data.description.includes(new Date(row.due_at).toISOString()));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+    } finally {
+      x.db.close();
+    }
+  }
+});

@@ -2259,5 +2259,13 @@
     "syntax": "?prefixset (symbol)",
     "source": "https://docs.zynrax.site/",
     "evidenceType": "Home-page explicit inline syntax."
+  },
+  {
+    "category": "antinuke",
+    "name": "antinuke",
+    "syntax": ",antinuke",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "imageSource": "https://mintcdn.com/zynraxdevelopment-9bbc81fc/wDzxParB8NBY4q1h/images/antinuke.png?fit=max&auto=format&n=wDzxParB8NBY4q1h&q=85&s=faa093bb6950b4d511bd27a8c9f638a7",
+    "evidenceType": "Official screenshot visually inspected Oct11,2026;standalone command,not module/parameter expansion."
   }
 ]

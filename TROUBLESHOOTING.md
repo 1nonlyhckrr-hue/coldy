@@ -9,7 +9,7 @@
 | SQLite readonly/cannot open | Confirm mount path, parent-directory write access and one writer |
 | Native module build failure | Use a supported LTS, reinstall with npm ci on target OS; review native build prerequisites |
 | Data disappears on redeploy | An ephemeral disk was used; attach persistent storage and restore a private backup |
-| Music unavailable | Music is not implemented in Phase 2; no Lavalink node is connected |
+| Music unavailable | Queue/adapter core is prepared but unactivated; no Music slash paths, approved live catalog or Lavalink node is connected |
 | Expected Zynrax command absent | Reference inventory is not installed code; see COMMAND_INDEX |
 | Internal reference error | Use the short reference ID to find sanitized logs; do not expose raw credentials or message bodies |
 

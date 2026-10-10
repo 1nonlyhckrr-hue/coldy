@@ -61,3 +61,83 @@ Original public checkpoint passed Node 22/24 GitHub CI. This newer consolidated 
 ## Unactivated Music core
 
 26 commands/110 paths unchanged,188 tests pass. Queue and direct-audio Lavalink adapter prepared but not registered/wired. No actual source catalog/free node/live playback verified. See MUSIC_CORE.md. Public older102-test checkpoint unchanged.
+
+## Consolidated public checkpoint
+
+26 commands/110 paths/188 tests published and exact190-source-file byte check passed. Final5a06a3f Node22/24 CI green https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38081947689.13 commits, no history rewrite, no archive/publisher left. No bot release/deploy. Local later doc cleanup is not yet published.
+
+## Metadata log expansion
+
+26 top-level/111 paths/194 tests pass. Six opt-in metadata events via one configuration path, bounded/replay-safe/no content logs. SQLitev15. See EVENT_LOGS.md. Local expansion not yet public, no live test/deploy.
+
+## Multi-button role panels
+
+26 top-level/112 paths/200 local tests pass. SQLitev16 mapping migration,2-5 distinct independent role buttons,100 live panel cap,current permission/race checks and pending recovery. See ROLE_PANELS.md. Not yet published or live.
+
+## Privacy and tracked-state repair
+
+26 top-level/116 paths/209 tests pass. SQLitev17. Leaderboard personal optout/optin and confirmed admin count erasure. VoiceMaster owner-only recorded-channel reconciliation does not edit native channels. See LEADERBOARD.md and VOICEMASTER_REPAIR.md. Local only, no release.
+
+## Confirmed cleanup
+
+26 top-level/118 paths/216 local tests. SQLitev18. Bounded recent10message inspection and caller-owned2minute exact-ID confirmation. No content retention,unknown send never replayed. See PURGE.md for race and live gates. Local unpublished.
+
+## Named-zone single send
+
+26 top-level/119 paths/220 local tests. createzone rejects ambiguous/nonexistent clock times,returns exact UTC,one-time only. No exact runner uptime/delivery claim. See AUTOMATIONS.md. Local unpublished.
+
+## Stored ticket-content privacy
+
+26 top-level/121 paths/224 local tests,SQLitev19. Default30day stored transcript maximum age,confirmed1-30day guild policy,current ticket-access snapshot deletion. Native messages and exported copies unchanged. See TICKETS.md for idle cleanup/backup/re-capture caveats. Local only.
+
+## Public metadata utilities
+
+29 top-level/124 paths/228 tests. roleinfo/banner/boostcount force native fresh records,fail on unknown/foreign identities,no stale fallback. See UTILITY_INFO.md. Local unpublished.
+
+## Native poll publication
+
+30 top-level/125 paths/234 tests,SQLitev20. Actual Discord poll payload,current staff/destination rights,2-10answers,persist-first/no unknown retry,10attempts/hour. Native provider controls votes/expiry. See POLLS.md. Local only,not visual/live validated.
+
+## Opt-in AutoMod timeout
+
+30 top-level/126 paths/238 local tests. Explicit confirmed bounded timeout,current protections/config recheck,no shortening of existing longer restriction. See AUTOMOD.md. Not reviewed false-positive/live behavior,no release.
+
+## Explicit away status
+
+31 top-level/129 paths/243tests,SQLitev21. User own opted-in exact-channel reason notices,no nickname/return announcement. At most7day storage,eligible future-message clear. See AFK.md. Local unpublished,live privacy gate not passed.
+
+## Source freshness and current lists
+
+32 top-level/131 paths/248 local tests. Forced native role/channel authority hardening,mapping/gate identity checks,and reference role/emoji list pagination. README written count fixed. No source publication yet,no release.
+
+## Dual inventories
+
+32 top-level/131 actual paths/250tests. Separate installed Luna JSON/CSV generated and regression checked,319reference rows still separate. No claim of live acceptance or full541help parity.
+
+## Formatting and current security guidance
+
+32/131/250 unchanged. Readable source formatted with pinned Prettier3.9.10 and CI style check. Final local formatter+syntax+tests green,audit all dependencies0. SECURITY.md updated from obsolete foundation-only claims to real opt-in storage/intents/release limits. This is not semantic lint or live validation.
+
+## Static safety lint and current installation
+
+32/131/250 unchanged. Supported pinned ESLint10.12.0,minimumNode22.13+,targeted no-undefined/duplicates/unreachable/dynamic-code checks. Final lint/formatter/syntax/tests/auditall green. Installation updated from stale foundation-only count/intents. Later local source not yet CI-public/live validated.
+
+## Confirmed empty-channel access
+
+32top-level/133paths/253tests SQLitev22. Owner lock/unlock audience choice requires empty tracked room and broad-share confirmation;current native access/private shape and postwrite checks. No move/auto cleanup. Local not released.
+
+## Voice intent release-blocker fixed in code
+
+32/133/256 tests. Found omitted GuildVoiceStates at boot;added explicit defaultfalse ENABLE_VOICE_EVENTS plus fail-closed Voice/VoiceMaster effects. Existing cache-based empty checks still need real live startup/reconnect/concurrency tests. No release or live deletion happened.
+
+## Conservative reconnect readiness
+
+32/133/258. Native ready/client/guild checks plus shard disconnect/reconnect safety-stop until new process. No resume-cache assumptions. Forced voice channel fetch and pre-effect readiness recheck. Real gateway event/cache verification outstanding.
+
+## Uncached occupant safety
+
+32/133/260. Raw native voice-state count replaces filtered channel.members count for empty/capacity decisions. Verified installed native implementation can omit uncached members. Tests prove refusal with uncached connected state. No live release.
+
+## Full schema integrity
+
+32/133/261. All22migrations once in order,SQLite integrity and FK checks pass,orphan mapping insertion fails. Normal source publication awaiting secret-safe supported push method;no temporary publisher reuse. No release.

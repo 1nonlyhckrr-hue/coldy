@@ -11,3 +11,9 @@ Today means current UTC date; week means today plus previous six UTC dates, not 
 SQLite v11 config/daily buckets/replay guards. Atomic count/seen writes; storage failures contained and no message content logged. Shared localized EN/HI/Hinglish embeds, metadata English. No invite tracking, voice durations, rewards, manual count inflation, destructive whole-guild reset or retrospective verification in this batch.
 
 Ten new tests,150 project tests pass: opt-in/replay/guild isolation, excluded bots/webhooks/stale/ancestors, calendar ranges/ties/pages, cleanup/self-delete, contribution cap, transaction failure containment, all seven paths/locales, current authorization and restart durability. No live Discord/visual checks. Reference rows remain separate.
+
+## Personal privacy and admin count deletion
+
+`optout` atomically erases only your retained counts in this server and stores your server+user ID opt-out preference. Future messages are ignored until `optin`; server enable/disable changes do not override personal preference. `optin` allows future counts only if server tracking is enabled; no history restoration or backfill. `resetmine` remains count-only reset, not opt-out. Minimal preference identity stays saved while opted out. This is not full identity erasure, and does not change unrelated bot modules.
+
+`eraseuser user confirm` requires current Manage Server plus true confirmation; clears this user's daily rows here, not their privacy preference or other-server data. It does not stop future counts unless the user opted out. Existing message replay keys remain until normal expiry and hold message IDs+times only. SQLitev17 adds personal preference table. Four new tests, latest209 project tests pass including subsequent VoiceMaster repair. No live gateway verification.

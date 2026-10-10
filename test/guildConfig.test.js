@@ -2,8 +2,44 @@ import { ChannelType } from 'discord.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { makeGuild } from './helpers/guild.js';
-import { openDatabase,GuildSettings } from '../src/database/index.js';
-import { GuildConfig,renderTemplate,validateOutputChannel } from '../src/services/guildConfig.js';
-test('validated nested settings preserve sections and reject invalid input',()=>{const db=openDatabase(':memory:');try{const c=new GuildConfig(new GuildSettings(db));assert.equal(c.get('g').logging.enabled,false);c.patch('g','logging',{channelId:'100000000000000001',enabled:true});c.patch('g','welcome',{message:'Hi {user}'});assert.equal(c.get('g').logging.enabled,true);assert.equal(c.get('other').welcome.enabled,false);assert.throws(()=>c.patch('g','welcome',{message:'x'.repeat(1801)}));assert.throws(()=>c.patch('g','logging',{untrusted:true}));assert.throws(()=>c.patch('g','unknown',{}));assert.equal(c.reset('g','logging').enabled,false);assert.equal(c.get('g').logging.channelId,undefined);}finally{db.close();}});
-test('templates replace known placeholders without code execution and stay bounded',()=>{const m={id:'1',user:{username:'safe'},guild:{name:'Server',memberCount:3}};assert.equal(renderTemplate('Hi {user} {username} {server} {count} {unknown}',m),'Hi <@1> safe Server 3 {unknown}');assert.equal(renderTemplate('x'.repeat(2000),m).length,1900);});
-test('destination check refuses foreign, voice, missing and denied channels',async()=>{for(const mutate of [s=>s.channel.guildId='other',s=>s.channel.type=ChannelType.GuildVoice,s=>s.channel.permissionsFor=()=>null,s=>s.guild.channels.fetch=async()=>null]){const s=makeGuild();mutate(s);await assert.rejects(()=>validateOutputChannel(s.guild,'1'));}assert((await validateOutputChannel(makeGuild().guild,'1')));});
+import { openDatabase, GuildSettings } from '../src/database/index.js';
+import { GuildConfig, renderTemplate, validateOutputChannel } from '../src/services/guildConfig.js';
+test('validated nested settings preserve sections and reject invalid input', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const c = new GuildConfig(new GuildSettings(db));
+    assert.equal(c.get('g').logging.enabled, false);
+    c.patch('g', 'logging', { channelId: '100000000000000001', enabled: true });
+    c.patch('g', 'welcome', { message: 'Hi {user}' });
+    assert.equal(c.get('g').logging.enabled, true);
+    assert.equal(c.get('other').welcome.enabled, false);
+    assert.throws(() => c.patch('g', 'welcome', { message: 'x'.repeat(1801) }));
+    assert.throws(() => c.patch('g', 'logging', { untrusted: true }));
+    assert.throws(() => c.patch('g', 'unknown', {}));
+    assert.equal(c.reset('g', 'logging').enabled, false);
+    assert.equal(c.get('g').logging.channelId, undefined);
+  } finally {
+    db.close();
+  }
+});
+test('templates replace known placeholders without code execution and stay bounded', () => {
+  const m = { id: '1', user: { username: 'safe' }, guild: { name: 'Server', memberCount: 3 } };
+  assert.equal(
+    renderTemplate('Hi {user} {username} {server} {count} {unknown}', m),
+    'Hi <@1> safe Server 3 {unknown}',
+  );
+  assert.equal(renderTemplate('x'.repeat(2000), m).length, 1900);
+});
+test('destination check refuses foreign, voice, missing and denied channels', async () => {
+  for (const mutate of [
+    (s) => (s.channel.guildId = 'other'),
+    (s) => (s.channel.type = ChannelType.GuildVoice),
+    (s) => (s.channel.permissionsFor = () => null),
+    (s) => (s.guild.channels.fetch = async () => null),
+  ]) {
+    const s = makeGuild();
+    mutate(s);
+    await assert.rejects(() => validateOutputChannel(s.guild, '1'));
+  }
+  assert(await validateOutputChannel(makeGuild().guild, '1'));
+});

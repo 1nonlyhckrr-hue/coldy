@@ -9,3 +9,9 @@ Cases persist before effects. Duplicate interaction IDs block repeats. One Disco
 This is server mute/deafen, not client self-mute/self-deafen; removing a server mute does not override a member's own microphone controls. No voice content recording. No bulk actions, channel privacy overwrite changes, join-role system, persistent player connection or VoiceMaster in this batch.
 
 Eleven new tests, 130 total project tests pass: all six exact method effects, permission/hierarchy denial, channel validity/capacity, races, duplicates/database gates, uncertain/definite failure, finalization failure, input/schema bounds all six paths in EN/HI/Hinglish, and second-fetch target hierarchy/destination-access rechecks. First negative hierarchy test found a mock comparator closed over old position rather than current position; fixture corrected and full suite rerun. No live Discord voice test or pixel verification. Reference syntax differs and rows are not promoted as exact equivalents.
+
+## Runtime gate
+
+ENABLE_VOICE_EVENTS=true activates GuildVoiceStates used by current target.voice state and channel occupancy. Effects refuse when disabled. Real gateway state freshness/live hierarchy testing still needed.256project tests pass.
+
+Voice effects now require initial ready,available guild/client and a shard not marked unsafe after disconnect/reconnect. Resume does not auto-clear unsafe state. Native source/destination fetch forced. Fresh process restart after operator inspection required;actual gateway integrity remains unverified.

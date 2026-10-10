@@ -58,9 +58,16 @@ for cat,primary,alias in alias_pairs:
 # The documentation's default prefix change syntax is explicit on the home page.
 add('?prefixset (symbol)','general','Change the server command prefix.','https://docs.zynrax.site/','Home-page explicit inline syntax.')
 items=sorted(rows.values(),key=lambda r:(r['category'],r['name']))
+# Preserve separately inspected visual evidence; text parser must not erase it.
+existing=json.loads((root/'data/commands.json').read_text())
+for visual in existing:
+ if 'Visually verified official documentation screenshot' in visual.get('notes','') and not any((r['category'],r['name'])==(visual['category'],visual['name']) for r in items):items.append(visual)
+old_evidence=json.loads((root/'data/reference-evidence.json').read_text())
+evidence.extend(e for e in old_evidence if e.get('imageSource'))
+items.sort(key=lambda r:(r['category'],r['name']))
 (root/'data/commands.json').write_text(json.dumps(items,indent=2)+'\n')
 (root/'data/reference-evidence.json').write_text(json.dumps(evidence,indent=2)+'\n')
-status=json.loads((root/'data/reference-status.json').read_text());status.update(verifiedReferenceCommands=len(items),status='Initial official-docs inventory complete; not the full advertised 541-command help inventory.',publicMarkdownPagesRead=34)
+status=json.loads((root/'data/reference-status.json').read_text());status.update(verifiedReferenceCommands=len(items),status='Official-docs text and preserved visual inventory; full advertised541-help inventory remains unverified.',publicMarkdownPagesRead=34)
 status['observedCountClaims']=[{'source':'https://www.zynrax.site','method':'text fetch','count':'539+'},{'source':'https://www.zynrax.site/','method':'browser settled animation','count':'541+'}]
 (root/'data/reference-status.json').write_text(json.dumps(status,indent=2)+'\n')
 print('Inventory:',len(items),'reference entries; by category:',dict(collections.Counter(r['category'] for r in items)))

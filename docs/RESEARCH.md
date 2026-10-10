@@ -10,7 +10,7 @@ The complete 541-command help menu is not established. Docs disagree on default 
 
 ## Runtime decision
 
-Node's current release page lists 22 and 24 as LTS. Installed package metadata reports discord.js stable 14.27.0, minimum Node >=18, and better-sqlite3 13.0.3, minimum >=22. The discord.js main-branch documentation instead requires Node 24.17+, so v1 follows installed pinned stable-package metadata, not unreleased main-branch requirements. Local install and tests ran on 22.23.3. Node 24 execution remains unverified.
+Node's current release page lists 22 and 24 as LTS. Installed package metadata reports discord.js stable 14.27.0, minimum Node >=18, and better-sqlite3 13.0.3, minimum >=22. The discord.js main-branch documentation instead requires Node 24.17+, so v1 follows installed pinned stable-package metadata, not unreleased main-branch requirements. Local install and tests ran on 22.23.3. The published188-test checkpoint subsequently passed GitHub CI on Node22 and24;current local later expansion has not been published/tested on24.
 
 ## Sources
 
@@ -32,3 +32,7 @@ Node's current release page lists 22 and 24 as LTS. Installed package metadata r
 - https://discord.com/developers/docs/interactions/application-commands
 
 Raw public source snippets are retained in `data/reference-evidence.json`; full third-party marketing prose is not shipped in the code repository.
+
+## Oct11 visual reference follow-up
+
+Official antinuke screenshots inspected at https://docs.zynrax.site/security/antinuke. Standalone ,antinuke menu is visually established and added as one path:319reference rows. antilimit ban4 and anticonfig images corroborate existing parameterized commands;not additional commands. Screenshot menu buttons are configuration controls,not invented slash paths. Threshold event choices are parameter values,not distinct commands. Complete541help inventory remains missing.

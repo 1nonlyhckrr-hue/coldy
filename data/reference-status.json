@@ -1,9 +1,9 @@
 {
   "benchmark": "Zynrax",
   "targetApproximateCommands": 541,
-  "verifiedReferenceCommands": 318,
-  "status": "Initial official-docs inventory complete; not the full advertised 541-command help inventory.",
-  "checkedAt": "2026-10-10",
+  "verifiedReferenceCommands": 319,
+  "status": "319 verified reference paths,including one visually established antinuke configuration command. Full541-help inventory remains unverified.",
+  "checkedAt": "2026-10-11",
   "observedCountClaims": [
     {
       "source": "https://www.zynrax.site",
@@ -21,5 +21,6 @@
     "https://discordbotlist.com/bots/zynrax",
     "https://www.zynrax.site/"
   ],
-  "publicMarkdownPagesRead": 34
+  "publicMarkdownPagesRead": 34,
+  "visualPagesRead": 1
 }

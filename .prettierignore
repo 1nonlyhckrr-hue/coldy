@@ -1,0 +1,7 @@
+node_modules
+var
+package-lock.json
+data
+docs
+*.md
+*.txt

@@ -1,14 +1,359 @@
-import{test}from'node:test';import assert from'node:assert/strict';import{openDatabase}from'../src/database/index.js';import{MessageRanks,createMessageRankHandler,utcDay}from'../src/services/leaderboard.js';import command from'../src/commands/leaderboard/leaderboard.js';import{translate}from'../src/services/localization.js';import{ChannelType}from'discord.js';
-const now=Date.parse('2026-10-11T12:00:00Z'),user='100000000000000001',channel='100000000000000002';
-const message=(n=1,extra={})=>({id:String(100000000000000100n+BigInt(n)),guildId:'g',author:{id:user,bot:false},channelId:channel,createdTimestamp:now,...extra});
-test('ranks off by default, enabled future counts are replay safe and guild scoped',()=>{const db=openDatabase(':memory:');try{const r=new MessageRanks(db);assert.equal(r.record(message(),now),false);r.enable('g',true);assert(r.record(message(),now));assert.equal(r.record(message(),now),false);assert.equal(r.stats('g',user,now).today,1);assert.equal(r.stats('other',user,now).today,0);r.enable('g',false);assert.equal(r.record(message(2),now),false);}finally{db.close();}});
-test('bots, webhooks, stale/future and invalid event ids are ignored',()=>{const db=openDatabase(':memory:');try{const r=new MessageRanks(db);r.enable('g',true);for(const extra of [{author:{id:user,bot:true}},{webhookId:'hook'},{guildId:null},{id:'bad'},{createdTimestamp:now-300001},{createdTimestamp:now+30001},{createdTimestamp:NaN}])assert.equal(r.record(message(1,extra),now),false);assert.equal(r.stats('g',user,now).retained,0);}finally{db.close();}});
-test('exclusions apply to channel, category and thread ancestor with bounded config',()=>{const db=openDatabase(':memory:');try{const r=new MessageRanks(db);r.enable('g',true);r.exclude('g',channel,true);assert.equal(r.record(message(),now),false);r.exclude('g',channel,false);r.exclude('g','100000000000000003',true);assert.equal(r.record(message(1,{channel:{parentId:'100000000000000003'}}),now),false);assert.equal(r.record(message(2,{channel:{parent:{parentId:'100000000000000003'}}}),now),false);for(let n=4;n<53;n++)r.exclude('g',String(100000000000000000n+BigInt(n)),true);assert.throws(()=>r.exclude('g','100000000000000999',true));}finally{db.close();}});
-test('UTC calendar ranges, tie sorting and pagination are deterministic',()=>{const db=openDatabase(':memory:');try{const r=new MessageRanks(db);assert.equal(utcDay(now),'2026-10-11');for(let n=0;n<11;n++)db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g',String(100000000000000000n+BigInt(n)),'2026-10-11',2);db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g',user,'2026-10-05',5);db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g',user,'2026-10-04',7);assert.deepEqual(r.stats('g',user,now),{today:2,week:7,retained:14});const top=r.top('g','today',1,now);assert.equal(top.rows[0].user_id,'100000000000000000');assert.equal(top.pages,2);assert.equal(r.top('g','today',2,now).rows.length,1);for(const page of [0,3,1.5,1001])assert.throws(()=>r.top('g','today',page,now));assert.throws(()=>r.top('g','all',1,now));}finally{db.close();}});
-test('retention clears older days/replay ids, resetmine leaves other users and replay guard',()=>{const db=openDatabase(':memory:');try{const r=new MessageRanks(db);r.enable('g',true);r.record(message(),now);r.record(message(2,{author:{id:'100000000000000009'}}),now);db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g',user,'2026-01-01',3);db.prepare('INSERT INTO message_rank_seen VALUES(?,?)').run('old',now-8*86400000);r.cleanup(now);assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n,2);r.resetMine('g',user);assert.equal(r.record(message(),now),false);assert.equal(r.stats('g',user,now).retained,0);assert.equal(r.stats('g','100000000000000009',now).retained,1);}finally{db.close();}});
-test('per-user daily contribution limit and transaction failure do not partly record',()=>{const db=openDatabase(':memory:');try{const r=new MessageRanks(db);r.enable('g',true);db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,10000)').run('g',user,utcDay(now));assert.equal(r.record(message(),now),false);assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n,0);db.exec('DROP TABLE message_rank_daily');assert.throws(()=>r.record(message(),now));assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n,0);}finally{db.close();}});
-test('message handler contains storage failure without logging content',()=>{let warning;const c={messageRanks:{record(){throw new Error('SECRET');}},logger:{warn:(...args)=>warning=args}};createMessageRankHandler(c)({...message(),content:'SECRET'});assert(!JSON.stringify(warning).includes('SECRET'));});
-test('all seven leaderboard commands execute localized private replies',async()=>{for(const locale of ['en','hi','hinglish']){const db=openDatabase(':memory:');try{const r=new MessageRanks(db),replies=[],c={messageRanks:r,config:{messageEventsEnabled:true},localization:{locale:()=>locale,t:(_g,k,p)=>translate(locale,k,p)}};let sub='enable';const i={guildId:'g',user:{id:user},guild:{members:{fetch:async()=>({permissions:{has:()=>true}})},channels:{fetch:async()=>({id:channel,guildId:'g',type:ChannelType.GuildText})}},deferReply:async p=>assert.equal(p.flags,64),editReply:async p=>replies.push(p),options:{getSubcommand:()=>sub,getString:()=> 'week',getInteger:()=>1,getChannel:()=>({id:channel}),getBoolean:()=>true}};for(const action of ['enable','exclude','config','stats','top','resetmine','disable']){sub=action;await command.execute(i,c);}assert.equal(replies.length,7);for(const p of replies)assert.deepEqual(p.allowedMentions.parse,[]);}finally{db.close();}}});
-test('leaderboard configuration fresh authorization/runtime gate and foreign channel fail',async()=>{const db=openDatabase(':memory:');try{const c={messageRanks:new MessageRanks(db),config:{messageEventsEnabled:false},localization:{locale:()=> 'en',t:(_g,k,p)=>translate('en',k,p)}};let sub='enable';const i={guildId:'g',user:{id:user},deferReply:async()=>{},guild:{members:{fetch:async()=>({permissions:{has:()=>true}})},channels:{fetch:async()=>({id:channel,guildId:'other',type:ChannelType.GuildText})}},options:{getSubcommand:()=>sub,getChannel:()=>({id:channel}),getBoolean:()=>true}};await assert.rejects(()=>command.execute(i,c),/responderRuntimeDisabled/);sub='exclude';await assert.rejects(()=>command.execute(i,c),/rankChannelInvalid/);i.guild.members.fetch=async()=>({permissions:{has:()=>false}});await assert.rejects(()=>command.execute(i,c),/userPermission/);}finally{db.close();}});
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { openDatabase } from '../src/database/index.js';
+import { MessageRanks, createMessageRankHandler, utcDay } from '../src/services/leaderboard.js';
+import command from '../src/commands/leaderboard/leaderboard.js';
+import { translate } from '../src/services/localization.js';
+import { ChannelType } from 'discord.js';
+const now = Date.parse('2026-10-11T12:00:00Z'),
+  user = '100000000000000001',
+  channel = '100000000000000002';
+const message = (n = 1, extra = {}) => ({
+  id: String(100000000000000100n + BigInt(n)),
+  guildId: 'g',
+  author: { id: user, bot: false },
+  channelId: channel,
+  createdTimestamp: now,
+  ...extra,
+});
+test('ranks off by default, enabled future counts are replay safe and guild scoped', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    assert.equal(r.record(message(), now), false);
+    r.enable('g', true);
+    assert(r.record(message(), now));
+    assert.equal(r.record(message(), now), false);
+    assert.equal(r.stats('g', user, now).today, 1);
+    assert.equal(r.stats('other', user, now).today, 0);
+    r.enable('g', false);
+    assert.equal(r.record(message(2), now), false);
+  } finally {
+    db.close();
+  }
+});
+test('bots, webhooks, stale/future and invalid event ids are ignored', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    for (const extra of [
+      { author: { id: user, bot: true } },
+      { webhookId: 'hook' },
+      { guildId: null },
+      { id: 'bad' },
+      { createdTimestamp: now - 300001 },
+      { createdTimestamp: now + 30001 },
+      { createdTimestamp: NaN },
+    ])
+      assert.equal(r.record(message(1, extra), now), false);
+    assert.equal(r.stats('g', user, now).retained, 0);
+  } finally {
+    db.close();
+  }
+});
+test('exclusions apply to channel, category and thread ancestor with bounded config', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    r.exclude('g', channel, true);
+    assert.equal(r.record(message(), now), false);
+    r.exclude('g', channel, false);
+    r.exclude('g', '100000000000000003', true);
+    assert.equal(r.record(message(1, { channel: { parentId: '100000000000000003' } }), now), false);
+    assert.equal(
+      r.record(message(2, { channel: { parent: { parentId: '100000000000000003' } } }), now),
+      false,
+    );
+    for (let n = 4; n < 53; n++) r.exclude('g', String(100000000000000000n + BigInt(n)), true);
+    assert.throws(() => r.exclude('g', '100000000000000999', true));
+  } finally {
+    db.close();
+  }
+});
+test('UTC calendar ranges, tie sorting and pagination are deterministic', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    assert.equal(utcDay(now), '2026-10-11');
+    for (let n = 0; n < 11; n++)
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+        'g',
+        String(100000000000000000n + BigInt(n)),
+        '2026-10-11',
+        2,
+      );
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g', user, '2026-10-05', 5);
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g', user, '2026-10-04', 7);
+    assert.deepEqual(r.stats('g', user, now), { today: 2, week: 7, retained: 14 });
+    const top = r.top('g', 'today', 1, now);
+    assert.equal(top.rows[0].user_id, '100000000000000000');
+    assert.equal(top.pages, 2);
+    assert.equal(r.top('g', 'today', 2, now).rows.length, 1);
+    for (const page of [0, 3, 1.5, 1001]) assert.throws(() => r.top('g', 'today', page, now));
+    assert.throws(() => r.top('g', 'all', 1, now));
+  } finally {
+    db.close();
+  }
+});
+test('retention clears older days/replay ids, resetmine leaves other users and replay guard', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    r.record(message(), now);
+    r.record(message(2, { author: { id: '100000000000000009' } }), now);
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g', user, '2026-01-01', 3);
+    db.prepare('INSERT INTO message_rank_seen VALUES(?,?)').run('old', now - 8 * 86400000);
+    r.cleanup(now);
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n, 2);
+    r.resetMine('g', user);
+    assert.equal(r.record(message(), now), false);
+    assert.equal(r.stats('g', user, now).retained, 0);
+    assert.equal(r.stats('g', '100000000000000009', now).retained, 1);
+  } finally {
+    db.close();
+  }
+});
+test('per-user daily contribution limit and transaction failure do not partly record', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,10000)').run('g', user, utcDay(now));
+    assert.equal(r.record(message(), now), false);
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n, 0);
+    db.exec('DROP TABLE message_rank_daily');
+    assert.throws(() => r.record(message(), now));
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n, 0);
+  } finally {
+    db.close();
+  }
+});
+test('message handler contains storage failure without logging content', () => {
+  let warning;
+  const c = {
+    messageRanks: {
+      record() {
+        throw new Error('SECRET');
+      },
+    },
+    logger: { warn: (...args) => (warning = args) },
+  };
+  createMessageRankHandler(c)({ ...message(), content: 'SECRET' });
+  assert(!JSON.stringify(warning).includes('SECRET'));
+});
+test('all seven leaderboard commands execute localized private replies', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new MessageRanks(db),
+        replies = [],
+        c = {
+          messageRanks: r,
+          config: { messageEventsEnabled: true },
+          localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+        };
+      let sub = 'enable';
+      const i = {
+        guildId: 'g',
+        user: { id: user },
+        guild: {
+          members: { fetch: async () => ({ permissions: { has: () => true } }) },
+          channels: {
+            fetch: async () => ({ id: channel, guildId: 'g', type: ChannelType.GuildText }),
+          },
+        },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => sub,
+          getString: () => 'week',
+          getInteger: () => 1,
+          getChannel: () => ({ id: channel }),
+          getBoolean: () => true,
+        },
+      };
+      for (const action of [
+        'enable',
+        'exclude',
+        'config',
+        'stats',
+        'top',
+        'resetmine',
+        'disable',
+      ]) {
+        sub = action;
+        await command.execute(i, c);
+      }
+      assert.equal(replies.length, 7);
+      for (const p of replies) assert.deepEqual(p.allowedMentions.parse, []);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('leaderboard configuration fresh authorization/runtime gate and foreign channel fail', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const c = {
+      messageRanks: new MessageRanks(db),
+      config: { messageEventsEnabled: false },
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+    };
+    let sub = 'enable';
+    const i = {
+      guildId: 'g',
+      user: { id: user },
+      deferReply: async () => {},
+      guild: {
+        members: { fetch: async () => ({ permissions: { has: () => true } }) },
+        channels: {
+          fetch: async () => ({ id: channel, guildId: 'other', type: ChannelType.GuildText }),
+        },
+      },
+      options: {
+        getSubcommand: () => sub,
+        getChannel: () => ({ id: channel }),
+        getBoolean: () => true,
+      },
+    };
+    await assert.rejects(() => command.execute(i, c), /responderRuntimeDisabled/);
+    sub = 'exclude';
+    await assert.rejects(() => command.execute(i, c), /rankChannelInvalid/);
+    i.guild.members.fetch = async () => ({ permissions: { has: () => false } });
+    await assert.rejects(() => command.execute(i, c), /userPermission/);
+  } finally {
+    db.close();
+  }
+});
 
-test('message counts and opt-in config survive restart with duplicate protection',async()=>{const {mkdtempSync,rmSync}=await import('node:fs'),{tmpdir}=await import('node:os'),{join}=await import('node:path');const dir=mkdtempSync(join(tmpdir(),'luna-ranks-')),path=join(dir,'db');try{let db=openDatabase(path),r=new MessageRanks(db);r.enable('g',true);r.record(message(),now);db.close();db=openDatabase(path);r=new MessageRanks(db);assert.equal(r.config('g').enabled,true);assert.equal(r.stats('g',user,now).today,1);assert.equal(r.record(message(),now),false);db.close();}finally{rmSync(dir,{recursive:true,force:true});}});
+test('message counts and opt-in config survive restart with duplicate protection', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs'),
+    { tmpdir } = await import('node:os'),
+    { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-ranks-')),
+    path = join(dir, 'db');
+  try {
+    let db = openDatabase(path),
+      r = new MessageRanks(db);
+    r.enable('g', true);
+    r.record(message(), now);
+    db.close();
+    db = openDatabase(path);
+    r = new MessageRanks(db);
+    assert.equal(r.config('g').enabled, true);
+    assert.equal(r.stats('g', user, now).today, 1);
+    assert.equal(r.record(message(), now), false);
+    db.close();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('optout erases only own server counts, survives config toggles, optin never restores past data', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    r.record(message(), now);
+    r.record(message(2, { author: { id: '100000000000000009' } }), now);
+    r.enable('other', true);
+    r.record(message(3, { guildId: 'other' }), now);
+    assert.equal(r.privacy('g', user, true), 1);
+    assert(r.optedOut('g', user));
+    assert.equal(r.record(message(4), now), false);
+    r.enable('g', false);
+    r.enable('g', true);
+    assert.equal(r.record(message(5), now), false);
+    assert.equal(r.stats('other', user, now).retained, 1);
+    assert.equal(r.stats('g', '100000000000000009', now).retained, 1);
+    assert.equal(r.top('g', 'retained', 1, now).rows.length, 1);
+    r.privacy('g', user, false);
+    assert.equal(r.stats('g', user, now).retained, 0);
+    assert(r.record(message(6), now));
+  } finally {
+    db.close();
+  }
+});
+test('optout setting and erase transaction rolls back together on failed deletion', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    db.exec('DROP TABLE message_rank_daily');
+    assert.throws(() => r.privacy('g', user, true));
+    assert(!r.optedOut('g', user));
+    assert.throws(() => r.privacy('g', 'invalid', true));
+    assert.throws(() => r.privacy('g', user, 1));
+  } finally {
+    db.close();
+  }
+});
+test('privacy and admin erase paths respond locally in all languages; confirm and fresh authorization enforced', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new MessageRanks(db),
+        replies = [],
+        c = {
+          messageRanks: r,
+          localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+        };
+      let sub = 'optout',
+        allowed = true,
+        confirm = true;
+      const i = {
+        guildId: 'g',
+        user: { id: user },
+        guild: { members: { fetch: async () => ({ permissions: { has: () => allowed } }) } },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => sub,
+          getBoolean: () => confirm,
+          getUser: () => ({ id: user }),
+        },
+      };
+      await command.execute(i, c);
+      assert(r.optedOut('g', user));
+      sub = 'optin';
+      await command.execute(i, c);
+      assert(!r.optedOut('g', user));
+      r.privacy('g', user, true);
+      sub = 'eraseuser';
+      allowed = false;
+      await assert.rejects(() => command.execute(i, c), /userPermission/);
+      allowed = true;
+      confirm = false;
+      await assert.rejects(() => command.execute(i, c), /rankEraseConfirm/);
+      confirm = true;
+      await command.execute(i, c);
+      assert(r.optedOut('g', user));
+      assert.equal(replies.length, 3);
+      for (const p of replies) assert.deepEqual(p.allowedMentions.parse, []);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('persistent personal privacy preference survives reopening', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs'),
+    { tmpdir } = await import('node:os'),
+    { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-privacy-')),
+    path = join(dir, 'db');
+  try {
+    let db = openDatabase(path);
+    new MessageRanks(db).privacy('g', user, true);
+    db.close();
+    db = openDatabase(path);
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    assert(r.optedOut('g', user));
+    assert.equal(r.record(message(), now), false);
+    db.close();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
