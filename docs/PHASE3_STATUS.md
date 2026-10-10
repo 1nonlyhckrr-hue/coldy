@@ -19,3 +19,9 @@ The command's default Discord permission bitfield is an initial visibility hint,
 ## Role panel batch
 
 12 top-level slash commands, 31 executable paths. Button-role panels implemented with migration v3 and current-role safety checks. 48 distinct local tests pass, zero fail. See ROLE_PANELS.md. No early deployment: full module build continues by owner direction.
+
+## Consolidated modules checkpoint (11 October 2026)
+
+18 top-level commands, 62 executable paths, 102 distinct local automated tests pass. Added persistent autoresponders, giveaways, private ticket channels/transcripts, scheduled messages, opt-in AutoMod and bounded process watchdog. Detailed scope and limitations: AUTORESPONDERS.md, GIVEAWAYS.md, TICKETS.md, AUTOMATIONS.md, AUTOMOD.md, WATCHDOG.md and LOCALIZATION_STATUS.md. These are partial module implementations, not proof all reference behaviors are built. Reference inventory remains 318 documented paths; full 541 target is unverified.
+
+Original public checkpoint passed Node 22/24 GitHub CI. This newer consolidated checkpoint must be published and its own CI verified separately. No live Discord testing, visual embed verification, Docker build or deployment. Destination channels now require Embed Links. Music/free-source and the other modules are still work. Retention, privacy, rate-limit and real interaction/restart tests remain release gates.

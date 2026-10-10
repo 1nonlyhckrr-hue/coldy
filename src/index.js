@@ -1,3 +1,11 @@
+import {AutoMod,createAutoModHandler} from './services/automod.js';
+import {MessageSchedules,AutomationRunner} from './services/automations.js';
+import { Tickets } from './services/tickets.js';
+import { createTicketButtonHandler } from './services/ticketDelivery.js';
+import { Giveaways } from './services/giveaways.js';
+import { GiveawayRunner,createGiveawayButtonHandler } from './services/giveawayDelivery.js';
+import { Autoresponders } from './services/autoresponder.js';
+import { createAutoresponderHandler } from './events/autoresponderMessages.js';
 import 'dotenv/config';
 import { RolePanels, createRoleButtonHandler } from './services/rolePanels.js';
 import { handleInteractionError } from './utils/errors.js';
@@ -16,9 +24,20 @@ import { createInteractionHandler } from './events/interactionCreate.js';
 const config = loadConfig();
 const logger = createLogger(config.logLevel);
 const db = openDatabase(config.databasePath);
-const client = new Client({intents:[GatewayIntentBits.Guilds,...(config.memberEventsEnabled?[GatewayIntentBits.GuildMembers]:[])], allowedMentions:{parse:[],repliedUser:false}});
+const client = new Client({intents:[GatewayIntentBits.Guilds,...(config.messageEventsEnabled?[GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent]:[]),...(config.memberEventsEnabled?[GatewayIntentBits.GuildMembers]:[])], allowedMentions:{parse:[],repliedUser:false}});
 const commands = await loadCommands();
 const context = {config,logger,db,settings:new GuildSettings(db),commands,cooldowns:new Cooldowns(),cases:new ModerationCases(db),version:'0.1.0'};
+context.autoresponders = new Autoresponders(db);
+context.autoresponders.recover();context.autoresponders.cleanup();
+context.automod=new AutoMod(db);context.automod.recover();context.automod.cleanup();
+if(config.messageEventsEnabled){const autoMod=createAutoModHandler(context),respond=createAutoresponderHandler(context);client.on(Events.MessageCreate,async message=>{if(!await autoMod(message))await respond(message);});}
+context.giveaways = new Giveaways(db);context.giveaways.recover();
+context.giveawayRunner = new GiveawayRunner(context,client);
+client.on(Events.InteractionCreate,createGiveawayButtonHandler(context));
+context.tickets = new Tickets(db);context.tickets.recover();
+client.on(Events.InteractionCreate,createTicketButtonHandler(context));
+context.messageSchedules = new MessageSchedules(db);context.messageSchedules.recover();
+context.automationRunner = new AutomationRunner(context,client);
 context.rolePanels = new RolePanels(db);
 context.handleInteractionError = (error,i,logger)=>handleInteractionError(error,i,logger,context.localization);
 const roleButtonHandler = createRoleButtonHandler(context);
@@ -28,10 +47,10 @@ context.localization = new Localization(context.guildConfig);
 context.serverLogs = new ServerLogs(context.guildConfig,logger);
 if(config.memberEventsEnabled){client.on(Events.GuildMemberAdd,createMemberMessageHandler(context,'welcome'));client.on(Events.GuildMemberRemove,createMemberMessageHandler(context,'goodbye'));}
 client.on(Events.InteractionCreate,createInteractionHandler(context));
-client.once(Events.ClientReady, ready => logger.info({botId:ready.user.id,commands:commands.size}, 'Luna ready'));
+client.once(Events.ClientReady, ready => {logger.info({botId:ready.user.id,commands:commands.size}, 'Luna ready');context.giveawayRunner.start();context.automationRunner.start();});
 client.on(Events.Error, e => logger.error({kind:e.name},'Discord client error'));
 let stopping = false;
-async function stop(code = 0) { if (stopping) return; stopping = true; client.destroy(); db.close(); process.exitCode = code; }
+async function stop(code = 0) { if (stopping) return; stopping = true; context.giveawayRunner.stop();context.automationRunner.stop(); client.destroy(); db.close(); process.exitCode = code; }
 process.once('SIGINT',() => void stop());
 process.once('SIGTERM',() => void stop());
 process.on('unhandledRejection',() => { logger.fatal('Unhandled rejection; shutting down'); void stop(1); });

@@ -1,0 +1,8 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {EventEmitter} from 'node:events';
+import {RestartPolicy,runWatchdog} from '../src/services/watchdog.js';
+test('restart policy backs off, resets after stable run and trips crash loops',()=>{let now=0;const p=new RestartPolicy({now:()=>now,maxCrashes:3});assert.equal(p.next(0),1000);assert.equal(p.next(0),2000);assert.equal(p.next(300000),1000);assert.equal(p.next(0),null);now=700000;assert.equal(p.next(0),2000);});
+test('watchdog contains spawn errors and duplicate exit/error events',()=>{let spawns=0,timer,exit;const e=new EventEmitter();e.kill=()=>{};const w=runWatchdog({spawnChild:()=>{spawns++;return e;},setTimer:cb=>{timer=cb;return 1;},clearTimer:()=>{},report:()=>{},exit:code=>exit=code});e.emit('error',new Error('bad'));e.emit('exit',1);assert.equal(spawns,1);timer();assert.equal(spawns,2);w.stop();assert.equal(exit,undefined);});
+test('watchdog signal shutdown cancels timer and never restarts',()=>{let spawns=0,cancelled=false,killed=false,callback;const e=new EventEmitter();e.kill=()=>{killed=true;};const w=runWatchdog({spawnChild:()=>{spawns++;return e;},setTimer:cb=>{callback=cb;return 1;},clearTimer:()=>cancelled=true,report:()=>{}});e.emit('exit',1);w.stop();callback();assert(cancelled);assert.equal(spawns,1);assert(w.isStopped());assert(!killed);});
+test('synchronous spawn failure uses bounded restart then fails clearly',()=>{let timer,code;const p=new RestartPolicy({maxCrashes:1});runWatchdog({spawnChild:()=>{throw new Error('spawn');},policy:p,setTimer:cb=>{timer=cb;return 1;},report:()=>{},exit:c=>code=c});timer();assert.equal(code,1);});

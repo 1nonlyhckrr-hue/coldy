@@ -10,7 +10,8 @@
     "check": "node scripts/check.js",
     "inventory": "node scripts/inventory.js",
     "register:preview": "node scripts/register.js",
-    "register:guild": "node scripts/register.js --apply"
+    "register:guild": "node scripts/register.js --apply",
+    "start:watchdog": "node scripts/watchdog.js"
   },
   "keywords": [],
   "author": "",
