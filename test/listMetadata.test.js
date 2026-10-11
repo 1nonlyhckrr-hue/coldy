@@ -17,7 +17,8 @@ function setup(locale = 'en') {
     ),
     replies = [];
   let kind = 'roles',
-    page = 1;
+    page = 1,
+    search = null;
   const i = {
       guildId: 'g',
       guild: {
@@ -25,12 +26,20 @@ function setup(locale = 'en') {
         emojis: { fetch: async () => records },
         stickers: { fetch: async () => records },
       },
-      options: { getSubcommand: () => kind, getInteger: () => page },
+      options: { getSubcommand: () => kind, getInteger: () => page, getString: () => search },
       deferReply: async (p) => assert.equal(p.flags, 64),
       editReply: async (p) => replies.push(p),
     },
     c = { localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) } };
-  return { records, replies, i, c, kind: (k) => (kind = k), page: (p) => (page = p) };
+  return {
+    records,
+    replies,
+    i,
+    c,
+    kind: (k) => (kind = k),
+    page: (p) => (page = p),
+    search: (s) => (search = s),
+  };
 }
 test('role/emoji lists freshly fetch,paginate10,sort deterministically and localize with no-pings', async () => {
   for (const locale of ['en', 'hi', 'hinglish']) {
@@ -138,4 +147,79 @@ test('emoji lists translate static/animated labels in stored locale', async () =
   const text = s.replies[0].embeds[0].data.description;
   assert(text.includes(translate('hi', 'listEmojiAnimated')));
   assert(text.includes(translate('hi', 'listEmojiStatic')));
+});
+
+test('metadata name search is literal case-insensitive full-name filtering before pagination', async () => {
+  const s = setup();
+  s.search(' r1 ');
+  await command.execute(s.i, s.c);
+  const text = s.replies[0].embeds[0].data.description;
+  assert(text.includes('R11'));
+  assert(text.includes('R10'));
+  assert(text.includes('R1 |'));
+  assert(!text.includes('R9 |'));
+  s.search('.*');
+  await command.execute(s.i, s.c);
+  assert(s.replies[1].embeds[0].data.description.includes('No current records'));
+  s.page(2);
+  await assert.rejects(() => command.execute(s.i, s.c), /listPageInvalid/);
+});
+test('search applies all source kinds and locales without pings or modified native records', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const kind of ['roles', 'emojis', 'stickers']) {
+      const s = setup(locale);
+      s.kind(kind);
+      s.search('R11');
+      const before = JSON.stringify([...s.records]);
+      await command.execute(s.i, s.c);
+      assert(s.replies[0].embeds[0].data.description.includes('R11'));
+      assert.equal(JSON.stringify([...s.records]), before);
+      assert.deepEqual(s.replies[0].allowedMentions.parse, []);
+    }
+});
+test('invalid literal queries reject before source fetch with no output', async () => {
+  for (const search of ['', '   ', 'x'.repeat(81), 'a\n', 1, undefined]) {
+    const s = setup();
+    s.search(search);
+    let calls = 0;
+    s.i.guild.roles.fetch = async () => {
+      calls++;
+      return s.records;
+    };
+    await assert.rejects(() => command.execute(s.i, s.c), /listSearchInvalid/);
+    assert.equal(calls, 0);
+    assert.equal(s.replies.length, 0);
+  }
+});
+test('search cannot hide foreign or malformed source rows even when not matching', async () => {
+  for (const change of [
+    (r) => (r.guild.id = 'foreign'),
+    (r) => (r.name = 'x\n'),
+    (r) => (r.name = 'x'.repeat(129)),
+  ]) {
+    const s = setup();
+    s.search('notfound');
+    change(s.records.values().next().value);
+    await assert.rejects(() => command.execute(s.i, s.c), /listIdentityInvalid/);
+    assert.equal(s.replies.length, 0);
+  }
+});
+test('worst-case names shorten before escaping without partial markdown and retain complete IDs', async () => {
+  const s = setup();
+  s.records.clear();
+  for (let n = 0; n < 10; n++)
+    s.records.set(String(n), {
+      id: String(100000000000000001n + BigInt(n)),
+      guild: { id: 'g' },
+      name: '*'.repeat(100),
+      position: n,
+    });
+  s.search('*'.repeat(60));
+  await command.execute(s.i, s.c);
+  const text = s.replies[0].embeds[0].data.description;
+  assert(text.length < 2000);
+  assert(text.includes('...'));
+  assert(text.includes('100000000000000001'));
+  assert(text.includes(translate('en', 'listNameNotice')));
+  assert(!text.includes('\\ |'));
 });

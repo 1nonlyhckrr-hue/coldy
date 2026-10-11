@@ -21,6 +21,9 @@ const schema = z
     mentionLimit: z.number().int().min(2).max(20).default(5),
     capsPercent: z.number().int().min(50).max(100).default(80),
     capsMinLetters: z.number().int().min(10).max(100).default(20),
+    spamMessages: z.number().int().min(3).max(10).default(6),
+    spamRepeats: z.number().int().min(2).max(10).default(3),
+    spamWindowSeconds: z.number().int().min(5).max(30).default(10),
     words: z.array(z.string().min(1).max(50)).max(100).default([]),
     ignoredChannels: z
       .array(z.string().regex(/^\d{17,20}$/))
@@ -115,15 +118,17 @@ export class AutoMod {
     if (settings.rules.spam) {
       const now = this.now(),
         key = `${message.guild.id}:${message.author.id}`,
-        history = (this.recent.get(key) ?? []).filter((x) => now - x.at < 10000);
+        history = (this.recent.get(key) ?? []).filter(
+          (x) => now - x.at < settings.spamWindowSeconds * 1000,
+        );
       if (!history.some((x) => x.id === message.id))
         history.push({ id: message.id, at: now, text: normalizeTrigger(text) });
       if (this.recent.size >= 10000 && !this.recent.has(key))
         this.recent.delete(this.recent.keys().next().value);
       this.recent.set(key, history.slice(-10));
       if (
-        history.length >= 6 ||
-        history.filter((x) => x.text === normalizeTrigger(text)).length >= 3
+        history.length >= settings.spamMessages ||
+        history.filter((x) => x.text === normalizeTrigger(text)).length >= settings.spamRepeats
       )
         return 'spam';
     }
@@ -140,9 +145,10 @@ export class AutoMod {
   finish(messageId, status) {
     if (!['completed', 'uncertain', 'failed'].includes(status))
       throw new Error('Invalid automod outcome');
-    this.db
-      .prepare('UPDATE automod_incidents SET status=? WHERE message_id=?')
+    const result = this.db
+      .prepare("UPDATE automod_incidents SET status=? WHERE message_id=? AND status='reserved'")
       .run(status, messageId);
+    if (result.changes !== 1) throw new Error('AutoMod incident not reserved');
   }
   incidents(guildId) {
     return this.db
@@ -150,6 +156,15 @@ export class AutoMod {
         'SELECT message_id,user_id,rule,action,status,created_at FROM automod_incidents WHERE guild_id=? ORDER BY created_at DESC LIMIT 20',
       )
       .all(guildId);
+  }
+  unresolved(guildId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 10)
+      throw new UserError('automodIncidentPageInvalid');
+    return this.db
+      .prepare(
+        "SELECT message_id,user_id,rule,action,status,created_at FROM automod_incidents WHERE guild_id=? AND status IN ('reserved','uncertain') ORDER BY created_at,message_id LIMIT 10 OFFSET ?",
+      )
+      .all(guildId, (page - 1) * 10);
   }
   recover() {
     this.db
@@ -161,7 +176,7 @@ export class AutoMod {
       .prepare('DELETE FROM automod_incidents WHERE created_at<?')
       .run(this.now() - 30 * 86400000);
     for (const [k, h] of this.recent)
-      if (!h.some((v) => this.now() - v.at < 10000)) this.recent.delete(k);
+      if (!h.some((v) => this.now() - v.at < 30000)) this.recent.delete(k);
   }
 }
 export function createAutoModHandler(c) {

@@ -55,6 +55,14 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show alert settings and limitations.'))
   .addSubcommand((s) =>
+    s
+      .setName('unresolved')
+      .setDescription('Privately inspect stored unresolved alert metadata;no retry or punishment.')
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Oldest-first page1-10').setMinValue(1).setMaxValue(10),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('incidents').setDescription('Show20 recent stored audit burst alerts.'),
   );
 export default {
@@ -125,6 +133,18 @@ export default {
         channel: cfg.channelId ?? '-',
         trusted: cfg.trustedUsers.join(', ') || '-',
       });
+    } else if (sub === 'unresolved') {
+      const page = i.options.getInteger('page') ?? 1,
+        rows = c.antinuke.unresolved(i.guildId, page);
+      text =
+        t('antinukeUnresolved', { page }) +
+        '\n' +
+        (rows
+          .map(
+            (r) =>
+              `#${r.id} | ${r.actor_id} | ${r.event_count} | ${t('antinukeState_' + r.status)}`,
+          )
+          .join('\n') || t('antinukeEmpty'));
     } else if (sub === 'incidents') {
       const rows = c.antinuke.incidents(i.guildId);
       text =

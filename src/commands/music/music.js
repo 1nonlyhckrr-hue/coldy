@@ -29,6 +29,7 @@ for (const [name, description] of [
   ['pause', 'Pause current track.'],
   ['resume', 'Resume current track.'],
   ['stop', 'Disconnect and clear this server session.'],
+  ['skip', 'Stop current track once and advance waiting queue;uncertain failures freeze.'],
   ['nowplaying', 'Show current track.'],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(description));
@@ -105,6 +106,13 @@ export default {
         sub === 'remove' ? i.options.getInteger('position', true) : undefined,
       );
     if (sub === 'pause' || sub === 'resume') await c.music.pause(i.guildId, sub === 'pause');
+    if (sub === 'skip')
+      await c.music.skip(i.guildId, {
+        beforeEffect: async () => {
+          const now = await requireMusicVoice(i, c);
+          if (now.channel.id !== channelId) throw new UserError('voiceMoved');
+        },
+      });
     if (sub === 'stop') await c.music.stop(i.guildId);
     if (sub === 'stay') await c.music.stay(i.guildId, i.options.getBoolean('enabled', true));
     const s = c.music.snapshot(i.guildId),

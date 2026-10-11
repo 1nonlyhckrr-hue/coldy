@@ -164,6 +164,36 @@
     "source": "src/commands/antinuke/antinuke.js"
   },
   {
+    "name": "antinuke unresolved",
+    "category": "antinuke",
+    "syntax": "/antinuke unresolved [page]",
+    "description": "Privately inspect stored unresolved alert metadata;no retry or punishment.",
+    "parameters": [
+      {
+        "name": "page",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 10
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/antinuke.js"
+  },
+  {
     "name": "automation cancel",
     "category": "automations",
     "syntax": "/automation cancel (id)",
@@ -501,6 +531,28 @@
     "source": "src/commands/automations/automation.js"
   },
   {
+    "name": "automation overview",
+    "category": "automations",
+    "syntax": "/automation overview",
+    "description": "Privately count stored schedule states;not delivery receipts or live readiness.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/automations/automation.js"
+  },
+  {
     "name": "automation repeat",
     "category": "automations",
     "syntax": "/automation repeat (id) (confirm) [minutes]",
@@ -601,6 +653,36 @@
         "type": 3,
         "minLength": 1,
         "maxLength": 80
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/automations/automation.js"
+  },
+  {
+    "name": "automation upcoming",
+    "category": "automations",
+    "syntax": "/automation upcoming [page]",
+    "description": "Privately inspect pending sends ordered by time;no content or sending.",
+    "parameters": [
+      {
+        "name": "page",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 3
       }
     ],
     "userPermissions": [
@@ -908,6 +990,50 @@
     "source": "src/commands/automod/automod.js"
   },
   {
+    "name": "automod spamthresholds",
+    "category": "automod",
+    "syntax": "/automod spamthresholds [messages] [repeats] [seconds]",
+    "description": "Tune bounded spam counts/window;does not enable moderation.",
+    "parameters": [
+      {
+        "name": "messages",
+        "required": false,
+        "type": 4,
+        "min": 3,
+        "max": 10
+      },
+      {
+        "name": "repeats",
+        "required": false,
+        "type": 4,
+        "min": 2,
+        "max": 10
+      },
+      {
+        "name": "seconds",
+        "required": false,
+        "type": 4,
+        "min": 5,
+        "max": 30
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/automod/automod.js"
+  },
+  {
     "name": "automod testtext",
     "category": "automod",
     "syntax": "/automod testtext (text)",
@@ -993,6 +1119,36 @@
         "type": 4,
         "min": 1,
         "max": 60
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/automod/automod.js"
+  },
+  {
+    "name": "automod unresolved",
+    "category": "automod",
+    "syntax": "/automod unresolved [page]",
+    "description": "Privately inspect unresolved stored incident metadata;never retries actions.",
+    "parameters": [
+      {
+        "name": "page",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 10
       }
     ],
     "userPermissions": [
@@ -1908,6 +2064,61 @@
     "source": "src/commands/fun/fun.js"
   },
   {
+    "name": "fun dicekeep",
+    "category": "fun",
+    "syntax": "/fun dicekeep (count) (keep) (mode) [sides]",
+    "description": "Roll bounded dice,keep highest or lowest results;no stakes or saved state.",
+    "parameters": [
+      {
+        "name": "count",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "name": "keep",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "name": "mode",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "highest",
+            "value": "highest"
+          },
+          {
+            "name": "lowest",
+            "value": "lowest"
+          }
+        ]
+      },
+      {
+        "name": "sides",
+        "required": false,
+        "type": 4,
+        "min": 2,
+        "max": 1000
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
     "name": "fun number",
     "category": "fun",
     "syntax": "/fun number (minimum) (maximum)",
@@ -1964,6 +2175,32 @@
             "value": "scissors"
           }
         ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
+    "name": "fun rpsseries",
+    "category": "fun",
+    "syntax": "/fun rpsseries (moves)",
+    "description": "Play2-10 preselected RPS rounds against Luna;private score,no stakes.",
+    "parameters": [
+      {
+        "name": "moves",
+        "required": true,
+        "type": 3,
+        "minLength": 3,
+        "maxLength": 100
       }
     ],
     "userPermissions": [],
@@ -3528,6 +3765,24 @@
     "source": "src/commands/music/music.js"
   },
   {
+    "name": "music skip",
+    "category": "music",
+    "syntax": "/music skip",
+    "description": "Stop current track once and advance waiting queue;uncertain failures freeze.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/music/music.js"
+  },
+  {
     "name": "music stay",
     "category": "music",
     "syntax": "/music stay (enabled)",
@@ -4548,8 +4803,8 @@
   {
     "name": "list emojis",
     "category": "utility",
-    "syntax": "/list emojis [page]",
-    "description": "List current server emojis,ten per page.",
+    "syntax": "/list emojis [page] [search]",
+    "description": "List current server emojis,ten per page with optional literal name search.",
     "parameters": [
       {
         "name": "page",
@@ -4557,6 +4812,13 @@
         "type": 4,
         "min": 1,
         "max": 1000
+      },
+      {
+        "name": "search",
+        "required": false,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 80
       }
     ],
     "userPermissions": [],
@@ -4574,8 +4836,8 @@
   {
     "name": "list roles",
     "category": "utility",
-    "syntax": "/list roles [page]",
-    "description": "List current server roles,ten per page.",
+    "syntax": "/list roles [page] [search]",
+    "description": "List current server roles,ten per page with optional literal name search.",
     "parameters": [
       {
         "name": "page",
@@ -4583,6 +4845,13 @@
         "type": 4,
         "min": 1,
         "max": 1000
+      },
+      {
+        "name": "search",
+        "required": false,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 80
       }
     ],
     "userPermissions": [],
@@ -4600,8 +4869,8 @@
   {
     "name": "list stickers",
     "category": "utility",
-    "syntax": "/list stickers [page]",
-    "description": "List current server stickers,ten per page.",
+    "syntax": "/list stickers [page] [search]",
+    "description": "List current server stickers,ten per page with optional literal name search.",
     "parameters": [
       {
         "name": "page",
@@ -4609,6 +4878,13 @@
         "type": 4,
         "min": 1,
         "max": 1000
+      },
+      {
+        "name": "search",
+        "required": false,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 80
       }
     ],
     "userPermissions": [],

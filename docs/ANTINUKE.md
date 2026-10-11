@@ -13,3 +13,5 @@ Nine new tests,159 total pass: disabled/config gates, replay/threshold/window, t
 Official sources inspected:
 - https://docs.discord.com/developers/events/gateway-events
 - https://docs.discord.com/developers/resources/audit-log
+
+AcceptednativealertsendmustreturnnonemptystringmessageID;otherwiseuncertainwithoutreplay. Finalizationtransitionsone recordedreservationonly. /antinuke unresolved [page] is private exactcurrentmanager storedmetadatareview,oldestfirst10/page1-10,terminal/foreignexcluded. No currentdanger/delivery/punishmentclaim,nativefetch,retryorcleanup.560localtests,new200pathscheckpointlocalonly.

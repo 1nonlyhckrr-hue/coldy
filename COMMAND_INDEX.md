@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-41 top-level commands, 199 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+41 top-level commands, 207 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -12,6 +12,7 @@
 | /antinuke incidents | Show20 recent stored audit burst alerts. | Local mock/unit only |
 | /antinuke threshold | Set mixed-action count and observation window. | Local mock/unit only |
 | /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
+| /antinuke unresolved | Privately inspect stored unresolved alert metadata;no retry or punishment. | Local mock/unit only |
 | /automation cancel | Cancel a pending or uncertain schedule. | Local mock/unit only |
 | /automation cancelpending | Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched. | Local mock/unit only |
 | /automation config | Show schedule limits and restart policy. | Local mock/unit only |
@@ -22,9 +23,11 @@
 | /automation forget | Erase stored text of a completed/cancelled schedule,not Discord messages. | Local mock/unit only |
 | /automation inspect | Privately review one stored schedule,text and metadata;no native effects. | Local mock/unit only |
 | /automation list | List recent schedule records. | Local mock/unit only |
+| /automation overview | Privately count stored schedule states;not delivery receipts or live readiness. | Local mock/unit only |
 | /automation repeat | Change pending elapsed repeat;omit minutes to make next send one-time. | Local mock/unit only |
 | /automation reschedule | Move pending next send to explicit offset time;repeat stays elapsed interval. | Local mock/unit only |
 | /automation reschedulezone | Move one pending schedule using explicit local time and named timezone. | Local mock/unit only |
+| /automation upcoming | Privately inspect pending sends ordered by time;no content or sending. | Local mock/unit only |
 | /automod config | Show configured rules and limits. | Local mock/unit only |
 | /automod disable | Stop automatic message moderation. | Local mock/unit only |
 | /automod enable | Enable configured rules; all rules start disabled. | Local mock/unit only |
@@ -33,9 +36,11 @@
 | /automod incidents | Show 20 recent action outcomes, no message content. | Local mock/unit only |
 | /automod removepolicy | Remove one stored ignored channel/exempt role ID,including deleted subjects. | Local mock/unit only |
 | /automod rule | Enable or disable one rule. | Local mock/unit only |
+| /automod spamthresholds | Tune bounded spam counts/window;does not enable moderation. | Local mock/unit only |
 | /automod testtext | Private dry-run of literal/caps/link rules,no punishment or spam tracking. | Local mock/unit only |
 | /automod thresholds | Tune mention/caps thresholds;does not enable rules or moderation. | Local mock/unit only |
 | /automod timeoutminutes | Set automatic timeout duration1-60 minutes;does not enable rules. | Local mock/unit only |
+| /automod unresolved | Privately inspect unresolved stored incident metadata;never retries actions. | Local mock/unit only |
 | /automod wordadd | Add a literal word/phrase to the filter. | Local mock/unit only |
 | /automod wordlist | Privately inspect twenty stored literal phrases per page. | Local mock/unit only |
 | /automod wordremove | Remove a literal filtered word/phrase. | Local mock/unit only |
@@ -67,8 +72,10 @@
 | /fun coin | Flip a coin. | Local mock/unit only |
 | /fun dare | Get an optional, safe solo activity. | Local mock/unit only |
 | /fun dice | Roll up to ten dice. | Local mock/unit only |
+| /fun dicekeep | Roll bounded dice,keep highest or lowest results;no stakes or saved state. | Local mock/unit only |
 | /fun number | One uniform integer in an inclusive bounded range;not advice. | Local mock/unit only |
 | /fun rps | Play one round of rock, paper, scissors against Luna. | Local mock/unit only |
+| /fun rpsseries | Play2-10 preselected RPS rounds against Luna;private score,no stakes. | Local mock/unit only |
 | /fun sample | Pick1-20 distinct waiting labels without replacement;no assignments. | Local mock/unit only |
 | /fun shuffle | Privately randomize all 2-20 distinct choices,no assignments. | Local mock/unit only |
 | /fun teams | Privately split 2-20 distinct labels into balanced random groups,no invites. | Local mock/unit only |
@@ -124,6 +131,7 @@
 | /music remove | Remove one queued position;never stops current track. | Local mock/unit only |
 | /music resume | Resume current track. | Local mock/unit only |
 | /music shuffle | Randomize waiting tracks only;current track unchanged. | Local mock/unit only |
+| /music skip | Stop current track once and advance waiting queue;uncertain failures freeze. | Local mock/unit only |
 | /music stay | Keep idle VC connection while this process/node are healthy;not uptime guarantee. | Local mock/unit only |
 | /music stop | Disconnect and clear this server session. | Local mock/unit only |
 | /permit blockrole | Block a role for one entire command. | Local mock/unit only |
@@ -161,9 +169,9 @@
 | /banner | Fetch a public user profile banner link,no guild membership assumption. | Local mock/unit only |
 | /boostcount | Fetch current server boost count and premium tier. | Local mock/unit only |
 | /emojiinfo | Read one current server custom emoji,no uploader or role enumeration. | Local mock/unit only |
-| /list emojis | List current server emojis,ten per page. | Local mock/unit only |
-| /list roles | List current server roles,ten per page. | Local mock/unit only |
-| /list stickers | List current server stickers,ten per page. | Local mock/unit only |
+| /list emojis | List current server emojis,ten per page with optional literal name search. | Local mock/unit only |
+| /list roles | List current server roles,ten per page with optional literal name search. | Local mock/unit only |
+| /list stickers | List current server stickers,ten per page with optional literal name search. | Local mock/unit only |
 | /membercount | Fresh approximate server member/presence counts,no member enumeration. | Local mock/unit only |
 | /poll | Manage Server: publish a native Discord poll with2-10 answers. | Local mock/unit only |
 | /roleinfo | Read current role ID,color,position and permission flags. | Local mock/unit only |

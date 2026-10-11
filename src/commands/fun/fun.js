@@ -16,6 +16,8 @@ import {
   splitTeams,
   randomNumber,
   sampleChoices,
+  rollKeep,
+  playRpsSeries,
 } from '../../services/fun.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
@@ -149,6 +151,50 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) => s.setName('dare').setDescription('Get an optional, safe solo activity.'))
   .addSubcommand((s) =>
     s
+      .setName('dicekeep')
+      .setDescription('Roll bounded dice,keep highest or lowest results;no stakes or saved state.')
+      .addIntegerOption((o) =>
+        o
+          .setName('count')
+          .setDescription('Number of dice1-10')
+          .setMinValue(1)
+          .setMaxValue(10)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('keep')
+          .setDescription('Keep1-count dice')
+          .setMinValue(1)
+          .setMaxValue(10)
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('mode')
+          .setDescription('Keep highest or lowest')
+          .addChoices({ name: 'highest', value: 'highest' }, { name: 'lowest', value: 'lowest' })
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o.setName('sides').setDescription('Sides2-1000,default6').setMinValue(2).setMaxValue(1000),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('rpsseries')
+      .setDescription('Play2-10 preselected RPS rounds against Luna;private score,no stakes.')
+      .addStringOption((o) =>
+        o
+          .setName('moves')
+          .setDescription('2-10 moves separated by |,e.g. rock|paper|scissors')
+          .setMinLength(3)
+          .setMaxLength(100)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('rps')
       .setDescription('Play one round of rock, paper, scissors against Luna.')
       .addStringOption((o) =>
@@ -216,6 +262,34 @@ export default {
         .join('\n');
       if (selected.length > 1700) throw new UserError('funShuffleTooLong');
       text = t('funSample', { choices: selected });
+    } else if (sub === 'dicekeep') {
+      const r = rollKeep(
+        i.options.getInteger('sides') ?? 6,
+        i.options.getInteger('count', true),
+        i.options.getInteger('keep', true),
+        i.options.getString('mode', true),
+      );
+      text = t('funDiceKeep', {
+        rolls: r.rolls.join(', '),
+        kept: r.kept.join(', '),
+        total: r.total,
+        mode: t('funKeep_' + i.options.getString('mode', true)),
+      });
+    } else if (sub === 'rpsseries') {
+      const r = playRpsSeries(i.options.getString('moves', true));
+      const rounds = r.rounds
+        .map(
+          (round, n) =>
+            `${n + 1}. ${t('funRps', { player: t('funMove_' + round.player), bot: t('funMove_' + round.bot), result: t('funRps_' + round.result) })}`,
+        )
+        .join('\n');
+      text = t('funSeries', {
+        rounds,
+        wins: r.wins,
+        losses: r.losses,
+        draws: r.draws,
+        result: t('funRps_' + r.result),
+      });
     } else if (sub === 'truth')
       text = t('funOptional', { prompt: t(`funTruth_${pick(TRUTH_PROMPTS)}`) });
     else if (sub === 'dare')

@@ -132,6 +132,9 @@ export class MusicQueues {
     }
   }
   async ended(guildId, eventId, reason) {
+    const current = this.sessions.get(guildId)?.current;
+    // Expected stop acknowledgement during an explicit skip is not a second advance.
+    if (current?.eventId === eventId && current.skipRequested && reason === 'stopped') return false;
     try {
       return await this.locked(guildId, async () => {
         const s = this.sessions.get(guildId);
@@ -155,6 +158,34 @@ export class MusicQueues {
       );
       return false;
     }
+  }
+  async skip(guildId, { beforeEffect } = {}) {
+    return this.locked(guildId, async () => {
+      const s = this.sessions.get(guildId);
+      if (!s?.current) throw new UserError('musicNoTrack');
+      if (s.status === 'uncertain') throw new UserError('musicUncertain');
+      const track = s.current;
+      if (beforeEffect) await beforeEffect();
+      track.skipRequested = true;
+      try {
+        await this.adapter.stopTrack(guildId);
+      } catch {
+        s.status = 'uncertain';
+        throw new UserError('musicUncertain');
+      }
+      if (s.status === 'uncertain') throw new UserError('musicUncertain');
+      if (beforeEffect) {
+        try {
+          await beforeEffect();
+        } catch (error) {
+          s.status = 'uncertain';
+          throw error;
+        }
+      }
+      s.current = null;
+      await this.advance(guildId, s);
+      return this.snapshot(guildId);
+    });
   }
   async editQueue(guildId, action, position, random = randomInt) {
     return this.locked(guildId, async () => {

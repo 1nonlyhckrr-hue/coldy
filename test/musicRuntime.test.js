@@ -338,3 +338,25 @@ test('play passes fresh exact-channel authority callback for delayed provider ef
   x.channel.id = 'other';
   await assert.rejects(() => check(), /voiceMoved/);
 });
+
+test('skip command is private localized same-channel and supplies exact delayed authority guard', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    let guard,
+      skips = 0;
+    x.c.guildConfig.language = () => locale;
+    x.i.options.getSubcommand = () => 'skip';
+    x.c.music.skip = async (_g, o) => {
+      skips++;
+      guard = o.beforeEffect;
+    };
+    await command.execute(x.i, x.c);
+    assert.equal(skips, 1);
+    await guard();
+    assert.equal(x.replies[0].flags, 64);
+    assert.deepEqual(x.replies[1].allowedMentions.parse, []);
+    x.actor.voice.channelId = 'other';
+    x.channel.id = 'other';
+    await assert.rejects(() => guard(), /voiceMoved/);
+  }
+});

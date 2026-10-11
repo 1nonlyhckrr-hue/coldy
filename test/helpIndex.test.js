@@ -4,21 +4,21 @@ import { helpPage } from '../src/services/helpIndex.js';
 import { loadCommands } from '../src/services/registry.js';
 import command from '../src/commands/general/help.js';
 const commands = await loadCommands();
-test('help pages expose all199 installed paths exactly once with complete sorted lines', () => {
+test('help pages expose all207 installed paths exactly once with complete sorted lines', () => {
   const first = helpPage(commands),
     lines = [];
-  assert.equal(first.total, 199);
+  assert.equal(first.total, 207);
   for (let page = 1; page <= first.pages; page++) {
     const result = helpPage(commands, { page });
     assert(result.lines.length <= 8);
     lines.push(...result.lines);
   }
-  assert.equal(lines.length, 199);
-  assert.equal(new Set(lines).size, 199);
+  assert.equal(lines.length, 207);
+  assert.equal(new Set(lines).size, 207);
   assert.deepEqual(lines, [...lines].sort());
 });
 test('help category and case-insensitive literal search combine without changing registry', () => {
-  assert.equal(helpPage(commands, { category: 'music' }).total, 10);
+  assert.equal(helpPage(commands, { category: 'music' }).total, 11);
   assert.deepEqual(
     helpPage(commands, { category: 'music', search: 'SHUFFLE' }).lines.map((l) => l.split(':')[0]),
     ['/music shuffle'],

@@ -65,6 +65,32 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('spamthresholds')
+      .setDescription('Tune bounded spam counts/window;does not enable moderation.')
+      .addIntegerOption((o) =>
+        o
+          .setName('messages')
+          .setDescription('3-10 total messages per window')
+          .setMinValue(3)
+          .setMaxValue(10),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('repeats')
+          .setDescription('2-10 identical normalized messages per window')
+          .setMinValue(2)
+          .setMaxValue(10),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('seconds')
+          .setDescription('Rolling window5-30seconds')
+          .setMinValue(5)
+          .setMaxValue(30),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('wordadd')
       .setDescription('Add a literal word/phrase to the filter.')
       .addStringOption((o) =>
@@ -201,6 +227,16 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show configured rules and limits.'))
+  .addSubcommand((s) =>
+    s
+      .setName('unresolved')
+      .setDescription(
+        'Privately inspect unresolved stored incident metadata;never retries actions.',
+      )
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Oldest-first page1-10').setMinValue(1).setMaxValue(10),
+      ),
+  )
   .addSubcommand((s) =>
     s.setName('incidents').setDescription('Show 20 recent action outcomes, no message content.'),
   );
@@ -347,6 +383,23 @@ export default {
       });
       content = t('automodThresholdSaved');
     }
+    if (sub === 'spamthresholds') {
+      const messages = i.options.getInteger('messages'),
+        repeats = i.options.getInteger('repeats'),
+        seconds = i.options.getInteger('seconds');
+      if ([messages, repeats, seconds].every((v) => v === null))
+        throw new UserError('automodThresholdRequired');
+      const s = c.automod.patch(i.guildId, {
+        ...(messages !== null ? { spamMessages: messages } : {}),
+        ...(repeats !== null ? { spamRepeats: repeats } : {}),
+        ...(seconds !== null ? { spamWindowSeconds: seconds } : {}),
+      });
+      content = t('automodSpamConfig', {
+        messages: s.spamMessages,
+        repeats: s.spamRepeats,
+        seconds: s.spamWindowSeconds,
+      });
+    }
     if (sub === 'wordlist') {
       const page = i.options.getInteger('page') ?? 1;
       if (!Number.isInteger(page) || page < 1 || page > 5)
@@ -388,7 +441,26 @@ export default {
           mentions: s.mentionLimit,
           percent: s.capsPercent,
           letters: s.capsMinLetters,
+        }) +
+        '\n' +
+        t('automodSpamConfig', {
+          messages: s.spamMessages,
+          repeats: s.spamRepeats,
+          seconds: s.spamWindowSeconds,
         });
+    }
+    if (sub === 'unresolved') {
+      const page = i.options.getInteger('page') ?? 1,
+        rows = c.automod.unresolved(i.guildId, page);
+      content =
+        t('automodUnresolved', { page }) +
+        '\n' +
+        (rows
+          .map(
+            (r) =>
+              `${r.message_id} | ${r.user_id} | ${r.rule} | ${r.action} | ${t('automodState_' + r.status)}`,
+          )
+          .join('\n') || t('automodEmpty'));
     }
     if (sub === 'incidents') {
       const rows = c.automod.incidents(i.guildId);

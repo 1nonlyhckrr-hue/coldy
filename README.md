@@ -4,7 +4,7 @@ Professional multipurpose Discord bot project. Repository name: `coldy`. Node.js
 
 ## Honest status
 
-**This is not a finished 541-command bot.** 41 top-level slash commands provide 199 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music has10 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
+**This is not a finished 541-command bot.** 41 top-level slash commands provide 207 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music has11 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
 
 The official Zynrax documentation yields 319 distinct documented command paths after shortcut deduplication. These are reference-only rows, not Luna implementations. The reference inventory is not advertised as the complete 541-command list. Aliases do not count as separate commands. Examples and parameter values do not count as new commands.
 
@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All556 distinct automated tests pass locally; these are not live Discord integration tests. The526-test/193-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38128706406). New556-test/199-path local changes need their own publication and CI verification. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All591 distinct automated tests pass locally; these are not live Discord integration tests. The556-test/199-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38131488672). New591-test/207-path local changes need their own publication and CI verification. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -52,7 +52,7 @@ Pinned Prettier formats source/scripts/tests;`npm run format:check` verifies sty
 
 `npm run lint` uses pinned ESLint10.12.0;current Node minimum22.13+ keeps tooling compatible. CI includes lint with formatter/tests and inventory drift checks.
 
-Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint526/193 (9dcd6f64d3e62e014803387ecc186f61f786ba80);local556/199 awaits publication. Never commit tokens or private runtime data.
+Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint556/199 (9a3c6ea65e1d1b054dff82ea39c3dc0e21537d37);local591/207 awaits publication. Never commit tokens or private runtime data.
 
 Private source publication on October11,2026:506-test/182-path source checkpoint commit `0d2fff5d1356b56e06227adf7695b061ac79228b`. [Publisher verification](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125749267) passed;[current-head Node22/24 CI](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125897895) passed. Temporary transfer release/asset/tag deleted. No deployment or live Discord acceptance. This local publication receipt was added after the published checkpoint;later archive will include it.
 

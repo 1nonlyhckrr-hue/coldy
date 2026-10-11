@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-41 top-level slash commands,199 executable paths,556 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+41 top-level slash commands,207 executable paths,591 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -81,7 +81,7 @@ Mapped CustomRole claim/release require exact member/appbot/interaction guild. C
 
 CustomRole uncertain creation reconcile fetches observed role before current manager/appbot authority and hierarchy. Loss during role lookup keeps uncertain record unchanged,no native mutation.483 local tests;native acceptance pending.
 
-Repository made PRIVATE October11,2026 at owner request,verified in GitHub settings and visually on repo header. Existing checkpoint/history unchanged. No future public upload/share is authorized by earlier publication permission.
+Repository made PRIVATE October11,2026 at owner request,verified in GitHub settings and visually on repo header. Existing checkpoint/history unchanged. Historical boundary at that time;later owner explicitly reversed to PUBLIC,see current public checkpoint receipt.
 
 VoiceMaster creation observation/activation require nonempty native channel identity and exactly one creating reservation. Missing identity after accepted create becomes uncertain and cannot replay.483 local tests;native acceptance pending.
 
@@ -157,3 +157,19 @@ Automation batch:/automation cancelpending confirm:true cancels all current guil
 LiveREST metadata candidatehttps://lavalink.nazha.online/v4/info verifiedstable4.2.2+YouTube at15:32IST,strictguardpass. Not selected/configured/activated;providerprivacy/trust/SLA/clientvoice/playbackunknown. No token/botID/voicecredential/search/websocket sent.553localtests,199paths unchanged. SeeMusicguide/sourceURLs.
 
 Offline deploypreflight `npm run doctor` checksNode/required fieldshapes/guild-registrationID/registry,redacts token/node-auth/database path and reports eventflags/musicoff-or-opted-in. No login/network/registration/database access or volume write. Missingguild blocks registration preflight without blocking actualbot code. Passing notlive readiness.556localtests,199pathsunchanged;localunpublished.
+
+556/199sourcePUBLICat9a3c6ea65e1d1b054dff82ea39c3dc0e21537d37;exactheadNode22/24CIhttps://github.com/1nonlyhckrr-hue/coldy/actions/runs/38131488672 green,publisher38131254184,temptransferremoved. No deploy.
+
+Antinukealert safety batch:acceptednativealertrequiresnonemptystringmessageidentity;missingidentitypausesuncertainwithoutreplay. Outcomeupdatesrequireexactonerecordedreservation;terminal/missingcannotrewrite. /antinuke unresolved [page] exactcurrentManageGuild privatelyshowsoldest-first10/page1-10unresolvedstoredID/actor/count/state only,notcurrentdanger/deliveryproof/punishment. No retry/mutation/nativefetch.560localtests,41top/200paths,SQL26,newlocalunpublished;alert-only remains,notpreventiveantinuke.
+
+Music explicit skip batch:/music skip same-channel currentauthority before stop and again before nextplay. Confirmedstop advancesone waitingtrack once;matchingexpectedstoppedackignored,staleevents cannotconsume nexttrack. Stopfailure/concurrentprovidererror/poststoplostauthority freezeswithoutnextplay/retry. Lasttrack respectsidleStayorleaves;no search/replay/historysave. InstalledShoukaku4.3stopTrack implementation inspected.566localtests,41top/201pathsSQL26;newlocalunpublished,notlivevoiceverified,musicdefaultoff.
+
+AutoModbatch:/automod spamthresholds tunes3-10total,2-10identicalnormalizedmessages,rolling5-30seconds withoutenable/action/rulechange. Defaults6/3/10 preservelegacysettings;configshowsstoredbounds. Sameguild/user deduped bounded10history,cleanupretainslongest30secondwindow. Exactcurrentmanager/private3locales/no-ping. Incidentfinishrequiresone reservedreceipt;loggingfailureaftercompletion cannotrewritecompletedasuncertain.571localtests,41top/202pathsSQL26,localunpublished;falsepositivefield/nativeacceptancepending.
+
+AutoModmetadatareviewbatch:/automod unresolved privately reads stored reserved/uncertain rows oldestfirst10/page1-10,totalmax100visible,30dayretention;no actions/replay/nativeoutcome/currentriskclaims. Exactcurrentmanager gating,3locales,no-ping. Terminal/foreignrows excluded. RealSQLite reopen tested for spam config plus reserved->uncertain recovery with no replay.575localtests/203paths,published556/199unchanged.
+
+Automationqueuebatch:/automation upcoming pending-only chronologicalmetadata10/page1-3 within25activecap,bodyfree,guildscoped,no send. /automation overview allstoredrecords statecounts(notjustlatest100) plus earliestpendingdue;counts notdelivery/readinessreceipts,uncertain noautoretry. Currentexactmanager/private3locales/no-ping. List nowrejectsnoninteger/negative/zero pagebounds.580localtests/205paths;published556/199unchanged.
+
+Funbatch:/fun dicekeep count keep mode [sides] independently rolls1-10dice2-1000sides(default6),keepshighest/lowest1-count,showssource+kept+sum,notstakes. /fun rpsseries moves validates2-10preselectedmoves beforeRNG,independentuniformbotmoves,completeperround+win/loss/drawtotals andseriesresult. Stateless/private3locales/no-ping/no external effects.586localtests/207paths,published556/199unchanged.
+
+Utilitymetadata batch:existing /list roles/emojis/stickers optional literalcase-insensitivenamesearch(fullname,beforepagination) validatesallfetchedrowsbeforefilter. Invalidqueriesbeforefetch,controls/over128namesrejected. Displaynameover50charactersshortensbeforemarkdownescape,completeIDs plusnotice,no brokenescape/overflow. No newaliases/countinflation,207paths unchanged;591localtests,published556/199unchanged.

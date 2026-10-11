@@ -72,6 +72,22 @@ export class MessageSchedules {
       .prepare('SELECT * FROM message_schedules WHERE guild_id=? ORDER BY id DESC LIMIT 100')
       .all(guildId);
   }
+  upcoming(guildId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 3)
+      throw new UserError('automationQueuePageInvalid');
+    return this.db
+      .prepare(
+        "SELECT id,channel_id,due_at,repeat_ms FROM message_schedules WHERE guild_id=? AND status='pending' ORDER BY due_at,id LIMIT 10 OFFSET ?",
+      )
+      .all(guildId, (page - 1) * 10);
+  }
+  overview(guildId) {
+    return this.db
+      .prepare(
+        "SELECT status,count(*) AS count,min(CASE WHEN status='pending' THEN due_at END) AS next_due FROM message_schedules WHERE guild_id=? GROUP BY status ORDER BY status",
+      )
+      .all(guildId);
+  }
   claim() {
     return this.db.transaction(() => {
       const row = this.db

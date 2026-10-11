@@ -994,3 +994,155 @@ test('cancelpending denied confirmation or current manager identity never change
     }
   }
 });
+
+test('upcoming metadata is pending-only guild-scoped due ordered deterministic paginated and body-free', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 25; n++)
+      x.store.create({
+        ...x.input,
+        interactionId: String(n),
+        dueAt: x.now() + 60000 + (24 - n) * 1000,
+      });
+    x.db
+      .prepare(
+        "INSERT INTO message_schedules(guild_id,channel_id,body,due_at,status,interaction_id,created_at) VALUES('g',?,'secret',?,'uncertain','terminal',?)",
+      )
+      .run(channelId, x.now(), x.now());
+    x.store.create({ ...x.input, guildId: 'other', interactionId: 'foreign' });
+    const a = x.store.upcoming('g'),
+      b = x.store.upcoming('g', 2),
+      c = x.store.upcoming('g', 3);
+    assert.equal(a.length, 10);
+    assert.equal(b.length, 10);
+    assert.equal(c.length, 5);
+    assert(a[0].due_at < b[0].due_at);
+    assert.equal(a[0].id, 25);
+    assert.deepEqual(Object.keys(a[0]), ['id', 'channel_id', 'due_at', 'repeat_ms']);
+    assert.equal(x.store.upcoming('other').length, 1);
+    for (const p of [0, 4, 1.5, '1'])
+      assert.throws(() => x.store.upcoming('g', p), /automationQueuePageInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('schedule overview aggregates beyond100 recent rows without body/channel disclosure and isolates guild', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 105; n++)
+      x.db
+        .prepare(
+          "INSERT INTO message_schedules(guild_id,channel_id,body,due_at,status,interaction_id,created_at) VALUES('g',?,'private',?,'done',?,?)",
+        )
+        .run(channelId, x.now(), String(n), x.now());
+    x.store.create(x.input);
+    x.store.create({ ...x.input, guildId: 'other', interactionId: 'foreign' });
+    const rows = x.store.overview('g');
+    assert.equal(x.store.list('g').length, 100);
+    assert.equal(rows.find((r) => r.status === 'done').count, 105);
+    assert.equal(rows.find((r) => r.status === 'pending').count, 1);
+    assert.equal(rows.find((r) => r.status === 'pending').next_due, x.input.dueAt);
+    assert.equal(rows.find((r) => r.status === 'done').next_due, null);
+    assert.deepEqual(Object.keys(rows[0]), ['status', 'count', 'next_due']);
+    assert.equal(x.store.overview('empty').length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('upcoming reads reflect claims and cancellation without mutating jobs or replaying uncertain work', () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    x.advance(60000);
+    assert.equal(x.store.upcoming('g')[0].id, id);
+    x.store.claim();
+    assert.equal(x.store.upcoming('g').length, 0);
+    x.store.finish(id, false);
+    assert.equal(x.store.overview('g')[0].status, 'uncertain');
+    assert.equal(x.store.claim(), null);
+    x.store.cancel(id, 'g');
+    assert.equal(x.store.overview('g')[0].status, 'cancelled');
+  } finally {
+    x.db.close();
+  }
+});
+test('upcoming and overview slash localize private metadata without sends or schedule mutations', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['upcoming', 'overview']) {
+      const x = setup();
+      try {
+        x.store.create(x.input);
+        x.c.guildConfig.setLanguage('g', locale);
+        let reply;
+        const before = x.store.list('g');
+        const i = {
+          guild: x.guild,
+          guildId: 'g',
+          user: { id: 'actor' },
+          deferReply: async (p) => assert.equal(p.flags, 64),
+          editReply: async (p) => {
+            reply = p;
+          },
+          options: { getSubcommand: () => sub, getInteger: () => null },
+        };
+        await command.execute(i, x.c);
+        assert.deepEqual(reply.allowedMentions.parse, []);
+        const desc = reply.embeds[0].data.description;
+        assert(
+          desc.includes(
+            translate(locale, sub === 'overview' ? 'automationOverview' : 'automationUpcoming', {
+              page: 1,
+            }),
+          ),
+        );
+        assert(!desc.includes(x.input.body));
+        assert.deepEqual(x.store.list('g'), before);
+        assert.equal(x.sent.length, 0);
+      } finally {
+        x.db.close();
+      }
+    }
+});
+test('queue read slash gates current exact manager before accessing storage and rejects invalid list/page bounds', async () => {
+  const x = setup();
+  try {
+    let reads = 0;
+    const original = x.store.upcoming.bind(x.store);
+    x.store.upcoming = (...a) => {
+      reads++;
+      return original(...a);
+    };
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'actor' },
+      deferReply: async () => {},
+      editReply: async () => {},
+      options: { getSubcommand: () => 'upcoming', getInteger: () => 1 },
+    };
+    for (const actor of [
+      { id: 'wrong', guild: { id: 'g' }, permissions: { has: () => true } },
+      { id: 'actor', guild: { id: 'other' }, permissions: { has: () => true } },
+      { id: 'actor', guild: { id: 'g' }, permissions: { has: () => false } },
+    ]) {
+      x.guild.members.fetch = async () => actor;
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    }
+    assert.equal(reads, 0);
+    x.guild.members.fetch = async () => ({
+      id: 'actor',
+      guild: { id: 'g' },
+      permissions: { has: () => true },
+    });
+    i.options.getInteger = () => 4;
+    await assert.rejects(() => command.execute(i, x.c), /automationQueuePageInvalid/);
+    i.options.getSubcommand = () => 'list';
+    for (const p of [0, 1.5, -1]) {
+      i.options.getInteger = () => p;
+      await assert.rejects(() => command.execute(i, x.c), /responderPageInvalid/);
+    }
+  } finally {
+    x.db.close();
+  }
+});

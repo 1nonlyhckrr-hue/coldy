@@ -78,6 +78,11 @@ export class LavalinkAdapter {
     this.eventIds.set(guildId, { encoded, eventId });
     await player.playTrack({ track: { encoded, userData: { lunaEventId: eventId } }, volume: 50 });
   }
+  async stopTrack(guildId) {
+    const player = this.manager.players.get(guildId);
+    if (!player) throw new UserError('musicNoSession');
+    await player.stopTrack();
+  }
   async pause(guildId, paused) {
     const player = this.manager.players.get(guildId);
     if (!player) throw new UserError('musicNoSession');

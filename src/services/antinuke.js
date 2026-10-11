@@ -128,7 +128,10 @@ export class AntinukeAlerts {
   finish(id, status) {
     if (!['alerted', 'uncertain', 'unavailable'].includes(status))
       throw new TypeError('Invalid alert state');
-    this.db.prepare('UPDATE antinuke_incidents SET status=? WHERE id=?').run(status, id);
+    const result = this.db
+      .prepare("UPDATE antinuke_incidents SET status=? WHERE id=? AND status='recorded'")
+      .run(status, id);
+    if (result.changes !== 1) throw new Error('Audit alert reservation not recorded');
   }
   incidents(guildId) {
     return this.db
@@ -136,6 +139,15 @@ export class AntinukeAlerts {
         'SELECT id,actor_id,action,event_count,status,created_at FROM antinuke_incidents WHERE guild_id=? ORDER BY id DESC LIMIT 20',
       )
       .all(guildId);
+  }
+  unresolved(guildId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 10)
+      throw new UserError('antinukePageInvalid');
+    return this.db
+      .prepare(
+        "SELECT id,actor_id,event_count,status,created_at FROM antinuke_incidents WHERE guild_id=? AND status IN ('recorded','uncertain','unavailable') ORDER BY created_at,id LIMIT 10 OFFSET ?",
+      )
+      .all(guildId, (page - 1) * 10);
   }
   cleanup(now = Date.now()) {
     this.db.transaction(() => {
@@ -165,9 +177,11 @@ export function createAntinukeHandler(c) {
         return;
       }
       try {
-        await channel.send(
+        const sent = await channel.send(
           lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }),
         );
+        if (typeof sent?.id !== 'string' || !sent.id)
+          throw new Error('Missing accepted audit alert identity');
       } catch {
         c.antinuke.finish(incident.id, 'uncertain');
         return;

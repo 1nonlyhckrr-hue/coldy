@@ -336,3 +336,99 @@ test('observed stable4.2.2 metadata shape passes strict guard without enabling a
     ),
   );
 });
+
+test('explicit skip confirms stop once then advances only one waiting track and ignores stopped ack', async () => {
+  const s = setup();
+  for (let n = 0; n < 3; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const old = s.q.sessions.get('g').current.eventId;
+  let stops = 0;
+  s.adapter.stopTrack = async () => {
+    stops++;
+    assert.equal(await s.q.ended('g', old, 'stopped'), false);
+  };
+  await s.q.skip('g');
+  assert.equal(stops, 1);
+  assert.equal(s.q.snapshot('g').queue.length, 1);
+  assert.notEqual(s.q.sessions.get('g').current.eventId, old);
+  assert.equal(await s.q.ended('g', old, 'stopped'), false);
+  assert.equal(s.calls.filter((c) => c[0] === 'play').length, 2);
+});
+test('skip last track respects idle stay and otherwise disconnects without replay', async () => {
+  for (const stay of [false, true]) {
+    const s = setup();
+    s.adapter.stopTrack = async () => {};
+    await s.q.enqueue('g', 'vc', 'sample', 'u');
+    if (stay) await s.q.stay('g', true);
+    await s.q.skip('g');
+    assert.equal(s.q.snapshot('g') !== null, stay);
+    if (stay) assert.equal(s.q.snapshot('g').status, 'idle');
+    assert.equal(s.calls.filter((c) => c[0] === 'play').length, 1);
+  }
+});
+test('skip uncertain stop,provider race or poststop lost authority freezes without next play', async () => {
+  for (const kind of ['stop', 'race', 'authority']) {
+    const s = setup();
+    for (let n = 0; n < 2; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+    let stops = 0,
+      checks = 0;
+    const event = s.q.sessions.get('g').current.eventId;
+    s.adapter.stopTrack = async () => {
+      stops++;
+      if (kind === 'stop') throw Error('SECRET');
+      if (kind === 'race') await s.q.ended('g', event, 'error');
+    };
+    await assert.rejects(() =>
+      s.q.skip('g', {
+        beforeEffect: async () => {
+          if (++checks === 2 && kind === 'authority') throw Error('voiceMoved');
+        },
+      }),
+    );
+    assert.equal(s.q.snapshot('g').status, 'uncertain');
+    assert.equal(s.q.snapshot('g').queue.length, 1);
+    assert.equal(s.calls.filter((c) => c[0] === 'play').length, 1);
+    await assert.rejects(() => s.q.skip('g'), /musicUncertain/);
+    assert.equal(stops, 1);
+  }
+});
+test('skip missing locked or preeffect denied sessions never stop playback', async () => {
+  const s = setup();
+  let stops = 0;
+  s.adapter.stopTrack = async () => {
+    stops++;
+  };
+  await assert.rejects(() => s.q.skip('g'), /musicNoTrack/);
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const before = s.q.snapshot('g');
+  await assert.rejects(() =>
+    s.q.skip('g', {
+      beforeEffect: async () => {
+        throw Error('voiceMoved');
+      },
+    }),
+  );
+  assert.deepEqual(s.q.snapshot('g'), before);
+  s.q.active.add('g');
+  await assert.rejects(() => s.q.skip('g'), /musicBusy/);
+  assert.equal(stops, 0);
+});
+test('adapter stopTrack uses installed player stop method without disconnecting or changing event token', async () => {
+  let stops = 0;
+  const a = new LavalinkAdapter({
+    players: new Map([
+      [
+        'g',
+        {
+          stopTrack: async () => {
+            stops++;
+          },
+        },
+      ],
+    ]),
+  });
+  a.eventIds.set('g', { eventId: 'e' });
+  await a.stopTrack('g');
+  assert.equal(stops, 1);
+  assert.equal(a.eventIds.get('g').eventId, 'e');
+  await assert.rejects(() => a.stopTrack('other'), /musicNoSession/);
+});

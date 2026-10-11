@@ -226,6 +226,21 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) => o.setName('page').setDescription('Page number').setMinValue(1)),
   )
   .addSubcommand((s) =>
+    s
+      .setName('upcoming')
+      .setDescription('Privately inspect pending sends ordered by time;no content or sending.')
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Pending queue page1-3').setMinValue(1).setMaxValue(3),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('overview')
+      .setDescription(
+        'Privately count stored schedule states;not delivery receipts or live readiness.',
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('config').setDescription('Show schedule limits and restart policy.'),
   );
 export default {
@@ -362,13 +377,39 @@ export default {
       const rows = c.messageSchedules.list(i.guildId),
         pages = Math.max(1, Math.ceil(rows.length / 10)),
         page = i.options.getInteger('page') ?? 1;
-      if (page > pages) throw new UserError('responderPageInvalid', { pages });
+      if (!Number.isInteger(page) || page < 1 || page > pages)
+        throw new UserError('responderPageInvalid', { pages });
       content =
         t('automationList', { page, pages }) +
         '\n' +
         (rows
           .slice((page - 1) * 10, page * 10)
           .map((r) => `#${r.id} | ${r.status} | <t:${Math.floor(r.due_at / 1000)}:f>`)
+          .join('\n') || t('automationEmpty'));
+    }
+    if (sub === 'upcoming') {
+      const page = i.options.getInteger('page') ?? 1,
+        rows = c.messageSchedules.upcoming(i.guildId, page);
+      content =
+        t('automationUpcoming', { page }) +
+        '\n' +
+        (rows
+          .map(
+            (r) =>
+              `#${r.id} | ${r.channel_id} | <t:${Math.floor(r.due_at / 1000)}:f> | ${r.repeat_ms === null ? t('automationNoRepeat') : t('automationElapsedRepeat', { minutes: r.repeat_ms / 60000 })}`,
+          )
+          .join('\n') || t('automationEmpty'));
+    }
+    if (sub === 'overview') {
+      const rows = c.messageSchedules.overview(i.guildId);
+      content =
+        t('automationOverview') +
+        '\n' +
+        (rows
+          .map(
+            (r) =>
+              `${t('automationState_' + r.status)}: ${r.count}${r.next_due === null ? '' : ` | <t:${Math.floor(r.next_due / 1000)}:f>`}`,
+          )
           .join('\n') || t('automationEmpty'));
     }
     if (sub === 'config') content = t('automationConfig');

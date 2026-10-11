@@ -108,7 +108,10 @@ test('audit handler sends localized no-ping alert once without any punishment AP
           guildId: 'g',
           type: ChannelType.GuildText,
           permissionsFor: () => ({ has: () => true }),
-          send: async (p) => sent.push(p),
+          send: async (p) => {
+            sent.push(p);
+            return { id: 'native-alert' };
+          },
         }),
       },
     },
@@ -392,6 +395,137 @@ test('antinuke trust verifies member guild and repeats admin authority after tar
       };
       await assert.rejects(() => command.execute(i, c));
       assert.deepEqual(r.get('g').trustedUsers, []);
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('audit alert finish requires one recorded reservation and terminal states cannot rewrite', () => {
+  const { db, r } = setup();
+  try {
+    r.record(entry(1), guild, now);
+    r.record(entry(2), guild, now);
+    for (const status of ['alerted', 'uncertain', 'unavailable']) {
+      db.prepare("UPDATE antinuke_incidents SET status='recorded' WHERE id=1").run();
+      r.finish(1, status);
+      assert.equal(r.incidents('g')[0].status, status);
+      for (const next of ['alerted', 'uncertain', 'unavailable'])
+        assert.throws(() => r.finish(1, next));
+    }
+    assert.throws(() => r.finish(999, 'alerted'));
+    assert.throws(() => r.finish(1, 'bad'));
+  } finally {
+    db.close();
+  }
+});
+test('accepted audit send missing native identity becomes uncertain without automatic replay', async () => {
+  for (const returned of [undefined, {}, { id: '' }, { id: 42 }]) {
+    const { db, r } = setup();
+    let sends = 0;
+    const g = {
+      ...guild,
+      members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+      channels: {
+        fetch: async () => ({
+          id: ids.channel,
+          guildId: 'g',
+          type: 0,
+          permissionsFor: () => ({ has: () => true }),
+          send: async () => {
+            sends++;
+            return returned;
+          },
+        }),
+      },
+    };
+    const h = createAntinukeHandler({
+      antinuke: r,
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      logger: { warn() {} },
+    });
+    try {
+      await h(entry(1), g);
+      await h(entry(2), g);
+      await h(entry(2), g);
+      assert.equal(sends, 1);
+      assert.equal(r.incidents('g')[0].status, 'uncertain');
+    } finally {
+      db.close();
+    }
+  }
+});
+test('unresolved audit metadata excludes terminal/foreign rows and paginates oldest first', () => {
+  const { db, r } = setup();
+  try {
+    for (let n = 0; n < 15; n++)
+      db.prepare(
+        'INSERT INTO antinuke_incidents(guild_id,actor_id,action,event_count,status,created_at) VALUES(?,?,?,?,?,?)',
+      ).run('g', ids.actor, 1, 2, n === 14 ? 'alerted' : 'uncertain', now + n);
+    db.prepare(
+      'INSERT INTO antinuke_incidents(guild_id,actor_id,action,event_count,status,created_at) VALUES(?,?,?,?,?,?)',
+    ).run('other', ids.actor, 1, 2, 'recorded', now - 1);
+    const first = r.unresolved('g', 1),
+      second = r.unresolved('g', 2);
+    assert.equal(first.length, 10);
+    assert.equal(second.length, 4);
+    assert(first[0].id < second[0].id);
+    assert.equal(r.unresolved('other').length, 1);
+    assert.deepEqual(Object.keys(first[0]), [
+      'id',
+      'actor_id',
+      'event_count',
+      'status',
+      'created_at',
+    ]);
+    for (const p of [0, 11, 1.5, '1']) assert.throws(() => r.unresolved('g', p));
+  } finally {
+    db.close();
+  }
+});
+test('unresolved audit slash is exact current manager gated private localized and stored-only', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const { db, r } = setup();
+    try {
+      r.record(entry(1), guild, now);
+      r.record(entry(2), guild, now);
+      let reply;
+      const i = {
+        guildId: 'g',
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({
+              id: 'actor',
+              guild: { id: 'g' },
+              permissions: { has: () => true },
+            }),
+          },
+        },
+        user: { id: 'actor' },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+        options: { getSubcommand: () => 'unresolved', getInteger: () => 1 },
+      };
+      const c = {
+        antinuke: r,
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      const before = r.incidents('g');
+      await command.execute(i, c);
+      assert.deepEqual(r.incidents('g'), before);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert(
+        reply.embeds[0].data.description.includes(translate(locale, 'antinukeState_recorded')),
+      );
+      i.guild.members.fetch = async () => ({
+        id: 'wrong',
+        guild: { id: 'g' },
+        permissions: { has: () => true },
+      });
+      await assert.rejects(() => command.execute(i, c), /userPermission/);
     } finally {
       db.close();
     }

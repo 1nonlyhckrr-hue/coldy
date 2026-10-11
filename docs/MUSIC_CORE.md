@@ -1,6 +1,6 @@
 # Music:experimental opt-in route,not live verified
 
-10 executable paths:play,pause,resume,stop,queue,nowplaying,stay,remove,clear,shuffle. Owner accepted public-node YouTube source-policy/takedown/availability risk October11,2026. Off by default. Direct rights-cleared HTTP catalog queue/adapter core remains separate and tested;no implicit source mirroring.
+11 executable paths:play,pause,resume,stop,queue,nowplaying,stay,remove,clear,shuffle,skip. Owner accepted public-node YouTube source-policy/takedown/availability risk October11,2026. Off by default. Direct rights-cleared HTTP catalog queue/adapter core remains separate and tested;no implicit source mirroring.
 
 Node must use TLS,stableLavalink4.2+ with YouTube source and compatible client. Shoukaku4.3.0 channelId support is pinned. First public provider returned opaque major0/minor0 snapshot and remains rejected;not claimed usable. No real token,server deployment,voice join or playback validated. No catalogue-wide Bollywood/uptime promise.
 
@@ -29,3 +29,5 @@ Play refreshes exact current voice authority after resolution and again after jo
 ## Verified version candidate,not active provider
 
 October11,2026 15:32IST:liveTLS GET `https://lavalink.nazha.online/v4/info` returned semver4.2.2,major4/minor2/patch2,empty prerelease andYouTube source. Existing strict guard passes without bypass. Public directory listsfree443TLS endpoint:https://lavalink.darrennathanael.com/SSL/Lavalink-SSL/ . This establishes metadata compatibility prerequisite,not trusted operator/privacy terms,playback or uptime. Operator ownsite:https://nazha.online/ describes its freebot,not a public-node SLA. Singapore siblingreturned530. No botID/token/voicecredentials/websocket/search/trackload/player disclosed or created. Not configured by default. Operator must independently choose/approve provider and verify live voice/client/source behavior at launch.
+
+`/music skip` explicitly stops current track once before advancing one waiting track. Same-channel current permissions/readiness rechecked before stop and before next play. Expected matching stopped acknowledgement is ignored;other concurrent provider errors freeze. Unknown stop/late failures cannot automatically cascade. Lasttrack leaves unless stayenabled,thenidle.566localtests,not actualDiscordvoice/playbackacceptance. Providerselection/terms/privacy/SLAstillunverified;defaultoff.

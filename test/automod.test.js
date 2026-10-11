@@ -887,3 +887,297 @@ test('AutoMod phrase listing default page reads only exact guild and does not re
     x.db.close();
   }
 });
+
+test('spam thresholds default compatibly and bounded config validates without enabling rules', () => {
+  const x = setup();
+  try {
+    const s = x.automod.get('g');
+    assert.equal(s.spamMessages, 6);
+    assert.equal(s.spamRepeats, 3);
+    assert.equal(s.spamWindowSeconds, 10);
+    x.automod.patch('g', { spamMessages: 10, spamRepeats: 2, spamWindowSeconds: 30 });
+    assert.equal(x.automod.get('g').enabled, false);
+    assert.equal(x.automod.get('other').spamMessages, 6);
+    for (const changes of [
+      { spamMessages: 2 },
+      { spamMessages: 11 },
+      { spamRepeats: 1 },
+      { spamRepeats: 11 },
+      { spamWindowSeconds: 4 },
+      { spamWindowSeconds: 31 },
+      { spamMessages: 3.5 },
+    ])
+      assert.throws(() => x.automod.patch('g', changes));
+  } finally {
+    x.db.close();
+  }
+});
+test('spam rolling window boundary/replay counts reflect configured thresholds and per-user guild scope', () => {
+  const x = setup();
+  try {
+    let now = 100000;
+    x.automod.now = () => now;
+    const s = x.automod.patch('g', {
+      rules: { spam: true },
+      spamMessages: 3,
+      spamRepeats: 2,
+      spamWindowSeconds: 5,
+    });
+    assert.equal(x.automod.detect({ ...x.m, id: '1', content: 'a' }, s), null);
+    assert.equal(x.automod.detect({ ...x.m, id: '1', content: 'a' }, s), null);
+    assert.equal(x.automod.detect({ ...x.m, id: '2', content: 'b' }, s), null);
+    assert.equal(x.automod.detect({ ...x.m, id: '3', content: 'c' }, s), 'spam');
+    assert.equal(
+      x.automod.detect({ ...x.m, id: '4', guild: { id: 'other' }, content: 'a' }, s),
+      null,
+    );
+    now += 5000;
+    assert.equal(x.automod.detect({ ...x.m, id: '5', content: 'a' }, s), null);
+    assert.equal(x.automod.detect({ ...x.m, id: '6', content: ' A ' }, s), 'spam');
+  } finally {
+    x.db.close();
+  }
+});
+test('spam history cleanup retains longest allowed window then expires and remains bounded', () => {
+  const x = setup();
+  try {
+    let now = 100000;
+    x.automod.now = () => now;
+    const s = x.automod.patch('g', {
+      rules: { spam: true },
+      spamMessages: 10,
+      spamRepeats: 10,
+      spamWindowSeconds: 30,
+    });
+    x.automod.detect({ ...x.m, id: 'a', content: 'one' }, s);
+    now += 15000;
+    x.automod.cleanup();
+    assert.equal(x.automod.recent.size, 1);
+    now += 15000;
+    x.automod.cleanup();
+    assert.equal(x.automod.recent.size, 0);
+    for (let n = 0; n < 50; n++) x.automod.detect({ ...x.m, id: String(n), content: String(n) }, s);
+    assert.equal(x.automod.recent.get('g:u').length, 10);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod finish transitions one reserved receipt only and logging failure cannot rewrite completed', async () => {
+  const x = setup();
+  try {
+    x.automod.reserve(x.m, 'words', 'warn');
+    x.automod.finish(x.m.id, 'completed');
+    for (const status of ['completed', 'uncertain', 'failed'])
+      assert.throws(() => x.automod.finish(x.m.id, status));
+    assert.throws(() => x.automod.finish('missing', 'completed'));
+    x.db.prepare('DELETE FROM automod_incidents').run();
+    x.automod.patch('g', { enabled: true, rules: { words: true }, words: ['bad'] });
+    x.c.serverLogs = {
+      emit: async () => {
+        throw Error('log failed');
+      },
+    };
+    await createAutoModHandler(x.c)(x.m);
+    assert.equal(x.automod.incidents('g')[0].status, 'completed');
+  } finally {
+    x.db.close();
+  }
+});
+test('spamthreshold slash updates chosen bounds privately in all locales with manager gate and no enabling', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      x.guild.members.fetch = async () => ({
+        id: 'actor',
+        guild: { id: 'g' },
+        permissions: { has: () => true },
+      });
+      let p;
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'actor' },
+        deferReply: async (r) => assert.equal(r.flags, 64),
+        editReply: async (r) => {
+          p = r;
+        },
+        options: {
+          getSubcommand: () => 'spamthresholds',
+          getInteger: (n) => (n === 'messages' ? 4 : n === 'repeats' ? 2 : 15),
+        },
+      };
+      await command.execute(i, x.c);
+      assert.equal(x.automod.get('g').enabled, false);
+      assert.deepEqual(p.allowedMentions.parse, []);
+      assert.equal(
+        p.embeds[0].data.description,
+        translate(locale, 'automodSpamConfig', { messages: 4, repeats: 2, seconds: 15 }),
+      );
+      const before = x.automod.get('g');
+      i.options.getInteger = () => null;
+      await assert.rejects(() => command.execute(i, x.c), /automodThresholdRequired/);
+      assert.deepEqual(x.automod.get('g'), before);
+      x.guild.members.fetch = async () => ({
+        id: 'wrong',
+        guild: { id: 'g' },
+        permissions: { has: () => true },
+      });
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('unresolved AutoMod metadata oldest-first bounded pages exclude terminal/foreign records without changing them', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 16; n++)
+      x.db
+        .prepare('INSERT INTO automod_incidents VALUES(?,?,?,?,?,?,?)')
+        .run(
+          String(n).padStart(3, '0'),
+          'g',
+          'u',
+          'words',
+          'delete',
+          n < 14 ? (n % 2 ? 'uncertain' : 'reserved') : 'completed',
+          100000 + n,
+        );
+    x.db
+      .prepare('INSERT INTO automod_incidents VALUES(?,?,?,?,?,?,?)')
+      .run('foreign', 'other', 'u', 'links', 'timeout', 'uncertain', 99999);
+    x.db
+      .prepare('INSERT INTO automod_incidents VALUES(?,?,?,?,?,?,?)')
+      .run('failed', 'g', 'u', 'words', 'warn', 'failed', 99999);
+    const before = x.automod.incidents('g'),
+      a = x.automod.unresolved('g'),
+      b = x.automod.unresolved('g', 2);
+    assert.equal(a.length, 10);
+    assert.equal(b.length, 4);
+    assert.equal(a[0].message_id, '000');
+    assert.equal(b[0].message_id, '010');
+    assert.equal(x.automod.unresolved('g', 10).length, 0);
+    assert.equal(x.automod.unresolved('other').length, 1);
+    assert.deepEqual(Object.keys(a[0]), [
+      'message_id',
+      'user_id',
+      'rule',
+      'action',
+      'status',
+      'created_at',
+    ]);
+    assert.deepEqual(x.automod.incidents('g'), before);
+    for (const page of [0, 11, 1.5, '1'])
+      assert.throws(() => x.automod.unresolved('g', page), /automodIncidentPageInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod unresolved slash privately localizes states and enforces exact current manager before metadata access', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.automod.reserve(x.m, 'words', 'delete');
+      x.c.guildConfig.setLanguage('g', locale);
+      let reply;
+      x.guild.members.fetch = async () => ({
+        id: 'actor',
+        guild: { id: 'g' },
+        permissions: { has: () => true },
+      });
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'actor' },
+        deferReply: async (r) => assert.equal(r.flags, 64),
+        editReply: async (r) => {
+          reply = r;
+        },
+        options: { getSubcommand: () => 'unresolved', getInteger: () => null },
+      };
+      await command.execute(i, x.c);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert(reply.embeds[0].data.description.includes(translate(locale, 'automodState_reserved')));
+      assert(reply.embeds[0].data.description.includes('msg | u | words | delete'));
+      assert.equal(x.deleted.length, 0);
+      assert.equal(x.automod.incidents('g')[0].status, 'reserved');
+      let reads = 0;
+      const original = x.automod.unresolved.bind(x.automod);
+      x.automod.unresolved = (...args) => {
+        reads++;
+        return original(...args);
+      };
+      for (const actor of [
+        { id: 'wrong', guild: { id: 'g' }, permissions: { has: () => true } },
+        { id: 'actor', guild: { id: 'other' }, permissions: { has: () => true } },
+        { id: 'actor', guild: { id: 'g' }, permissions: { has: () => false } },
+      ]) {
+        x.guild.members.fetch = async () => actor;
+        await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+      }
+      assert.equal(reads, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('unresolved AutoMod slash rejects invalid pages and handles empty guild without native mutation', async () => {
+  const x = setup();
+  try {
+    x.guild.members.fetch = async () => ({
+      id: 'actor',
+      guild: { id: 'g' },
+      permissions: { has: () => true },
+    });
+    let reply;
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'actor' },
+      deferReply: async () => {},
+      editReply: async (r) => {
+        reply = r;
+      },
+      options: { getSubcommand: () => 'unresolved', getInteger: () => 11 },
+    };
+    await assert.rejects(() => command.execute(i, x.c), /automodIncidentPageInvalid/);
+    assert.equal(reply, undefined);
+    i.options.getInteger = () => 10;
+    await command.execute(i, x.c);
+    assert(reply.embeds[0].data.description.includes('10'));
+    assert.equal(x.automod.incidents('g').length, 0);
+    assert.equal(x.deleted.length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('spam threshold config and unresolved recovery survive actual SQLite reopen without replaying effects', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-spam-recovery-'));
+  let db = openDatabase(join(dir, 'db'));
+  try {
+    let a = new AutoMod(db);
+    a.patch('g', { spamMessages: 9, spamRepeats: 7, spamWindowSeconds: 25 });
+    a.reserve({ id: 'pending', guild: { id: 'g' }, author: { id: 'u' } }, 'spam', 'timeout');
+    db.close();
+    db = openDatabase(join(dir, 'db'));
+    a = new AutoMod(db);
+    assert.equal(a.get('g').spamMessages, 9);
+    assert.equal(a.get('g').spamRepeats, 7);
+    assert.equal(a.get('g').spamWindowSeconds, 25);
+    assert.equal(a.get('g').enabled, false);
+    a.recover();
+    assert.equal(a.unresolved('g')[0].status, 'uncertain');
+    assert.throws(() => a.finish('pending', 'completed'));
+    assert.equal(a.recent.size, 0);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

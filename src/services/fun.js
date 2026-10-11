@@ -105,3 +105,34 @@ export function sampleChoices(text, count, rng = randomInt) {
     throw new UserError('funSampleInvalid');
   return shuffleChoices(text, rng).slice(0, count);
 }
+
+export function rollKeep(sides, count, keep, mode, rng = randomInt) {
+  if (!Number.isInteger(keep) || keep < 1 || keep > count || !['highest', 'lowest'].includes(mode))
+    throw new UserError('funKeepInvalid');
+  const { rolls } = rollDice(sides, count, rng),
+    sorted = [...rolls].sort((a, b) => (mode === 'highest' ? b - a : a - b)),
+    kept = sorted.slice(0, keep);
+  return { rolls, kept, total: kept.reduce((a, b) => a + b, 0) };
+}
+export function playRpsSeries(text, rng = randomInt) {
+  if (typeof text !== 'string' || text.length > 100 || /[\u0000-\u001f\u007f]/u.test(text))
+    throw new UserError('funSeriesInvalid');
+  const moves = text.split('|').map((s) => s.trim().toLowerCase());
+  if (
+    moves.length < 2 ||
+    moves.length > 10 ||
+    moves.some((s) => !['rock', 'paper', 'scissors'].includes(s))
+  )
+    throw new UserError('funSeriesInvalid');
+  const rounds = moves.map((move) => playRps(move, rng)),
+    wins = rounds.filter((r) => r.result === 'win').length,
+    losses = rounds.filter((r) => r.result === 'lose').length,
+    draws = rounds.length - wins - losses;
+  return {
+    rounds,
+    wins,
+    losses,
+    draws,
+    result: wins === losses ? 'draw' : wins > losses ? 'win' : 'lose',
+  };
+}

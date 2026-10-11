@@ -9,6 +9,8 @@ import {
   BALL_ANSWERS,
   TRUTH_PROMPTS,
   DARE_PROMPTS,
+  rollKeep,
+  playRpsSeries,
 } from '../src/services/fun.js';
 import fun from '../src/commands/fun/fun.js';
 import { translate } from '../src/services/localization.js';
@@ -70,9 +72,9 @@ test('RPS computes all nine outcomes', () => {
     }
   assert.throws(() => playRps('gun'));
 });
-test('fun serializes eleven real paths and bounded input options', () => {
+test('fun serializes thirteen real paths and bounded input options', () => {
   const d = fun.data.toJSON();
-  assert.equal(d.options.length, 11);
+  assert.equal(d.options.length, 13);
   assert.equal(d.contexts[0], 0);
   assert.equal(fun.cooldownMs, 5000);
   assert(d.options.every((o) => o.type === 1));
@@ -336,4 +338,110 @@ test('sample expanded labels refuse output overflow without partial reply', asyn
     /funShuffleTooLong/,
   );
   assert.equal(replied, false);
+});
+
+test('dice keep sorts chosen extrema without changing original rolls and handles ties/all/one', () => {
+  for (const [mode, kept, total] of [
+    ['highest', [6, 6], 12],
+    ['lowest', [1, 2], 3],
+  ]) {
+    const values = [0, 5, 1, 5];
+    const r = rollKeep(6, 4, 2, mode, () => values.shift());
+    assert.deepEqual(r, { rolls: [1, 6, 2, 6], kept, total });
+  }
+  assert.deepEqual(
+    rollKeep(2, 1, 1, 'lowest', () => 0),
+    { rolls: [1], kept: [1], total: 1 },
+  );
+  assert.equal(rollKeep(1000, 10, 10, 'highest', () => 999).total, 10000);
+});
+test('dice keep validates all native runtime bounds and rejects unsafe RNG without partial output', () => {
+  for (const args of [
+    [6, 3, 0, 'highest'],
+    [6, 3, 4, 'highest'],
+    [6, 3, 1.5, 'highest'],
+    [6, 3, 1, 'bad'],
+    [1, 3, 1, 'lowest'],
+    [6, 11, 1, 'lowest'],
+  ])
+    assert.throws(() => rollKeep(...args));
+  for (const v of [-1, 6, NaN, 0.5]) assert.throws(() => rollKeep(6, 3, 1, 'highest', () => v));
+});
+test('RPS series accepts repeated moves and scores all outcomes/tie with independent uniform draws', () => {
+  const choices = [2, 0, 1],
+    bounds = [];
+  const r = playRpsSeries(' ROCK | rock | rock ', (n) => {
+    bounds.push(n);
+    return choices.shift();
+  });
+  assert.deepEqual(bounds, [3, 3, 3]);
+  assert.equal(r.wins, 1);
+  assert.equal(r.losses, 1);
+  assert.equal(r.draws, 1);
+  assert.equal(r.result, 'draw');
+  assert.equal(playRpsSeries('rock|rock', () => 2).result, 'win');
+  assert.equal(playRpsSeries('rock|rock', () => 1).result, 'lose');
+  assert.equal(playRpsSeries(Array(10).fill('rock').join('|'), () => 0).draws, 10);
+});
+test('RPS series validates entire move list before randomness and rejects malformed bounded inputs', () => {
+  for (const text of [
+    null,
+    'rock',
+    'rock||paper',
+    'rock|gun',
+    'rock|paper\n',
+    Array(11).fill('rock').join('|'),
+    'x'.repeat(101),
+  ]) {
+    let calls = 0;
+    assert.throws(() =>
+      playRpsSeries(text, () => {
+        calls++;
+        return 0;
+      }),
+    );
+    assert.equal(calls, 0);
+  }
+  assert.throws(() => playRpsSeries('rock|paper', () => 3));
+});
+test('dicekeep and RPS series reply privately with complete localized no-ping branded summaries', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['dicekeep', 'rpsseries']) {
+      let reply;
+      const c = {
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      const i = {
+        guildId: 'g',
+        options: {
+          getSubcommand: () => sub,
+          getString: (n) => (n === 'mode' ? 'highest' : Array(10).fill('scissors').join('|')),
+          getInteger: (n) => (n === 'sides' ? 1000 : n === 'count' ? 10 : 5),
+        },
+        reply: async (p) => {
+          reply = p;
+        },
+      };
+      await fun.execute(i, c);
+      assert.equal(reply.flags, 64);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert(reply.embeds[0].data.footer.text.includes('Luna'));
+      assert(reply.embeds[0].data.description.length < 2000);
+      if (sub === 'rpsseries') assert(reply.embeds[0].data.description.includes('10.'));
+    }
+});
+test('new Fun runtime rejection has no reply and no external or persistent effects', async () => {
+  for (const sub of ['dicekeep', 'rpsseries']) {
+    let replies = 0;
+    const c = { localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) } };
+    const i = {
+      guildId: 'g',
+      options: { getSubcommand: () => sub, getString: () => 'bad', getInteger: () => 1 },
+      reply: async () => {
+        replies++;
+      },
+    };
+    await assert.rejects(() => fun.execute(i, c));
+    assert.equal(replies, 0);
+  }
 });
