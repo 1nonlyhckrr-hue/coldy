@@ -4,6 +4,7 @@ import {
   PermissionFlagsBits as P,
   ChannelType,
   MessageFlags,
+  escapeMarkdown,
 } from 'discord.js';
 import { createGiveaway } from '../../services/giveawayDelivery.js';
 import { translate } from '../../services/localization.js';
@@ -70,8 +71,16 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('list')
-      .setDescription('List recent giveaway records.')
-      .addIntegerOption((o) => o.setName('page').setDescription('Page number').setMinValue(1)),
+      .setDescription(
+        'List latest100 stored records,2 complete prizes/page,no live delivery claim.',
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('page')
+          .setDescription('Page1-50,latest100 records')
+          .setMinValue(1)
+          .setMaxValue(50),
+      ),
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show giveaway limits and policies.'));
 export default {
@@ -116,16 +125,20 @@ export default {
       content = t('giveawayEnded', { id: g.id, draw: g.draw_version });
     }
     if (sub === 'list') {
-      const rows = c.giveaways.list(i.guildId),
-        pages = Math.max(1, Math.ceil(rows.length / 10)),
-        page = i.options.getInteger('page') ?? 1;
-      if (page > pages) throw new UserError('responderPageInvalid', { pages });
+      const { rows, pages, page } = c.giveaways.listPage(
+        i.guildId,
+        i.options.getInteger('page') ?? 1,
+      );
       content =
         t('giveawayList', { page, pages }) +
         '\n' +
+        t('giveawayStoredNotice') +
+        '\n' +
         (rows
-          .slice((page - 1) * 10, page * 10)
-          .map((g) => `#${g.id} | ${g.status} | ${g.prize}`)
+          .map(
+            (g) =>
+              `#${g.id} | ${g.status} | ${escapeMarkdown(g.prize.replace(/[\x00-\x1f\x7f]/g, ' '))}`,
+          )
           .join('\n') || t('giveawayEmpty'));
     }
     if (sub === 'config') content = t('giveawayConfig');

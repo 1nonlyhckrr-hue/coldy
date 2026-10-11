@@ -657,5 +657,11 @@
   "ticketQueueFilterInvalid": "Listed unresolved state aur boolean unclaimed filter choose karo.",
   "ticketQueueAllStates": "all unresolved",
   "ticketQueueFilters": "State filter:{state};unclaimed-only:{unclaimed}. Stored metadata only;ownership/access change nahi.",
-  "modIdentityInvalid": "Current moderator,bot,target/server identity verify nahi hui.Koi action record/retry nahi."
+  "modIdentityInvalid": "Current moderator,bot,target/server identity verify nahi hui.Koi action record/retry nahi.",
+  "modWarningPageInvalid": "Existing warning page1-1000 choose karo.",
+  "modWarningPage": "Active stored warnings:{total};page{page}/{pages},two complete reasons/page,newestfirst. Formatting escaped,controls spaces mein;stored reasons unchanged.",
+  "musicAction_move": "Waiting track requested final position pe move.Current playback unchanged.",
+  "giveawayStoredNotice": "Sirf latest100 stored records;live delivery/eligibility status nahi.Prizes full,formatting escaped.",
+  "responderConfirmRequired": "Saare guild triggers pause karne ki confirmation chahiye.",
+  "responderDisabledAll": "{count}currently enabled stored triggers pause;response/cooldown/history retained.In-flight responses finish ho sakte hain.Runtime switches unchanged."
 }

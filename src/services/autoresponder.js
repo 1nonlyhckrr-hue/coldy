@@ -98,6 +98,11 @@ export class Autoresponders {
       .run(Number(enabled), guildId, normalizeTrigger(trigger));
     if (!result.changes) throw new UserError('responderNotFound');
   }
+  disableAll(guildId) {
+    return this.db
+      .prepare('UPDATE autoresponders SET enabled=0 WHERE guild_id=? AND enabled=1')
+      .run(guildId).changes;
+  }
   delete(guildId, trigger) {
     const result = this.db
       .prepare('DELETE FROM autoresponders WHERE guild_id=? AND trigger=?')

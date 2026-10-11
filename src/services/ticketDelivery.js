@@ -50,7 +50,7 @@ export async function openTicket(i, c) {
       reason: 'Luna private support ticket',
     });
   } catch {
-    c.tickets.uncertain(id);
+    c.tickets.uncertain(id, 'creating');
     throw new UserError('ticketCreateUncertain', { id });
   }
   try {
@@ -59,7 +59,7 @@ export async function openTicket(i, c) {
     await verifyTicketPrivacy(channel, record, bot.id);
     c.tickets.activate(id, channel.id);
   } catch {
-    c.tickets.uncertain(id);
+    c.tickets.uncertain(id, 'creating');
     throw new UserError('ticketPrivacyUncertain', { id });
   }
   return { id, channelId: channel.id };
@@ -144,7 +144,7 @@ export async function changeTicketState(i, c, close) {
     await verifyTicketPrivacy(channel, { ...ticket, status: close ? 'closed' : 'open' }, bot.id);
     c.tickets.transition(ticket.id, close ? 'closing' : 'reopening', close ? 'closed' : 'open');
   } catch {
-    c.tickets.uncertain(ticket.id);
+    c.tickets.uncertain(ticket.id, close ? 'closing' : 'reopening');
     throw new UserError('ticketStateUncertain', { id: ticket.id });
   }
   return ticket.id;

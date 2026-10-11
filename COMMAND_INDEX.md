@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-41 top-level commands, 212 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+41 top-level commands, 214 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -48,6 +48,7 @@
 | /autoresponder cooldown | Change one stored trigger cooldown10-3600s;last-send/replay history retained. | Local mock/unit only |
 | /autoresponder create | Create an exact or literal keyword trigger. | Local mock/unit only |
 | /autoresponder delete | Delete an existing trigger. | Local mock/unit only |
+| /autoresponder disableall | Pause all stored guild triggers;in-flight responses may finish,history retained. | Local mock/unit only |
 | /autoresponder edit | Edit the response for an existing trigger. | Local mock/unit only |
 | /autoresponder mode | Set literal exact/keyword matching,retaining response/cooldown/replay history. | Local mock/unit only |
 | /autoresponder preview | Privately preview stored response,no send or cooldown change. | Local mock/unit only |
@@ -88,7 +89,7 @@
 | /uptime | Show how long this process has been running. | Local mock/unit only |
 | /giveaway config | Show giveaway limits and policies. | Local mock/unit only |
 | /giveaway end | End and publish a stored draw, or retry publishing it. | Local mock/unit only |
-| /giveaway list | List recent giveaway records. | Local mock/unit only |
+| /giveaway list | List latest100 stored records,2 complete prizes/page,no live delivery claim. | Local mock/unit only |
 | /giveaway reroll | Draw again, excluding the immediately previous winners. | Local mock/unit only |
 | /giveaway start | Create a giveaway with checked eligibility. | Local mock/unit only |
 | /giveawayleave | Withdraw only your own entry from an active giveaway before its deadline. | Local mock/unit only |
@@ -126,6 +127,7 @@
 | /nickname | Confirmed one-member nickname update or explicit reset,no bulk changes. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode,0 disables,no bulk changes. | Local mock/unit only |
 | /music clear | Clear waiting tracks only;current track keeps playing. | Local mock/unit only |
+| /music move | Move one waiting track to exact final queue position;current playback untouched. | Local mock/unit only |
 | /music nowplaying | Show current track. | Local mock/unit only |
 | /music pause | Pause current track. | Local mock/unit only |
 | /music play | Queue first YouTube search result or exact11-character video ID. | Local mock/unit only |

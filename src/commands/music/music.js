@@ -54,6 +54,29 @@ data.addSubcommand((s) =>
         .setRequired(true),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('move')
+    .setDescription(
+      'Move one waiting track to exact final queue position;current playback untouched.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('from')
+        .setDescription('Waiting queue source1-50')
+        .setMinValue(1)
+        .setMaxValue(50)
+        .setRequired(true),
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('to')
+        .setDescription('Final queue destination1-50')
+        .setMinValue(1)
+        .setMaxValue(50)
+        .setRequired(true),
+    ),
+);
 for (const [name, description] of [
   ['clear', 'Clear waiting tracks only;current track keeps playing.'],
   ['shuffle', 'Randomize waiting tracks only;current track unchanged.'],
@@ -104,6 +127,18 @@ export default {
         i.guildId,
         sub,
         sub === 'remove' ? i.options.getInteger('position', true) : undefined,
+      );
+    if (sub === 'move')
+      await c.music.moveQueued(
+        i.guildId,
+        i.options.getInteger('from', true),
+        i.options.getInteger('to', true),
+        {
+          beforeEffect: async () => {
+            const now = await requireMusicVoice(i, c);
+            if (now.channel.id !== channelId) throw new UserError('voiceMoved');
+          },
+        },
       );
     if (sub === 'pause' || sub === 'resume') await c.music.pause(i.guildId, sub === 'pause');
     if (sub === 'skip')

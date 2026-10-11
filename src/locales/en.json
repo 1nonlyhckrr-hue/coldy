@@ -657,5 +657,11 @@
   "ticketQueueFilterInvalid": "Choose a listed unresolved state and boolean unclaimed filter.",
   "ticketQueueAllStates": "all unresolved",
   "ticketQueueFilters": "State filter:{state};unclaimed-only:{unclaimed}. Stored metadata only;no ownership/access changes.",
-  "modIdentityInvalid": "Current moderator,bot,target or server identity could not be verified.No action recorded or retried."
+  "modIdentityInvalid": "Current moderator,bot,target or server identity could not be verified.No action recorded or retried.",
+  "modWarningPageInvalid": "Choose an existing warning page1-1000.",
+  "modWarningPage": "Active stored warnings:{total};page{page}/{pages},two complete reasons/page,newestfirst. Formatting escaped,controls displayed as spaces;stored reasons unchanged.",
+  "musicAction_move": "Waiting track moved to requested final position.Current playback unchanged.",
+  "giveawayStoredNotice": "Latest100 stored records only;not live delivery/eligibility status.Prizes displayed fully,formatting escaped.",
+  "responderConfirmRequired": "Confirm all guild triggers should be paused.",
+  "responderDisabledAll": "Paused{count}currently enabled stored triggers;response/cooldown/history retained.In-flight responses may finish.This does not change runtime switches."
 }

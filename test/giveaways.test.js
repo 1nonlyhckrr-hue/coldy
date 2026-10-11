@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { escapeMarkdown } from 'discord.js';
 import assert from 'node:assert/strict';
 import { openDatabase, GuildSettings } from '../src/database/index.js';
 import { GuildConfig } from '../src/services/guildConfig.js';
@@ -510,5 +511,98 @@ test('accepted giveaway send with no returned identity marks uncertain and never
     assert.equal(x.sent.length, 1);
   } finally {
     x.db.close();
+  }
+});
+
+test('giveaway stored pagination is newest first scoped and strict two complete records/page', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 5; n++) {
+      const id = x.giveaways.reserve({ ...input, interactionId: 'item' + n, prize: 'full' + n });
+      x.db.prepare("UPDATE giveaways SET status='ended' WHERE id=?").run(id);
+    }
+    x.giveaways.reserve({ ...input, guildId: 'foreign', interactionId: 'foreign' });
+    assert.deepEqual(
+      x.giveaways.listPage('g', 1).rows.map((r) => r.id),
+      [5, 4],
+    );
+    assert.deepEqual(
+      x.giveaways.listPage('g', 3).rows.map((r) => r.id),
+      [1],
+    );
+    assert.equal(x.giveaways.listPage('g', 3).total, 5);
+    for (const p of [0, -1, 1.5, '1', 4, 51]) assert.throws(() => x.giveaways.listPage('g', p));
+    assert.equal(x.giveaways.listPage('empty', 1).pages, 1);
+    assert.deepEqual(x.giveaways.listPage('empty', 1).rows, []);
+  } finally {
+    x.db.close();
+  }
+});
+test('giveaway pagination explicitly caps latest100 records without changing stored archive', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 105; n++) {
+      const id = x.giveaways.reserve({ ...input, interactionId: 'archive' + n });
+      x.db.prepare("UPDATE giveaways SET status='ended' WHERE id=?").run(id);
+    }
+    const p = x.giveaways.listPage('g', 50);
+    assert.deepEqual(
+      p.rows.map((r) => r.id),
+      [7, 6],
+    );
+    assert.equal(p.total, 100);
+    assert.equal(p.pages, 50);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM giveaways').get().n, 105);
+  } finally {
+    x.db.close();
+  }
+});
+test('giveaway list renders worst-case complete escaped prizes privately in all locales without silent cut or mutation', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.guildConfig.setLanguage('g', locale);
+      const prize = '*'.repeat(245) + '\n@all';
+      for (let n = 0; n < 2; n++)
+        x.giveaways.reserve({ ...input, interactionId: 'prize' + n, prize });
+      let deferred;
+      x.i.deferReply = async (p) => {
+        deferred = p;
+      };
+      x.i.options = { getSubcommand: () => 'list', getInteger: () => 1 };
+      await command.execute(x.i, x.context);
+      assert.equal(deferred.flags, 64);
+      const payload = x.replies[0],
+        body = payload.embeds.map((e) => e.data?.description ?? e.description ?? '').join('');
+      assert(body.includes(escapeMarkdown(prize.replace(/[\x00-\x1f\x7f]/g, ' '))));
+      assert(body.includes(' @all'));
+      assert(body.length < 2000);
+      assert.deepEqual(payload.allowedMentions.parse, []);
+      assert.equal(x.giveaways.get(1, 'g').prize, prize);
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.edits.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('stored giveaway listing requires refreshed exact manager identity and rejects revoked access without disclosure', async () => {
+  for (const mode of ['lost', 'foreign', 'wrong']) {
+    const x = setup();
+    try {
+      create(x);
+      x.i.options = { getSubcommand: () => 'list', getInteger: () => 1 };
+      x.guild.members.fetch = async () => ({
+        ...x.member,
+        id: mode === 'wrong' ? user2 : user1,
+        guild: { id: mode === 'foreign' ? 'other' : 'g' },
+        permissions: { has: () => mode !== 'lost' },
+      });
+      await assert.rejects(() => command.execute(x.i, x.context), /userPermission/);
+      assert.equal(x.replies.length, 0);
+      assert.equal(x.giveaways.get(1, 'g').status, 'active');
+    } finally {
+      x.db.close();
+    }
   }
 });

@@ -107,6 +107,19 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('disableall')
+      .setDescription(
+        'Pause all stored guild triggers;in-flight responses may finish,history retained.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm disabling all currently enabled guild triggers')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('preview')
       .setDescription('Privately preview stored response,no send or cooldown change.')
       .addStringOption(trigger),
@@ -165,6 +178,7 @@ export default {
         'cooldown',
         'mode',
         'rename',
+        'disableall',
       ].includes(sub)
     )
       throw new UserError('unknownCommand');
@@ -178,6 +192,12 @@ export default {
         cooldownSeconds: i.options.getInteger('cooldown') ?? 60,
       });
       text = t('responderCreated', { id });
+    }
+    if (sub === 'disableall') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('responderConfirmRequired');
+      const count = c.autoresponders.disableAll(i.guildId);
+      text = t('responderDisabledAll', { count });
     }
     if (sub === 'rename') {
       c.autoresponders.rename(

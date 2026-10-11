@@ -360,3 +360,29 @@ test('skip command is private localized same-channel and supplies exact delayed 
     await assert.rejects(() => guard(), /voiceMoved/);
   }
 });
+
+test('queue move slash passes captured current-channel authority and private localized no-ping results', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    let guard,
+      calls = 0;
+    x.c.guildConfig.language = () => locale;
+    x.i.options.getSubcommand = () => 'move';
+    x.i.options.getInteger = (n) => (n === 'from' ? 1 : 2);
+    x.c.music.moveQueued = async (g, a, b, o) => {
+      assert.equal(g, 'g');
+      assert.equal(a, 1);
+      assert.equal(b, 2);
+      calls++;
+      guard = o.beforeEffect;
+    };
+    await command.execute(x.i, x.c);
+    assert.equal(calls, 1);
+    await guard();
+    assert.equal(x.replies[0].flags, 64);
+    assert.deepEqual(x.replies[1].allowedMentions.parse, []);
+    x.actor.voice.channelId = 'other';
+    x.channel.id = 'other';
+    await assert.rejects(() => guard(), /voiceMoved/);
+  }
+});

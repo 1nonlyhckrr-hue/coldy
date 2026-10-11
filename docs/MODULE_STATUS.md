@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-41 top-level slash commands,212 executable paths,618 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+41 top-level slash commands,214 executable paths,637 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -185,3 +185,15 @@ Rolepanelbatch:/reactionroles disableactive confirm disablesonlyguildactivepanel
 Ticketqueuefilterbatch:existing /ticket queue [state] [unclaimed] filtersverifiedlistedstoredunresolvedstatesandnullclaimant beforepagination;explicitpolicylabel. No newpath/countinflation,owner/body/transcriptdisclosure,nativeaccesschange,retryoravailabilityclaim. Manager/private3locales/nopings.615localtests/212paths,published591/207unchanged.
 
 Moderationsafetybatch:exactactor/bot/target/guildidentity/currentbotclient checksbeforewarningrecord ornativeeffect;freshactor/botidentity/permission/hierarchyrecheckaftertarget lookup tocloseauthoritychangegap. Moderationcasefinishrequiresonependingreceipt,terminal/missingcannotrewrite.3newregressiontests acrossmultipleidentity/racepaths.618localtests/212paths,published591/207unchanged.
+
+618/212PUBLICpublishedf5c7c4fc9f3e1a45375795a6abfa12694f603e06 exactNode22/24CIverified:https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38137105993 . Temptransfercleaned,nohistoryrewrite/deployment. Thisreceiptupdatelocalafterpublication.
+
+Warningpaginationbatch:existing /moderation warnings member [page] two completeescapedreasons/page1-1000,newestfirst,countsandpages explicit. Active-onlyguild/targetscoped,no records/effects,displaycontrolsasspacesstoredunchanged. No silent1900cut,allreasoncharactersshown,worst2x400escapedbounded.622localtests212paths,published618/212unchanged.
+
+Musicwaitingreorderbatch:/music move from to exactfinal1-Nwaitingpositions,currenttrack untouched,originalqueuedobjects/requesters preserved. Guildlock+beforemutationcurrentvoiceauthorityrefresh,capturedchannelID;postawaituncertain/providerinvalidationabortswithoutreorder. No nativeplayer/search/audioeffect,defaultoffremains.626localtests/213paths(new12musicpaths),published618/212unchanged.
+
+Ticket630local safety batch:uncertain receipts guard expected source state;creating/closing/reopening callbacks cannot overwrite completed/open/closed newer receipts.Paneluncertain onlypending,no active messageidentity invalidation.Missing/alreadyuncertain returnsfalse,no retry/nativeeffects.4tests include allactivesource states,no resurrection,receiptidentity and actualSQLite reopen.
+
+Giveaway634local batch:existinglist2completeprizes/page1-50,newestfirstlatest100only explicitlylabeledstorednotliveeligibility/delivery. Strictpositiveexistingintegerpages,Markdownescaped/controlspacesdisplay,storedprizeunchanged,currentexactmanagerprivate/no-ping.4tests worstcase3locales/scopes/bounds/archivecap/no-disclosure.
+
+Autoresponder637batch:/disableall confirm:true atomiccurrentguildenabled->disabled only;templates/matching/cooldown/lastsend/historyretained,disabled/foreignunchanged.In-flightreservedresponsesmayfinish,neverautosendenableorchangesruntimeswitches.3newtestsguards/all3locales/SQLite-reopen.214localpaths.

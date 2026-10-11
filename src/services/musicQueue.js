@@ -210,6 +210,35 @@ export class MusicQueues {
       return this.snapshot(guildId);
     });
   }
+  async moveQueued(guildId, from, to, { beforeEffect } = {}) {
+    return this.locked(guildId, async () => {
+      const s = this.sessions.get(guildId);
+      if (!s) throw new UserError('musicNoSession');
+      if (s.status === 'uncertain') throw new UserError('musicUncertain');
+      if (
+        !Number.isInteger(from) ||
+        !Number.isInteger(to) ||
+        from < 1 ||
+        to < 1 ||
+        from > s.queue.length ||
+        to > s.queue.length
+      )
+        throw new UserError('musicQueuePosition');
+      const revision = s.queue.map((r) => r.eventId).join('|');
+      if (beforeEffect) await beforeEffect();
+      if (
+        this.sessions.get(guildId) !== s ||
+        s.status === 'uncertain' ||
+        s.queue.map((r) => r.eventId).join('|') !== revision
+      )
+        throw new UserError('musicUncertain');
+      const reordered = [...s.queue];
+      const [track] = reordered.splice(from - 1, 1);
+      reordered.splice(to - 1, 0, track);
+      s.queue = reordered;
+      return this.snapshot(guildId);
+    });
+  }
   async pause(guildId, paused) {
     if (typeof paused !== 'boolean') throw new TypeError('Invalid pause state');
     return this.locked(guildId, async () => {

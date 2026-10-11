@@ -432,3 +432,63 @@ test('adapter stopTrack uses installed player stop method without disconnecting 
   assert.equal(a.eventIds.get('g').eventId, 'e');
   await assert.rejects(() => a.stopTrack('other'), /musicNoSession/);
 });
+
+test('move queued track uses final destination indices forward backward same-position preserving playback/requesters', async () => {
+  const s = setup();
+  for (let n = 0; n < 5; n++) await s.q.enqueue('g', 'vc', 'sample', 'u' + n);
+  const session = s.q.sessions.get('g'),
+    current = session.current,
+    initial = [...session.queue],
+    calls = s.calls.length;
+  await s.q.moveQueued('g', 1, 4);
+  assert.deepEqual(session.queue, [initial[1], initial[2], initial[3], initial[0]]);
+  await s.q.moveQueued('g', 4, 1);
+  assert.deepEqual(session.queue, initial);
+  await s.q.moveQueued('g', 2, 2);
+  assert.deepEqual(session.queue, initial);
+  assert.equal(session.current, current);
+  assert.equal(s.calls.length, calls);
+});
+test('move queue bounds lock uncertainty and preeffect authority failures preserve all waiting state', async () => {
+  const s = setup();
+  await assert.rejects(() => s.q.moveQueued('g', 1, 1), /musicNoSession/);
+  for (let n = 0; n < 3; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const initial = [...s.q.sessions.get('g').queue];
+  for (const [a, b] of [
+    [0, 1],
+    [1, 3],
+    [1.5, 1],
+    [1, '2'],
+  ])
+    await assert.rejects(() => s.q.moveQueued('g', a, b), /musicQueuePosition/);
+  await assert.rejects(() =>
+    s.q.moveQueued('g', 1, 2, {
+      beforeEffect: async () => {
+        throw Error('authority lost');
+      },
+    }),
+  );
+  assert.deepEqual(s.q.sessions.get('g').queue, initial);
+  s.q.active.add('g');
+  await assert.rejects(() => s.q.moveQueued('g', 1, 2), /musicBusy/);
+  s.q.active.delete('g');
+  s.q.sessions.get('g').status = 'uncertain';
+  await assert.rejects(() => s.q.moveQueued('g', 1, 2), /musicUncertain/);
+  assert.deepEqual(s.q.sessions.get('g').queue, initial);
+});
+test('move awaiting authority cannot rewrite invalidated provider session after concurrent errors', async () => {
+  const s = setup();
+  for (let n = 0; n < 3; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const session = s.q.sessions.get('g'),
+    initial = [...session.queue];
+  await assert.rejects(
+    () =>
+      s.q.moveQueued('g', 1, 2, {
+        beforeEffect: async () => {
+          session.status = 'uncertain';
+        },
+      }),
+    /musicUncertain/,
+  );
+  assert.deepEqual(session.queue, initial);
+});

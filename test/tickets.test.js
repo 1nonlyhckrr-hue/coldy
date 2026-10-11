@@ -918,3 +918,88 @@ test('filtered queue does not promote uncertain or claimed jobs as available and
     x.db.close();
   }
 });
+
+test('uncertainty receipts require matching in-flight state and preserve newer completed ticket receipts', () => {
+  const x = setup();
+  try {
+    const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'one');
+    assert.equal(x.tickets.uncertain(id, 'closing'), false);
+    assert.equal(x.tickets.get(id, ids.guild).status, 'creating');
+    x.tickets.activate(id, ids.channel);
+    assert.equal(x.tickets.uncertain(id, 'creating'), false);
+    assert.equal(x.tickets.get(id, ids.guild).status, 'open');
+    x.tickets.transition(id, 'open', 'closing');
+    assert.equal(x.tickets.uncertain(id, 'reopening'), false);
+    x.tickets.transition(id, 'closing', 'closed');
+    for (const state of ['creating', 'closing', 'reopening', null])
+      assert.equal(x.tickets.uncertain(id, state), false);
+    assert.equal(x.tickets.get(id, ids.guild).status, 'closed');
+    assert.equal(x.tickets.get(id, ids.guild).channel_id, ids.channel);
+    assert.equal(x.tickets.uncertain(999, 'creating'), false);
+    assert.throws(() => x.tickets.uncertain(id, 'closed'), /Invalid uncertain/);
+  } finally {
+    x.db.close();
+  }
+});
+test('matching active ticket faults mark uncertain exactly once and unresolved rows block repeat creation', () => {
+  for (const state of ['creating', 'open', 'closing', 'reopening']) {
+    const x = setup();
+    try {
+      const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, state);
+      if (state !== 'creating') {
+        x.tickets.activate(id, ids.channel);
+        if (state !== 'open') x.tickets.transition(id, 'open', state);
+      }
+      assert.equal(x.tickets.uncertain(id, state), true);
+      assert.equal(x.tickets.uncertain(id, state), false);
+      assert.equal(x.tickets.get(id, ids.guild).status, 'uncertain');
+      assert.throws(
+        () => x.tickets.reserve(ids.guild, ids.owner, ids.role, 'repeat'),
+        /ticketAlreadyOpen/,
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('late ticket panel fault cannot invalidate active delivery identity or resurrect missing reservation', () => {
+  const x = setup();
+  try {
+    const id = x.tickets.reservePanel(ids.guild, ids.channel, 'one');
+    assert.equal(x.tickets.panelUncertain(id), true);
+    assert.equal(x.tickets.panelUncertain(id), false);
+    assert.throws(() => x.tickets.panelSent(id, 'bad'), /not pending/);
+    const active = x.tickets.reservePanel(ids.guild, ids.channel, 'two');
+    x.tickets.panelSent(active, 'exact-message');
+    assert.equal(x.tickets.panelUncertain(active), false);
+    assert.equal(x.tickets.panel(active, ids.guild).status, 'active');
+    assert.equal(x.tickets.panel(active, ids.guild).message_id, 'exact-message');
+    assert.equal(x.tickets.panelUncertain(999), false);
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket receipt guarded storage writes remain guarded after actual SQLite restart', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-ticket-receipts-')),
+    path = join(dir, 'db');
+  let db;
+  try {
+    db = openDatabase(path);
+    let t = new Tickets(db);
+    const id = t.reserve(ids.guild, ids.owner, ids.role, 'one');
+    t.activate(id, ids.channel);
+    t.transition(id, 'open', 'closed');
+    const p = t.reservePanel(ids.guild, ids.channel, 'panel');
+    t.panelSent(p, 'message');
+    db.close();
+    db = openDatabase(path);
+    t = new Tickets(db);
+    assert.equal(t.uncertain(id, 'creating'), false);
+    assert.equal(t.panelUncertain(p), false);
+    assert.equal(t.get(id, ids.guild).status, 'closed');
+    assert.equal(t.panel(p, ids.guild).message_id, 'message');
+  } finally {
+    db?.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

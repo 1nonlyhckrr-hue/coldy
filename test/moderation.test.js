@@ -332,3 +332,146 @@ test('case finish requires one pending reservation and terminal/missing states c
     s.db.close();
   }
 });
+
+test('warning pages expose every active stored reason complete with deterministic ordering and strict bounds', () => {
+  const s = setup();
+  try {
+    for (let n = 0; n < 7; n++)
+      s.context.cases.warn({
+        guildId: 'guild',
+        targetId: ids.target,
+        actorId: ids.actor,
+        action: 'warn',
+        reason: 'Reason' + n,
+        interactionId: 'w' + n,
+      });
+    s.db.prepare('UPDATE warnings SET cleared_at=1 WHERE id=1').run();
+    s.context.cases.warn({
+      guildId: 'other',
+      targetId: ids.target,
+      actorId: ids.actor,
+      action: 'warn',
+      reason: 'FOREIGN',
+      interactionId: 'foreign',
+    });
+    const all = [];
+    for (let p = 1; p <= 3; p++) {
+      const r = s.context.cases.warningPage('guild', ids.target, p);
+      assert.equal(r.total, 6);
+      assert.equal(r.pages, 3);
+      assert.equal(r.rows.length, 2);
+      all.push(...r.rows);
+    }
+    assert.equal(new Set(all.map((r) => r.id)).size, 6);
+    assert.equal(all[0].reason, 'Reason6');
+    assert.equal(s.context.cases.warningPage('empty', ids.target).total, 0);
+    for (const p of [0, 4, 1001, 1.5, '1'])
+      assert.throws(
+        () => s.context.cases.warningPage('guild', ids.target, p),
+        /modWarningPageInvalid/,
+      );
+  } finally {
+    s.db.close();
+  }
+});
+test('warning listing paginated moderation path retains current permission/hierarchy and makes no case/effects', async () => {
+  const s = setup();
+  try {
+    for (let n = 0; n < 3; n++)
+      s.context.cases.warn({
+        guildId: 'guild',
+        targetId: ids.target,
+        actorId: ids.actor,
+        action: 'warn',
+        reason: 'Reason' + n,
+        interactionId: 'w' + n,
+      });
+    const count = s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n;
+    const r = await moderate(s.i, s.context, { action: 'warnings', targetId: ids.target, page: 2 });
+    assert.equal(r.warnings.length, 1);
+    assert.equal(r.warningPage.total, 3);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, count);
+    assert.equal(s.calls.length, 0);
+    await assert.rejects(
+      () => moderate(s.i, s.context, { action: 'warnings', targetId: ids.target, page: 3 }),
+      /modWarningPageInvalid/,
+    );
+  } finally {
+    s.db.close();
+  }
+});
+test('warning slash renders worst-case complete escaped reasons privately in3locales without silent cutoff', async () => {
+  const { default: cmd } = await import('../src/commands/moderation/moderation.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      const reason = '*'.repeat(390) + ' @everyone';
+      for (let n = 0; n < 2; n++)
+        s.context.cases.warn({
+          guildId: 'guild',
+          targetId: ids.target,
+          actorId: ids.actor,
+          action: 'warn',
+          reason,
+          interactionId: 'w' + n,
+        });
+      s.context.localization = { locale: () => locale };
+      let reply;
+      s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      s.i.editReply = async (p) => {
+        reply = p;
+      };
+      s.i.options = {
+        getSubcommand: () => 'warnings',
+        getInteger: () => 1,
+        getUser: () => ({ id: ids.target }),
+      };
+      await cmd.execute(s.i, s.context);
+      const text = reply.embeds[0].data.description;
+      assert(text.length < 2000);
+      assert.equal(text.split('@everyone').length, 3);
+      assert(text.includes('\\*'));
+      assert(text.includes(translate(locale, 'modWarningPage', { page: 1, pages: 1, total: 2 })));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(s.context.cases.warnings('guild', ids.target)[0].reason, reason);
+      assert.equal(s.calls.length, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('warning slash rejects invalid pages before reply and normalizes display controls without stored mutation', async () => {
+  const { default: cmd } = await import('../src/commands/moderation/moderation.js');
+  const s = setup();
+  try {
+    const reason = 'line\n**two**\tend';
+    s.context.cases.warn({
+      guildId: 'guild',
+      targetId: ids.target,
+      actorId: ids.actor,
+      action: 'warn',
+      reason,
+      interactionId: 'w',
+    });
+    let reply;
+    s.i.deferReply = async () => {};
+    s.i.editReply = async (p) => {
+      reply = p;
+    };
+    let page = 2;
+    s.i.options = {
+      getSubcommand: () => 'warnings',
+      getInteger: () => page,
+      getUser: () => ({ id: ids.target }),
+    };
+    await assert.rejects(() => cmd.execute(s.i, s.context), /modWarningPageInvalid/);
+    assert.equal(reply, undefined);
+    page = 1;
+    await cmd.execute(s.i, s.context);
+    assert(reply.embeds[0].data.description.includes('line \\*\\*two\\*\\* end'));
+    assert.equal(s.context.cases.warnings('guild', ids.target)[0].reason, reason);
+  } finally {
+    s.db.close();
+  }
+});

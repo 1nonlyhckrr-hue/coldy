@@ -63,6 +63,23 @@ export class ModerationCases {
       )
       .all(guildId, targetId);
   }
+  warningPage(guildId, targetId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 1000)
+      throw new UserError('modWarningPageInvalid');
+    const total = this.db
+        .prepare(
+          'SELECT count(*) n FROM warnings WHERE guild_id=? AND target_id=? AND cleared_at IS NULL',
+        )
+        .get(guildId, targetId).n,
+      pages = Math.max(1, Math.ceil(total / 2));
+    if (page > pages) throw new UserError('modWarningPageInvalid');
+    const rows = this.db
+      .prepare(
+        'SELECT id,reason,created_at FROM warnings WHERE guild_id=? AND target_id=? AND cleared_at IS NULL ORDER BY id DESC LIMIT 2 OFFSET ?',
+      )
+      .all(guildId, targetId, (page - 1) * 2);
+    return { rows, total, page, pages };
+  }
   clearWarnings(record) {
     return this.db.transaction(() => {
       const id = this.begin(record);
@@ -153,8 +170,10 @@ export async function moderate(interaction, context, input) {
     reason,
     interactionId: interaction.id,
   };
-  if (action === 'warnings')
-    return { warnings: context.cases.warnings(interaction.guildId, targetId) };
+  if (action === 'warnings') {
+    const warningPage = context.cases.warningPage(interaction.guildId, targetId, input.page ?? 1);
+    return { warnings: warningPage.rows, warningPage };
+  }
   if (action === 'warn') return { id: context.cases.warn(record) };
   if (action === 'clearwarns') return context.cases.clearWarnings(record);
   const duration = action === 'timeout' ? parseDuration(input.duration) : undefined;

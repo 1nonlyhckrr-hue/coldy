@@ -766,3 +766,91 @@ test('responder rename command is private localized exact-manager storage mutati
     }
   }
 });
+
+test('disable all guild responders changes only enabled bit and preserves unresolved delivery/cooldown/metadata', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'hello', response: 'response' });
+    r.create('g', { trigger: 'paused', response: 'paused' });
+    r.setEnabled('g', 'paused', false);
+    r.create('foreign', { trigger: 'hello', response: 'foreign' });
+    r.claim('g', 'm1', 'hello');
+    const before = r.list('g'),
+      receipt = db.prepare('SELECT * FROM autoresponder_deliveries').get();
+    assert.equal(r.disableAll('g'), 1);
+    assert.equal(r.disableAll('g'), 0);
+    assert.deepEqual(
+      r.list('g'),
+      before.map((a) => ({ ...a, enabled: 0 })),
+    );
+    assert.equal(r.find('foreign', 'hello').enabled, 1);
+    assert.deepEqual(db.prepare('SELECT * FROM autoresponder_deliveries').get(), receipt);
+    assert.equal(r.eligible('g', 'm2', 'hello'), false);
+    assert.equal(r.claim('g', 'm2', 'hello'), null);
+    r.finish('m1', 'sent');
+    assert.equal(db.prepare('SELECT status FROM autoresponder_deliveries').get().status, 'sent');
+  } finally {
+    db.close();
+  }
+});
+test('disableall command requires exact current manager explicit confirm and privately explains in-flight boundary in three locales', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const guildConfig = new GuildConfig(new GuildSettings(db));
+      guildConfig.setLanguage('g', locale);
+      const r = new Autoresponders(db);
+      r.create('g', { trigger: 'hello', response: 'x' });
+      const replies = [],
+        actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } },
+        i = {
+          guildId: 'g',
+          user: { id: 'u' },
+          guild: { id: 'g', members: { fetch: async () => actor } },
+          options: { getSubcommand: () => 'disableall', getBoolean: () => false },
+          reply: async (p) => replies.push(p),
+        },
+        c = { guildConfig, autoresponders: r, config: { messageEventsEnabled: false } };
+      await assert.rejects(() => command.execute(i, c), /responderConfirmRequired/);
+      assert.equal(r.find('g', 'hello').enabled, 1);
+      i.options.getBoolean = () => true;
+      actor.id = 'foreign';
+      await assert.rejects(() => command.execute(i, c), /userPermission/);
+      actor.id = 'u';
+      await command.execute(i, c);
+      assert.equal(r.find('g', 'hello').enabled, 0);
+      assert.equal(replies[0].flags, 64);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.equal(c.config.messageEventsEnabled, false);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('bulk paused autoresponders and their retained cooldown/receipt survive realSQLite reopen without reenable', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-responder-bulk-')),
+    path = join(dir, 'db');
+  let db;
+  try {
+    db = openDatabase(path);
+    let r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'hello', response: 'same', cooldownSeconds: 10 });
+    r.claim('g', 'm1', 'hello');
+    const before = r.find('g', 'hello');
+    r.disableAll('g');
+    db.close();
+    db = openDatabase(path);
+    r = new Autoresponders(db, () => 200000);
+    r.recover();
+    assert.deepEqual(r.find('g', 'hello'), { ...before, enabled: 0 });
+    assert.equal(r.claim('g', 'm2', 'hello'), null);
+    assert.equal(
+      db.prepare('SELECT status FROM autoresponder_deliveries').get().status,
+      'uncertain',
+    );
+  } finally {
+    db?.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

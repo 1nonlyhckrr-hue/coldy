@@ -107,8 +107,16 @@ export class Tickets {
       .run(to, id, from);
     if (!r.changes) throw new UserError('ticketStateInvalid');
   }
-  uncertain(id) {
-    this.db.prepare("UPDATE tickets SET status='uncertain' WHERE id=?").run(id);
+  uncertain(id, expected = null) {
+    if (expected !== null && !['creating', 'open', 'closing', 'reopening'].includes(expected))
+      throw new TypeError('Invalid uncertain source state');
+    return (
+      this.db
+        .prepare(
+          "UPDATE tickets SET status='uncertain' WHERE id=? AND status IN ('creating','open','closing','reopening') AND (? IS NULL OR status=?)",
+        )
+        .run(id, expected, expected).changes === 1
+    );
   }
   claim(id, actorId) {
     const r = this.db
@@ -203,7 +211,11 @@ export class Tickets {
     if (result.changes !== 1) throw new Error('Ticket panel reservation not pending');
   }
   panelUncertain(id) {
-    this.db.prepare("UPDATE ticket_panels SET status='uncertain' WHERE id=?").run(id);
+    return (
+      this.db
+        .prepare("UPDATE ticket_panels SET status='uncertain' WHERE id=? AND status='pending'")
+        .run(id).changes === 1
+    );
   }
 }
 export async function requireTicketManager(i) {

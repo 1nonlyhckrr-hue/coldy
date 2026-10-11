@@ -7,6 +7,7 @@ import {
   MessageFlags,
   ChannelType,
   PermissionFlagsBits,
+  escapeMarkdown,
 } from 'discord.js';
 import { moderate } from '../../services/moderation.js';
 const actions = ['warn', 'warnings', 'clearwarns', 'timeout', 'untimeout', 'kick', 'ban', 'unban'];
@@ -40,6 +41,14 @@ for (const action of actions)
           .setDescription('1s to 28d, e.g. 30m or 1h')
           .setRequired(true)
           .setMaxLength(12),
+      );
+    if (action === 'warnings')
+      s.addIntegerOption((o) =>
+        o
+          .setName('page')
+          .setDescription('Two complete warning reasons/page1-1000,newestfirst')
+          .setMinValue(1)
+          .setMaxValue(1000),
       );
     if (action !== 'warnings')
       s.addStringOption((o) =>
@@ -115,6 +124,7 @@ export default {
     }
     const result = await moderate(i, context, {
       action,
+      page: action === 'warnings' ? (i.options.getInteger('page') ?? 1) : undefined,
       targetId:
         action === 'unban'
           ? i.options.getString('user-id', true)
@@ -138,11 +148,22 @@ export default {
     let content = result.warnings
       ? result.warnings.length
         ? result.warnings
-            .map((w) => `#${w.id}: ${w.reason}`)
+            .map(
+              (w) =>
+                `#${w.id}: ${escapeMarkdown(w.reason.replace(/[\u0000-\u001f\u007f]/gu, ' '))}`,
+            )
             .join('\n')
-            .slice(0, 1900)
         : t('modNoWarnings')
       : t('modComplete', { action, id: result.id });
+    if (result.warningPage)
+      content =
+        t('modWarningPage', {
+          page: result.warningPage.page,
+          pages: result.warningPage.pages,
+          total: result.warningPage.total,
+        }) +
+        '\n' +
+        content;
     if (result.count !== undefined) content += ' ' + t('modCleared', { count: result.count });
     if (result.logUnavailable) content += ' ' + t('modLogUnavailable');
     await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));

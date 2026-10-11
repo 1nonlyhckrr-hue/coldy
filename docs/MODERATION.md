@@ -1,3 +1,5 @@
 # Moderation
 
 Safetycheckpoint618:warn/warnings/clearwarns/native moderation verifyexactfreshactor/clientbot/targetguildidentities. Refreshactor/botagain aftertargetlookup and recheckcurrentpermissions/hierarchy beforecase or API effects. Casefinishsinglependingtransitiononly;terminal/missingreceiptcannotrewrite. Unknownnativeoutcome remainsno-retry.3testscovermultipleidentity/race/terminalpaths;618localfullsuite,212pathsunchanged. LiveDiscordacceptancepending.
+
+`warnings member [page]`:two completeactivewarningreasons/page1-1000,newestfirst,exactguild/targetscope. Invalid/nonexistentpagesreject,emptyvalidpage1. Reasonsmarkdownescaped,controlcharactersdisplayas spaces,stored text unchanged. Currentmoderator/target/hierarchychecksremain;no records/nativeeffects. Unlikepreviouslatest10/truncateddisplay,reasonsarenotsilentlycut.4newtests,622localfullsuite/212pathsunchanged,published618checkpointCI38137105993.

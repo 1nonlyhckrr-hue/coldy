@@ -80,6 +80,14 @@ export class Giveaways {
       .prepare('SELECT * FROM giveaways WHERE guild_id=? ORDER BY id DESC LIMIT 100')
       .all(guildId);
   }
+  listPage(guildId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 50)
+      throw new UserError('responderPageInvalid', { pages: 50 });
+    const rows = this.list(guildId),
+      pages = Math.max(1, Math.ceil(rows.length / 2));
+    if (page > pages) throw new UserError('responderPageInvalid', { pages });
+    return { rows: rows.slice((page - 1) * 2, page * 2), pages, total: rows.length, page };
+  }
   due() {
     return this.db
       .prepare(
