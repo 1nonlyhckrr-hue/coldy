@@ -63,9 +63,12 @@ export class Giveaways {
     return this.db.prepare('SELECT * FROM giveaways WHERE id=? AND guild_id=?').get(id, guildId);
   }
   activate(id, messageId) {
-    this.db
+    if (typeof messageId !== 'string' || !messageId)
+      throw new TypeError('Missing giveaway message identity');
+    const result = this.db
       .prepare("UPDATE giveaways SET message_id=?,status='active' WHERE id=? AND status='pending'")
       .run(messageId, id);
+    if (result.changes !== 1) throw new Error('Giveaway reservation not pending');
   }
   uncertain(id) {
     this.db
@@ -107,6 +110,19 @@ export class Giveaways {
         this.db
           .prepare('INSERT OR IGNORE INTO giveaway_entries VALUES(?,?,?)')
           .run(id, userId, this.now()).changes === 1
+      );
+    })();
+  }
+  leave(id, guildId, userId) {
+    if (!/^\d{17,20}$/.test(userId)) throw new UserError('giveawayUserInvalid');
+    return this.db.transaction(() => {
+      const g = this.get(id, guildId);
+      if (!g || g.status !== 'active' || g.ends_at <= this.now())
+        throw new UserError('giveawayNotActive');
+      return (
+        this.db
+          .prepare('DELETE FROM giveaway_entries WHERE giveaway_id=? AND user_id=?')
+          .run(id, userId).changes === 1
       );
     })();
   }

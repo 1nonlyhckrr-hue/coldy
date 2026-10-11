@@ -12,6 +12,7 @@ import {
   rollDice,
   parseChoices,
   playRps,
+  shuffleChoices,
 } from '../../services/fun.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
@@ -62,6 +63,19 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('shuffle')
+      .setDescription('Privately randomize all 2-20 distinct choices,no assignments.')
+      .addStringOption((o) =>
+        o
+          .setName('choices')
+          .setDescription('Choices separated by |')
+          .setMinLength(3)
+          .setMaxLength(1800)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('truth').setDescription('Get an optional, low-pressure reflection prompt.'),
   )
   .addSubcommand((s) => s.setName('dare').setDescription('Get an optional, safe solo activity.'))
@@ -103,7 +117,13 @@ export default {
       text = t('funChosen', {
         choice: escapeMarkdown(pick(parseChoices(i.options.getString('choices', true)))),
       });
-    else if (sub === 'truth')
+    else if (sub === 'shuffle') {
+      const choices = shuffleChoices(i.options.getString('choices', true))
+        .map((value, n) => `${n + 1}. ${escapeMarkdown(value)}`)
+        .join('\n');
+      if (choices.length > 1700) throw new UserError('funShuffleTooLong');
+      text = t('funShuffled', { choices });
+    } else if (sub === 'truth')
       text = t('funOptional', { prompt: t(`funTruth_${pick(TRUTH_PROMPTS)}`) });
     else if (sub === 'dare')
       text = t('funOptional', { prompt: t(`funDare_${pick(DARE_PROMPTS)}`) });

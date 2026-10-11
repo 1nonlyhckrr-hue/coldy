@@ -62,11 +62,47 @@ export class Autoresponders {
       .run(valid, guildId, normalizeTrigger(trigger));
     if (!result.changes) throw new UserError('responderNotFound');
   }
+  setMode(guildId, trigger, mode) {
+    const value = input.shape.mode.parse(mode);
+    const result = this.db
+      .prepare('UPDATE autoresponders SET mode=? WHERE guild_id=? AND trigger=?')
+      .run(value, guildId, normalizeTrigger(trigger));
+    if (result.changes !== 1) throw new UserError('responderNotFound');
+  }
+  setCooldown(guildId, trigger, seconds) {
+    const value = input.shape.cooldownSeconds.parse(seconds);
+    const result = this.db
+      .prepare('UPDATE autoresponders SET cooldown_seconds=? WHERE guild_id=? AND trigger=?')
+      .run(value, guildId, normalizeTrigger(trigger));
+    if (result.changes !== 1) throw new UserError('responderNotFound');
+  }
+  setEnabled(guildId, trigger, enabled) {
+    if (typeof enabled !== 'boolean') throw new TypeError('Invalid responder enabled state');
+    const result = this.db
+      .prepare('UPDATE autoresponders SET enabled=? WHERE guild_id=? AND trigger=?')
+      .run(Number(enabled), guildId, normalizeTrigger(trigger));
+    if (!result.changes) throw new UserError('responderNotFound');
+  }
   delete(guildId, trigger) {
     const result = this.db
       .prepare('DELETE FROM autoresponders WHERE guild_id=? AND trigger=?')
       .run(guildId, normalizeTrigger(trigger));
     if (!result.changes) throw new UserError('responderNotFound');
+  }
+  eligible(guildId, messageId, content) {
+    if (
+      this.db
+        .prepare('SELECT message_id FROM autoresponder_deliveries WHERE message_id=?')
+        .get(messageId)
+    )
+      return false;
+    const now = this.now();
+    return this.list(guildId).some(
+      (rule) =>
+        rule.enabled === 1 &&
+        matchesTrigger(content, rule.trigger, rule.mode) &&
+        now - rule.last_sent_at >= rule.cooldown_seconds * 1000,
+    );
   }
   claim(guildId, messageId, content) {
     return this.db.transaction(() => {
@@ -82,6 +118,7 @@ export class Autoresponders {
       );
       for (const rule of rules) {
         if (
+          rule.enabled !== 1 ||
           !matchesTrigger(content, rule.trigger, rule.mode) ||
           now - rule.last_sent_at < rule.cooldown_seconds * 1000
         )
@@ -98,11 +135,12 @@ export class Autoresponders {
   finish(messageId, status) {
     if (!['sent', 'uncertain'].includes(status))
       throw new Error('Invalid responder delivery status');
-    this.db
+    const result = this.db
       .prepare(
         "UPDATE autoresponder_deliveries SET status=? WHERE message_id=? AND status='reserved'",
       )
       .run(status, messageId);
+    if (result.changes !== 1) throw new Error('Responder delivery not reserved');
   }
   recover() {
     this.db

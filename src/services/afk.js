@@ -1,4 +1,4 @@
-import { PermissionFlagsBits as P } from 'discord.js';
+import { PermissionFlagsBits as P, ChannelType } from 'discord.js';
 import { UserError } from '../utils/errors.js';
 import { lunaPayload } from '../utils/embeds.js';
 export class AfkStates {
@@ -67,7 +67,9 @@ export class AfkStates {
 export function createAfkHandler(c) {
   return async (message) => {
     if (
+      !c.config.messageEventsEnabled ||
       !message.guildId ||
+      message.guild?.id !== message.guildId ||
       !message.author ||
       message.author.bot ||
       message.webhookId ||
@@ -86,8 +88,40 @@ export function createAfkHandler(c) {
           .map((id) => c.afk.get(message.guildId, id))
           .filter((row) => row && row.channel_id === message.channelId);
       if (!rows.length) return;
+      const channel = await message.guild.channels.fetch(message.channelId, { force: true });
+      if (
+        !channel ||
+        channel.id !== message.channelId ||
+        channel.guildId !== message.guildId ||
+        ![
+          ChannelType.GuildText,
+          ChannelType.GuildAnnouncement,
+          ChannelType.PublicThread,
+          ChannelType.PrivateThread,
+          ChannelType.AnnouncementThread,
+        ].includes(channel.type)
+      )
+        return;
       const bot = await message.guild.members.fetchMe({ force: true });
-      if (!message.channel.permissionsFor(bot)?.has([P.ViewChannel, P.SendMessages, P.EmbedLinks]))
+      if (
+        !message.guild.client?.user?.id ||
+        bot?.id !== message.guild.client.user.id ||
+        bot.guild?.id !== message.guildId ||
+        !c.config.messageEventsEnabled ||
+        !channel
+          .permissionsFor(bot)
+          ?.has([
+            P.ViewChannel,
+            [
+              ChannelType.PublicThread,
+              ChannelType.PrivateThread,
+              ChannelType.AnnouncementThread,
+            ].includes(channel.type)
+              ? P.SendMessagesInThreads
+              : P.SendMessages,
+            P.EmbedLinks,
+          ])
+      )
         return;
       if (!c.afk.reserve(message.id, message.guildId, message.channelId)) return;
       const rowsNow = rows.filter((row) => {
@@ -99,7 +133,7 @@ export function createAfkHandler(c) {
         );
       });
       if (!rowsNow.length) return;
-      await message.channel.send(
+      await channel.send(
         lunaPayload(
           {
             content: rowsNow

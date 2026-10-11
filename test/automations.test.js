@@ -15,16 +15,25 @@ function setup() {
   const store = new MessageSchedules(db, () => now),
     sent = [];
   const channel = {
+      id: channelId,
       guildId: 'g',
       type: 0,
       permissionsFor: () => ({ has: () => true }),
-      send: async (p) => sent.push(p),
+      send: async (p) => {
+        sent.push(p);
+        return { id: 'native-message' };
+      },
     },
     guild = {
       id: 'g',
+      client: { user: { id: 'b' } },
       members: {
-        fetch: async () => ({ permissions: { has: () => true } }),
-        fetchMe: async () => ({}),
+        fetch: async ({ user }) => ({
+          id: user,
+          guild: { id: 'g' },
+          permissions: { has: () => true },
+        }),
+        fetchMe: async () => ({ id: 'b', guild: { id: 'g' } }),
       },
       channels: { fetch: async () => channel },
     },
@@ -189,6 +198,706 @@ test('named zone create path persists one-time message and returns exact UTC in 
       assert.equal(row.due_at, Date.parse(local + 'Z'));
       assert(replies[0].embeds[0].data.description.includes(new Date(row.due_at).toISOString()));
       assert.deepEqual(replies[0].allowedMentions.parse, []);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('schedule text erasure requires completed/cancelled scope and preserves replay metadata', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    assert.throws(() => x.store.forget(id, 'g'), /automationForgetInvalid/);
+    assert.throws(() => x.store.forget(id, 'other'), /automationForgetInvalid/);
+    x.advance(60001);
+    await x.runner.tick();
+    x.store.forget(id, 'g');
+    x.store.forget(id, 'g');
+    const row = x.store.get(id, 'g');
+    assert.equal(row.body, '[erased]');
+    assert.equal(row.status, 'done');
+    assert.equal(row.interaction_id, 'i');
+    assert.throws(() => x.store.create(x.input));
+    assert.equal(x.sent.length, 1);
+    const two = x.store.create({ ...x.input, dueAt: x.now() + 60000, interactionId: 'two' });
+    x.store.cancel(two, 'g');
+    x.store.forget(two, 'g');
+    assert.equal(x.store.get(two, 'g').body, '[erased]');
+    const three = x.store.create({ ...x.input, dueAt: x.now() + 60000, interactionId: 'three' });
+    x.advance(60001);
+    x.store.claim();
+    assert.throws(() => x.store.forget(three, 'g'));
+    x.store.finish(three, false);
+    assert.throws(() => x.store.forget(three, 'g'));
+  } finally {
+    x.db.close();
+  }
+});
+test('schedule forget confirmation,current permission and localization gate metadata-only erasure', async () => {
+  for (const language of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    let confirm = false;
+    const replies = [];
+    const id = x.store.create(x.input);
+    x.store.cancel(id, 'g');
+    x.c.guildConfig.setLanguage('g', language);
+    const i = {
+      user: { id: 'actor' },
+      guild: x.guild,
+      guildId: 'g',
+      deferReply: async () => {},
+      editReply: async (p) => replies.push(p),
+      options: { getSubcommand: () => 'forget', getBoolean: () => confirm, getInteger: () => id },
+    };
+    try {
+      await assert.rejects(() => command.execute(i, x.c), /automationForgetConfirm/);
+      assert.equal(x.store.get(id, 'g').body, x.input.body);
+      confirm = true;
+      await command.execute(i, x.c);
+      assert.equal(x.store.get(id, 'g').body, '[erased]');
+      assert.equal(x.sent.length, 0);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      x.guild.members.fetch = async () => ({ permissions: { has: () => false } });
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('pending schedule text edit is guild isolated and preserves timing/repeat/replay metadata', () => {
+  const x = setup();
+  try {
+    const id = x.store.create({ ...x.input, repeatMs: 600000 }),
+      before = x.store.get(id, 'g');
+    x.store.editPending(id, 'g', 'CURRENT TEXT');
+    const after = x.store.get(id, 'g');
+    assert.equal(after.body, 'CURRENT TEXT');
+    for (const key of [
+      'due_at',
+      'channel_id',
+      'repeat_ms',
+      'interaction_id',
+      'created_at',
+      'status',
+    ])
+      assert.equal(after[key], before[key]);
+    assert.throws(() => x.store.editPending(id, 'other', 'LEAK'), /automationEditInvalid/);
+    assert.throws(() => x.store.editPending(id, 'g', ''));
+    assert.equal(x.sent.length, 0);
+    x.advance(60000);
+    assert.equal(x.store.claim().body, 'CURRENT TEXT');
+    assert.throws(() => x.store.editPending(id, 'g', 'SENDING'), /automationEditInvalid/);
+    x.store.finish(id, false);
+    assert.throws(() => x.store.editPending(id, 'g', 'UNCERTAIN'), /automationEditInvalid/);
+    x.store.cancel(id, 'g');
+    assert.throws(() => x.store.editPending(id, 'g', 'CANCELLED'), /automationEditInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('schedule edit slash is private localized current-authority and sends nothing', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup(),
+      replies = [];
+    const id = x.store.create(x.input);
+    x.c.guildConfig.setLanguage('g', locale);
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'actor' },
+      deferReply: async (p) => assert.equal(p.flags, 64),
+      editReply: async (p) => replies.push(p),
+      options: {
+        getSubcommand: () => 'edit',
+        getInteger: () => id,
+        getString: () => 'private updated',
+      },
+    };
+    try {
+      await command.execute(i, x.c);
+      assert.equal(x.store.get(id, 'g').body, 'private updated');
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert(!JSON.stringify(replies).includes('private updated'));
+      assert.equal(x.sent.length, 0);
+      x.guild.members.fetch = async () => ({
+        id: 'other',
+        guild: { id: 'g' },
+        permissions: { has: () => true },
+      });
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('automation runner delivers edited pending text once and never the replaced body', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    x.store.editPending(id, 'g', 'CURRENT @everyone');
+    x.advance(60000);
+    await x.runner.tick();
+    await x.runner.tick();
+    assert.equal(x.sent.length, 1);
+    assert.equal(x.sent[0].embeds[0].data.description, 'CURRENT @everyone');
+    assert.deepEqual(x.sent[0].allowedMentions.parse, []);
+    assert.equal(x.store.get(id, 'g').status, 'done');
+    assert.throws(() => x.store.editPending(id, 'g', 'completed'), /automationEditInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('edited pending schedule survives SQLite reopen with unchanged time and interaction guard', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-schedule-edit-')),
+    path = join(dir, 'db');
+  let db = openDatabase(path);
+  const now = Date.now();
+  try {
+    let store = new MessageSchedules(db, () => now);
+    const input = {
+      guildId: 'g',
+      channelId,
+      body: 'old',
+      dueAt: now + 60000,
+      interactionId: 'source',
+    };
+    const id = store.create(input);
+    store.editPending(id, 'g', 'new');
+    db.close();
+    db = openDatabase(path);
+    store = new MessageSchedules(db, () => now);
+    store.recover();
+    const row = store.get(id, 'g');
+    assert.equal(row.body, 'new');
+    assert.equal(row.due_at, input.dueAt);
+    assert.equal(row.status, 'pending');
+    assert.equal(row.interaction_id, 'source');
+    assert.throws(() => store.create(input));
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('pending schedule reschedule preserves text/destination/interval and advances repeats from new due time', () => {
+  const x = setup();
+  try {
+    const id = x.store.create({ ...x.input, repeatMs: 600000 }),
+      before = x.store.get(id, 'g');
+    const next = Math.ceil((x.now() + 120000) / 1000) * 1000;
+    x.store.reschedulePending(id, 'g', next);
+    const after = x.store.get(id, 'g');
+    assert.equal(after.due_at, next);
+    for (const key of ['body', 'channel_id', 'repeat_ms', 'interaction_id', 'created_at', 'status'])
+      assert.equal(after[key], before[key]);
+    x.advance(60000);
+    assert.equal(x.store.claim(), null);
+    x.advance(next - x.now());
+    assert.equal(x.store.claim().id, id);
+    x.store.finish(id, true);
+    assert.equal(x.store.get(id, 'g').due_at, next + 600000);
+  } finally {
+    x.db.close();
+  }
+});
+test('reschedule rejects bad bounds/foreign/nonpending records and slash localizes exact UTC result', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup(),
+      replies = [];
+    const id = x.store.create(x.input);
+    x.c.guildConfig.setLanguage('g', locale);
+    const next = Math.ceil((x.now() + 120000) / 1000) * 1000;
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'actor' },
+      deferReply: async () => {},
+      editReply: async (p) => replies.push(p),
+      options: {
+        getSubcommand: () => 'reschedule',
+        getInteger: () => id,
+        getString: () => new Date(next).toISOString().replace('.000', ''),
+      },
+    };
+    try {
+      for (const due of [x.now(), x.now() + 366 * 86400000, 1.5])
+        assert.throws(() => x.store.reschedulePending(id, 'g', due), /automationTimeBounds/);
+      assert.throws(() => x.store.reschedulePending(id, 'other', next), /automationEditInvalid/);
+      await command.execute(i, x.c);
+      assert.equal(x.store.get(id, 'g').due_at, next);
+      assert(replies[0].embeds[0].data.description.includes(new Date(next).toISOString()));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.equal(x.sent.length, 0);
+      x.store.cancel(id, 'g');
+      assert.throws(() => x.store.reschedulePending(id, 'g', next), /automationEditInvalid/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('automation create paths repeat current admin after destination lookup before storing', async () => {
+  for (const sub of ['create', 'createzone']) {
+    const x = setup();
+    try {
+      let lost = false;
+      const fetch = x.guild.members.fetch;
+      x.guild.members.fetch = async (opts) => {
+        const actor = await fetch(opts);
+        if (lost) actor.permissions = { has: () => false };
+        return actor;
+      };
+      const channels = x.guild.channels.fetch;
+      x.guild.channels.fetch = async (...args) => {
+        lost = true;
+        return channels(...args);
+      };
+      const i = {
+        id: 'i',
+        guildId: 'g',
+        guild: x.guild,
+        user: { id: 'a' },
+        deferReply: async () => {},
+        options: { getSubcommand: () => sub, getChannel: () => ({ id: channelId }) },
+      };
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+      assert.equal(x.store.list('g').length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('automation runner forces exact source guild and pauses foreign lookup without channel access/send', async () => {
+  const x = setup();
+  try {
+    x.store.create(x.input);
+    x.advance(60001);
+    let channels = 0;
+    const runner = new AutomationRunner(x.c, {
+      guilds: {
+        fetch: async (o) => {
+          assert.deepEqual(o, { guild: 'g', force: true });
+          return {
+            id: 'other',
+            channels: {
+              fetch: async () => {
+                channels++;
+                return x.channel;
+              },
+            },
+          };
+        },
+      },
+    });
+    await runner.tick();
+    assert.equal(channels, 0);
+    assert.equal(x.sent.length, 0);
+    assert.equal(x.store.get(1, 'g').status, 'uncertain');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('schedule inspect privately shows exact stored body/metadata without mutation or destination lookup', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      const id = x.store.create({
+          ...x.input,
+          body: 'private @everyone **text**',
+          repeatMs: 600000,
+        }),
+        before = x.store.get(id, 'g'),
+        replies = [];
+      x.c.guildConfig.setLanguage('g', locale);
+      x.guild.channels.fetch = async () => {
+        throw Error('must not fetch destination');
+      };
+      await command.execute(
+        {
+          guildId: 'g',
+          guild: x.guild,
+          user: { id: 'a' },
+          deferReply: async (p) => assert.equal(p.flags, 64),
+          editReply: async (p) => replies.push(p),
+          options: { getSubcommand: () => 'inspect', getInteger: () => id },
+        },
+        x.c,
+      );
+      assert.deepEqual(x.store.get(id, 'g'), before);
+      assert.equal(x.sent.length, 0);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert(replies[0].embeds[0].data.description.includes(before.body));
+      assert(replies[0].embeds[0].data.description.includes(new Date(before.due_at).toISOString()));
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('schedule inspect refuses missing or foreign records without private text disclosure', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    for (const guildId of ['other', 'g']) {
+      let replies = 0;
+      const guild = {
+        ...x.guild,
+        id: guildId,
+        members: {
+          fetch: async ({ user }) => ({
+            id: user,
+            guild: { id: guildId },
+            permissions: { has: () => true },
+          }),
+        },
+      };
+      await assert.rejects(
+        () =>
+          command.execute(
+            {
+              guildId,
+              guild,
+              user: { id: 'a' },
+              deferReply: async () => {},
+              editReply: async () => {
+                replies++;
+              },
+              options: {
+                getSubcommand: () => 'inspect',
+                getInteger: () => (guildId === 'other' ? id : 999),
+              },
+            },
+            x.c,
+          ),
+        /automationInspectMissing/,
+      );
+      assert.equal(replies, 0);
+    }
+  } finally {
+    x.db.close();
+  }
+});
+
+test('pending repeat change preserves other metadata and omit stops after one next send', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create({ ...x.input, repeatMs: 600000 }),
+      before = x.store.get(id, 'g');
+    x.store.repeatPending(id, 'g', 1200000);
+    const after = x.store.get(id, 'g');
+    for (const key of ['body', 'channel_id', 'due_at', 'status', 'interaction_id', 'created_at'])
+      assert.equal(after[key], before[key]);
+    assert.equal(after.repeat_ms, 1200000);
+    x.store.repeatPending(id, 'g', null);
+    x.advance(60000);
+    await x.runner.tick();
+    assert.equal(x.sent.length, 1);
+    assert.equal(x.store.get(id, 'g').status, 'done');
+    assert.throws(() => x.store.repeatPending(id, 'g', 600000), /automationEditInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('repeat path current admin/confirmation/bounds/guild/status checked with private locale reply', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input),
+        replies = [];
+      x.c.guildConfig.setLanguage('g', locale);
+      let confirm = false;
+      const i = {
+        guildId: 'g',
+        guild: x.guild,
+        user: { id: 'a' },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => 'repeat',
+          getBoolean: () => confirm,
+          getInteger: (name) => (name === 'id' ? id : 10),
+        },
+      };
+      await assert.rejects(() => command.execute(i, x.c), /automationRepeatConfirm/);
+      assert.equal(x.store.get(id, 'g').repeat_ms, null);
+      for (const value of [0, 599999, 30 * 86400000 + 1, 1.5])
+        assert.throws(() => x.store.repeatPending(id, 'g', value));
+      assert.throws(() => x.store.repeatPending(id, 'other', 600000), /automationEditInvalid/);
+      confirm = true;
+      await command.execute(i, x.c);
+      assert.equal(x.store.get(id, 'g').repeat_ms, 600000);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.equal(x.sent.length, 0);
+      x.advance(60000);
+      x.store.claim();
+      assert.throws(() => x.store.repeatPending(id, 'g', null), /automationEditInvalid/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('accepted scheduled send missing native identity stops repeating job uncertain without replay', async () => {
+  const x = setup();
+  try {
+    x.store.create({ ...x.input, repeatMs: 600000 });
+    x.channel.send = async (p) => {
+      x.sent.push(p);
+      return {};
+    };
+    x.advance(60001);
+    await x.runner.tick();
+    assert.equal(x.store.list('g')[0].status, 'uncertain');
+    x.advance(1200000);
+    await x.runner.tick();
+    assert.equal(x.sent.length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('schedule finish requires one sending reservation and boolean outcome', () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    assert.throws(() => x.store.finish(id, true), /not sending/);
+    assert.throws(() => x.store.finish(999, true), /not sending/);
+    x.advance(60001);
+    x.store.claim();
+    assert.throws(() => x.store.finish(id, 'true'), /outcome/);
+    x.store.finish(id, true);
+    assert.equal(x.store.get(id, 'g').status, 'done');
+    assert.throws(() => x.store.finish(id, false), /not sending/);
+    assert.equal(x.store.get(id, 'g').status, 'done');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('named-zone reschedule moves one pending instant with text destination and elapsed repeat preserved in three locales', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      const id = x.store.create({ ...x.input, repeatMs: 600000 }),
+        before = x.store.get(id, 'g'),
+        next = Math.ceil((x.now() + 120000) / 1000) * 1000,
+        local = new Date(next).toISOString().slice(0, 19),
+        replies = [];
+      x.guild.channels.fetch = async () => {
+        throw Error('no destination lookup');
+      };
+      await command.execute(
+        {
+          guild: x.guild,
+          guildId: 'g',
+          user: { id: 'actor' },
+          deferReply: async () => {},
+          editReply: async (p) => replies.push(p),
+          options: {
+            getSubcommand: () => 'reschedulezone',
+            getInteger: () => id,
+            getString: (n) => (n === 'local' ? local : 'UTC'),
+          },
+        },
+        x.c,
+      );
+      const after = x.store.get(id, 'g');
+      assert.deepEqual(after, { ...before, due_at: next });
+      assert.equal(
+        replies[0].embeds[0].data.description,
+        translate(locale, 'automationZoneRescheduled', {
+          zone: 'UTC',
+          iso: new Date(next).toISOString(),
+        }),
+      );
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('named-zone reschedule rejects DST ambiguity gap invalidzone nonpending foreign and stale instants without mutation', async () => {
+  for (const kind of ['ambiguous', 'gap', 'zone', 'foreign', 'cancelled', 'past']) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input);
+      if (kind === 'cancelled') x.store.cancel(id, 'g');
+      const before = x.store.get(id, 'g');
+      let local = new Date(x.now() + 120000).toISOString().slice(0, 19),
+        zone = 'UTC';
+      if (kind === 'ambiguous') {
+        local = '2026-11-01T01:30:00';
+        zone = 'America/New_York';
+      }
+      if (kind === 'gap') {
+        local = '2027-03-14T02:30:00';
+        zone = 'America/New_York';
+      }
+      if (kind === 'zone') zone = 'Fake/Zone';
+      if (kind === 'past') local = '2020-01-01T00:00:00';
+      await assert.rejects(() =>
+        command.execute(
+          {
+            guild: x.guild,
+            guildId: 'g',
+            user: { id: 'actor' },
+            deferReply: async () => {},
+            editReply: async () => assert.fail('no output'),
+            options: {
+              getSubcommand: () => 'reschedulezone',
+              getInteger: () => (kind === 'foreign' ? id + 1 : id),
+              getString: (n) => (n === 'local' ? local : zone),
+            },
+          },
+          x.c,
+        ),
+      );
+      assert.deepEqual(x.store.get(id, 'g'), before);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('named-zone reschedule current manager failure blocks before modifying schedule', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input),
+      before = x.store.get(id, 'g');
+    x.guild.members.fetch = async () => ({
+      id: 'actor',
+      guild: { id: 'g' },
+      permissions: { has: () => false },
+    });
+    await assert.rejects(
+      () =>
+        command.execute(
+          {
+            guild: x.guild,
+            guildId: 'g',
+            user: { id: 'actor' },
+            deferReply: async () => {},
+            options: { getSubcommand: () => 'reschedulezone' },
+          },
+          x.c,
+        ),
+      /userPermission/,
+    );
+    assert.deepEqual(x.store.get(id, 'g'), before);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('pending destination edit preserves scheduling snapshot and produces private three-locale no-send result', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      const id = x.store.create({ ...x.input, repeatMs: 600000 }),
+        before = x.store.get(id, 'g'),
+        newChannel = '100000000000000009',
+        replies = [];
+      x.guild.channels.fetch = async () => ({ ...x.channel, id: newChannel });
+      await command.execute(
+        {
+          guild: x.guild,
+          guildId: 'g',
+          user: { id: 'actor' },
+          deferReply: async () => {},
+          editReply: async (p) => replies.push(p),
+          options: {
+            getSubcommand: () => 'destination',
+            getInteger: () => id,
+            getChannel: () => ({ id: newChannel }),
+          },
+        },
+        x.c,
+      );
+      assert.deepEqual(x.store.get(id, 'g'), { ...before, channel_id: newChannel });
+      assert.equal(
+        replies[0].embeds[0].data.description,
+        translate(locale, 'automationDestinationSaved', { channel: newChannel }),
+      );
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('destination edit rejects concurrent claimed edited or cancelled snapshots without overwriting latest state', () => {
+  for (const kind of ['claimed', 'body', 'time', 'repeat', 'cancelled']) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input),
+        before = x.store.get(id, 'g');
+      if (kind === 'claimed') {
+        x.advance(60001);
+        x.store.claim();
+      }
+      if (kind === 'body') x.store.editPending(id, 'g', 'new body');
+      if (kind === 'time') x.store.reschedulePending(id, 'g', x.now() + 120000);
+      if (kind === 'repeat') x.store.repeatPending(id, 'g', 600000);
+      if (kind === 'cancelled') x.store.cancel(id, 'g');
+      const latest = x.store.get(id, 'g');
+      assert.throws(
+        () => x.store.destinationPending(before, '100000000000000009'),
+        /automationEditInvalid/,
+      );
+      assert.deepEqual(x.store.get(id, 'g'), latest);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('destination edit rejects missing foreign unavailable and manager permission loss during channel fetch', async () => {
+  for (const kind of ['missing', 'unavailable', 'foreign', 'permission', 'race']) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input),
+        newChannel = '100000000000000009';
+      let lost = false;
+      const fetch = x.guild.members.fetch;
+      x.guild.members.fetch = async (o) => {
+        const member = await fetch(o);
+        if (lost) member.permissions.has = () => false;
+        return member;
+      };
+      x.guild.channels.fetch = async () => {
+        if (kind === 'permission') lost = true;
+        if (kind === 'race') x.store.cancel(id, 'g');
+        return kind === 'unavailable'
+          ? null
+          : { ...x.channel, id: newChannel, guildId: kind === 'foreign' ? 'other' : 'g' };
+      };
+      await assert.rejects(() =>
+        command.execute(
+          {
+            guild: x.guild,
+            guildId: 'g',
+            user: { id: 'actor' },
+            deferReply: async () => {},
+            editReply: async () => assert.fail('no output'),
+            options: {
+              getSubcommand: () => 'destination',
+              getInteger: () => (kind === 'missing' ? id + 1 : id),
+              getChannel: () => ({ id: newChannel }),
+            },
+          },
+          x.c,
+        ),
+      );
+      assert.equal(x.store.get(id, 'g').channel_id, channelId);
+      assert.equal(x.sent.length, 0);
     } finally {
       x.db.close();
     }

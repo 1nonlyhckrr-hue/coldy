@@ -148,6 +148,29 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES (22, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 23').get()) {
+      db.exec(`CREATE TABLE custom_role_creation_config(guild_id TEXT PRIMARY KEY,enabled INTEGER NOT NULL CHECK(enabled IN (0,1)));
+        CREATE TABLE custom_created_roles(guild_id TEXT NOT NULL,owner_id TEXT NOT NULL,role_id TEXT UNIQUE,name TEXT NOT NULL,color INTEGER NOT NULL,status TEXT NOT NULL CHECK(status IN ('creating','created','uncertain')),interaction_id TEXT NOT NULL UNIQUE,created_at INTEGER NOT NULL,PRIMARY KEY(guild_id,owner_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES (23, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 24').get()) {
+      db.exec(
+        'ALTER TABLE autoresponders ADD COLUMN enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1));',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (24, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 25').get()) {
+      db.exec(
+        "CREATE TABLE role_click_receipts(interaction_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,user_id TEXT NOT NULL,role_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('pending','completed','failed','uncertain')),created_at INTEGER NOT NULL);",
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (25, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=26').get()) {
+      db.exec(
+        "ALTER TABLE role_click_receipts ADD COLUMN action TEXT NOT NULL DEFAULT 'unknown' CHECK(action IN ('unknown','add','remove'));",
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES(26,?)').run(Date.now());
+    }
   })();
   return db;
 }

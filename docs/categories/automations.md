@@ -194,3 +194,5 @@ Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Lun
 
 Source: https://docs.zynrax.site/configuration/autoreact
 
+
+Original Luna `/automation forget id confirm:true` erases stored text only for done/cancelled schedules. Pending,sending and uncertain jobs are blocked until cancelled/reconciled. Discord messages are not deleted. Schedule ID,interaction replay guard,status and timestamp metadata remain. Current ManageGuild,confirmation,guild isolation and failure gates apply. No SQL schema change required.

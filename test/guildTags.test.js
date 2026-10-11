@@ -14,6 +14,7 @@ function setup() {
     user = { id: ids.user, primaryGuild: { identityGuildId: 'g', identityEnabled: true } },
     member = {
       id: ids.user,
+      guild: { id: 'g' },
       permissions: { has: () => true },
       roles: {
         highest: { comparePositionTo: () => 5 },
@@ -22,14 +23,19 @@ function setup() {
         remove: async (r) => calls.push(['remove', r.id]),
       },
     },
-    bot = { permissions: { has: () => true }, roles: { highest: { comparePositionTo: () => 5 } } },
+    bot = {
+      id: 'b',
+      guild: { id: 'g' },
+      permissions: { has: () => true },
+      roles: { highest: { comparePositionTo: () => 5 } },
+    },
     role = { id: ids.role, guild: { id: 'g' }, managed: false, permissions: { has: () => false } },
     i = {
       id: 'i1',
       user: { id: ids.user },
       guildId: 'g',
       appPermissions: { has: () => true },
-      client: { users: { fetch: async () => user } },
+      client: { user: { id: 'b' }, users: { fetch: async () => user } },
       guild: {
         id: 'g',
         ownerId: ids.owner,
@@ -184,5 +190,149 @@ test('four guildtag paths execute private localized replies and config authoriza
     } finally {
       s.db.close();
     }
+  }
+});
+
+test('guildtag refresh rejects exact identity mismatches without role effects or grant reservations', async () => {
+  for (const change of [
+    (s) => (s.member.guild.id = 'other'),
+    (s) => (s.i.guild.id = 'other'),
+    (s) => (s.bot.id = 'other'),
+    (s) => (s.bot.guild.id = 'other'),
+    (s) => delete s.i.client.user,
+  ]) {
+    const s = setup();
+    try {
+      change(s);
+      await assert.rejects(() => refreshGuildTag(s.i, s.c));
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.c.guildTags.grant('g', ids.user), undefined);
+      assert.equal(s.c.guildTags.active.size, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('guildtag setup forces exact role and rechecks caller after lookup;reset verifies exact admin', async () => {
+  for (const kind of ['role', 'permission', 'member', 'bot', 'reset']) {
+    const s = setup();
+    try {
+      let sub = kind === 'reset' ? 'reset' : 'setup';
+      s.i.deferReply = async () => {};
+      s.i.editReply = async () => {};
+      s.i.options = { getSubcommand: () => sub, getRole: () => ({ id: ids.role }) };
+      s.c.guildTags.reset('g');
+      if (kind === 'reset') s.c.guildTags.setup('g', ids.role);
+      if (kind === 'member' || kind === 'reset') s.member.id = 'other';
+      if (kind === 'bot') s.bot.id = 'other';
+      s.i.guild.roles.fetch = async (id, o) => {
+        assert.equal(id, ids.role);
+        assert.deepEqual(o, { force: true });
+        if (kind === 'permission') s.member.permissions.has = () => false;
+        return kind === 'role' ? { ...s.role, id: 'other' } : s.role;
+      };
+      await assert.rejects(() => command.execute(s.i, s.c));
+      assert.equal(s.c.guildTags.config('g')?.role_id, kind === 'reset' ? ids.role : undefined);
+      assert.equal(s.calls.length, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+
+test('tag finish requires one pending grant and never rewrites completed/uncertain/foreign records', () => {
+  const s = setup();
+  try {
+    assert.throws(() => s.c.guildTags.finish('g', ids.user, 'granted'), /not pending/);
+    s.c.guildTags.reserve('g', ids.user, ids.role);
+    assert.throws(() => s.c.guildTags.finish('other', ids.user, 'granted'), /not pending/);
+    s.c.guildTags.finish('g', ids.user, 'granted');
+    assert.throws(() => s.c.guildTags.finish('g', ids.user, 'uncertain'), /not pending/);
+    assert.equal(s.c.guildTags.grant('g', ids.user).status, 'granted');
+    s.c.guildTags.reserve('g', ids.user, ids.role);
+    s.c.guildTags.finish('g', ids.user, 'uncertain');
+    assert.throws(() => s.c.guildTags.finish('g', ids.user, 'granted'), /not pending/);
+    assert.equal(s.c.guildTags.grant('g', ids.user).status, 'uncertain');
+  } finally {
+    s.db.close();
+  }
+});
+test('accepted tag role add with failed completion remains unresolved and cannot repeat', async () => {
+  const s = setup();
+  try {
+    s.c.guildTags.finish = () => {
+      throw Error('storage');
+    };
+    await assert.rejects(() => refreshGuildTag(s.i, s.c), /tagUncertain/);
+    assert.equal(s.calls.length, 1);
+    assert.equal(s.c.guildTags.grant('g', ids.user).status, 'pending');
+    s.i.id = 'new';
+    await assert.rejects(() => refreshGuildTag(s.i, s.c), /tagUncertain/);
+    assert.equal(s.calls.length, 1);
+    assert.equal(s.c.guildTags.active.size, 0);
+    s.c.guildTags.recover();
+    assert.equal(s.c.guildTags.grant('g', ids.user).status, 'uncertain');
+  } finally {
+    s.db.close();
+  }
+});
+
+test('guildtag own status is private/localized stored-only without live lookups or mutation', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const status of ['none', 'pending', 'granted', 'uncertain']) {
+      const s = setup();
+      try {
+        if (status !== 'none') {
+          s.c.guildTags.reserve('g', ids.user, ids.role);
+          if (status !== 'pending') s.c.guildTags.finish('g', ids.user, status);
+        }
+        const before = s.c.guildTags.grant('g', ids.user),
+          replies = [];
+        s.c.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+        s.i.options = { getSubcommand: () => 'status' };
+        s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+        s.i.editReply = async (p) => replies.push(p);
+        s.i.guild.members.fetch =
+          s.i.guild.members.fetchMe =
+          s.i.guild.roles.fetch =
+          s.i.client.users.fetch =
+            async () => {
+              throw Error('no native lookup');
+            };
+        await command.execute(s.i, s.c);
+        assert.deepEqual(s.c.guildTags.grant('g', ids.user), before);
+        assert.equal(s.calls.length, 0);
+        assert.deepEqual(replies[0].allowedMentions.parse, []);
+        assert(
+          replies[0].embeds[0].data.description.includes(
+            translate(locale, status === 'none' ? 'tagOwnNone' : 'tagStored_' + status),
+          ),
+        );
+      } finally {
+        s.db.close();
+      }
+    }
+});
+
+test('enabled identity with absent or malformed guild ID is unknown,not revocation evidence', () => {
+  for (const identityGuildId of [undefined, null, '', 0, false, {}])
+    assert.equal(
+      guildTagState({ primaryGuild: { identityEnabled: true, identityGuildId } }, 'g'),
+      'unknown',
+    );
+});
+test('malformed primary guild does not revoke tracked reward or clear grant', async () => {
+  const s = setup();
+  try {
+    await refreshGuildTag(s.i, s.c);
+    s.member.roles.cache.add(ids.role);
+    s.i.id = 'next';
+    delete s.user.primaryGuild.identityGuildId;
+    await assert.rejects(() => refreshGuildTag(s.i, s.c), /tagUnavailable/);
+    assert.equal(s.calls.length, 1);
+    assert.equal(s.c.guildTags.grant('g', ids.user).status, 'granted');
+    assert.equal(s.c.guildTags.active.size, 0);
+  } finally {
+    s.db.close();
   }
 });

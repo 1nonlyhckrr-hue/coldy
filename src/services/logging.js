@@ -6,13 +6,17 @@ export class ServerLogs {
     this.config = config;
     this.logger = logger;
   }
-  async emit(guild, entry) {
+  async emit(guild, entry, beforeSend) {
     try {
       const settings = this.config.get(guild.id);
       const setting = settings.logging;
       if (!setting.enabled || !setting.channelId) return { sent: false, reason: 'disabled' };
       const channel = await validateOutputChannel(guild, setting.channelId);
-      const content = translate(settings.language, 'logEntry', {
+      if (beforeSend) await beforeSend();
+      const latest = this.config.get(guild.id);
+      if (!latest.logging.enabled || latest.logging.channelId !== setting.channelId)
+        return { sent: false, reason: 'changed' };
+      const content = translate(latest.language, 'logEntry', {
         kind: entry.kind,
         action: entry.action ?? 'event',
         caseId: entry.caseId ?? '-',
@@ -20,7 +24,7 @@ export class ServerLogs {
         targetId: entry.targetId ?? '-',
       }).slice(0, 1900);
       await channel.send(
-        lunaPayload({ content, allowedMentions: { parse: [] } }, { locale: settings.language }),
+        lunaPayload({ content, allowedMentions: { parse: [] } }, { locale: latest.language }),
       );
       return { sent: true };
     } catch {

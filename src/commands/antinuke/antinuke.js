@@ -63,20 +63,37 @@ export default {
   userPermissions: [P.ManageGuild],
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });
-    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    const authorize = async () => {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        i.guild.id !== i.guildId ||
+        actor?.id !== i.user.id ||
+        actor.guild?.id !== i.guildId ||
+        !actor.permissions?.has(P.ManageGuild)
+      )
+        throw new UserError('userPermission');
+    };
+    await authorize();
     const t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId),
       sub = i.options.getSubcommand();
     let text;
     if (sub === 'enable') {
       if (!c.config.auditEventsEnabled) throw new UserError('antinukeRuntimeDisabled');
-      const bot = await i.guild.members.fetchMe({ force: true });
-      if (!bot.permissions.has(P.ViewAuditLog)) throw new UserError('antinukeBotPermission');
       const channel = await validateOutputChannel(
         i.guild,
         i.options.getChannel('channel', true).id,
       );
+      await authorize();
+      const bot = await i.guild.members.fetchMe({ force: true });
+      if (
+        !i.guild.client?.user?.id ||
+        bot?.id !== i.guild.client.user.id ||
+        bot.guild?.id !== i.guildId ||
+        !bot.permissions?.has(P.ViewAuditLog)
+      )
+        throw new UserError('antinukeBotPermission');
+      if (!c.config.auditEventsEnabled) throw new UserError('antinukeRuntimeDisabled');
       c.antinuke.patch(i.guildId, { enabled: true, channelId: channel.id });
       text = t('antinukeEnabled');
     } else if (sub === 'disable') {
@@ -93,8 +110,10 @@ export default {
         trusted = i.options.getBoolean('trusted', true);
       if (trusted) {
         const member = await i.guild.members.fetch({ user: selected.id, force: true });
-        if (!member || member.id !== selected.id) throw new UserError('antinukeUserInvalid');
+        if (!member || member.id !== selected.id || member.guild?.id !== i.guildId)
+          throw new UserError('antinukeUserInvalid');
       }
+      await authorize();
       c.antinuke.trust(i.guildId, selected.id, trusted);
       text = t('antinukeSaved');
     } else if (sub === 'config') {

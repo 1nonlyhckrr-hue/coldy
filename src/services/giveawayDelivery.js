@@ -45,13 +45,32 @@ export function giveawayPayload(record, locale = 'en') {
 }
 export async function createGiveaway(i, c, input) {
   const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-  if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+  if (
+    i.guild.id !== i.guildId ||
+    actor?.id !== i.user.id ||
+    actor.guild?.id !== i.guildId ||
+    !actor.permissions?.has(P.ManageGuild)
+  )
+    throw new UserError('userPermission');
   const channel = await validateOutputChannel(i.guild, input.channelId);
   if (input.requiredRoleId) {
-    const role = await i.guild.roles.fetch(input.requiredRoleId);
-    if (!role || role.guild.id !== i.guildId || role.id === i.guildId)
+    const role = await i.guild.roles.fetch(input.requiredRoleId, { force: true });
+    if (
+      !role ||
+      role.id !== input.requiredRoleId ||
+      role.guild.id !== i.guildId ||
+      role.id === i.guildId
+    )
       throw new UserError('giveawayRoleInvalid');
   }
+  const current = await i.guild.members.fetch({ user: i.user.id, force: true });
+  if (
+    i.guild.id !== i.guildId ||
+    current?.id !== i.user.id ||
+    current.guild?.id !== i.guildId ||
+    !current.permissions?.has(P.ManageGuild)
+  )
+    throw new UserError('userPermission');
   const id = c.giveaways.reserve({ ...input, guildId: i.guildId, interactionId: i.id });
   const record = c.giveaways.get(id, i.guildId),
     locale = c.guildConfig.get(i.guildId).language;
@@ -63,6 +82,10 @@ export async function createGiveaway(i, c, input) {
     throw new UserError('giveawaySendUncertain', { id });
   }
   try {
+    if (!message?.id) {
+      c.giveaways.uncertain(id);
+      throw new Error('Missing giveaway message identity');
+    }
     c.giveaways.activate(id, message.id);
   } catch {
     throw new UserError('giveawayStorageUncertain', { id });
@@ -77,7 +100,7 @@ export class GiveawayRunner {
     this.tickBusy = false;
     this.timer = null;
   }
-  async finish(id, guildId, { reroll = false } = {}) {
+  async finish(id, guildId, { reroll = false, authorize } = {}) {
     const key = `${guildId}:${id}`;
     if (this.busy.has(key)) throw new UserError('giveawayBusy');
     this.busy.add(key);
@@ -88,8 +111,9 @@ export class GiveawayRunner {
       if (g.status !== 'ending') {
         if ((reroll && g.status !== 'ended') || (!reroll && g.status !== 'active'))
           throw new UserError('giveawayDrawInvalid');
-        const guild = await this.client.guilds.fetch(guildId),
+        const guild = await this.client.guilds.fetch({ guild: guildId, force: true }),
           eligible = [];
+        if (guild?.id !== guildId) throw new UserError('giveawayEligibilityUnavailable');
         // Fail closed when eligibility cannot be verified. Do not draw from stale caches.
         for (const userId of c.giveaways.entries(id)) {
           let member;
@@ -99,19 +123,25 @@ export class GiveawayRunner {
             if (error.code === 10007) continue;
             throw new UserError('giveawayEligibilityUnavailable');
           }
+          if (member?.id !== userId || member.guild?.id !== guildId)
+            throw new UserError('giveawayEligibilityUnavailable');
           if (
             !member.user.bot &&
             (!g.required_role_id || member.roles.cache.has(g.required_role_id))
           )
             eligible.push(userId);
         }
+        if (authorize) await authorize();
         g = c.giveaways.draw(id, guildId, eligible, { reroll });
       }
       // Winners are already persisted. A failed edit may be safely retried without a new draw.
-      const guild = await this.client.guilds.fetch(guildId),
+      const guild = await this.client.guilds.fetch({ guild: guildId, force: true }),
         channel = await validateOutputChannel(guild, g.channel_id),
-        message = await channel.messages.fetch(g.message_id);
-      if (message.author.id !== this.client.user.id) throw new UserError('giveawayMessageInvalid');
+        message = await channel.messages.fetch({ message: g.message_id, force: true });
+      if (guild?.id !== guildId) throw new UserError('giveawayMessageInvalid');
+      if (message.id !== g.message_id || message.author.id !== this.client.user.id)
+        throw new UserError('giveawayMessageInvalid');
+      if (authorize) await authorize();
       await message.edit(giveawayPayload(g, c.guildConfig.get(guildId).language));
       c.giveaways.endPublished(id, g.draw_version);
       return g;
@@ -165,6 +195,8 @@ export function createGiveawayButtonHandler(c) {
       if (remaining)
         throw new UserError('commandCooldown', { seconds: Math.ceil(remaining / 1000) });
       const member = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (i.guild.id !== i.guildId || member?.id !== i.user.id || member.guild?.id !== i.guildId)
+        throw new UserError('giveawayUserInvalid');
       if (member.user.bot) throw new UserError('giveawayBotEntry');
       if (g.required_role_id && !member.roles.cache.has(g.required_role_id))
         throw new UserError('giveawayRoleRequired');

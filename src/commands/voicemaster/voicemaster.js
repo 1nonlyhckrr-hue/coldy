@@ -32,6 +32,13 @@ const data = new SlashCommandBuilder()
     s.setName('config').setDescription('Show configured private channel category and limits.'),
   )
   .addSubcommand((s) =>
+    s
+      .setName('status')
+      .setDescription(
+        'Privately inspect your stored voice ownership record,not live channel state.',
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('open').setDescription('Create your own private standard voice channel.'),
   )
   .addSubcommand((s) =>
@@ -101,14 +108,24 @@ export default {
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text;
     if (sub === 'setup') {
-      const [actor, bot, category] = await Promise.all([
+      if (i.guild?.id !== i.guildId) throw new UserError('userPermission');
+      const selected = i.options.getChannel('category', true).id;
+      const category = await i.guild.channels.fetch(selected, { force: true });
+      const [actor, bot] = await Promise.all([
         i.guild.members.fetch({ user: i.user.id, force: true }),
         i.guild.members.fetchMe({ force: true }),
-        i.guild.channels.fetch(i.options.getChannel('category', true).id),
       ]);
-      if (!actor.permissions.has(P.ManageChannels)) throw new UserError('userPermission');
+      if (
+        actor?.id !== i.user.id ||
+        actor.guild?.id !== i.guildId ||
+        !actor.permissions?.has(P.ManageChannels)
+      )
+        throw new UserError('userPermission');
+      if (!i.client?.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
+        throw new UserError('vmBotPermission');
       if (
         !category ||
+        category.id !== selected ||
         category.guildId !== i.guildId ||
         category.type !== ChannelType.GuildCategory
       )
@@ -119,6 +136,16 @@ export default {
       text = t('vmSetup');
     } else if (sub === 'config') {
       text = t('vmConfig', { category: c.voiceMaster.config(i.guildId)?.category_id ?? '-' });
+    } else if (sub === 'status') {
+      if (i.guild?.id !== i.guildId) throw new UserError('customMemberMissing');
+      const row = c.voiceMaster.owned(i.guildId, i.user.id);
+      text = row
+        ? t('vmStoredRecord', {
+            id: row.id,
+            channel: row.channel_id ?? t('vmStoredNoChannel'),
+            state: t('vmStoredState_' + row.status),
+          })
+        : t('vmStoredNone');
     } else if (sub === 'reconcile') {
       const r = await reconcilePrivateVoice(i, c, {
         confirm: i.options.getBoolean('confirm', true),

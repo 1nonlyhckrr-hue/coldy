@@ -26,6 +26,11 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('status')
+      .setDescription('Privately inspect only your stored tag-grant state;no live identity claim.'),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('refresh')
       .setDescription('Check your current primary-guild identity and own reward role.'),
   );
@@ -40,13 +45,28 @@ export default {
       locale = c.localization.locale(i.guildId);
     let text;
     if (['setup', 'reset'].includes(sub)) {
-      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-      if (!actor.permissions.has(P.ManageRoles)) throw new UserError('roleActorPermission');
+      const authorize = async () => {
+        const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+        if (
+          i.guild.id !== i.guildId ||
+          actor?.id !== i.user.id ||
+          actor.guild?.id !== i.guildId ||
+          !actor.permissions?.has(P.ManageRoles)
+        )
+          throw new UserError('roleActorPermission');
+        return actor;
+      };
+      await authorize();
       if (sub === 'setup') {
-        const [bot, role] = await Promise.all([
+        const selected = i.options.getRole('role', true),
+          role = await i.guild.roles.fetch(selected.id, { force: true });
+        if (!role || role.id !== selected.id) throw new UserError('roleInvalid');
+        const [actor, bot] = await Promise.all([
+          authorize(),
           i.guild.members.fetchMe({ force: true }),
-          i.guild.roles.fetch(i.options.getRole('role', true).id),
         ]);
+        if (!i.client.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
+          throw new UserError('roleBotPermission');
         validateSelfRole(role, bot, actor, i.guild);
         c.guildTags.setup(i.guildId, role.id);
         text = t('tagSetup');
@@ -56,6 +76,11 @@ export default {
       }
     } else if (sub === 'show') {
       text = t('tagConfig', { role: c.guildTags.config(i.guildId)?.role_id ?? '-' });
+    } else if (sub === 'status') {
+      const grant = c.guildTags.grant(i.guildId, i.user.id);
+      text = grant
+        ? t('tagOwnStored', { role: grant.role_id, status: t('tagStored_' + grant.status) })
+        : t('tagOwnNone');
     } else if (sub === 'refresh') {
       text = t(`tag_${await refreshGuildTag(i, c)}`);
     } else throw new UserError('unknownCommand');

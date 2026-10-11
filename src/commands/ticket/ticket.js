@@ -1,11 +1,9 @@
+import { SlashCommandBuilder, InteractionContextType, ChannelType, MessageFlags } from 'discord.js';
 import {
-  SlashCommandBuilder,
-  InteractionContextType,
-  PermissionFlagsBits as P,
-  ChannelType,
-  MessageFlags,
-} from 'discord.js';
-import { validateTicketConfig, requireTicketAccess } from '../../services/tickets.js';
+  validateTicketConfig,
+  requireTicketAccess,
+  requireTicketManager,
+} from '../../services/tickets.js';
 import {
   openTicket,
   publishTicketPanel,
@@ -50,9 +48,21 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('status')
+      .setDescription(
+        'Privately show your ten latest stored ticket states,no live access or transcript.',
+      ),
+  )
   .addSubcommand((s) => s.setName('open').setDescription('Open one private support ticket.'))
   .addSubcommand((s) =>
     s.setName('claim').setDescription('Assign the current open ticket to yourself.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('unclaim')
+      .setDescription('Release your own claim on this open ticket,without changing access.'),
   )
   .addSubcommand((s) =>
     s.setName('close').setDescription('Store transcript and make the owner read-only.'),
@@ -106,19 +116,35 @@ export default {
       t = (key, p) => translate(locale, key, p);
     let content, files;
     if (['setup', 'panel', 'config', 'retention'].includes(sub)) {
-      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-      if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+      await requireTicketManager(i);
     }
     if (sub === 'setup') {
       const categoryId = i.options.getChannel('category', true).id,
         roleId = i.options.getRole('support-role', true).id;
       await validateTicketConfig(i.guild, categoryId, roleId);
+      await requireTicketManager(i);
       c.tickets.configure(i.guildId, categoryId, roleId);
       content = t('ticketSetupSaved');
     }
     if (sub === 'panel') {
       const id = await publishTicketPanel(i, c, i.options.getChannel('channel', true).id);
       content = t('ticketPanelSent', { id });
+    }
+    if (sub === 'status') {
+      if (i.guild?.id !== i.guildId) throw new UserError('ticketAccessDenied');
+      const rows = c.tickets.ownRecords(i.guildId, i.user.id);
+      content =
+        t('ticketOwnStoredHeader') +
+        '\n' +
+        (rows
+          .map((row) =>
+            t('ticketOwnStoredRow', {
+              id: row.id,
+              channel: row.channel_id ?? t('ticketOwnNoChannel'),
+              state: t('ticketOwnState_' + row.status),
+            }),
+          )
+          .join('\n') || t('ticketOwnStoredNone'));
     }
     if (sub === 'open') {
       const r = await openTicket(i, c);
@@ -129,6 +155,12 @@ export default {
       await requireTicketAccess(i, ticket, { staff: true });
       c.tickets.claim(ticket.id, i.user.id);
       content = t('ticketClaimed', { id: ticket.id });
+    }
+    if (sub === 'unclaim') {
+      const ticket = c.tickets.byChannel(i.channelId, i.guildId);
+      await requireTicketAccess(i, ticket, { staff: true });
+      c.tickets.unclaim(ticket.id, i.guildId, i.user.id);
+      content = t('ticketUnclaimed', { id: ticket.id });
     }
     if (['close', 'reopen'].includes(sub)) {
       const id = await changeTicketState(i, c, sub === 'close');

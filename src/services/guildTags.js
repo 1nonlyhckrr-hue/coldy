@@ -3,7 +3,7 @@ import { UserError } from '../utils/errors.js';
 import { PermissionFlagsBits as P } from 'discord.js';
 export function guildTagState(user, guildId) {
   const identity = user.primaryGuild;
-  if (!identity || identity.identityEnabled === null || identity.identityGuildId === null)
+  if (!identity || typeof identity.identityGuildId !== 'string' || !identity.identityGuildId)
     return 'unknown';
   if (typeof identity.identityEnabled !== 'boolean') return 'unknown';
   return identity.identityEnabled && identity.identityGuildId === guildId
@@ -49,9 +49,12 @@ export class GuildTags {
   }
   finish(guildId, userId, status) {
     if (!['granted', 'uncertain'].includes(status)) throw new TypeError('Invalid tag state');
-    this.db
-      .prepare('UPDATE guild_tag_grants SET status=? WHERE guild_id=? AND user_id=?')
+    const result = this.db
+      .prepare(
+        "UPDATE guild_tag_grants SET status=? WHERE guild_id=? AND user_id=? AND status='pending'",
+      )
       .run(status, guildId, userId);
+    if (result.changes !== 1) throw new Error('Tag reservation not pending');
   }
   remove(guildId, userId) {
     this.db
@@ -75,8 +78,16 @@ export async function refreshGuildTag(i, c) {
       i.client.users.fetch(i.user.id, { force: true }),
       i.guild.roles.fetch(cfg.role_id, { force: true }),
     ]);
-    if (!member || member.id !== i.user.id || user.id !== i.user.id)
+    if (
+      i.guild.id !== i.guildId ||
+      !member ||
+      member.id !== i.user.id ||
+      member.guild?.id !== i.guildId ||
+      user?.id !== i.user.id
+    )
       throw new UserError('customMemberMissing');
+    if (!i.client.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
+      throw new UserError('roleBotPermission');
     const state = guildTagState(user, i.guildId);
     if (state === 'unknown') throw new UserError('tagUnavailable');
     if (role?.id !== cfg.role_id) throw new UserError('roleInvalid');

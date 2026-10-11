@@ -95,6 +95,119 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('reschedule')
+      .setDescription(
+        'Move pending next send to explicit offset time;repeat stays elapsed interval.',
+      )
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('at')
+          .setDescription('ISO time with offset,one minute to365days ahead')
+          .setMaxLength(25)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('edit')
+      .setDescription('Replace text of a pending schedule only;time/destination unchanged.')
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('text')
+          .setDescription('Replacement message,mentions disabled')
+          .setMinLength(1)
+          .setMaxLength(1800)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('repeat')
+      .setDescription('Change pending elapsed repeat;omit minutes to make next send one-time.')
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Confirm changing future repeats').setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('minutes')
+          .setDescription('10-43200;omit to stop repeating after next send')
+          .setMinValue(10)
+          .setMaxValue(43200),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('inspect')
+      .setDescription('Privately review one stored schedule,text and metadata;no native effects.')
+      .addIntegerOption((o) =>
+        o
+          .setName('id')
+          .setDescription('Schedule ID in this server')
+          .setMinValue(1)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('reschedulezone')
+      .setDescription('Move one pending schedule using explicit local time and named timezone.')
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('local')
+          .setDescription('YYYY-MM-DDTHH:mm:ss;ambiguous/gap times rejected')
+          .setMinLength(19)
+          .setMaxLength(19)
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('timezone')
+          .setDescription('Named timezone such as Asia/Kolkata or UTC')
+          .setMinLength(1)
+          .setMaxLength(80)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('destination')
+      .setDescription('Move one pending message schedule to a validated channel;does not send now.')
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addChannelOption((o) =>
+        o
+          .setName('channel')
+          .setDescription('New destination')
+          .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('forget')
+      .setDescription('Erase stored text of a completed/cancelled schedule,not Discord messages.')
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Erase stored text only').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('list')
       .setDescription('List recent schedule records.')
       .addIntegerOption((o) => o.setName('page').setDescription('Page number').setMinValue(1)),
@@ -108,8 +221,17 @@ export default {
   userPermissions: [P.ManageGuild],
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });
-    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    const authorize = async () => {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        actor?.id !== i.user.id ||
+        actor.guild?.id !== i.guildId ||
+        i.guild.id !== i.guildId ||
+        !actor.permissions?.has(P.ManageGuild)
+      )
+        throw new UserError('userPermission');
+    };
+    await authorize();
     const sub = i.options.getSubcommand(),
       locale = c.guildConfig.get(i.guildId).language,
       t = (key, p) => translate(locale, key, p);
@@ -117,6 +239,7 @@ export default {
     if (sub === 'create') {
       const channelId = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, channelId);
+      await authorize();
       const repeat = i.options.getInteger('repeat-minutes'),
         id = c.messageSchedules.create({
           guildId: i.guildId,
@@ -131,6 +254,7 @@ export default {
     if (sub === 'createzone') {
       const channelId = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, channelId);
+      await authorize();
       const resolved = resolveZonedTime(
         i.options.getString('local', true),
         i.options.getString('timezone', true),
@@ -148,6 +272,73 @@ export default {
       const id = i.options.getInteger('id', true);
       c.messageSchedules.cancel(id, i.guildId);
       content = t('automationCancelled', { id });
+    }
+    if (sub === 'reschedule') {
+      const dueAt = parseScheduledTime(i.options.getString('at', true));
+      c.messageSchedules.reschedulePending(i.options.getInteger('id', true), i.guildId, dueAt);
+      content = t('automationRescheduled', { iso: new Date(dueAt).toISOString() });
+    }
+    if (sub === 'reschedulezone') {
+      const resolved = resolveZonedTime(
+        i.options.getString('local', true),
+        i.options.getString('timezone', true),
+      );
+      c.messageSchedules.reschedulePending(
+        i.options.getInteger('id', true),
+        i.guildId,
+        resolved.dueAt,
+      );
+      content = t('automationZoneRescheduled', { zone: resolved.zone, iso: resolved.iso });
+    }
+    if (sub === 'destination') {
+      const snapshot = c.messageSchedules.get(i.options.getInteger('id', true), i.guildId);
+      if (snapshot?.status !== 'pending') throw new UserError('automationEditInvalid');
+      const channelId = i.options.getChannel('channel', true).id;
+      await validateOutputChannel(i.guild, channelId);
+      await authorize();
+      c.messageSchedules.destinationPending(snapshot, channelId);
+      content = t('automationDestinationSaved', { channel: channelId });
+    }
+    if (sub === 'edit') {
+      c.messageSchedules.editPending(
+        i.options.getInteger('id', true),
+        i.guildId,
+        i.options.getString('text', true),
+      );
+      content = t('automationEdited');
+    }
+    if (sub === 'repeat') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationRepeatConfirm');
+      const minutes = i.options.getInteger('minutes');
+      c.messageSchedules.repeatPending(
+        i.options.getInteger('id', true),
+        i.guildId,
+        minutes === null ? null : minutes * 60000,
+      );
+      content = t('automationRepeatSaved');
+    }
+    if (sub === 'inspect') {
+      const row = c.messageSchedules.get(i.options.getInteger('id', true), i.guildId);
+      if (!row) throw new UserError('automationInspectMissing');
+      content = t('automationInspected', {
+        id: row.id,
+        status: row.status,
+        channel: row.channel_id,
+        iso: new Date(row.due_at).toISOString(),
+        repeat:
+          row.repeat_ms === null
+            ? t('automationNoRepeat')
+            : t('automationElapsedRepeat', { minutes: row.repeat_ms / 60000 }),
+        body: row.body,
+      });
+    }
+    if (sub === 'forget') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationForgetConfirm');
+      const id = i.options.getInteger('id', true);
+      c.messageSchedules.forget(id, i.guildId);
+      content = t('automationForgot', { id });
     }
     if (sub === 'list') {
       const rows = c.messageSchedules.list(i.guildId),

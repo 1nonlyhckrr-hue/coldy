@@ -351,3 +351,5 @@ Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Lun
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
+
+Luna `/list stickers [page]` fetches current guild stickers,ten per page,with name and ID only. It never lists uploader identity,description,tags or image URL. The list is ephemeral,localized and mention-suppressed. Native API failures do not fall back to cached lists. This original Luna path is not a new verified Zynrax reference row. Source: https://docs.discord.com/developers/resources/sticker .

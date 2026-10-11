@@ -160,7 +160,10 @@ test('all seven leaderboard commands execute localized private replies', async (
         guildId: 'g',
         user: { id: user },
         guild: {
-          members: { fetch: async () => ({ permissions: { has: () => true } }) },
+          id: 'g',
+          members: {
+            fetch: async () => ({ id: user, guild: { id: 'g' }, permissions: { has: () => true } }),
+          },
           channels: {
             fetch: async () => ({ id: channel, guildId: 'g', type: ChannelType.GuildText }),
           },
@@ -208,7 +211,10 @@ test('leaderboard configuration fresh authorization/runtime gate and foreign cha
       user: { id: user },
       deferReply: async () => {},
       guild: {
-        members: { fetch: async () => ({ permissions: { has: () => true } }) },
+        id: 'g',
+        members: {
+          fetch: async () => ({ id: user, guild: { id: 'g' }, permissions: { has: () => true } }),
+        },
         channels: {
           fetch: async () => ({ id: channel, guildId: 'other', type: ChannelType.GuildText }),
         },
@@ -222,7 +228,11 @@ test('leaderboard configuration fresh authorization/runtime gate and foreign cha
     await assert.rejects(() => command.execute(i, c), /responderRuntimeDisabled/);
     sub = 'exclude';
     await assert.rejects(() => command.execute(i, c), /rankChannelInvalid/);
-    i.guild.members.fetch = async () => ({ permissions: { has: () => false } });
+    i.guild.members.fetch = async () => ({
+      id: user,
+      guild: { id: 'g' },
+      permissions: { has: () => false },
+    });
     await assert.rejects(() => command.execute(i, c), /userPermission/);
   } finally {
     db.close();
@@ -306,7 +316,16 @@ test('privacy and admin erase paths respond locally in all languages; confirm an
       const i = {
         guildId: 'g',
         user: { id: user },
-        guild: { members: { fetch: async () => ({ permissions: { has: () => allowed } }) } },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({
+              id: user,
+              guild: { id: 'g' },
+              permissions: { has: () => allowed },
+            }),
+          },
+        },
         deferReply: async () => {},
         editReply: async (p) => replies.push(p),
         options: {
@@ -355,5 +374,239 @@ test('persistent personal privacy preference survives reopening', async () => {
     db.close();
   } finally {
     rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('personal rank uses same UTC window and user-ID tie order without returning other member records', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db),
+      put = db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)');
+    put.run('g', user, '2026-10-11', 5);
+    put.run('g', '100000000000000000', '2026-10-11', 5);
+    put.run('g', '100000000000000003', '2026-10-11', 6);
+    put.run('g', '100000000000000004', '2026-10-01', 100);
+    put.run('other', user, '2026-10-11', 100);
+    assert.deepEqual(r.position('g', user, 'week', now), { position: 3, total: 5 });
+    assert.deepEqual(r.position('g', user, 'retained', now), { position: 4, total: 5 });
+    assert.deepEqual(r.position('g', 'missing', 'week', now), { position: null, total: 0 });
+    assert.throws(() => r.position('g', user, 'invalid', now), /rankPeriodInvalid/);
+  } finally {
+    db.close();
+  }
+});
+test('personal position slash is private localized and shows no other IDs', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new MessageRanks(db),
+        replies = [];
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+        'g',
+        user,
+        utcDay(Date.now()),
+        3,
+      );
+      const i = {
+        guildId: 'g',
+        user: { id: user },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => replies.push(p),
+        options: { getSubcommand: () => 'position', getString: () => 'today' },
+      };
+      const c = {
+        messageRanks: r,
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      await command.execute(i, c);
+      assert.equal(replies.length, 1);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert(replies[0].embeds[0].data.description.includes('3'));
+      assert(!replies[0].embeds[0].data.description.includes(user));
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('leaderboard admin rejects mismatched current actor and guild before storage writes', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db),
+      c = {
+        messageRanks: r,
+        config: { messageEventsEnabled: true },
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+    for (const sub of ['enable', 'disable', 'exclude', 'eraseuser'])
+      for (const bad of [
+        { id: 'wrong', guild: { id: 'g' } },
+        { id: user, guild: { id: 'other' } },
+        { id: user, guild: { id: 'g' }, wrongGuild: true },
+      ]) {
+        const i = {
+          guildId: 'g',
+          user: { id: user },
+          deferReply: async () => {},
+          options: { getSubcommand: () => sub },
+          guild: {
+            id: bad.wrongGuild ? 'other' : 'g',
+            members: {
+              fetch: async (opts) => {
+                assert.deepEqual(opts, { user, force: true });
+                return { ...bad, permissions: { has: () => true } };
+              },
+            },
+          },
+        };
+        await assert.rejects(() => command.execute(i, c), /userPermission/);
+      }
+    assert.equal(r.config('g').enabled, false);
+    assert.deepEqual(r.config('g').excluded, []);
+  } finally {
+    db.close();
+  }
+});
+test('leaderboard exclusion forces exact channel and rechecks actor after fetch', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db),
+      c = {
+        messageRanks: r,
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+    let calls = 0,
+      wrong = true,
+      lost = false;
+    const i = {
+      guildId: 'g',
+      user: { id: user },
+      deferReply: async () => {},
+      editReply: async () => {},
+      options: {
+        getSubcommand: () => 'exclude',
+        getChannel: () => ({ id: channel }),
+        getBoolean: () => true,
+      },
+      guild: {
+        id: 'g',
+        members: {
+          fetch: async () => ({
+            id: user,
+            guild: { id: 'g' },
+            permissions: { has: () => !(lost && ++calls > 1) },
+          }),
+        },
+        channels: {
+          fetch: async (id, opts) => {
+            assert.equal(id, channel);
+            assert.deepEqual(opts, { force: true });
+            return { id: wrong ? 'wrong' : channel, guildId: 'g', type: ChannelType.GuildText };
+          },
+        },
+      },
+    };
+    await assert.rejects(() => command.execute(i, c), /rankChannelInvalid/);
+    wrong = false;
+    lost = true;
+    calls = 0;
+    await assert.rejects(() => command.execute(i, c), /userPermission/);
+    assert.deepEqual(r.config('g').excluded, []);
+    lost = false;
+    await command.execute(i, c);
+    assert.deepEqual(r.config('g').excluded, [channel]);
+  } finally {
+    db.close();
+  }
+});
+
+test('removeexclude deletes only exact stored guild exclusion with no native target lookup', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new MessageRanks(db),
+        other = '100000000000000009',
+        replies = [];
+      r.enable('g', true);
+      r.exclude('g', channel, true);
+      r.exclude('g', other, true);
+      r.exclude('other', channel, true);
+      const i = {
+        guildId: 'g',
+        user: { id: user },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({ id: user, guild: { id: 'g' }, permissions: { has: () => true } }),
+          },
+          channels: {
+            fetch: async () => {
+              throw Error('no native lookup');
+            },
+          },
+        },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => 'removeexclude',
+          getBoolean: () => true,
+          getString: () => channel,
+        },
+      };
+      await command.execute(i, {
+        messageRanks: r,
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      });
+      assert.deepEqual(r.config('g'), { enabled: true, excluded: [other] });
+      assert.deepEqual(r.config('other').excluded, [channel]);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('removeexclude confirmation/ID/current authority rejects without clearing unrelated config', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.exclude('g', channel, true);
+    let confirm = false,
+      id = channel,
+      allowed = true;
+    const i = {
+        guildId: 'g',
+        user: { id: user },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({
+              id: user,
+              guild: { id: 'g' },
+              permissions: { has: () => allowed },
+            }),
+          },
+        },
+        deferReply: async () => {},
+        editReply: async () => {},
+        options: {
+          getSubcommand: () => 'removeexclude',
+          getBoolean: () => confirm,
+          getString: () => id,
+        },
+      },
+      c = {
+        messageRanks: r,
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+    await assert.rejects(() => command.execute(i, c), /rankExcludeConfirm/);
+    confirm = true;
+    id = 'bad';
+    await assert.rejects(() => command.execute(i, c), /rankChannelInvalid/);
+    id = channel;
+    allowed = false;
+    await assert.rejects(() => command.execute(i, c), /userPermission/);
+    assert.deepEqual(r.config('g').excluded, [channel]);
+  } finally {
+    db.close();
   }
 });

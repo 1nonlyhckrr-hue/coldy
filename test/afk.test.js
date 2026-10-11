@@ -23,9 +23,20 @@ function setup(locale = 'en') {
       author: { id: 'sender', bot: false },
       createdTimestamp: Date.now(),
       mentions: { users: new Map([['away', {}]]) },
-      guild: { members: { fetchMe: async () => ({}) } },
-      channel: { permissionsFor: () => ({ has: () => true }), send: async (p) => sent.push(p) },
+      guild: {
+        id: 'g',
+        client: { user: { id: 'b' } },
+        members: { fetchMe: async () => ({ id: 'b', guild: { id: 'g' } }) },
+      },
+      channel: {
+        id: 'c',
+        guildId: 'g',
+        type: 0,
+        permissionsFor: () => ({ has: () => true }),
+        send: async (p) => sent.push(p),
+      },
     };
+  m.guild.channels = { fetch: async () => m.channel };
   const i = {
     guildId: 'g',
     channelId: 'c',
@@ -105,7 +116,7 @@ test('permission/unknown send outcome and state changed during fetch never leak/
       if (kind === 'clear')
         s.m.guild.members.fetchMe = async () => {
           s.afk.clear('g', 'away');
-          return {};
+          return { id: 'b', guild: { id: 'g' } };
         };
       await h(s.m);
       await h(s.m);
@@ -135,6 +146,77 @@ test('AFK paths require runtime+reason disclosure confirmation and private local
       assert.equal(s.replies.length, 3);
       assert.equal(s.afk.get('g', 'away'), undefined);
       for (const p of s.replies) assert.deepEqual(p.allowedMentions.parse, []);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+
+test('AFK notice forces exact channel and bot identity;invalid native/runtime state never reserves or sends', async () => {
+  for (const kind of [
+    'channel',
+    'channelGuild',
+    'channelType',
+    'bot',
+    'botGuild',
+    'guild',
+    'runtime',
+  ]) {
+    const s = setup();
+    try {
+      s.afk.set('g', 'away', 'c', 'Lunch');
+      const fresh = { ...s.m.channel };
+      s.m.guild.channels.fetch = async (id, o) => {
+        assert.equal(id, 'c');
+        assert.deepEqual(o, { force: true });
+        if (kind === 'runtime') s.c.config.messageEventsEnabled = false;
+        return fresh;
+      };
+      if (kind === 'channel') fresh.id = 'wrong';
+      if (kind === 'channelGuild') fresh.guildId = 'other';
+      if (kind === 'channelType') fresh.type = 2;
+      if (kind === 'guild') s.m.guild.id = 'other';
+      if (kind === 'bot' || kind === 'botGuild')
+        s.m.guild.members.fetchMe = async () => ({
+          id: kind === 'bot' ? 'wrong' : 'b',
+          guild: { id: kind === 'botGuild' ? 'other' : 'g' },
+        });
+      await createAfkHandler(s.c)(s.m);
+      assert.equal(s.sent.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM afk_notices').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('AFK sends only through forced fresh destination;threads require SendMessagesInThreads', async () => {
+  const { PermissionFlagsBits: P, ChannelType } = await import('discord.js');
+  for (const thread of [false, true]) {
+    const s = setup();
+    try {
+      s.afk.set('g', 'away', 'c', 'Lunch');
+      let freshSent = 0;
+      s.m.channel.send = async () => {
+        throw Error('must not use event channel');
+      };
+      const fresh = {
+        id: 'c',
+        guildId: 'g',
+        type: thread ? ChannelType.PrivateThread : ChannelType.GuildText,
+        isThread: () => thread,
+        permissionsFor: () => ({
+          has: (perms) => {
+            assert(perms.includes(thread ? P.SendMessagesInThreads : P.SendMessages));
+            return true;
+          },
+        }),
+        send: async () => {
+          freshSent++;
+        },
+      };
+      s.m.guild.channels.fetch = async () => fresh;
+      await createAfkHandler(s.c)(s.m);
+      assert.equal(freshSent, 1);
     } finally {
       s.db.close();
     }

@@ -13,8 +13,11 @@ export default {
     if (
       !guild ||
       guild.id !== i.guildId ||
-      !Number.isInteger(guild.premiumSubscriptionCount) ||
-      !Number.isInteger(guild.premiumTier)
+      !Number.isSafeInteger(guild.premiumSubscriptionCount) ||
+      guild.premiumSubscriptionCount < 0 ||
+      !Number.isInteger(guild.premiumTier) ||
+      guild.premiumTier < 0 ||
+      guild.premiumTier > 3
     )
       throw new UserError('boostUnavailable');
     await i.editReply(

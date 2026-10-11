@@ -1,0 +1,5 @@
+# Slowmode
+
+`/slowmode channel seconds confirm:true` changes one GuildText channel only.0 disables,maximum21600seconds. Fresh exact actor/bot/channel/guild,current ViewChannel+ManageChannels and app ManageChannels. No bulk/threads/forums/voice/announcement/permission changes. Current invalid/unavailable state fails closed,no cache fallback. Case reservation precedes mutation;force-refetch verifies exact requested seconds. Already matching is a no-op. Unknown/accepted-but-unverified/finalization failure blocks further channel operations through pending/uncertain case;no automatic retries. Definitive mutation rejection recorded failed;post-acceptance REST rejection remains uncertain. No reconciliation command yet. Private no-ping EN/HI/Hinglish.329 project tests,not live acceptance or pixels.
+
+Current source: https://docs.discord.com/developers/resources/channel . rate_limit_per_user0-21600,Modify Channel needs ManageChannels;bots and BYPASS_SLOWMODE users exempt. No fake promise that slowmode affects everyone.

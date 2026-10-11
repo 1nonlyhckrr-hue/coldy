@@ -101,9 +101,10 @@ test('audit handler sends localized no-ping alert once without any punishment AP
     sent = [];
   const g = {
       ...guild,
-      members: { fetchMe: async () => ({}) },
+      members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
       channels: {
         fetch: async () => ({
+          id: ids.channel,
           guildId: 'g',
           type: ChannelType.GuildText,
           permissionsFor: () => ({ has: () => true }),
@@ -135,12 +136,13 @@ test('alert channel rejection and uncertain send never repeat', async () => {
     let n = 0;
     const g = {
         ...guild,
-        members: { fetchMe: async () => ({}) },
+        members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
         channels: {
           fetch: async () =>
             missing
               ? null
               : {
+                  id: ids.channel,
                   guildId: 'g',
                   type: ChannelType.GuildText,
                   permissionsFor: () => ({ has: () => true }),
@@ -175,8 +177,16 @@ test('all six antinuke slash paths execute in three locales with fresh authoriza
       g = {
         ...guild,
         members: {
-          fetch: async ({ user }) => ({ id: user, permissions: { has: () => true } }),
-          fetchMe: async () => ({ permissions: { has: () => true } }),
+          fetch: async ({ user }) => ({
+            id: user,
+            guild: { id: 'g' },
+            permissions: { has: () => true },
+          }),
+          fetchMe: async () => ({
+            id: ids.bot,
+            guild: { id: 'g' },
+            permissions: { has: () => true },
+          }),
         },
       },
       channel = {
@@ -231,13 +241,31 @@ test('audit runtime and View Audit Log gate prevent enabling', async () => {
       i = {
         guildId: 'g',
         guild: {
+          id: 'g',
+          client: { user: { id: ids.bot } },
+          channels: {
+            fetch: async () => ({
+              id: ids.channel,
+              guildId: 'g',
+              type: 0,
+              permissionsFor: () => ({ has: () => true }),
+            }),
+          },
           members: {
-            fetch: async () => ({ permissions: { has: () => true } }),
-            fetchMe: async () => ({ permissions: { has: () => false } }),
+            fetch: async () => ({
+              id: ids.actor,
+              guild: { id: 'g' },
+              permissions: { has: () => true },
+            }),
+            fetchMe: async () => ({
+              id: ids.bot,
+              guild: { id: 'g' },
+              permissions: { has: () => false },
+            }),
           },
         },
         user: { id: ids.actor },
-        options: { getSubcommand: () => 'enable' },
+        options: { getSubcommand: () => 'enable', getChannel: () => ({ id: ids.channel }) },
         deferReply: async () => {},
       };
     await assert.rejects(() => command.execute(i, c), /antinukeRuntimeDisabled/);
@@ -250,14 +278,17 @@ test('audit runtime and View Audit Log gate prevent enabling', async () => {
 
 test('stale trusted user can be removed without current member but adding still verifies', async () => {
   const { db, r } = setup();
-  const actor = { id: ids.actor, permissions: { has: () => true } };
+  const actor = { id: ids.actor, guild: { id: 'g' }, permissions: { has: () => true } };
   const c = {
       antinuke: r,
       localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
     },
     i = {
       guildId: 'g',
-      guild: { members: { fetch: async ({ user }) => (user === ids.actor ? actor : null) } },
+      guild: {
+        id: 'g',
+        members: { fetch: async ({ user }) => (user === ids.actor ? actor : null) },
+      },
       user: { id: ids.actor },
       options: {
         getSubcommand: () => 'trust',
@@ -275,5 +306,94 @@ test('stale trusted user can be removed without current member but adding still 
     await assert.rejects(() => command.execute(i, c), /antinukeUserInvalid/);
   } finally {
     db.close();
+  }
+});
+
+test('antinuke admin identity and enable lookup races leave configuration unchanged', async () => {
+  for (const kind of ['actor', 'guild', 'permissionRace', 'runtimeRace', 'bot']) {
+    const { db, r } = setup();
+    try {
+      r.patch('g', { enabled: false });
+      let allowed = true;
+      const actor = {
+          id: kind === 'actor' ? 'wrong' : ids.actor,
+          guild: { id: 'g' },
+          permissions: { has: () => allowed },
+        },
+        bot = {
+          id: kind === 'bot' ? 'wrong' : ids.bot,
+          guild: { id: 'g' },
+          permissions: { has: () => true },
+        };
+      const c = {
+        antinuke: r,
+        config: { auditEventsEnabled: true },
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+      const i = {
+        guildId: 'g',
+        user: { id: ids.actor },
+        deferReply: async () => {},
+        options: { getSubcommand: () => 'enable', getChannel: () => ({ id: ids.channel }) },
+        guild: {
+          id: kind === 'guild' ? 'other' : 'g',
+          client: { user: { id: ids.bot } },
+          members: { fetch: async () => actor, fetchMe: async () => bot },
+          channels: {
+            fetch: async () => {
+              if (kind === 'permissionRace') allowed = false;
+              if (kind === 'runtimeRace') c.config.auditEventsEnabled = false;
+              return {
+                id: ids.channel,
+                guildId: 'g',
+                type: 0,
+                permissionsFor: () => ({ has: () => true }),
+              };
+            },
+          },
+        },
+      };
+      await assert.rejects(() => command.execute(i, c));
+      assert.equal(r.get('g').enabled, false);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('antinuke trust verifies member guild and repeats admin authority after target lookup', async () => {
+  for (const foreign of [true, false]) {
+    const { db, r } = setup();
+    try {
+      let allowed = true;
+      const c = {
+        antinuke: r,
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+      const i = {
+        guildId: 'g',
+        user: { id: ids.actor },
+        deferReply: async () => {},
+        options: {
+          getSubcommand: () => 'trust',
+          getUser: () => ({ id: ids.owner }),
+          getBoolean: () => true,
+        },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async ({ user }) => {
+              if (user === ids.actor)
+                return { id: user, guild: { id: 'g' }, permissions: { has: () => allowed } };
+              allowed = false;
+              return { id: user, guild: { id: foreign ? 'other' : 'g' } };
+            },
+          },
+        },
+      };
+      await assert.rejects(() => command.execute(i, c));
+      assert.deepEqual(r.get('g').trustedUsers, []);
+    } finally {
+      db.close();
+    }
   }
 });

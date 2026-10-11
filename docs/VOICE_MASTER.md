@@ -29,3 +29,5 @@ Native initial ready and available guild/client required. Voice effects blocked 
 ## Raw voice-state occupancy
 
 Native discord.js channel.members skips voice states when member is not cached. Empty check now counts raw guild.voiceStates cache channel IDs instead,not member list. Missing voice cache blocks. Also used by move destination capacity. Two new tests,total260,uncached connected member blocks close/unlock. Real gateway state completeness/concurrent join race still unresolved by local tests.
+
+`/voicemaster status`: private caller-only stored unresolved ownership record. No native lookup or mutation,explicitly not live access or occupancy.

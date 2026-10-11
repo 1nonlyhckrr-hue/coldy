@@ -5,6 +5,7 @@ import {
   rollDice,
   parseChoices,
   playRps,
+  shuffleChoices,
   BALL_ANSWERS,
   TRUTH_PROMPTS,
   DARE_PROMPTS,
@@ -69,16 +70,16 @@ test('RPS computes all nine outcomes', () => {
     }
   assert.throws(() => playRps('gun'));
 });
-test('fun serializes seven real paths and bounded input options', () => {
+test('fun serializes eight real paths and bounded input options', () => {
   const d = fun.data.toJSON();
-  assert.equal(d.options.length, 7);
+  assert.equal(d.options.length, 8);
   assert.equal(d.contexts[0], 0);
   assert.equal(fun.cooldownMs, 5000);
   assert(d.options.every((o) => o.type === 1));
 });
 test('all fun commands reply in all locales with ephemeral branded embeds and no pings', async () => {
   for (const locale of ['en', 'hi', 'hinglish'])
-    for (const sub of ['8ball', 'coin', 'dice', 'choose', 'truth', 'dare', 'rps']) {
+    for (const sub of ['8ball', 'coin', 'dice', 'choose', 'shuffle', 'truth', 'dare', 'rps']) {
       const replies = [],
         c = { localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) } };
       const i = {
@@ -108,7 +109,7 @@ test('all fun commands reply in all locales with ephemeral branded embeds and no
 });
 test('fun rejects malformed runtime values without replying', async () => {
   const c = { localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) } };
-  for (const sub of ['8ball', 'choose', 'rps', 'unknown']) {
+  for (const sub of ['8ball', 'choose', 'shuffle', 'rps', 'unknown']) {
     let replied = false;
     const i = {
       guildId: 'g',
@@ -129,4 +130,64 @@ test('all fixed answers and prompts exist with no placeholders in each locale', 
       ['funDare_', DARE_PROMPTS],
     ])
       for (const value of values) assert(translate(locale, prefix + value).length > 0);
+});
+
+test('shuffle uses shrinking random bounds and returns every choice once without duplicates', () => {
+  const bounds = [];
+  assert.deepEqual(
+    shuffleChoices('a|b|c|d', (n) => {
+      bounds.push(n);
+      return 0;
+    }),
+    ['b', 'c', 'd', 'a'],
+  );
+  assert.deepEqual(bounds, [4, 3, 2]);
+  assert.deepEqual(
+    shuffleChoices('a|b', (n) => n - 1),
+    ['a', 'b'],
+  );
+  for (const value of [-1, 2, 0.5, NaN]) assert.throws(() => shuffleChoices('a|b', () => value));
+  for (const input of ['one', 'a|A', 'a||b', 'a|b\n']) assert.throws(() => shuffleChoices(input));
+});
+test('shuffle privately escapes all choices in all locales without external effects', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const replies = [],
+      c = { localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) } };
+    await fun.execute(
+      {
+        guildId: 'g',
+        options: { getSubcommand: () => 'shuffle', getString: () => '**one** | @everyone two' },
+        reply: async (p) => replies.push(p),
+      },
+      c,
+    );
+    assert.equal(replies.length, 1);
+    assert.equal(replies[0].flags, 64);
+    assert.deepEqual(replies[0].allowedMentions.parse, []);
+    const body = replies[0].embeds[0].data.description;
+    assert(body.includes('\\*\\*one\\*\\*'));
+    assert(body.includes('@everyone two'));
+    assert(body.includes('1. '));
+    assert(body.includes('2. '));
+  }
+});
+
+test('shuffle refuses expanded output that would truncate any choices', async () => {
+  let replied = false;
+  const text = Array.from({ length: 18 }, (_, n) => '*'.repeat(94) + n).join('|');
+  await assert.rejects(
+    () =>
+      fun.execute(
+        {
+          guildId: 'g',
+          options: { getSubcommand: () => 'shuffle', getString: () => text },
+          reply: async () => {
+            replied = true;
+          },
+        },
+        { localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) } },
+      ),
+    /funShuffleTooLong/,
+  );
+  assert.equal(replied, false);
 });

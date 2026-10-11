@@ -8,9 +8,9 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('list')
-  .setDescription('Current server role and emoji metadata,no member enumeration.')
+  .setDescription('Current role,emoji and sticker metadata,no member enumeration.')
   .setContexts(InteractionContextType.Guild);
-for (const kind of ['roles', 'emojis'])
+for (const kind of ['roles', 'emojis', 'stickers'])
   data.addSubcommand((s) =>
     s
       .setName(kind)
@@ -27,13 +27,27 @@ export default {
     await i.deferReply({ flags: MessageFlags.Ephemeral });
     const kind = i.options.getSubcommand(),
       page = i.options.getInteger('page') ?? 1;
-    if (!['roles', 'emojis'].includes(kind)) throw new UserError('unknownCommand');
+    if (!['roles', 'emojis', 'stickers'].includes(kind)) throw new UserError('unknownCommand');
     if (!Number.isSafeInteger(page) || page < 1 || page > 1000)
       throw new UserError('listPageInvalid');
     const collection =
-        kind === 'roles' ? await i.guild.roles.fetch() : await i.guild.emojis.fetch(),
+        kind === 'roles'
+          ? await i.guild.roles.fetch()
+          : kind === 'emojis'
+            ? await i.guild.emojis.fetch()
+            : await i.guild.stickers.fetch(),
       rows = [...collection.values()];
-    if (rows.some((r) => !r || r.guild?.id !== i.guildId))
+    if (
+      rows.some(
+        (r) =>
+          !r ||
+          r.guild?.id !== i.guildId ||
+          !/^\d{17,20}$/.test(r.id) ||
+          typeof r.name !== 'string' ||
+          (kind === 'roles' && (!Number.isSafeInteger(r.position) || r.position < 0)) ||
+          (kind === 'emojis' && typeof r.animated !== 'boolean'),
+      )
+    )
       throw new UserError('listIdentityInvalid');
     rows.sort(
       kind === 'roles'
@@ -47,14 +61,20 @@ export default {
       .map((r) =>
         kind === 'roles'
           ? `${escapeMarkdown(r.name).slice(0, 120)} | ${r.id} | ${r.position}`
-          : `${escapeMarkdown(r.name ?? '-').slice(0, 120)} | ${r.id} | ${r.animated ? 'animated' : 'static'}`,
+          : kind === 'emojis'
+            ? `${escapeMarkdown(r.name ?? '-').slice(0, 120)} | ${r.id} | ${c.localization.t(i.guildId, r.animated ? 'listEmojiAnimated' : 'listEmojiStatic')}`
+            : `${escapeMarkdown(r.name ?? '-').slice(0, 120)} | ${r.id}`,
       );
     const locale = c.localization.locale(i.guildId),
       text =
         c.localization.t(i.guildId, 'listMetadataHeader', {
           kind: c.localization.t(
             i.guildId,
-            kind === 'roles' ? 'listRolesLabel' : 'listEmojisLabel',
+            kind === 'roles'
+              ? 'listRolesLabel'
+              : kind === 'emojis'
+                ? 'listEmojisLabel'
+                : 'listStickersLabel',
           ),
           count: rows.length,
           page,

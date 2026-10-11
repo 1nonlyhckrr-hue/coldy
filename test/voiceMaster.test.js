@@ -36,11 +36,16 @@ function setup() {
   const db = openDatabase(':memory:'),
     calls = [],
     v = new VoiceMaster(db),
-    owner = { id: ids.owner, user: { bot: false }, permissions: { has: () => true } },
-    bot = { id: ids.bot, permissions: { has: () => true } },
+    owner = {
+      id: ids.owner,
+      guild: { id: 'g' },
+      user: { bot: false },
+      permissions: { has: () => true },
+    },
+    bot = { id: ids.bot, guild: { id: 'g' }, permissions: { has: () => true } },
     category = {
       id: ids.category,
-      client: { isReady: () => true },
+      client: { isReady: () => true, user: { id: ids.bot } },
       guildId: 'g',
       type: ChannelType.GuildCategory,
       permissionsFor: () => ({ has: () => true }),
@@ -58,7 +63,7 @@ function setup() {
     };
   const i = {
       id: 'i1',
-      client: { isReady: () => true },
+      client: { isReady: () => true, user: { id: ids.bot } },
       guildId: 'g',
       user: { id: ids.owner },
       appPermissions: { has: () => true },
@@ -585,4 +590,186 @@ test('uncached voice member still blocks empty-room close/access changes', async
   } finally {
     s.db.close();
   }
+});
+
+test('private voice recording and activation require native identity and exactly one creating record', () => {
+  const s = setup();
+  try {
+    const id = s.c.voiceMaster.reserve('g', ids.owner, 'reservation');
+    assert.throws(() => s.c.voiceMaster.created(id, ''), /identity/);
+    assert.throws(() => s.c.voiceMaster.activate(id, null), /identity/);
+    assert.throws(() => s.c.voiceMaster.created(999, ids.channel), /not creating/);
+    assert.throws(() => s.c.voiceMaster.activate(999, ids.channel), /not creating/);
+    s.c.voiceMaster.created(id, ids.channel);
+    s.c.voiceMaster.activate(id, ids.channel);
+    assert.throws(() => s.c.voiceMaster.created(id, 'other'), /not creating/);
+    assert.throws(() => s.c.voiceMaster.activate(id, 'other'), /not creating/);
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).channel_id, ids.channel);
+  } finally {
+    s.db.close();
+  }
+});
+test('accepted private voice creation lacking channel identity is uncertain and cannot replay', async () => {
+  const s = setup();
+  try {
+    s.i.guild.channels.create = async () => {
+      s.calls.push(['create']);
+      return {};
+    };
+    await assert.rejects(() => openPrivateVoice(s.i, s.c), /vmCreateUncertain/);
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).status, 'uncertain');
+    await assert.rejects(() => openPrivateVoice(s.i, s.c));
+    assert.equal(s.calls.length, 1);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('VoiceMaster setup force-checks exact category and current manager/appbot identities', async () => {
+  for (const kind of ['category', 'actor', 'member', 'bot', 'botguild', 'interaction']) {
+    const s = setup();
+    try {
+      s.i.deferReply = async () => {};
+      s.i.options = { getSubcommand: () => 'setup', getChannel: () => s.category };
+      if (kind === 'actor') s.owner.id = 'other';
+      if (kind === 'member') s.owner.guild.id = 'other';
+      if (kind === 'bot') s.bot.id = 'other';
+      if (kind === 'botguild') s.bot.guild.id = 'other';
+      if (kind === 'interaction') s.i.guild.id = 'other';
+      s.i.guild.channels.fetch = async (id, opts) => {
+        assert.equal(id, ids.category);
+        assert.equal(opts.force, true);
+        return kind === 'category' ? { ...s.category, id: 'other' } : s.category;
+      };
+      const old = s.c.voiceMaster.config('g');
+      await assert.rejects(() => command.execute(s.i, s.c));
+      assert.deepEqual(s.c.voiceMaster.config('g'), old);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('VoiceMaster setup reads current manager after category lookup before config save', async () => {
+  const s = setup();
+  try {
+    s.i.deferReply = async () => {};
+    s.i.options = { getSubcommand: () => 'setup', getChannel: () => s.category };
+    const current = { ...s.owner, permissions: { has: () => false } };
+    s.i.guild.channels.fetch = async () => {
+      s.i.guild.members.fetch = async () => current;
+      return s.category;
+    };
+    const old = s.c.voiceMaster.config('g');
+    await assert.rejects(() => command.execute(s.i, s.c), /userPermission/);
+    assert.deepEqual(s.c.voiceMaster.config('g'), old);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('private voice opening rejects foreign native actors or wrong exact category before reservation', async () => {
+  for (const kind of ['owner', 'bot', 'botguild', 'interaction', 'category']) {
+    const s = setup();
+    try {
+      if (kind === 'owner') s.owner.guild.id = 'other';
+      if (kind === 'bot') s.bot.id = 'other';
+      if (kind === 'botguild') s.bot.guild.id = 'other';
+      if (kind === 'interaction') s.i.guild.id = 'other';
+      if (kind === 'category') s.category.id = 'other';
+      await assert.rejects(() => openPrivateVoice(s.i, s.c));
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.c.voiceMaster.owned('g', ids.owner), undefined);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('private voice open and edit fetch current actors after native destination lookup', async () => {
+  for (const action of ['open', 'rename'])
+    for (const kind of ['owner', 'bot']) {
+      const s = setup();
+      try {
+        if (action === 'rename') await openPrivateVoice(s.i, s.c);
+        s.calls.length = 0;
+        const owner = { ...s.owner, guild: { id: 'other' } },
+          bot = { ...s.bot, id: 'other' };
+        s.i.guild.channels.fetch = async () => {
+          if (kind === 'owner') s.i.guild.members.fetch = async () => owner;
+          else s.i.guild.members.fetchMe = async () => bot;
+          return action === 'open' ? s.category : s.channel;
+        };
+        await assert.rejects(() =>
+          action === 'open'
+            ? openPrivateVoice(s.i, s.c)
+            : editPrivateVoice(s.i, s.c, { action: 'rename', name: 'Fresh' }),
+        );
+        assert.equal(s.calls.length, 0);
+        assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+      } finally {
+        s.db.close();
+      }
+    }
+});
+
+test('private voice reconcile verifies fresh owner/appbot after existing or missing channel lookup', async () => {
+  const { reconcilePrivateVoice } = await import('../src/services/voiceMaster.js');
+  for (const missing of [false, true])
+    for (const kind of ['owner', 'bot', 'permission']) {
+      const s = setup();
+      try {
+        await openPrivateVoice(s.i, s.c);
+        s.i.id = 'repair';
+        const row = s.c.voiceMaster.owned('g', ids.owner);
+        s.c.voiceMaster.status(row.id, 'uncertain');
+        const owner = { ...s.owner, guild: { id: 'other' } },
+          bot = { ...s.bot };
+        if (kind === 'bot') bot.id = 'other';
+        if (kind === 'permission') bot.permissions = { has: () => false };
+        s.i.guild.channels.fetch = async () => {
+          if (kind === 'owner') s.i.guild.members.fetch = async () => owner;
+          else s.i.guild.members.fetchMe = async () => bot;
+          if (missing) throw Object.assign(new Error('unknown'), { code: 10003, status: 404 });
+          return s.channel;
+        };
+        await assert.rejects(() => reconcilePrivateVoice(s.i, s.c, { confirm: true }));
+        assert.equal(s.c.voiceMaster.owned('g', ids.owner).status, 'uncertain');
+        assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+        assert.equal(s.calls.length, 1);
+      } finally {
+        s.db.close();
+      }
+    }
+});
+
+test('VoiceMaster stored self status is private,localized and performs no native lookup or mutation', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const state of ['none', 'creating', 'active', 'deleting', 'uncertain']) {
+      const s = setup();
+      try {
+        s.c.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+        const replies = [];
+        s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+        s.i.editReply = async (p) => replies.push(p);
+        s.i.options = { getSubcommand: () => 'status' };
+        if (state !== 'none') {
+          const id = s.c.voiceMaster.reserve('g', ids.owner, 'status');
+          if (state === 'active') s.c.voiceMaster.activate(id, ids.channel);
+          else if (state !== 'creating') s.c.voiceMaster.status(id, state);
+        }
+        const before = s.db.prepare('SELECT * FROM voice_master_channels').all();
+        s.i.guild.members.fetch = async () => {
+          throw Error('native lookup');
+        };
+        s.i.guild.members.fetchMe = s.i.guild.members.fetch;
+        s.i.guild.channels.fetch = s.i.guild.members.fetch;
+        await command.execute(s.i, s.c);
+        assert.equal(replies.length, 1);
+        assert.deepEqual(replies[0].allowedMentions.parse, []);
+        assert.deepEqual(s.db.prepare('SELECT * FROM voice_master_channels').all(), before);
+        assert.equal(s.calls.length, 0);
+        assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+      } finally {
+        s.db.close();
+      }
+    }
 });

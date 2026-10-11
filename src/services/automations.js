@@ -87,24 +87,22 @@ export class MessageSchedules {
     })();
   }
   finish(id, success) {
-    const row = this.db
-      .prepare("SELECT * FROM message_schedules WHERE id=? AND status='sending'")
-      .get(id);
-    if (!row) return;
-    if (!success) {
-      this.db.prepare("UPDATE message_schedules SET status='uncertain' WHERE id=?").run(id);
-      return;
-    }
-    if (!row.repeat_ms) {
-      this.db.prepare("UPDATE message_schedules SET status='done' WHERE id=?").run(id);
-      return;
-    }
-    const next =
-      row.due_at +
-      Math.max(1, Math.floor((this.now() - row.due_at) / row.repeat_ms) + 1) * row.repeat_ms;
-    this.db
-      .prepare("UPDATE message_schedules SET status='pending',due_at=? WHERE id=?")
-      .run(next, id);
+    if (typeof success !== 'boolean') throw new TypeError('Invalid schedule outcome');
+    return this.db.transaction(() => {
+      const row = this.db
+        .prepare("SELECT * FROM message_schedules WHERE id=? AND status='sending'")
+        .get(id);
+      if (!row) throw new Error('Schedule not sending');
+      const next =
+        success && row.repeat_ms
+          ? row.due_at +
+            Math.max(1, Math.floor((this.now() - row.due_at) / row.repeat_ms) + 1) * row.repeat_ms
+          : row.due_at;
+      const result = this.db
+        .prepare("UPDATE message_schedules SET status=?,due_at=? WHERE id=? AND status='sending'")
+        .run(!success ? 'uncertain' : row.repeat_ms ? 'pending' : 'done', next, id);
+      if (result.changes !== 1) throw new Error('Schedule outcome not stored');
+    })();
   }
   cancel(id, guildId) {
     const r = this.db
@@ -113,6 +111,63 @@ export class MessageSchedules {
       )
       .run(id, guildId);
     if (!r.changes) throw new UserError('automationCancelInvalid');
+  }
+  reschedulePending(id, guildId, dueAt) {
+    if (
+      !Number.isInteger(dueAt) ||
+      dueAt < this.now() + 60000 ||
+      dueAt > this.now() + 365 * 86400000
+    )
+      throw new UserError('automationTimeBounds');
+    const result = this.db
+      .prepare(
+        "UPDATE message_schedules SET due_at=? WHERE id=? AND guild_id=? AND status='pending'",
+      )
+      .run(dueAt, id, guildId);
+    if (result.changes !== 1) throw new UserError('automationEditInvalid');
+  }
+  repeatPending(id, guildId, repeatMs) {
+    if (repeatMs !== null) schema.shape.repeatMs.parse(repeatMs);
+    const result = this.db
+      .prepare(
+        "UPDATE message_schedules SET repeat_ms=? WHERE id=? AND guild_id=? AND status='pending'",
+      )
+      .run(repeatMs, id, guildId);
+    if (result.changes !== 1) throw new UserError('automationEditInvalid');
+  }
+  destinationPending(snapshot, channelId) {
+    schema.shape.channelId.parse(channelId);
+    if (snapshot?.status !== 'pending') throw new UserError('automationEditInvalid');
+    const result = this.db
+      .prepare(
+        "UPDATE message_schedules SET channel_id=? WHERE id=? AND guild_id=? AND status='pending' AND channel_id=? AND body=? AND due_at=? AND repeat_ms IS ? AND interaction_id=?",
+      )
+      .run(
+        channelId,
+        snapshot.id,
+        snapshot.guild_id,
+        snapshot.channel_id,
+        snapshot.body,
+        snapshot.due_at,
+        snapshot.repeat_ms,
+        snapshot.interaction_id,
+      );
+    if (result.changes !== 1) throw new UserError('automationEditInvalid');
+  }
+  editPending(id, guildId, body) {
+    schema.shape.body.parse(body);
+    const result = this.db
+      .prepare("UPDATE message_schedules SET body=? WHERE id=? AND guild_id=? AND status='pending'")
+      .run(body, id, guildId);
+    if (result.changes !== 1) throw new UserError('automationEditInvalid');
+  }
+  forget(id, guildId) {
+    const result = this.db
+      .prepare(
+        "UPDATE message_schedules SET body='[erased]' WHERE id=? AND guild_id=? AND status IN ('done','cancelled')",
+      )
+      .run(id, guildId);
+    if (!result.changes) throw new UserError('automationForgetInvalid');
   }
   recover() {
     this.db.prepare("UPDATE message_schedules SET status='uncertain' WHERE status='sending'").run();
@@ -140,12 +195,15 @@ export class AutomationRunner {
         if (!job) break;
         let success = false;
         try {
-          const guild = await this.client.guilds.fetch(job.guild_id),
-            channel = await validateOutputChannel(guild, job.channel_id),
+          const guild = await this.client.guilds.fetch({ guild: job.guild_id, force: true });
+          if (guild?.id !== job.guild_id) throw new UserError('channelTypeInvalid');
+          const channel = await validateOutputChannel(guild, job.channel_id),
             locale = this.context.guildConfig.get(job.guild_id).language;
-          await channel.send(
+          const sent = await channel.send(
             lunaPayload({ content: job.body, allowedMentions: { parse: [] } }, { locale }),
           );
+          if (typeof sent?.id !== 'string' || !sent.id)
+            throw new Error('Missing accepted schedule message identity');
           success = true;
         } catch {
           this.context.logger.warn(

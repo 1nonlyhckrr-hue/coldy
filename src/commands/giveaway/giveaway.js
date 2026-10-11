@@ -85,8 +85,17 @@ export default {
       t = (key, p) => translate(locale, key, p);
     let content;
     // Re-fetch moderator permissions for state changes, including manual draws.
-    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    const authorize = async () => {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        i.guild.id !== i.guildId ||
+        actor?.id !== i.user.id ||
+        actor.guild?.id !== i.guildId ||
+        !actor.permissions?.has(P.ManageGuild)
+      )
+        throw new UserError('userPermission');
+    };
+    await authorize();
     if (sub === 'start') {
       const id = await createGiveaway(i, c, {
         channelId: i.options.getChannel('channel', true).id,
@@ -102,6 +111,7 @@ export default {
     if (['end', 'reroll'].includes(sub)) {
       const g = await c.giveawayRunner.finish(i.options.getInteger('id', true), i.guildId, {
         reroll: sub === 'reroll',
+        authorize,
       });
       content = t('giveawayEnded', { id: g.id, draw: g.draw_version });
     }

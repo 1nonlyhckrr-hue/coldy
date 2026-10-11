@@ -27,9 +27,12 @@ export class Polls {
   }
   finish(id, status, messageId = null) {
     if (!['sent', 'uncertain'].includes(status)) throw new TypeError('Invalid poll state');
-    this.db
-      .prepare('UPDATE native_polls SET status=?,message_id=? WHERE id=?')
+    if (status === 'sent' && (typeof messageId !== 'string' || !messageId))
+      throw new TypeError('Missing poll message identity');
+    const result = this.db
+      .prepare("UPDATE native_polls SET status=?,message_id=? WHERE id=? AND status='sending'")
       .run(status, messageId, id);
+    if (result.changes !== 1) throw new Error('Poll reservation not pending');
   }
   recover() {
     this.db.prepare("UPDATE native_polls SET status='uncertain' WHERE status='sending'").run();
@@ -67,11 +70,11 @@ export function pollInput({ question, answers, duration = 24, multiple = false }
 }
 export async function publishPoll(i, c, input) {
   const poll = pollInput(input),
-    [actor, bot, channel] = await Promise.all([
-      i.guild.members.fetch({ user: i.user.id, force: true }),
-      i.guild.members.fetchMe({ force: true }),
-      i.guild.channels.fetch(input.channelId, { force: true }),
-    ]);
+    channel = await i.guild.channels.fetch(input.channelId, { force: true });
+  const [actor, bot] = await Promise.all([
+    i.guild.members.fetch({ user: i.user.id, force: true }),
+    i.guild.members.fetchMe({ force: true }),
+  ]);
   if (
     !channel ||
     channel.id !== input.channelId ||
@@ -80,11 +83,19 @@ export async function publishPoll(i, c, input) {
   )
     throw new UserError('pollChannelInvalid');
   if (
-    !actor.permissions.has(P.ManageGuild) ||
+    i.guild.id !== i.guildId ||
+    actor?.id !== i.user.id ||
+    actor.guild?.id !== i.guildId ||
+    !actor.permissions?.has(P.ManageGuild) ||
     !channel.permissionsFor(actor)?.has([P.ViewChannel, P.SendMessages, P.SendPolls])
   )
     throw new UserError('userPermission');
-  if (!channel.permissionsFor(bot)?.has([P.ViewChannel, P.SendMessages, P.EmbedLinks, P.SendPolls]))
+  if (
+    !i.guild.client?.user?.id ||
+    bot?.id !== i.guild.client.user.id ||
+    bot.guild?.id !== i.guildId ||
+    !channel.permissionsFor(bot)?.has([P.ViewChannel, P.SendMessages, P.EmbedLinks, P.SendPolls])
+  )
     throw new UserError('pollBotPermission');
   const id = c.polls.reserve(i, channel.id);
   let message;
@@ -104,7 +115,10 @@ export async function publishPoll(i, c, input) {
     throw new UserError('pollUncertain', { id });
   }
   try {
-    if (!message?.id) throw new Error('Missing poll message');
+    if (typeof message?.id !== 'string' || !message.id) {
+      c.polls.finish(id, 'uncertain');
+      throw new Error('Missing poll message');
+    }
     c.polls.finish(id, 'sent', message.id);
   } catch {
     throw new UserError('pollUncertain', { id });

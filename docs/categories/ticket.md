@@ -171,3 +171,5 @@ Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Lun
 
 Source: https://docs.zynrax.site/configuration/tickets
 
+
+Original Luna `/ticket unclaim` releases only the invoking current staff member's own claim on the current open ticket. No other member claim can be released,even by a manager. Channel access,roles,messages and transcripts are unchanged. Current staff access and exact actor ID are refetched;DB update is guild/status/claimant-conditional.

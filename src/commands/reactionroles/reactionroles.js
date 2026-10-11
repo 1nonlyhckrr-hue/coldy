@@ -6,8 +6,13 @@ import {
   PermissionFlagsBits as P,
   ChannelType,
   MessageFlags,
+  escapeMarkdown,
 } from 'discord.js';
-import { createRolePanel, createMultiRolePanel } from '../../services/rolePanels.js';
+import {
+  createRolePanel,
+  createMultiRolePanel,
+  reconcileRoleClick,
+} from '../../services/rolePanels.js';
 import { UserError } from '../../utils/errors.js';
 const data = new SlashCommandBuilder()
   .setName('reactionroles')
@@ -65,6 +70,46 @@ const data = new SlashCommandBuilder()
     }
     return s;
   })
+  .addSubcommand((s) =>
+    s
+      .setName('inspect')
+      .setDescription('Privately inspect stored panel mappings,status and binding IDs only.')
+      .addIntegerOption((o) =>
+        o.setName('panel-id').setDescription('Stored panel ID').setMinValue(1).setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('receipts')
+      .setDescription('Privately inspect ten unresolved stored role clicks for one member.')
+      .addUserOption((o) =>
+        o
+          .setName('member')
+          .setDescription('Member whose stored clicks to inspect')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('reconcileclick')
+      .setDescription(
+        'Resolve a directed uncertain receipt only when observed role state matches intent.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('interaction-id')
+          .setDescription('Exact stored receipt identity')
+          .setMinLength(1)
+          .setMaxLength(100)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm observed-state reconciliation,no role effect or retry')
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('list').setDescription('List the newest 20 panel records.'))
   .addSubcommand((s) =>
     s
@@ -84,7 +129,13 @@ export default {
       t = (key, params) => translate(locale, key, params);
     await i.deferReply({ flags: MessageFlags.Ephemeral });
     const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageRoles)) throw new UserError('roleActorPermission');
+    if (
+      i.guild.id !== i.guildId ||
+      actor?.id !== i.user.id ||
+      actor.guild?.id !== i.guildId ||
+      !actor.permissions.has(P.ManageRoles)
+    )
+      throw new UserError('roleActorPermission');
     const sub = i.options.getSubcommand();
     let content;
     if (sub === 'create') {
@@ -109,6 +160,49 @@ export default {
         buttons,
       });
       content = t('rolePanelCreated', { id: result.panelId, messageId: result.messageId });
+    }
+    if (sub === 'inspect') {
+      const panel = c.rolePanels.get(i.options.getInteger('panel-id', true), i.guildId);
+      if (!panel) throw new UserError('rolePanelNotFound');
+      content =
+        t('rolePanelInspect', {
+          id: panel.id,
+          status: panel.status,
+          channel: panel.channel_id,
+          message: panel.message_id ?? '-',
+        }) +
+        '\n' +
+        c.rolePanels
+          .buttons(panel.id)
+          .map((b) => `${b.button_index}: ${escapeMarkdown(b.label)} | ${b.role_id}`)
+          .join('\n');
+    }
+    if (sub === 'receipts') {
+      const rows = c.rolePanels.unresolvedClicks(i.guildId, i.options.getUser('member', true).id);
+      content = rows.length
+        ? t('roleClickReceipts') +
+          '\n' +
+          rows
+            .map(
+              (r) =>
+                `${r.interaction_id} | ${r.role_id} | ${r.status} | ${t('roleClickAction_' + r.action)}`,
+            )
+            .join('\n')
+        : t('roleClickReceiptsEmpty');
+    }
+    if (sub === 'reconcileclick') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('roleClickReconcileConfirm');
+      const id = i.options.getString('interaction-id', true);
+      if (
+        typeof id !== 'string' ||
+        id.length < 1 ||
+        id.length > 100 ||
+        /[\u0000-\u001f\u007f]/u.test(id)
+      )
+        throw new UserError('roleClickReconcileBlocked');
+      await reconcileRoleClick(i, c, id);
+      content = t('roleClickReconciled');
     }
     if (sub === 'list') {
       const panels = c.rolePanels.list(i.guildId);

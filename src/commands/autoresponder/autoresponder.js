@@ -61,6 +61,58 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('mode')
+      .setDescription(
+        'Set literal exact/keyword matching,retaining response/cooldown/replay history.',
+      )
+      .addStringOption(trigger)
+      .addStringOption((o) =>
+        o
+          .setName('mode')
+          .setDescription('Literal matching only,no regex')
+          .addChoices(
+            { name: 'Exact message', value: 'exact' },
+            { name: 'Keyword phrase', value: 'keyword' },
+          )
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('cooldown')
+      .setDescription(
+        'Change one stored trigger cooldown10-3600s;last-send/replay history retained.',
+      )
+      .addStringOption(trigger)
+      .addIntegerOption((o) =>
+        o
+          .setName('seconds')
+          .setDescription('Elapsed seconds from retained last send')
+          .setRequired(true)
+          .setMinValue(10)
+          .setMaxValue(3600),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('toggle')
+      .setDescription('Pause/resume one trigger,retaining response/cooldown/history.')
+      .addStringOption(trigger)
+      .addBooleanOption((o) =>
+        o
+          .setName('enabled')
+          .setDescription('Allow automatic responses from this trigger')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('preview')
+      .setDescription('Privately preview stored response,no send or cooldown change.')
+      .addStringOption(trigger),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('config')
       .setDescription('List trigger configuration.')
       .addIntegerOption((o) => o.setName('page').setDescription('Page number').setMinValue(1)),
@@ -72,7 +124,19 @@ export default {
   async execute(i, c) {
     const locale = c.guildConfig.get(i.guildId).language,
       t = (k, p) => translate(locale, k, p);
+    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+    if (
+      i.guild.id !== i.guildId ||
+      actor?.id !== i.user.id ||
+      actor.guild?.id !== i.guildId ||
+      !actor.permissions.has(P.ManageGuild)
+    )
+      throw new UserError('userPermission');
     const sub = i.options.getSubcommand();
+    if (
+      !['create', 'edit', 'delete', 'config', 'preview', 'toggle', 'cooldown', 'mode'].includes(sub)
+    )
+      throw new UserError('unknownCommand');
     let text;
     if (sub === 'create') {
       if (!c.config.messageEventsEnabled) throw new UserError('responderRuntimeDisabled');
@@ -83,6 +147,30 @@ export default {
         cooldownSeconds: i.options.getInteger('cooldown') ?? 60,
       });
       text = t('responderCreated', { id });
+    }
+    if (sub === 'mode') {
+      c.autoresponders.setMode(
+        i.guildId,
+        i.options.getString('trigger', true),
+        i.options.getString('mode', true),
+      );
+      text = t('responderModeSaved');
+    }
+    if (sub === 'cooldown') {
+      c.autoresponders.setCooldown(
+        i.guildId,
+        i.options.getString('trigger', true),
+        i.options.getInteger('seconds', true),
+      );
+      text = t('responderCooldownSaved');
+    }
+    if (sub === 'toggle') {
+      c.autoresponders.setEnabled(
+        i.guildId,
+        i.options.getString('trigger', true),
+        i.options.getBoolean('enabled', true),
+      );
+      text = t('responderToggleSaved');
     }
     if (sub === 'edit') {
       c.autoresponders.edit(
@@ -96,11 +184,17 @@ export default {
       c.autoresponders.delete(i.guildId, i.options.getString('trigger', true));
       text = t('responderDeleted');
     }
+    if (sub === 'preview') {
+      const row = c.autoresponders.find(i.guildId, i.options.getString('trigger', true));
+      if (!row) throw new UserError('responderNotFound');
+      text = row.response;
+    }
     if (sub === 'config') {
       const rows = c.autoresponders.list(i.guildId),
         pages = Math.max(1, Math.ceil(rows.length / 10)),
         page = i.options.getInteger('page') ?? 1;
-      if (page > pages) throw new UserError('responderPageInvalid', { pages });
+      if (!Number.isInteger(page) || page < 1 || page > pages)
+        throw new UserError('responderPageInvalid', { pages });
       text = t('responderConfig', {
         page,
         pages,
@@ -111,7 +205,10 @@ export default {
         '\n' +
         (rows
           .slice((page - 1) * 10, page * 10)
-          .map((r) => `#${r.id} | ${r.trigger} | ${r.mode} | ${r.cooldown_seconds}s`)
+          .map(
+            (r) =>
+              `#${r.id} | ${r.trigger} | ${r.mode} | ${r.cooldown_seconds}s | ${t(r.enabled === 1 ? 'enabled' : 'disabled')}`,
+          )
           .join('\n') || t('responderEmpty'));
     }
     await i.reply(

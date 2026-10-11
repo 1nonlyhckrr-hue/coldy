@@ -8,11 +8,17 @@ import command from '../src/commands/automod/automod.js';
 function setup() {
   const db = openDatabase(':memory:'),
     automod = new AutoMod(db),
-    member = { id: 'u', permissions: { has: () => false }, roles: { cache: new Map() } },
-    bot = { permissions: { has: () => true } },
+    member = {
+      id: 'u',
+      guild: { id: 'g' },
+      permissions: { has: () => false },
+      roles: { cache: new Map() },
+    },
+    bot = { id: 'bot', guild: { id: 'g' }, permissions: { has: () => true } },
     deleted = [];
   const guild = {
     id: 'g',
+    client: { user: { id: 'bot' } },
     ownerId: 'owner',
     members: { fetch: async () => member, fetchMe: async () => bot },
     roles: { fetch: async () => ({ id: '100000000000000001', guild: { id: 'g' } }) },
@@ -145,7 +151,7 @@ test('eight management paths enforce runtime, save settings and localize results
       i = {
         guild: x.guild,
         guildId: 'g',
-        user: { id: 'manager' },
+        user: { id: 'u' },
         deferReply: async () => {},
         editReply: async (p) => replies.push(p),
         options: {
@@ -227,6 +233,7 @@ test('timeout protected targets,current permission/hierarchy,changed config and 
     'permission',
     'unmoderatable',
     'changed',
+    'threshold',
     'unknown',
   ]) {
     const x = setup();
@@ -257,6 +264,7 @@ test('timeout protected targets,current permission/hierarchy,changed config and 
           if (kind === 'permission') x.bot.permissions.has = () => false;
           if (kind === 'unmoderatable') x.member.moderatable = false;
           if (kind === 'changed') x.automod.patch('g', { enabled: false });
+          if (kind === 'threshold') x.automod.patch('g', { mentionLimit: 10 });
         }
         return x.member;
       };
@@ -284,7 +292,7 @@ test('timeoutminutes and enable require current manager,explicit confirmation,na
         i = {
           guild: x.guild,
           guildId: 'g',
-          user: { id: 'manager' },
+          user: { id: 'u' },
           deferReply: async () => {},
           editReply: async (p) => replies.push(p),
           options: {
@@ -314,5 +322,568 @@ test('timeoutminutes and enable require current manager,explicit confirmation,na
     } finally {
       x.db.close();
     }
+  }
+});
+test('AutoMod ignored channels are bounded,guild isolated and skip native member fetch/effects', async () => {
+  const x = setup();
+  const id = '100000000000000020';
+  let fetches = 0;
+  x.m.channel.id = id;
+  x.guild.members.fetch = async () => {
+    fetches++;
+    return x.member;
+  };
+  try {
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'delete',
+      rules: { words: true },
+      words: ['bad'],
+    });
+    x.automod.ignoreChannel('g', id, true);
+    x.automod.ignoreChannel('g', id, true);
+    assert.equal(x.automod.get('g').ignoredChannels.length, 1);
+    assert.equal(x.automod.get('other').ignoredChannels.length, 0);
+    assert.equal(await createAutoModHandler(x.c)(x.m), false);
+    assert.equal(fetches, 0);
+    assert.equal(x.deleted.length, 0);
+    assert.equal(x.automod.incidents('g').length, 0);
+    x.automod.ignoreChannel('g', id, false);
+    assert.equal(x.automod.get('g').ignoredChannels.length, 0);
+    for (let n = 0; n < 20; n++)
+      x.automod.ignoreChannel('g', String(100000000000001000n + BigInt(n)), true);
+    assert.throws(() => x.automod.ignoreChannel('g', id, true));
+    assert.equal(x.automod.get('g').ignoredChannels.length, 20);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod channel exclusion added during native member or delete permission validation prevents effects', async () => {
+  for (const stage of ['member', 'bot']) {
+    const x = setup(),
+      id = '100000000000000020';
+    x.m.channel.id = id;
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'delete',
+      rules: { words: true },
+      words: ['bad'],
+    });
+    if (stage === 'member')
+      x.guild.members.fetch = async () => {
+        x.automod.ignoreChannel('g', id, true);
+        return x.member;
+      };
+    else
+      x.guild.members.fetchMe = async () => {
+        x.automod.ignoreChannel('g', id, true);
+        return x.bot;
+      };
+    try {
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(x.deleted.length, 0);
+      if (stage === 'member') assert.equal(x.automod.incidents('g').length, 0);
+      else assert.equal(x.automod.incidents('g')[0].status, 'failed');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod ignorechannel slash requires exact current channel/actor and private locale output', async () => {
+  const { ChannelType } = await import('discord.js');
+  const id = '100000000000000020';
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup(),
+      replies = [];
+    x.member.permissions.has = () => true;
+    x.c.guildConfig.setLanguage('g', locale);
+    x.guild.channels = {
+      fetch: async (selected, o) => {
+        assert.equal(selected, id);
+        assert.equal(o.force, true);
+        return { id, guildId: 'g', type: ChannelType.GuildText };
+      },
+    };
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'u' },
+      deferReply: async (p) => assert.equal(p.flags, 64),
+      editReply: async (p) => replies.push(p),
+      options: {
+        getSubcommand: () => 'ignorechannel',
+        getChannel: () => ({ id }),
+        getBoolean: () => true,
+      },
+    };
+    try {
+      await command.execute(i, x.c);
+      assert.deepEqual(x.automod.get('g').ignoredChannels, [id]);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      x.guild.channels.fetch = async () => ({
+        id: 'other',
+        guildId: 'g',
+        type: ChannelType.GuildText,
+      });
+      await assert.rejects(() => command.execute(i, x.c), /channelTypeInvalid/);
+      x.member.id = 'other';
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod exact current member identity and runtime prevent wrong-person records/effects', async () => {
+  for (const kind of ['id', 'guild', 'missing', 'runtime']) {
+    const x = setup();
+    x.automod.patch('g', { enabled: true, action: 'warn', rules: { words: true }, words: ['bad'] });
+    if (kind === 'id') x.member.id = 'other';
+    if (kind === 'guild') x.member.guild.id = 'other';
+    if (kind === 'missing') x.guild.members.fetch = async () => null;
+    if (kind === 'runtime') x.c.config.messageEventsEnabled = false;
+    try {
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(x.automod.incidents('g').length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+      assert.equal(x.deleted.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod legacy JSON defaults empty exclusions and channel policy survives actual reopen', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-ignore-restart-')),
+    path = join(dir, 'db');
+  let db = openDatabase(path);
+  try {
+    db.prepare('INSERT INTO automod_settings VALUES(?,?)').run(
+      'g',
+      JSON.stringify({ enabled: true, action: 'warn', words: ['bad'], rules: { words: true } }),
+    );
+    let a = new AutoMod(db);
+    assert.deepEqual(a.get('g').ignoredChannels, []);
+    a.ignoreChannel('g', '100000000000000020', true);
+    db.close();
+    db = openDatabase(path);
+    a = new AutoMod(db);
+    assert.deepEqual(a.get('g').ignoredChannels, ['100000000000000020']);
+    assert.equal(a.get('g').enabled, true);
+    assert.deepEqual(a.get('g').words, ['bad']);
+    assert.deepEqual(a.get('other').ignoredChannels, []);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('AutoMod bounded mention/caps tuning changes detection not enabled state or unrelated policies', () => {
+  const x = setup();
+  try {
+    const s = x.automod.patch('g', {
+      rules: { mentions: true, caps: true },
+      mentionLimit: 3,
+      capsPercent: 50,
+      capsMinLetters: 10,
+    });
+    assert.equal(s.enabled, false);
+    assert.equal(
+      x.automod.detect(
+        { ...x.m, content: 'hi', mentions: { users: { size: 2 }, roles: { size: 0 } } },
+        s,
+      ),
+      null,
+    );
+    assert.equal(
+      x.automod.detect({ ...x.m, content: 'hi', mentions: { users: { size: 3 } } }, s),
+      'mentions',
+    );
+    assert.equal(
+      x.automod.detect({ ...x.m, content: 'hi', mentions: { everyone: true } }, s),
+      'mentions',
+    );
+    assert.equal(x.automod.detect({ ...x.m, content: 'AAAAAaaaaa' }, s), null);
+    assert.equal(x.automod.detect({ ...x.m, content: 'AAAAAAaaaa' }, s), 'caps');
+    assert.equal(x.automod.detect({ ...x.m, content: 'AAAAAAAAA' }, s), null);
+    for (const change of [
+      { mentionLimit: 1 },
+      { mentionLimit: 21 },
+      { capsPercent: 49 },
+      { capsPercent: 101 },
+      { capsMinLetters: 9 },
+      { capsMinLetters: 101 },
+      { capsPercent: 1.5 },
+    ])
+      assert.throws(() => x.automod.patch('g', change));
+    assert.equal(x.automod.get('other').mentionLimit, 5);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod thresholds slash requires at least one value,current authority and localized private output', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup(),
+      replies = [];
+    x.member.permissions.has = () => true;
+    x.c.guildConfig.setLanguage('g', locale);
+    let value = null;
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'u' },
+      deferReply: async () => {},
+      editReply: async (p) => replies.push(p),
+      options: {
+        getSubcommand: () => 'thresholds',
+        getInteger: (n) => (n === 'mentions' ? value : null),
+      },
+    };
+    try {
+      await assert.rejects(() => command.execute(i, x.c), /automodThresholdRequired/);
+      value = 10;
+      await command.execute(i, x.c);
+      assert.equal(x.automod.get('g').mentionLimit, 10);
+      assert.equal(x.automod.get('g').capsPercent, 80);
+      assert.equal(x.automod.get('g').enabled, false);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod tuned thresholds persist across SQLite reopen and legacy settings retain defaults', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-threshold-restart-')),
+    path = join(dir, 'db');
+  let db = openDatabase(path);
+  try {
+    db.prepare('INSERT INTO automod_settings VALUES(?,?)').run(
+      'legacy',
+      JSON.stringify({ enabled: false, action: 'warn' }),
+    );
+    let a = new AutoMod(db);
+    assert.equal(a.get('legacy').mentionLimit, 5);
+    assert.equal(a.get('legacy').capsPercent, 80);
+    assert.equal(a.get('legacy').capsMinLetters, 20);
+    a.patch('g', { mentionLimit: 12, capsPercent: 95, capsMinLetters: 50 });
+    db.close();
+    db = openDatabase(path);
+    a = new AutoMod(db);
+    assert.equal(a.get('g').mentionLimit, 12);
+    assert.equal(a.get('g').capsPercent, 95);
+    assert.equal(a.get('g').capsMinLetters, 50);
+    assert.equal(a.get('g').enabled, false);
+    assert.equal(a.get('legacy').mentionLimit, 5);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('AutoMod text dry-run evaluates configured static rules without incident,spam state or content echo', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup(),
+      replies = [];
+    x.member.permissions.has = () => true;
+    x.c.guildConfig.setLanguage('g', locale);
+    x.automod.patch('g', { rules: { words: true, spam: true, mentions: true }, words: ['bad'] });
+    const before = x.automod.get('g');
+    let text = 'bad PRIVATE SAMPLE';
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'u' },
+      deferReply: async (p) => assert.equal(p.flags, 64),
+      editReply: async (p) => replies.push(p),
+      options: { getSubcommand: () => 'testtext', getString: () => text },
+    };
+    try {
+      await command.execute(i, x.c);
+      assert(replies[0].embeds[0].data.description.includes('words'));
+      assert(!JSON.stringify(replies).includes('PRIVATE SAMPLE'));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      text = '@everyone repeated';
+      for (let n = 0; n < 6; n++) await command.execute(i, x.c);
+      assert.equal(x.automod.recent.size, 0);
+      assert.equal(x.automod.incidents('g').length, 0);
+      assert.deepEqual(x.automod.get('g'), before);
+      assert.equal(x.deleted.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod testtext rejects invalid input/current authority without output', async () => {
+  const x = setup();
+  x.member.permissions.has = () => true;
+  let text = '';
+  let n = 0;
+  const i = {
+    guild: x.guild,
+    guildId: 'g',
+    user: { id: 'u' },
+    deferReply: async () => {},
+    editReply: async () => n++,
+    options: { getSubcommand: () => 'testtext', getString: () => text },
+  };
+  try {
+    for (const value of ['', null, 'x'.repeat(1801)]) {
+      text = value;
+      await assert.rejects(() => command.execute(i, x.c));
+    }
+    text = 'good';
+    x.member.id = 'other';
+    await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    assert.equal(n, 0);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('automod enable rejects foreign bot and postfetch permission/runtime loss without consent write', async () => {
+  for (const kind of ['bot', 'memberGuild', 'permissionRace', 'runtimeRace']) {
+    const x = setup();
+    try {
+      x.member.permissions.has = () => true;
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        deferReply: async () => {},
+        options: { getSubcommand: () => 'enable', getString: () => 'delete' },
+      };
+      x.guild.members.fetchMe = async () => {
+        if (kind === 'permissionRace') x.member.permissions.has = () => false;
+        if (kind === 'runtimeRace') x.c.config.messageEventsEnabled = false;
+        return {
+          ...x.bot,
+          id: kind === 'bot' ? 'other' : 'bot',
+          guild: { id: kind === 'memberGuild' ? 'other' : 'g' },
+        };
+      };
+      await assert.rejects(() => command.execute(i, x.c));
+      assert.equal(x.automod.get('g').enabled, false);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('automod exempt forces exact role and refreshes admin after role lookup', async () => {
+  for (const kind of ['role', 'permissionRace']) {
+    const x = setup();
+    try {
+      x.member.permissions.has = () => true;
+      const id = '100000000000000001',
+        i = {
+          guild: x.guild,
+          guildId: 'g',
+          user: { id: 'u' },
+          deferReply: async () => {},
+          options: {
+            getSubcommand: () => 'exempt',
+            getRole: () => ({ id }),
+            getBoolean: () => true,
+          },
+        };
+      x.guild.roles.fetch = async (selected, o) => {
+        assert.equal(selected, id);
+        assert.deepEqual(o, { force: true });
+        if (kind === 'permissionRace') x.member.permissions.has = () => false;
+        return { id: kind === 'role' ? 'other' : id, guild: { id: 'g' } };
+      };
+      await assert.rejects(() => command.execute(i, x.c));
+      assert.deepEqual(x.automod.get('g').exemptRoles, []);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('removepolicy removes only one stored channel/role with no native target lookup', async () => {
+  for (const kind of ['channel', 'role'])
+    for (const locale of ['en', 'hi', 'hinglish']) {
+      const x = setup();
+      try {
+        x.member.permissions.has = () => true;
+        x.c.guildConfig.setLanguage('g', locale);
+        const id = '100000000000000001',
+          other = '100000000000000002';
+        x.automod.patch('g', { ignoredChannels: [id, other], exemptRoles: [id, other] });
+        const before = x.automod.get('g');
+        x.guild.roles.fetch = async () => {
+          throw Error('no target read');
+        };
+        x.guild.channels = {
+          fetch: async () => {
+            throw Error('no target read');
+          },
+        };
+        const replies = [];
+        await command.execute(
+          {
+            guild: x.guild,
+            guildId: 'g',
+            user: { id: 'u' },
+            deferReply: async () => {},
+            editReply: async (p) => replies.push(p),
+            options: {
+              getSubcommand: () => 'removepolicy',
+              getString: (n) => (n === 'kind' ? kind : id),
+              getBoolean: () => true,
+            },
+          },
+          x.c,
+        );
+        const after = x.automod.get('g');
+        assert.deepEqual(after, {
+          ...before,
+          [kind === 'channel' ? 'ignoredChannels' : 'exemptRoles']: [other],
+        });
+        assert.deepEqual(replies[0].allowedMentions.parse, []);
+      } finally {
+        x.db.close();
+      }
+    }
+});
+test('removepolicy validates confirmation/kind/ID before mutation', async () => {
+  const x = setup();
+  try {
+    x.member.permissions.has = () => true;
+    const id = '100000000000000001';
+    x.automod.ignoreChannel('g', id, true);
+    for (const [confirm, kind, subject] of [
+      [false, 'channel', id],
+      [true, 'wrong', id],
+      [true, 'channel', 'bad'],
+    ]) {
+      await assert.rejects(() =>
+        command.execute(
+          {
+            guild: x.guild,
+            guildId: 'g',
+            user: { id: 'u' },
+            deferReply: async () => {},
+            options: {
+              getSubcommand: () => 'removepolicy',
+              getString: (n) => (n === 'kind' ? kind : subject),
+              getBoolean: () => confirm,
+            },
+          },
+          x.c,
+        ),
+      );
+      assert.deepEqual(x.automod.get('g').ignoredChannels, [id]);
+    }
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod phrase listing is bounded private localized and preserves exact stored settings', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.member.permissions.has = () => true;
+      x.c.guildConfig.setLanguage('g', locale);
+      x.automod.patch('g', {
+        words: Array.from({ length: 45 }, (_, n) =>
+          n === 20 ? '@everyone **danger**' : 'phrase' + n,
+        ),
+      });
+      const before = x.automod.get('g'),
+        replies = [];
+      let page = 2;
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        deferReply: async (p) => assert(p.flags),
+        editReply: async (p) => replies.push(p),
+        options: { getSubcommand: () => 'wordlist', getInteger: () => page },
+      };
+      await command.execute(i, x.c);
+      const text = replies[0].embeds[0].data.description;
+      assert(text.includes(translate(locale, 'automodWordList', { page: 2, total: 45 })));
+      assert(text.includes('21. @everyone'));
+      assert(!text.includes('phrase19'));
+      assert(text.includes('40. phrase39'));
+      assert(!text.includes('phrase40'));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      page = 5;
+      await command.execute(i, x.c);
+      assert(
+        replies[1].embeds[0].data.description.includes(translate(locale, 'automodWordListEmpty')),
+      );
+      assert.deepEqual(x.automod.get('g'), before);
+      assert.equal(x.deleted.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod phrase listing validates pages and manager identity before private storage read', async () => {
+  for (const kind of ['zero', 'fraction', 'large', 'permission', 'actor', 'guild']) {
+    const x = setup();
+    try {
+      x.member.permissions.has = () => kind !== 'permission';
+      if (kind === 'actor') x.member.id = 'other';
+      if (kind === 'guild') x.member.guild.id = 'other';
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        deferReply: async () => {},
+        editReply: async () => assert.fail('no output'),
+        options: {
+          getSubcommand: () => 'wordlist',
+          getInteger: () =>
+            kind === 'zero' ? 0 : kind === 'fraction' ? 1.5 : kind === 'large' ? 6 : 1,
+        },
+      };
+      await assert.rejects(
+        () => command.execute(i, x.c),
+        kind === 'permission' || kind === 'actor' || kind === 'guild'
+          ? /userPermission/
+          : /automodWordPageInvalid/,
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod phrase listing default page reads only exact guild and does not require message events', async () => {
+  const x = setup();
+  try {
+    x.member.permissions.has = () => true;
+    x.c.config.messageEventsEnabled = false;
+    x.automod.word('foreign', 'secret', true);
+    const replies = [];
+    await command.execute(
+      {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+        options: { getSubcommand: () => 'wordlist', getInteger: () => null },
+      },
+      x.c,
+    );
+    assert(!JSON.stringify(replies).includes('secret'));
+    assert(replies[0].embeds[0].data.description.includes('total 0'));
+    assert.equal(
+      x.db.prepare('SELECT count(*) n FROM automod_settings WHERE guild_id=?').get('g').n,
+      0,
+    );
+  } finally {
+    x.db.close();
   }
 });

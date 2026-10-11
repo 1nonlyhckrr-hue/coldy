@@ -16,11 +16,13 @@ export const guildConfigSchema = z
               'memberleave',
               'rolecreate',
               'roledelete',
+              'roleupdate',
               'channelcreate',
               'channeldelete',
+              'channelupdate',
             ]),
           )
-          .max(6)
+          .max(8)
           .default([]),
         enabled: z.boolean().default(false),
         channelId: id.optional(),
@@ -31,6 +33,19 @@ export const guildConfigSchema = z
       .object({
         enabled: z.boolean().default(false),
         channelId: id.optional(),
+        title: z
+          .string()
+          .min(1)
+          .max(120)
+          .regex(/^[^\u0000-\u001f\u007f@]+$/u)
+          .optional(),
+        goodbyeTitle: z
+          .string()
+          .min(1)
+          .max(120)
+          .regex(/^[^\u0000-\u001f\u007f@]+$/u)
+          .optional(),
+        color: z.number().int().min(0).max(0xffffff).optional(),
         messageCustom: z.boolean().optional(),
         goodbyeCustom: z.boolean().optional(),
         message: message.default('Welcome {user} to {server}!'),
@@ -81,18 +96,24 @@ export class GuildConfig {
 export async function validateOutputChannel(guild, channelId) {
   let channel;
   try {
-    channel = await guild.channels.fetch(channelId);
+    channel = await guild.channels.fetch(channelId, { force: true });
   } catch {
     throw new UserError('channelFetchFailed');
   }
   if (
     !channel ||
+    channel.id !== channelId ||
     channel.guildId !== guild.id ||
     ![ChannelType.GuildText, ChannelType.GuildAnnouncement].includes(channel.type)
   )
     throw new UserError('channelTypeInvalid');
   const bot = await guild.members.fetchMe({ force: true });
-  if (!channel.permissionsFor(bot)?.has([P.ViewChannel, P.SendMessages, P.EmbedLinks]))
+  if (
+    !guild.client?.user?.id ||
+    bot?.id !== guild.client.user.id ||
+    bot.guild?.id !== guild.id ||
+    !channel.permissionsFor(bot)?.has([P.ViewChannel, P.SendMessages, P.EmbedLinks])
+  )
     throw new UserError('channelPermissionMissing');
   return channel;
 }

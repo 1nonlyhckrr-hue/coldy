@@ -39,7 +39,83 @@ test('destination check refuses foreign, voice, missing and denied channels', as
   ]) {
     const s = makeGuild();
     mutate(s);
-    await assert.rejects(() => validateOutputChannel(s.guild, '1'));
+    await assert.rejects(() => validateOutputChannel(s.guild, '100000000000000001'));
   }
-  assert(await validateOutputChannel(makeGuild().guild, '1'));
+  assert(await validateOutputChannel(makeGuild().guild, '100000000000000001'));
+});
+
+test('welcome embed color schema rejects out-of-range/noninteger and retains zero', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const c = new GuildConfig(new GuildSettings(db));
+    for (const v of [-1, 0x1000000, 1.5, 'abc'])
+      assert.throws(() => c.patch('g', 'welcome', { color: v }));
+    c.patch('g', 'welcome', { color: 0 });
+    assert.equal(c.get('g').welcome.color, 0);
+    assert.equal(new GuildConfig(new GuildSettings(db)).get('g').welcome.color, 0);
+  } finally {
+    db.close();
+  }
+});
+test('shared output validation force-fetches exact destination and refuses wrong native ID', async () => {
+  const s = makeGuild(),
+    id = '100000000000000001';
+  let reads = 0;
+  s.guild.channels.fetch = async (selected, o) => {
+    reads++;
+    assert.equal(selected, id);
+    assert.equal(o.force, true);
+    return s.channel;
+  };
+  assert.equal(await validateOutputChannel(s.guild, id), s.channel);
+  assert.equal(reads, 1);
+  s.channel.id = 'other';
+  await assert.rejects(() => validateOutputChannel(s.guild, id), /channelTypeInvalid/);
+});
+
+test('shared output validation requires exact current application bot and guild before permission resolution', async () => {
+  for (const bad of [
+    { id: 'other', guild: { id: 'g' } },
+    { id: 'b', guild: { id: 'other' } },
+    null,
+  ]) {
+    const s = makeGuild();
+    let resolved = 0;
+    s.channel.permissionsFor = () => {
+      resolved++;
+      return { has: () => true };
+    };
+    s.guild.members.fetchMe = async (opts) => {
+      assert.deepEqual(opts, { force: true });
+      return bad;
+    };
+    await assert.rejects(
+      () => validateOutputChannel(s.guild, s.channel.id),
+      /channelPermissionMissing/,
+    );
+    assert.equal(resolved, 0);
+  }
+  const s = makeGuild();
+  delete s.guild.client;
+  await assert.rejects(
+    () => validateOutputChannel(s.guild, s.channel.id),
+    /channelPermissionMissing/,
+  );
+});
+
+test('welcome title schema persists bounded static values and rejects mentions/control characters', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const c = new GuildConfig(new GuildSettings(db));
+    for (const value of ['', '@everyone', 'a\nb', 'x'.repeat(121)])
+      assert.throws(() => c.patch('g', 'welcome', { title: value }));
+    c.patch('g', 'welcome', { title: 'Static {server}', goodbyeTitle: 'Bye' });
+    const next = new GuildConfig(new GuildSettings(db));
+    assert.equal(next.get('g').welcome.title, 'Static {server}');
+    assert.equal(next.get('other').welcome.title, undefined);
+    c.patch('g', 'welcome', { title: undefined });
+    assert.equal(c.get('g').welcome.goodbyeTitle, 'Bye');
+  } finally {
+    db.close();
+  }
 });

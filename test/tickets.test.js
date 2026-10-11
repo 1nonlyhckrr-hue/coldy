@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PermissionFlagsBits as P } from 'discord.js';
@@ -10,6 +13,7 @@ import {
   exportTicketTranscript,
   publishTicketPanel,
   createTicketButtonHandler,
+  forgetTicketTranscript,
 } from '../src/services/ticketDelivery.js';
 import { collectTicketTranscript } from '../src/services/ticketTranscripts.js';
 import { handleInteractionError } from '../src/utils/errors.js';
@@ -42,11 +46,12 @@ function setup() {
     sent = [];
   const owner = {
       id: ids.owner,
+      guild: { id: ids.guild },
       user: { bot: false },
       permissions: { has: () => false },
       roles: { cache: new Map() },
     },
-    bot = { id: ids.bot, permissions: { has: () => true } };
+    bot = { id: ids.bot, guild: { id: ids.guild }, permissions: { has: () => true } };
   const category = { id: ids.category, guildId: ids.guild, type: 4 },
     role = { id: ids.role, guild: { id: ids.guild }, managed: false };
   const channel = {
@@ -69,6 +74,7 @@ function setup() {
   const creates = [];
   const guild = {
     id: ids.guild,
+    client: { user: { id: ids.bot } },
     ownerId: 'server-owner',
     members: { fetch: async () => owner, fetchMe: async () => bot },
     roles: { fetch: async () => role },
@@ -237,6 +243,7 @@ test('private transcript denies unrelated users and does not use public channel 
 test('panels bind buttons to source messages and refuse copies', async () => {
   const x = setup();
   try {
+    x.owner.permissions.has = () => true;
     await publishTicketPanel(x.i, x.c, ids.channel);
     const h = createTicketButtonHandler(x.c);
     x.i.id = 'open-button';
@@ -366,6 +373,371 @@ test('ticket retention/forget commands localize,confirm and current server permi
       await command.execute(x.i, x.c);
       assert.equal(x.tickets.transcript(1), undefined);
       for (const r of x.replies) assert.deepEqual(r.allowedMentions.parse, []);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('ticket setup forces native category/support identity and blocks wrong returned ID', async () => {
+  for (const kind of ['category', 'role']) {
+    const x = setup();
+    try {
+      const fetch = x.guild.channels.fetch;
+      x.guild.channels.fetch = async (id, options) => {
+        assert.equal(options.force, true);
+        const row = await fetch(id);
+        return kind === 'category' ? { ...row, id: 'other' } : row;
+      };
+      x.guild.roles.fetch = async (id, options) => {
+        assert.equal(id, ids.role);
+        assert.equal(options.force, true);
+        return kind === 'role' ? { ...x.role, id: 'other' } : x.role;
+      };
+      await assert.rejects(() => openTicket(x.i, x.c));
+      assert.equal(x.creates.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('ticket open rejects changed support/category config and wrong fetched owner before creation', async () => {
+  for (const kind of ['config', 'actor']) {
+    const x = setup();
+    try {
+      if (kind === 'actor') x.guild.members.fetch = async () => ({ ...x.owner, id: 'other' });
+      else
+        x.guild.members.fetchMe = async () => {
+          x.tickets.configure(ids.guild, ids.category, '100000000000000009');
+          return x.bot;
+        };
+      await assert.rejects(() => openTicket(x.i, x.c));
+      assert.equal(x.creates.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM tickets').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('ticket transcript/close reject access or privacy revoked during history fetch before save/effect', async () => {
+  for (const action of ['export', 'close']) {
+    for (const race of ['access', 'privacy', 'state']) {
+      const x = setup();
+      try {
+        await openTicket(x.i, x.c);
+        if (race === 'access') {
+          x.i.user.id = 'staff';
+          x.owner.id = 'staff';
+          x.owner.permissions.has = () => true;
+        }
+        x.channel.messages.fetch = async () => {
+          if (race === 'access') x.owner.permissions.has = () => false;
+          if (race === 'privacy') x.channel.permissionOverwrites.cache.clear();
+          if (race === 'state') x.tickets.uncertain(1);
+          return new Map();
+        };
+        await assert.rejects(() =>
+          action === 'export'
+            ? exportTicketTranscript(x.i, x.c)
+            : changeTicketState(x.i, x.c, true),
+        );
+        assert.equal(x.tickets.transcript(1), undefined);
+        assert.equal(x.tickets.get(1, ids.guild).status, race === 'state' ? 'uncertain' : 'open');
+      } finally {
+        x.db.close();
+      }
+    }
+  }
+});
+
+test('ticket own-claim release is isolated,current-staff-only and does not modify access/content', async () => {
+  for (const language of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      await openTicket(x.i, x.c);
+      x.owner.permissions.has = () => true;
+      x.c.guildConfig.setLanguage(ids.guild, language);
+      x.tickets.claim(1, ids.owner);
+      x.i.options = { getSubcommand: () => 'unclaim' };
+      const before = x.channel.permissionOverwrites.cache;
+      await command.execute(x.i, x.c);
+      assert.equal(x.tickets.get(1, ids.guild).claimed_by, null);
+      assert.equal(x.channel.permissionOverwrites.cache, before);
+      assert.equal(x.sent.length, 0);
+      assert.throws(() => x.tickets.unclaim(1, 'other', ids.owner));
+      assert.throws(() => x.tickets.unclaim(1, ids.guild, ids.owner));
+      x.tickets.claim(1, 'other-user');
+      await assert.rejects(() => command.execute(x.i, x.c), /ticketUnclaimInvalid/);
+      x.owner.permissions.has = () => false;
+      await assert.rejects(() => command.execute(x.i, x.c), /ticketAccessDenied/);
+      x.owner.permissions.has = () => true;
+      x.tickets.transition(1, 'open', 'closed');
+      assert.throws(() => x.tickets.unclaim(1, ids.guild, 'other-user'));
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('released ticket claim remains unclaimed across database restart', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-unclaim-')),
+    path = join(dir, 'db');
+  let db;
+  try {
+    db = openDatabase(path);
+    let t = new Tickets(db);
+    const id = t.reserve(ids.guild, ids.owner, ids.role, 'restart');
+    t.activate(id, ids.channel);
+    t.claim(id, ids.owner);
+    t.unclaim(id, ids.guild, ids.owner);
+    db.close();
+    db = openDatabase(path);
+    t = new Tickets(db);
+    assert.equal(t.get(id, ids.guild).claimed_by, null);
+    assert.equal(t.get(id, ids.guild).status, 'open');
+    assert.throws(() => t.reserve(ids.guild, ids.owner, ids.role, 'restart-new'));
+  } finally {
+    db?.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('ticket activation and panel completion require one pending reservation and identity', () => {
+  const x = setup();
+  try {
+    const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'source');
+    assert.throws(() => x.tickets.activate(id, null), /identity/);
+    x.tickets.activate(id, ids.channel);
+    assert.throws(() => x.tickets.activate(id, 'other'), /not creating/);
+    assert.throws(() => x.tickets.activate(999, ids.channel), /not creating/);
+    const panel = x.tickets.reservePanel(ids.guild, ids.channel, 'panel');
+    assert.throws(() => x.tickets.panelSent(panel, ''), /identity/);
+    x.tickets.panelSent(panel, 'message');
+    assert.throws(() => x.tickets.panelSent(panel, 'other'), /not pending/);
+    assert.throws(() => x.tickets.panelSent(999, 'message'), /not pending/);
+    assert.equal(x.tickets.panel(panel, ids.guild).message_id, 'message');
+  } finally {
+    x.db.close();
+  }
+});
+test('accepted ticket panel send without identity is uncertain and source cannot replay', async () => {
+  const x = setup();
+  try {
+    x.owner.permissions.has = () => true;
+    x.channel.send = async (p) => {
+      x.sent.push(p);
+      return {};
+    };
+    await assert.rejects(() => publishTicketPanel(x.i, x.c, ids.channel), /ticketPanelUncertain/);
+    assert.equal(x.tickets.panel(1, ids.guild).status, 'uncertain');
+    await assert.rejects(() => publishTicketPanel(x.i, x.c, ids.channel));
+    assert.equal(x.sent.length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('ticket opening rejects foreign member guild and foreign app bot without reserving', async () => {
+  for (const kind of ['member', 'bot', 'botguild', 'interaction']) {
+    const x = setup();
+    try {
+      if (kind === 'member') x.owner.guild.id = 'foreign';
+      if (kind === 'bot') x.bot.id = 'foreign';
+      if (kind === 'botguild') x.bot.guild.id = 'foreign';
+      if (kind === 'interaction') x.i.guildId = 'foreign';
+      await assert.rejects(() => openTicket(x.i, x.c));
+      assert.equal(x.creates.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM tickets').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('ticket opening refreshes member after config native lookups before reservation', async () => {
+  const x = setup();
+  try {
+    x.guild.members.fetchMe = async () => {
+      x.owner.guild.id = 'foreign';
+      return x.bot;
+    };
+    await assert.rejects(() => openTicket(x.i, x.c), /ticketAccessDenied/);
+    assert.equal(x.creates.length, 0);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM tickets').get().n, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket transcript rejects foreign native actor and bot before history disclosure', async () => {
+  for (const kind of ['member', 'bot']) {
+    const x = setup();
+    try {
+      await openTicket(x.i, x.c);
+      let fetched = 0;
+      x.channel.messages.fetch = async () => {
+        fetched++;
+        return new Map();
+      };
+      if (kind === 'member') x.owner.guild.id = 'foreign';
+      else x.bot.id = 'foreign';
+      await assert.rejects(() => exportTicketTranscript(x.i, x.c));
+      assert.equal(fetched, 0);
+      assert.equal(x.tickets.transcript(1), undefined);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('ticket manager commands reject wrong actor/member guild/interaction guild before config or retention', async () => {
+  for (const sub of ['config', 'retention', 'setup', 'panel'])
+    for (const kind of ['actor', 'member', 'interaction']) {
+      const x = setup();
+      try {
+        x.owner.permissions.has = () => true;
+        if (kind === 'actor') x.owner.id = 'foreign';
+        if (kind === 'member') x.owner.guild.id = 'foreign';
+        if (kind === 'interaction') x.i.guildId = 'foreign';
+        x.i.options = { getSubcommand: () => sub };
+        await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+        assert.equal(x.sent.length, 0);
+        assert.equal(x.tickets.retention(ids.guild), 30);
+      } finally {
+        x.db.close();
+      }
+    }
+});
+test('ticket setup rechecks manager after native category/role lookups before changing config', async () => {
+  const x = setup();
+  try {
+    x.owner.permissions.has = () => true;
+    x.i.options = {
+      getSubcommand: () => 'setup',
+      getChannel: () => x.category,
+      getRole: () => x.role,
+    };
+    const old = x.tickets.config(ids.guild);
+    x.guild.roles.fetch = async () => {
+      x.owner.permissions.has = () => false;
+      return x.role;
+    };
+    await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+    assert.deepEqual(x.tickets.config(ids.guild), old);
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket panel rechecks manager and configured state after destination lookup before reserve/send', async () => {
+  for (const kind of ['authority', 'config']) {
+    const x = setup();
+    try {
+      x.owner.permissions.has = () => true;
+      x.guild.channels.fetch = async () => {
+        if (kind === 'authority') x.owner.permissions.has = () => false;
+        else x.db.prepare('DELETE FROM ticket_config WHERE guild_id=?').run(ids.guild);
+        return x.channel;
+      };
+      await assert.rejects(() => publishTicketPanel(x.i, x.c, ids.channel));
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM ticket_panels').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('ticket native lookup authority race blocks transcript reads and stored snapshot deletion', async () => {
+  for (const action of ['export', 'close', 'forget']) {
+    const x = setup();
+    try {
+      await openTicket(x.i, x.c);
+      x.tickets.saveTranscript(1, { body: 'saved', count: 0, truncated: false });
+      x.i.user.id = 'staff';
+      x.owner.id = 'staff';
+      x.owner.permissions.has = () => true;
+      let fetched = 0;
+      x.channel.messages.fetch = async () => {
+        fetched++;
+        return new Map();
+      };
+      x.guild.channels.fetch = async () => {
+        x.owner.permissions.has = () => false;
+        return x.channel;
+      };
+      await assert.rejects(
+        () =>
+          action === 'forget'
+            ? forgetTicketTranscript(x.i, x.c, { confirm: true })
+            : action === 'close'
+              ? changeTicketState(x.i, x.c, true)
+              : exportTicketTranscript(x.i, x.c),
+        /ticketAccessDenied/,
+      );
+      assert.equal(fetched, 0);
+      assert.equal(x.tickets.transcript(1).body, 'saved');
+      assert.equal(x.tickets.get(1, ids.guild).status, 'open');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('ticket close applies overwrite mutation on freshly revalidated channel object', async () => {
+  const x = setup();
+  try {
+    await openTicket(x.i, x.c);
+    const fresh = { ...x.channel, permissionOverwrites: { ...x.channel.permissionOverwrites } };
+    let writes = 0;
+    fresh.permissionOverwrites.set = async (rules) => {
+      writes++;
+      fresh.permissionOverwrites.cache = cache(rules);
+    };
+    let reads = 0;
+    x.guild.channels.fetch = async () => (++reads === 1 ? x.channel : fresh);
+    x.channel.permissionOverwrites.set = async () => {
+      throw new Error('stale channel used');
+    };
+    await changeTicketState(x.i, x.c, true);
+    assert.equal(writes, 1);
+    assert.equal(x.tickets.get(1, ids.guild).status, 'closed');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('ticket stored self status is private localized and cannot read others or transcript/native channels', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage(ids.guild, locale);
+      x.i.options = { getSubcommand: () => 'status' };
+      await command.execute(x.i, x.c);
+      assert.equal(x.tickets.ownRecords(ids.guild, ids.owner).length, 0);
+      for (let n = 0; n < 12; n++) {
+        const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'self' + n);
+        x.tickets.activate(id, String(100000000000000100n + BigInt(n)));
+        x.tickets.transition(id, 'open', 'closed');
+      }
+      x.tickets.reserve(ids.guild, 'other', ids.role, 'other');
+      x.tickets.reserve('foreign', ids.owner, ids.role, 'foreign');
+      const before = x.db.prepare('SELECT * FROM tickets').all();
+      x.guild.members.fetch = async () => {
+        throw Error('native lookup');
+      };
+      x.guild.channels.fetch = x.guild.members.fetch;
+      x.tickets.transcript = () => {
+        throw Error('transcript read');
+      };
+      await command.execute(x.i, x.c);
+      const rows = x.tickets.ownRecords(ids.guild, ids.owner);
+      assert.equal(rows.length, 10);
+      assert.equal(rows[0].id, 12);
+      assert.equal(rows.at(-1).id, 3);
+      const reply = x.replies.at(-1);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert(reply.embeds[0].data.description.includes('#12'));
+      assert(!reply.embeds[0].data.description.includes('#13'));
+      assert.deepEqual(x.db.prepare('SELECT * FROM tickets').all(), before);
+      assert.equal(x.creates.length, 0);
     } finally {
       x.db.close();
     }

@@ -2,7 +2,12 @@ import { VoiceReadiness } from './services/voiceReadiness.js';
 import { AfkStates, createAfkHandler } from './services/afk.js';
 import { Polls } from './services/polls.js';
 import { PurgePlans } from './services/purge.js';
-import { EventLogDelivery, createMetadataLogHandler } from './services/eventLogs.js';
+import {
+  EventLogDelivery,
+  createMetadataLogHandler,
+  createRoleUpdateLogHandler,
+  createChannelUpdateLogHandler,
+} from './services/eventLogs.js';
 import { VoiceMaster } from './services/voiceMaster.js';
 import { GuildTags } from './services/guildTags.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
@@ -75,6 +80,7 @@ if (config.auditEventsEnabled)
 context.messageRanks = new MessageRanks(db);
 context.messageRanks.cleanup();
 context.customRoles = new CustomRoles(db);
+context.customRoles.recoverCreation();
 context.commandRestrictions = new CommandRestrictions(db);
 context.autoresponders = new Autoresponders(db);
 context.autoresponders.recover();
@@ -132,6 +138,8 @@ for (const [event, kind] of [
   [Events.ChannelDelete, 'channeldelete'],
 ])
   client.on(event, createMetadataLogHandler(context, kind));
+client.on(Events.GuildRoleUpdate, createRoleUpdateLogHandler(context));
+client.on(Events.ChannelUpdate, createChannelUpdateLogHandler(context));
 if (config.memberEventsEnabled) {
   client.on(Events.GuildMemberAdd, createMetadataLogHandler(context, 'memberjoin'));
   client.on(Events.GuildMemberRemove, createMetadataLogHandler(context, 'memberleave'));

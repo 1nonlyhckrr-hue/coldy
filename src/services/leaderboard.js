@@ -137,6 +137,21 @@ export class MessageRanks {
       .all(guildId, since, (page - 1) * 10);
     return { rows, pages, page };
   }
+  position(guildId, userId, period, now = Date.now()) {
+    const since = this.since(period, now);
+    const total = this.db
+      .prepare(
+        'SELECT COALESCE(SUM(count),0) total FROM message_rank_daily WHERE guild_id=? AND user_id=? AND day>=?',
+      )
+      .get(guildId, userId, since).total;
+    if (total === 0) return { position: null, total: 0 };
+    const ahead = this.db
+      .prepare(
+        'SELECT count(*) n FROM (SELECT user_id,SUM(count) total FROM message_rank_daily WHERE guild_id=? AND day>=? GROUP BY user_id) WHERE total>? OR (total=? AND user_id<?)',
+      )
+      .get(guildId, since, total, total, userId).n;
+    return { position: ahead + 1, total };
+  }
   stats(guildId, userId, now = Date.now()) {
     const result = {};
     for (const period of ['today', 'week', 'retained'])

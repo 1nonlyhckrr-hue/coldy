@@ -3,6 +3,7 @@ import { lunaPayload } from '../utils/embeds.js';
 export function createAutoresponderHandler(context) {
   return async (message) => {
     if (
+      !context.config.messageEventsEnabled ||
       !message.guild ||
       !message.author ||
       message.author.bot ||
@@ -20,19 +21,43 @@ export function createAutoresponderHandler(context) {
       return;
     let reserved = false;
     try {
-      const me = await message.guild.members.fetchMe();
-      if (!message.channel.permissionsFor(me)?.has([P.ViewChannel, P.SendMessages, P.EmbedLinks]))
+      // Read-only preflight avoids native calls for unmatched/cooldown/replayed messages.
+      // The transactional claim rechecks current records after asynchronous native validation.
+      if (!context.autoresponders.eligible(message.guild.id, message.id, message.content)) return;
+      const [me, channel] = await Promise.all([
+        message.guild.members.fetchMe({ force: true }),
+        message.guild.channels.fetch(message.channel.id, { force: true }),
+      ]);
+      if (
+        !context.config.messageEventsEnabled ||
+        !me ||
+        me.id !== message.client.user.id ||
+        me.guild?.id !== message.guild.id ||
+        !channel ||
+        channel.id !== message.channel.id ||
+        channel.guildId !== message.guild.id ||
+        !channel.isTextBased() ||
+        !channel
+          .permissionsFor(me)
+          ?.has([
+            P.ViewChannel,
+            channel.isThread() ? P.SendMessagesInThreads : P.SendMessages,
+            P.EmbedLinks,
+          ])
+      )
         return;
       const rule = context.autoresponders.claim(message.guild.id, message.id, message.content);
       if (!rule) return;
       reserved = true;
       const locale = context.guildConfig.get(message.guild.id).language;
-      await message.channel.send(
+      const sent = await channel.send(
         lunaPayload(
           { content: rule.response, allowedMentions: { parse: [], repliedUser: false } },
           { locale },
         ),
       );
+      if (typeof sent?.id !== 'string' || !sent.id)
+        throw new Error('Missing accepted responder message identity');
       context.autoresponders.finish(message.id, 'sent');
     } catch {
       if (reserved) {

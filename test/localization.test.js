@@ -24,8 +24,16 @@ test('per-guild language isolates and localized config executes', async () => {
     let sub = 'language';
     const i = {
       guildId: 'one',
+      user: { id: 'a' },
+      guild: {
+        id: 'one',
+        members: {
+          fetch: async () => ({ id: 'a', guild: { id: 'one' }, permissions: { has: () => true } }),
+        },
+      },
+      deferReply: async (p) => assert.equal(p.flags, 64),
       options: { getSubcommand: () => sub, getString: () => 'hi' },
-      reply: async (p) => replies.push(p),
+      editReply: async (p) => replies.push(p),
     };
     await configCommand.execute(i, c);
     assert.equal(guildConfig.get('one').language, 'hi');
@@ -72,5 +80,84 @@ test('all locale placeholder sets match English templates', async () => {
       [...new Set([...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]))].sort();
     for (const d of dictionaries)
       assert.deepEqual(placeholders(d[key]), placeholders(dictionaries[0][key]), key);
+  }
+});
+
+test('config command force verifies exact current server admin before reads or language writes', async () => {
+  for (const sub of ['view', 'language'])
+    for (const kind of ['actor', 'memberGuild', 'guild', 'permission']) {
+      const db = openDatabase(':memory:');
+      try {
+        const guildConfig = new GuildConfig(new GuildSettings(db)),
+          c = {
+            guildConfig,
+            localization: new Localization(guildConfig),
+            config: { memberEventsEnabled: false },
+          };
+        let replies = 0;
+        const i = {
+          guildId: 'g',
+          user: { id: 'a' },
+          guild: {
+            id: kind === 'guild' ? 'other' : 'g',
+            members: {
+              fetch: async (o) => {
+                assert.deepEqual(o, { user: 'a', force: true });
+                return {
+                  id: kind === 'actor' ? 'other' : 'a',
+                  guild: { id: kind === 'memberGuild' ? 'other' : 'g' },
+                  permissions: { has: () => kind !== 'permission' },
+                };
+              },
+            },
+          },
+          options: { getSubcommand: () => sub, getString: () => 'hi' },
+          deferReply: async () => {},
+          editReply: async () => {
+            replies++;
+          },
+        };
+        await assert.rejects(() => configCommand.execute(i, c), /userPermission/);
+        assert.equal(guildConfig.get('g').language, 'en');
+        assert.equal(replies, 0);
+      } finally {
+        db.close();
+      }
+    }
+});
+test('config rejects unknown subcommand without defaulting to config disclosure', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const guildConfig = new GuildConfig(new GuildSettings(db));
+    let replies = 0;
+    await assert.rejects(
+      () =>
+        configCommand.execute(
+          {
+            guildId: 'g',
+            user: { id: 'a' },
+            guild: {
+              id: 'g',
+              members: {
+                fetch: async () => ({
+                  id: 'a',
+                  guild: { id: 'g' },
+                  permissions: { has: () => true },
+                }),
+              },
+            },
+            deferReply: async () => {},
+            editReply: async () => {
+              replies++;
+            },
+            options: { getSubcommand: () => 'unknown' },
+          },
+          { guildConfig, localization: new Localization(guildConfig) },
+        ),
+      /unknownCommand/,
+    );
+    assert.equal(replies, 0);
+  } finally {
+    db.close();
   }
 });

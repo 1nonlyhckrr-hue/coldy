@@ -3,6 +3,8 @@ import {
   InteractionContextType,
   PermissionFlagsBits as P,
   MessageFlags,
+  ChannelType,
+  escapeMarkdown,
 } from 'discord.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
@@ -96,6 +98,108 @@ const data = new SlashCommandBuilder()
         o.setName('enabled').setDescription('Exemption enabled').setRequired(true),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('ignorechannel')
+      .setDescription('Ignore/unignore one channel for automatic message moderation.')
+      .addChannelOption((o) =>
+        o
+          .setName('channel')
+          .setDescription('Server text/announcement/thread channel')
+          .addChannelTypes(
+            ChannelType.GuildText,
+            ChannelType.GuildAnnouncement,
+            ChannelType.PublicThread,
+            ChannelType.PrivateThread,
+            ChannelType.AnnouncementThread,
+          )
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('enabled')
+          .setDescription('Exclude this exact channel,no parent inheritance')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('removepolicy')
+      .setDescription(
+        'Remove one stored ignored channel/exempt role ID,including deleted subjects.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('kind')
+          .setDescription('Stored policy kind')
+          .addChoices(
+            { name: 'ignored channel', value: 'channel' },
+            { name: 'exempt role', value: 'role' },
+          )
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('subject-id')
+          .setDescription('Exact stored channel/role ID')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removal of this one stored policy')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('testtext')
+      .setDescription('Private dry-run of literal/caps/link rules,no punishment or spam tracking.')
+      .addStringOption((o) =>
+        o
+          .setName('text')
+          .setDescription('Sample text,no real message fetched or saved')
+          .setMinLength(1)
+          .setMaxLength(1800)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('thresholds')
+      .setDescription('Tune mention/caps thresholds;does not enable rules or moderation.')
+      .addIntegerOption((o) =>
+        o
+          .setName('mentions')
+          .setDescription('Unique user/role mentions2-20')
+          .setMinValue(2)
+          .setMaxValue(20),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('caps-percent')
+          .setDescription('Uppercase percentage must exceed this50-100')
+          .setMinValue(50)
+          .setMaxValue(100),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('caps-letters')
+          .setDescription('Minimum letters10-100')
+          .setMinValue(10)
+          .setMaxValue(100),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('wordlist')
+      .setDescription('Privately inspect twenty stored literal phrases per page.')
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-5').setMinValue(1).setMaxValue(5),
+      ),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show configured rules and limits.'))
   .addSubcommand((s) =>
     s.setName('incidents').setDescription('Show 20 recent action outcomes, no message content.'),
@@ -106,8 +210,17 @@ export default {
   userPermissions: [P.ManageGuild],
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });
-    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    const authorize = async () => {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        actor?.id !== i.user.id ||
+        actor.guild?.id !== i.guildId ||
+        i.guild.id !== i.guildId ||
+        !actor.permissions?.has(P.ManageGuild)
+      )
+        throw new UserError('userPermission');
+    };
+    await authorize();
     const sub = i.options.getSubcommand(),
       locale = c.guildConfig.get(i.guildId).language,
       t = (k, p) => translate(locale, k, p);
@@ -117,15 +230,28 @@ export default {
       const action = i.options.getString('action', true);
       if (action === 'delete') {
         const bot = await i.guild.members.fetchMe({ force: true });
-        if (!bot.permissions.has(P.ManageMessages)) throw new UserError('automodDeletePermission');
+        if (
+          !i.guild.client?.user?.id ||
+          bot?.id !== i.guild.client.user.id ||
+          bot.guild?.id !== i.guildId ||
+          !bot.permissions?.has(P.ManageMessages)
+        )
+          throw new UserError('automodDeletePermission');
       }
       if (action === 'timeout') {
         if (i.options.getBoolean('confirm-timeout') !== true)
           throw new UserError('automodTimeoutConfirm');
         const bot = await i.guild.members.fetchMe({ force: true });
-        if (!bot.permissions.has(P.ModerateMembers))
+        if (
+          !i.guild.client?.user?.id ||
+          bot?.id !== i.guild.client.user.id ||
+          bot.guild?.id !== i.guildId ||
+          !bot.permissions?.has(P.ModerateMembers)
+        )
           throw new UserError('automodTimeoutPermission');
       }
+      await authorize();
+      if (!c.config.messageEventsEnabled) throw new UserError('responderRuntimeDisabled');
       c.automod.patch(i.guildId, { enabled: true, action });
       content = t('automodEnabled');
     }
@@ -148,11 +274,96 @@ export default {
       content = t('automodSaved');
     }
     if (sub === 'exempt') {
-      const role = await i.guild.roles.fetch(i.options.getRole('role', true).id);
-      if (!role || role.guild.id !== i.guildId || role.id === i.guildId)
+      const selected = i.options.getRole('role', true),
+        role = await i.guild.roles.fetch(selected.id, { force: true });
+      if (!role || role.id !== selected.id || role.guild?.id !== i.guildId || role.id === i.guildId)
         throw new UserError('automodRoleInvalid');
+      await authorize();
       c.automod.exempt(i.guildId, role.id, i.options.getBoolean('enabled', true));
       content = t('automodSaved');
+    }
+    if (sub === 'ignorechannel') {
+      const selected = i.options.getChannel('channel', true);
+      const channel = await i.guild.channels.fetch(selected.id, { force: true });
+      if (
+        !channel ||
+        channel.id !== selected.id ||
+        channel.guildId !== i.guildId ||
+        ![
+          ChannelType.GuildText,
+          ChannelType.GuildAnnouncement,
+          ChannelType.PublicThread,
+          ChannelType.PrivateThread,
+          ChannelType.AnnouncementThread,
+        ].includes(channel.type)
+      )
+        throw new UserError('channelTypeInvalid');
+      const latestActor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        latestActor?.id !== i.user.id ||
+        latestActor.guild?.id !== i.guildId ||
+        !latestActor.permissions.has(P.ManageGuild)
+      )
+        throw new UserError('userPermission');
+      c.automod.ignoreChannel(i.guildId, channel.id, i.options.getBoolean('enabled', true));
+      content = t('automodIgnoredSaved');
+    }
+    if (sub === 'removepolicy') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automodPolicyConfirm');
+      const kind = i.options.getString('kind', true),
+        id = i.options.getString('subject-id', true);
+      if (!['channel', 'role'].includes(kind) || !/^\d{17,20}$/.test(id))
+        throw new UserError('automodPolicyInvalid');
+      const cfg = c.automod.get(i.guildId),
+        exists = (kind === 'channel' ? cfg.ignoredChannels : cfg.exemptRoles).includes(id);
+      if (exists) {
+        if (kind === 'channel') c.automod.ignoreChannel(i.guildId, id, false);
+        else c.automod.exempt(i.guildId, id, false);
+      }
+      content = t('automodPolicyRemoved', { count: exists ? 1 : 0 });
+    }
+    if (sub === 'testtext') {
+      const text = i.options.getString('text', true);
+      if (typeof text !== 'string' || text.length < 1 || text.length > 1800)
+        throw new UserError('automodWordInvalid');
+      const settings = c.automod.get(i.guildId);
+      const rule = c.automod.detect(
+        { content: text },
+        { ...settings, rules: { ...settings.rules, spam: false, mentions: false } },
+      );
+      content = t('automodTextTest', { rule: rule ?? t('automodNoMatch') });
+    }
+    if (sub === 'thresholds') {
+      const mentionLimit = i.options.getInteger('mentions'),
+        capsPercent = i.options.getInteger('caps-percent'),
+        capsMinLetters = i.options.getInteger('caps-letters');
+      if ([mentionLimit, capsPercent, capsMinLetters].every((v) => v === null))
+        throw new UserError('automodThresholdRequired');
+      c.automod.patch(i.guildId, {
+        ...(mentionLimit !== null ? { mentionLimit } : {}),
+        ...(capsPercent !== null ? { capsPercent } : {}),
+        ...(capsMinLetters !== null ? { capsMinLetters } : {}),
+      });
+      content = t('automodThresholdSaved');
+    }
+    if (sub === 'wordlist') {
+      const page = i.options.getInteger('page') ?? 1;
+      if (!Number.isInteger(page) || page < 1 || page > 5)
+        throw new UserError('automodWordPageInvalid');
+      const words = c.automod.get(i.guildId).words,
+        rows = words.slice((page - 1) * 20, page * 20);
+      content =
+        t('automodWordList', { page, total: words.length }) +
+        '\n' +
+        (rows.length
+          ? rows
+              .map(
+                (w, n) =>
+                  `${(page - 1) * 20 + n + 1}. ${escapeMarkdown(w.replace(/[\u0000-\u001f\u007f]/gu, ' '))}`,
+              )
+              .join('\n')
+          : t('automodWordListEmpty'));
     }
     if (sub === 'config') {
       const s = c.automod.get(i.guildId);
@@ -169,7 +380,15 @@ export default {
           roles: s.exemptRoles.length,
         }) +
         ' ' +
-        t('automodTimeoutSaved', { minutes: s.timeoutMinutes });
+        t('automodTimeoutSaved', { minutes: s.timeoutMinutes }) +
+        ' ' +
+        t('automodIgnoredConfig', { channels: s.ignoredChannels.join(', ') || '-' }) +
+        ' ' +
+        t('automodThresholdConfig', {
+          mentions: s.mentionLimit,
+          percent: s.capsPercent,
+          letters: s.capsMinLetters,
+        });
     }
     if (sub === 'incidents') {
       const rows = c.automod.incidents(i.guildId);

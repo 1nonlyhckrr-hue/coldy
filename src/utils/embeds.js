@@ -13,10 +13,11 @@ export function lunaEmbed({
   fields = [],
   timestamp = false,
   locale = 'en',
+  color,
 } = {}) {
   const style = styles[kind] ?? styles.info;
   const embed = new EmbedBuilder()
-    .setColor(style.color)
+    .setColor(color ?? style.color)
     .setTitle(
       (title ?? translate(locale, kind === 'error' ? 'embedErrorTitle' : 'embedInfoTitle')).slice(
         0,
@@ -38,7 +39,7 @@ export function lunaEmbed({
 }
 export function lunaPayload(
   payload,
-  { title, kind = 'info', timestamp = false, locale = 'en' } = {},
+  { title, kind = 'info', timestamp = false, locale = 'en', color } = {},
 ) {
   if (typeof payload === 'string') payload = { content: payload };
   const { content, ...rest } = payload;
@@ -46,7 +47,7 @@ export function lunaPayload(
   return {
     ...rest,
     embeds: [
-      lunaEmbed({ title, description: content, kind, timestamp, locale }),
+      lunaEmbed({ title, description: content, kind, timestamp, locale, color }),
       ...(rest.embeds ?? []),
     ],
   };

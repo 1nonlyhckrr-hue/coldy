@@ -64,3 +64,14 @@ export function playRps(player, rng = randomInt) {
         : 'lose';
   return { player, bot, result };
 }
+
+export function shuffleChoices(text, rng = randomInt) {
+  const values = parseChoices(text);
+  for (let n = values.length - 1; n > 0; n--) {
+    const index = rng(n + 1);
+    if (!Number.isInteger(index) || index < 0 || index > n)
+      throw new TypeError('Invalid random result');
+    [values[n], values[index]] = [values[index], values[n]];
+  }
+  return values;
+}

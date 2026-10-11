@@ -18,7 +18,14 @@ const schema = z
       })
       .strict()
       .default({}),
+    mentionLimit: z.number().int().min(2).max(20).default(5),
+    capsPercent: z.number().int().min(50).max(100).default(80),
+    capsMinLetters: z.number().int().min(10).max(100).default(20),
     words: z.array(z.string().min(1).max(50)).max(100).default([]),
+    ignoredChannels: z
+      .array(z.string().regex(/^\d{17,20}$/))
+      .max(20)
+      .default([]),
     exemptRoles: z
       .array(z.string().regex(/^\d{17,20}$/))
       .max(20)
@@ -64,6 +71,15 @@ export class AutoMod {
       return this.patch(guildId, { words: [...words] });
     })();
   }
+  ignoreChannel(guildId, channelId, add) {
+    if (typeof add !== 'boolean') throw new TypeError('Invalid ignore mode');
+    return this.db.transaction(() => {
+      const channels = new Set(this.get(guildId).ignoredChannels);
+      if (add) channels.add(channelId);
+      else channels.delete(channelId);
+      return this.patch(guildId, { ignoredChannels: [...channels] });
+    })();
+  }
   exempt(guildId, roleId, add) {
     return this.db.transaction(() => {
       const s = this.get(guildId),
@@ -86,11 +102,15 @@ export class AutoMod {
     const mentions =
       (message.mentions?.users?.size ?? 0) +
       (message.mentions?.roles?.size ?? 0) +
-      (message.mentions?.everyone ? 5 : 0);
-    if (settings.rules.mentions && mentions >= 5) return 'mentions';
+      (message.mentions?.everyone ? settings.mentionLimit : 0);
+    if (settings.rules.mentions && mentions >= settings.mentionLimit) return 'mentions';
     const letters = [...text].filter((c) => /\p{L}/u.test(c)),
       uppercase = letters.filter((c) => c.toUpperCase() === c && c.toLowerCase() !== c);
-    if (settings.rules.caps && letters.length >= 20 && uppercase.length / letters.length > 0.8)
+    if (
+      settings.rules.caps &&
+      letters.length >= settings.capsMinLetters &&
+      uppercase.length / letters.length > settings.capsPercent / 100
+    )
       return 'caps';
     if (settings.rules.spam) {
       const now = this.now(),
@@ -147,6 +167,7 @@ export class AutoMod {
 export function createAutoModHandler(c) {
   return async (message) => {
     if (
+      !c.config.messageEventsEnabled ||
       !message.guild ||
       !message.author ||
       message.author.bot ||
@@ -164,8 +185,13 @@ export function createAutoModHandler(c) {
     let reserved = false;
     try {
       const settings = c.automod.get(message.guild.id);
-      if (!settings.enabled) return false;
+      if (!settings.enabled || settings.ignoredChannels.includes(message.channel.id)) return false;
       const member = await message.guild.members.fetch({ user: message.author.id, force: true });
+      if (!member || member.id !== message.author.id || member.guild?.id !== message.guild.id)
+        return true;
+      const current = c.automod.get(message.guild.id);
+      if (!current.enabled || current.ignoredChannels.includes(message.channel.id)) return false;
+      if (JSON.stringify(current) !== JSON.stringify(settings)) return false;
       // Server managers/moderators and configured staff roles are always exempt.
       if (
         member.id === message.guild.ownerId ||
@@ -194,9 +220,12 @@ export function createAutoModHandler(c) {
           message.guild.members.fetch({ user: message.author.id, force: true }),
         ]);
         if (
+          bot?.id !== message.client.user.id ||
+          bot.guild?.id !== message.guild.id ||
           !bot.permissions.has(P.ModerateMembers) ||
           !target ||
           target.id !== message.author.id ||
+          target.guild?.id !== message.guild.id ||
           target.id === message.guild.ownerId ||
           target.user?.bot ||
           target.permissions.has(P.Administrator) ||
@@ -213,8 +242,10 @@ export function createAutoModHandler(c) {
         const latest = c.automod.get(message.guild.id);
         if (
           !latest.enabled ||
+          latest.ignoredChannels.includes(message.channel.id) ||
           latest.action !== 'timeout' ||
           latest.timeoutMinutes !== settings.timeoutMinutes ||
+          JSON.stringify(latest) !== JSON.stringify(settings) ||
           JSON.stringify(latest.rules) !== JSON.stringify(settings.rules) ||
           JSON.stringify(latest.exemptRoles) !== JSON.stringify(settings.exemptRoles) ||
           JSON.stringify(latest.words) !== JSON.stringify(settings.words)
@@ -230,7 +261,16 @@ export function createAutoModHandler(c) {
         await target.disableCommunicationUntil(until, 'Luna AutoMod: ' + rule);
       } else {
         const bot = await message.guild.members.fetchMe({ force: true });
-        if (!message.channel.permissionsFor(bot)?.has(P.ManageMessages)) {
+        if (
+          bot?.id !== message.client.user.id ||
+          bot.guild?.id !== message.guild.id ||
+          !message.channel.permissionsFor(bot)?.has(P.ManageMessages)
+        ) {
+          c.automod.finish(message.id, 'failed');
+          return true;
+        }
+        const latest = c.automod.get(message.guild.id);
+        if (JSON.stringify(latest) !== JSON.stringify(settings)) {
           c.automod.finish(message.id, 'failed');
           return true;
         }

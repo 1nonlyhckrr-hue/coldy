@@ -110,3 +110,5 @@ Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Lun
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
+
+Original Luna `/giveawayleave id` withdraws only your own current-server entry before an active giveaway deadline. No management permission is required. Wrong actor identity,foreign records,ending/ended/expired records are blocked. No winner reroll or public announcement occurs;reentry before deadline is allowed. This path is separate because management-only `/giveaway` access stays unchanged.

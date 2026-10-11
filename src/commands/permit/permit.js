@@ -17,8 +17,7 @@ const command = (o) =>
 const data = new SlashCommandBuilder()
   .setName('permit')
   .setDescription('Restrict installed commands without granting Discord permissions.')
-  .setContexts(InteractionContextType.Guild)
-  .setDefaultMemberPermissions(P.ManageGuild);
+  .setContexts(InteractionContextType.Guild);
 for (const kind of ['user', 'role'])
   for (const blocked of [true, false])
     data.addSubcommand((s) => {
@@ -34,6 +33,39 @@ for (const kind of ['user', 'role'])
 data
   .addSubcommand((s) =>
     s
+      .setName('status')
+      .setDescription('Check your current stored command restriction only,not Discord permissions.')
+      .addStringOption(command),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('remove')
+      .setDescription('Remove one exact stored restriction,including departed/deleted subject IDs.')
+      .addStringOption(command)
+      .addStringOption((o) =>
+        o
+          .setName('kind')
+          .setDescription('Stored subject kind')
+          .addChoices({ name: 'user', value: 'user' }, { name: 'role', value: 'role' })
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('subject-id')
+          .setDescription('Exact stored Discord ID')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removal of this exact stored deny rule')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('list')
       .setDescription('Show configured restrictions, ten per page.')
       .addIntegerOption((o) => o.setName('page').setDescription('Page').setMinValue(1)),
@@ -47,14 +79,34 @@ data
 export default {
   category: 'permit',
   data,
-  userPermissions: [P.ManageGuild],
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });
-    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    const sub = i.options.getSubcommand();
     const t = (key, params) => c.localization.t(i.guildId, key, params),
-      locale = c.localization.locale(i.guildId),
-      sub = i.options.getSubcommand();
+      locale = c.localization.locale(i.guildId);
+    if (sub === 'status') {
+      const name = i.options.getString('command', true);
+      if (!c.commands.has(name)) throw new UserError('permitCommandInvalid');
+      const status = await c.commandRestrictions.ownStatus(i, name);
+      await i.editReply(
+        lunaPayload(
+          {
+            content: t('permitOwnStatus', { command: name, status: t('permitOwn_' + status) }),
+            allowedMentions: { parse: [] },
+          },
+          { locale },
+        ),
+      );
+      return;
+    }
+    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+    if (
+      i.guild.id !== i.guildId ||
+      actor?.id !== i.user.id ||
+      actor.guild?.id !== i.guildId ||
+      !actor.permissions.has(P.ManageGuild)
+    )
+      throw new UserError('userPermission');
     let text;
     if (sub === 'list') {
       const rows = c.commandRestrictions.list(i.guildId),
@@ -76,7 +128,17 @@ export default {
       const name = i.options.getString('command', true);
       if (!c.commands.has(name)) throw new UserError('permitCommandInvalid');
       if (RECOVERY_COMMANDS.has(name)) throw new UserError('permitProtected');
-      if (sub === 'clear') {
+      if (sub === 'remove') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('permitRemoveConfirm');
+        const count = c.commandRestrictions.removeStored(
+          i.guildId,
+          name,
+          i.options.getString('kind', true),
+          i.options.getString('subject-id', true),
+        );
+        text = t('permitRemoved', { count });
+      } else if (sub === 'clear') {
         const count = c.commandRestrictions.clear(i.guildId, name);
         text = t('permitCleared', { command: name, count });
       } else if (['blockuser', 'unblockuser', 'blockrole', 'unblockrole'].includes(sub)) {
@@ -86,16 +148,30 @@ export default {
         if (kind === 'user') {
           const user = i.options.getUser('user', true),
             member = await i.guild.members.fetch({ user: user.id, force: true });
-          if (!member || member.id !== user.id) throw new UserError('permitMemberMissing');
+          if (!member || member.id !== user.id || member.guild?.id !== i.guildId)
+            throw new UserError('permitMemberMissing');
           id = member.id;
           if (blocked && id === i.guild.ownerId) throw new UserError('permitOwnerProtected');
         } else {
           const selected = i.options.getRole('role', true),
-            role = await i.guild.roles.fetch(selected.id);
-          if (!role || role.guild.id !== i.guildId || role.id === i.guildId || role.managed)
+            role = await i.guild.roles.fetch(selected.id, { force: true });
+          if (
+            !role ||
+            role.id !== selected.id ||
+            role.guild.id !== i.guildId ||
+            role.id === i.guildId ||
+            role.managed
+          )
             throw new UserError('permitRoleInvalid');
           id = role.id;
         }
+        const currentActor = await i.guild.members.fetch({ user: i.user.id, force: true });
+        if (
+          currentActor?.id !== i.user.id ||
+          currentActor.guild?.id !== i.guildId ||
+          !currentActor.permissions.has(P.ManageGuild)
+        )
+          throw new UserError('userPermission');
         c.commandRestrictions.set(i.guildId, name, kind, id, blocked);
         text = t(blocked ? 'permitBlocked' : 'permitUnblocked', { command: name });
       } else throw new UserError('unknownCommand');

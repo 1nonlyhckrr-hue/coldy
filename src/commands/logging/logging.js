@@ -47,8 +47,10 @@ const data = new SlashCommandBuilder()
               'memberleave',
               'rolecreate',
               'roledelete',
+              'roleupdate',
               'channelcreate',
               'channeldelete',
+              'channelupdate',
             ].map((value) => ({ name: value, value })),
           )
           .setRequired(true),
@@ -68,13 +70,23 @@ export default {
     const locale = c.guildConfig.get(i.guildId).language;
     const t = (key, params) => translate(locale, key, params);
     await i.deferReply({ flags: MessageFlags.Ephemeral });
-    const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    const authorize = async () => {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        i.guild.id !== i.guildId ||
+        actor?.id !== i.user.id ||
+        actor.guild?.id !== i.guildId ||
+        !actor.permissions?.has(P.ManageGuild)
+      )
+        throw new UserError('userPermission');
+    };
+    await authorize();
     const sub = i.options.getSubcommand();
     let text;
     if (sub === 'channel') {
       const id = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, id);
+      await authorize();
       c.guildConfig.patch(i.guildId, 'logging', { channelId: id });
       text = t('logChannelSaved');
     }
@@ -82,6 +94,11 @@ export default {
       const s = c.guildConfig.get(i.guildId).logging;
       if (!s.channelId) throw new UserError('logChannelRequired');
       await validateOutputChannel(i.guild, s.channelId);
+      if (c.guildConfig.get(i.guildId).logging.channelId !== s.channelId)
+        throw new UserError('logChannelRequired');
+      await authorize();
+      if (c.guildConfig.get(i.guildId).logging.channelId !== s.channelId)
+        throw new UserError('logChannelRequired');
       c.guildConfig.patch(i.guildId, 'logging', { enabled: true });
       text = t('logsEnabled');
     }
@@ -107,8 +124,10 @@ export default {
           'memberleave',
           'rolecreate',
           'roledelete',
+          'roleupdate',
           'channelcreate',
           'channeldelete',
+          'channelupdate',
         ].includes(kind)
       )
         throw new UserError('logEventInvalid');
@@ -125,7 +144,11 @@ export default {
       text = t('logEventSaved');
     }
     if (sub === 'test') {
-      const result = await c.serverLogs.emit(i.guild, { kind: 'test', actorId: i.user.id });
+      const result = await c.serverLogs.emit(
+        i.guild,
+        { kind: 'test', actorId: i.user.id },
+        authorize,
+      );
       text = t(result.sent ? 'logTestSent' : 'logTestNotSent');
     }
     await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));

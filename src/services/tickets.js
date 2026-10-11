@@ -64,15 +64,25 @@ export class Tickets {
   get(id, guildId) {
     return this.db.prepare('SELECT * FROM tickets WHERE id=? AND guild_id=?').get(id, guildId);
   }
+  ownRecords(guildId, ownerId) {
+    return this.db
+      .prepare(
+        'SELECT id,channel_id,status FROM tickets WHERE guild_id=? AND owner_id=? ORDER BY id DESC LIMIT 10',
+      )
+      .all(guildId, ownerId);
+  }
   byChannel(channelId, guildId) {
     return this.db
       .prepare('SELECT * FROM tickets WHERE channel_id=? AND guild_id=?')
       .get(channelId, guildId);
   }
   activate(id, channelId) {
-    this.db
+    if (typeof channelId !== 'string' || !channelId)
+      throw new TypeError('Missing ticket channel identity');
+    const result = this.db
       .prepare("UPDATE tickets SET channel_id=?,status='open' WHERE id=? AND status='creating'")
       .run(channelId, id);
+    if (result.changes !== 1) throw new Error('Ticket reservation not creating');
   }
   transition(id, from, to) {
     if (!['open', 'closing', 'closed', 'reopening', 'uncertain'].includes(to))
@@ -92,6 +102,14 @@ export class Tickets {
       )
       .run(actorId, id, actorId);
     if (!r.changes) throw new UserError('ticketClaimUnavailable');
+  }
+  unclaim(id, guildId, actorId) {
+    const result = this.db
+      .prepare(
+        "UPDATE tickets SET claimed_by=NULL WHERE id=? AND guild_id=? AND status='open' AND claimed_by=?",
+      )
+      .run(id, guildId, actorId);
+    if (!result.changes) throw new UserError('ticketUnclaimInvalid');
   }
   retention(guildId) {
     return (
@@ -160,26 +178,62 @@ export class Tickets {
       .get(id, guildId);
   }
   panelSent(id, messageId) {
-    this.db
+    if (typeof messageId !== 'string' || !messageId)
+      throw new TypeError('Missing ticket panel message identity');
+    const result = this.db
       .prepare(
         "UPDATE ticket_panels SET message_id=?,status='active' WHERE id=? AND status='pending'",
       )
       .run(messageId, id);
+    if (result.changes !== 1) throw new Error('Ticket panel reservation not pending');
   }
   panelUncertain(id) {
     this.db.prepare("UPDATE ticket_panels SET status='uncertain' WHERE id=?").run(id);
   }
 }
+export async function requireTicketManager(i) {
+  if (!i.guildId || i.guild?.id !== i.guildId) throw new UserError('userPermission');
+  const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+  if (
+    actor?.id !== i.user.id ||
+    actor.guild?.id !== i.guildId ||
+    !actor.permissions?.has(P.ManageGuild)
+  )
+    throw new UserError('userPermission');
+  return actor;
+}
+export function requireTicketBot(guild, bot) {
+  if (
+    !guild?.id ||
+    !guild.client?.user?.id ||
+    bot?.id !== guild.client.user.id ||
+    bot.guild?.id !== guild.id
+  )
+    throw new UserError('ticketBotPermission');
+  return bot;
+}
 export async function validateTicketConfig(guild, categoryId, supportRoleId) {
   const [category, role, bot] = await Promise.all([
-    guild.channels.fetch(categoryId),
-    guild.roles.fetch(supportRoleId),
+    guild.channels.fetch(categoryId, { force: true }),
+    guild.roles.fetch(supportRoleId, { force: true }),
     guild.members.fetchMe({ force: true }),
   ]);
-  if (!category || category.guildId !== guild.id || category.type !== ChannelType.GuildCategory)
+  if (
+    !category ||
+    category.id !== categoryId ||
+    category.guildId !== guild.id ||
+    category.type !== ChannelType.GuildCategory
+  )
     throw new UserError('ticketCategoryInvalid');
-  if (!role || role.guild.id !== guild.id || role.id === guild.id || role.managed)
+  if (
+    !role ||
+    role.id !== supportRoleId ||
+    role.guild.id !== guild.id ||
+    role.id === guild.id ||
+    role.managed
+  )
     throw new UserError('ticketSupportInvalid');
+  requireTicketBot(guild, bot);
   if (
     !bot.permissions.has([
       P.ManageChannels,
@@ -194,7 +248,11 @@ export async function validateTicketConfig(guild, categoryId, supportRoleId) {
 }
 export async function requireTicketAccess(i, ticket, { staff = false } = {}) {
   if (!ticket) throw new UserError('ticketNotFound');
+  if (i.guild?.id !== i.guildId || ticket.guild_id !== i.guildId)
+    throw new UserError('ticketAccessDenied');
   const member = await i.guild.members.fetch({ user: i.user.id, force: true });
+  if (member?.id !== i.user.id || member.guild?.id !== i.guildId)
+    throw new UserError('ticketAccessDenied');
   const isStaff =
     i.user.id === i.guild.ownerId ||
     member.permissions.has(P.ManageGuild) ||

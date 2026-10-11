@@ -46,11 +46,31 @@ export class CommandRestrictions {
           .run(guildId, commandName, kind, id);
     })();
   }
+  removeStored(guildId, commandName, kind, id) {
+    this.validate(commandName, kind, id);
+    return this.db
+      .prepare(
+        'DELETE FROM command_restrictions WHERE guild_id=? AND command_name=? AND subject_kind=? AND subject_id=?',
+      )
+      .run(guildId, commandName, kind, id).changes;
+  }
   clear(guildId, commandName) {
     if (!/^[a-z0-9_-]{1,32}$/.test(commandName)) throw new UserError('permitCommandInvalid');
     return this.db
       .prepare('DELETE FROM command_restrictions WHERE guild_id=? AND command_name=?')
       .run(guildId, commandName).changes;
+  }
+  async ownStatus(i, commandName) {
+    if (i.guild?.id !== i.guildId) throw new UserError('permitMemberMissing');
+    const member = await i.guild.members.fetch({ user: i.user.id, force: true });
+    if (member?.id !== i.user.id || member.guild?.id !== i.guildId)
+      throw new UserError('permitMemberMissing');
+    if (RECOVERY_COMMANDS.has(commandName) || member.id === i.guild.ownerId) return 'exempt';
+    return this.list(i.guildId, commandName).some((r) =>
+      r.subject_kind === 'user' ? r.subject_id === member.id : member.roles.cache.has(r.subject_id),
+    )
+      ? 'denied'
+      : 'notdenied';
   }
   async enforce(i, commandName) {
     if (RECOVERY_COMMANDS.has(commandName) || i.user.id === i.guild?.ownerId) return;
@@ -58,9 +78,15 @@ export class CommandRestrictions {
     if (!rows.length) return;
     // A configured restriction must never depend on a stale interaction member snapshot.
     const member = await i.guild.members.fetch({ user: i.user.id, force: true });
-    if (!member || member.id !== i.user.id) throw new UserError('permitMemberMissing');
     if (
-      rows.some((r) =>
+      !member ||
+      member.id !== i.user.id ||
+      member.guild?.id !== i.guildId ||
+      i.guild.id !== i.guildId
+    )
+      throw new UserError('permitMemberMissing');
+    if (
+      this.list(i.guildId, commandName).some((r) =>
         r.subject_kind === 'user'
           ? r.subject_id === member.id
           : member.roles.cache.has(r.subject_id),

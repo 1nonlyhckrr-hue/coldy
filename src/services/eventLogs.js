@@ -1,3 +1,4 @@
+import { createHmac, randomBytes } from 'node:crypto';
 import { validateOutputChannel } from './guildConfig.js';
 import { lunaPayload } from '../utils/embeds.js';
 export const LOG_EVENT_KINDS = [
@@ -5,8 +6,10 @@ export const LOG_EVENT_KINDS = [
   'memberleave',
   'rolecreate',
   'roledelete',
+  'roleupdate',
   'channelcreate',
   'channeldelete',
+  'channelupdate',
 ];
 export class EventLogDelivery {
   constructor(db) {
@@ -33,7 +36,11 @@ export class EventLogDelivery {
   finish(key, status) {
     if (!['sent', 'uncertain', 'unavailable'].includes(status))
       throw new TypeError('Invalid event log state');
-    this.db.prepare('UPDATE event_log_deliveries SET status=? WHERE event_key=?').run(status, key);
+    return (
+      this.db
+        .prepare("UPDATE event_log_deliveries SET status=? WHERE event_key=? AND status='reserved'")
+        .run(status, key).changes === 1
+    );
   }
   recover() {
     this.db
@@ -61,7 +68,11 @@ export function createMetadataLogHandler(c, kind, now = Date.now) {
             ? String(resource.joinedTimestamp ?? Math.floor(time / 86400000))
             : kind === 'memberleave'
               ? String(Math.floor(time / 86400000))
-              : '';
+              : ['roleupdate', 'channelupdate'].includes(kind)
+                ? resource.lunaUpdateKey
+                : '';
+      if (['roleupdate', 'channelupdate'].includes(kind) && !/^[a-f0-9]{32}$/.test(suffix ?? ''))
+        return;
       key = `${guild.id}:${kind}:${resource.id}:${suffix}`;
       if (time - c.eventLogs.lastCleanup > 3600000) {
         c.eventLogs.cleanup(time);
@@ -75,17 +86,30 @@ export function createMetadataLogHandler(c, kind, now = Date.now) {
         c.eventLogs.finish(key, 'unavailable');
         return;
       }
+      const latest = c.guildConfig.get(guild.id);
+      if (
+        !latest.logging.enabled ||
+        latest.logging.channelId !== cfg.channelId ||
+        !latest.logging.events.includes(kind)
+      ) {
+        c.eventLogs.finish(key, 'unavailable');
+        return;
+      }
       const text = c.localization.t(guild.id, 'logMetadataEvent', {
         kind: c.localization.t(guild.id, `logKind_${kind}`),
         id: resource.id,
       });
       try {
-        await channel.send(
+        const message = await channel.send(
           lunaPayload(
             { content: text, allowedMentions: { parse: [] } },
-            { locale: settings.language },
+            { locale: latest.language },
           ),
         );
+        if (typeof message?.id !== 'string' || !message.id.trim()) {
+          c.eventLogs.finish(key, 'uncertain');
+          return;
+        }
       } catch {
         c.eventLogs.finish(key, 'uncertain');
         return;
@@ -94,5 +118,70 @@ export function createMetadataLogHandler(c, kind, now = Date.now) {
     } catch {
       c.logger.warn({ kind: 'event_log' }, 'Metadata event log unavailable; no automatic retry');
     }
+  };
+}
+
+export function createRoleUpdateLogHandler(c) {
+  const emit = createMetadataLogHandler(c, 'roleupdate');
+  // Ephemeral secret prevents stored receipts becoming dictionary hashes of private names.
+  const receiptKey = randomBytes(32);
+  return async (before, after) => {
+    if (!before || !after || before.id !== after.id || before.guild?.id !== after.guild?.id) return;
+    const snapshot = (r) => [
+      r.name,
+      r.permissions?.bitfield?.toString(),
+      r.position,
+      r.colors?.primaryColor,
+      r.hoist,
+      r.mentionable,
+      r.managed,
+    ];
+    const complete = (r) =>
+      typeof r.name === 'string' &&
+      typeof r.permissions?.bitfield === 'bigint' &&
+      Number.isInteger(r.position) &&
+      Number.isInteger(r.colors?.primaryColor) &&
+      ['hoist', 'mentionable', 'managed'].every((k) => typeof r[k] === 'boolean');
+    if (!complete(before) || !complete(after)) return;
+    const old = JSON.stringify(snapshot(before)),
+      current = JSON.stringify(snapshot(after));
+    if (old === current) return;
+    const lunaUpdateKey = createHmac('sha256', receiptKey)
+      .update(old + '\n' + current)
+      .digest('hex')
+      .slice(0, 32);
+    await emit({ id: after.id, guild: after.guild, lunaUpdateKey });
+  };
+}
+
+export function createChannelUpdateLogHandler(c) {
+  const emit = createMetadataLogHandler(c, 'channelupdate'),
+    receiptKey = randomBytes(32);
+  return async (before, after) => {
+    if (
+      !before ||
+      !after ||
+      before.id !== after.id ||
+      !before.guild?.id ||
+      before.guild.id !== after.guild?.id
+    )
+      return;
+    const complete = (r) =>
+      typeof r.name === 'string' &&
+      Number.isInteger(r.type) &&
+      Number.isInteger(r.rawPosition) &&
+      r.rawPosition >= 0 &&
+      (r.parentId === null || typeof r.parentId === 'string') &&
+      typeof r.nsfw === 'boolean';
+    if (!complete(before) || !complete(after)) return;
+    const snapshot = (r) => JSON.stringify([r.name, r.type, r.rawPosition, r.parentId, r.nsfw]),
+      old = snapshot(before),
+      current = snapshot(after);
+    if (old === current) return;
+    const lunaUpdateKey = createHmac('sha256', receiptKey)
+      .update(old + '\n' + current)
+      .digest('hex')
+      .slice(0, 32);
+    await emit({ id: after.id, guild: after.guild, lunaUpdateKey });
   };
 }

@@ -61,3 +61,35 @@ test('welcome and goodbye are separately gated, mentions narrowly allowed, failu
     db.close();
   }
 });
+
+test('welcome/goodbye recheck event consent and destination after asynchronous native validation', async () => {
+  for (const kind of ['welcome', 'goodbye']) {
+    for (const patch of [
+      { enabled: false, goodbyeEnabled: false },
+      { channelId: '100000000000000009' },
+    ]) {
+      const db = openDatabase(':memory:');
+      try {
+        const guildConfig = new GuildConfig(new GuildSettings(db)),
+          s = makeGuild();
+        guildConfig.patch('g', 'welcome', {
+          enabled: true,
+          goodbyeEnabled: true,
+          channelId: '100000000000000001',
+        });
+        const fetch = s.guild.channels.fetch;
+        s.guild.channels.fetch = async (...args) => {
+          guildConfig.patch('g', 'welcome', patch);
+          return fetch(...args);
+        };
+        await createMemberMessageHandler(
+          { guildConfig, logger },
+          kind,
+        )({ id: '100000000000000001', user: { username: 'U' }, guild: s.guild });
+        assert.equal(s.sent.length, 0);
+      } finally {
+        db.close();
+      }
+    }
+  }
+});

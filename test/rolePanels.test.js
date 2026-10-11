@@ -18,11 +18,13 @@ function setup() {
     roles = [];
   const actor = {
     id: 'a',
+    guild: { id: 'g' },
     permissions: { has: () => true },
     roles: { highest: { comparePositionTo: () => 5 } },
   };
   const bot = {
     id: 'b',
+    guild: { id: 'g' },
     permissions: { has: () => true },
     roles: { highest: { comparePositionTo: () => 5 } },
   };
@@ -33,6 +35,8 @@ function setup() {
     permissions: { has: () => false },
   };
   const member = {
+    id: 'member',
+    guild: { id: 'g' },
     roles: {
       cache: new Map(),
       add: async (r) => roles.push(['add', r.id]),
@@ -55,6 +59,8 @@ function setup() {
   };
   const i = {
     id: 'interaction',
+    client: { user: { id: 'b' } },
+    appPermissions: { has: () => true },
     guild: s.guild,
     guildId: 'g',
     channelId: '100000000000000001',
@@ -152,6 +158,7 @@ test('button grant and revoke revalidate safe role; cooldown prevents repeats', 
     assert.equal(x.roles.length, 1);
     x.context.cooldowns.entries.clear();
     x.member.roles.cache.set(x.role.id, x.role);
+    x.i.id = 'release-click';
     await h(x.i);
     assert.equal(x.roles[1][0], 'remove');
   } finally {
@@ -423,5 +430,532 @@ test('pending publication recovers uncertain and per-guild live panel cap is enf
     );
   } finally {
     x.db.close();
+  }
+});
+test('role button durable receipt blocks replay after cooldown and uncertainty without repeat effect', async () => {
+  for (const kind of ['success', 'network', 'reserve', 'finalize']) {
+    const x = setup();
+    try {
+      await createRolePanel(x.i, x.context, {
+        channelId: x.i.channelId,
+        roleId: x.role.id,
+        label: 'Member',
+      });
+      x.i.user.id = 'member';
+      let n = 0;
+      x.member.roles.add = async () => {
+        n++;
+        if (kind === 'network') throw Error('network');
+      };
+      if (kind === 'reserve')
+        x.context.rolePanels.reserveClick = () => {
+          throw Error('db');
+        };
+      if (kind === 'finalize')
+        x.context.rolePanels.finishClick = () => {
+          throw Error('db');
+        };
+      const h = createRoleButtonHandler(x.context);
+      await h(x.i);
+      x.context.cooldowns.entries.clear();
+      await h(x.i);
+      assert.equal(n, kind === 'reserve' ? 0 : 1);
+      if (kind === 'network' || kind === 'finalize') {
+        x.context.cooldowns.entries.clear();
+        x.i.id = 'new-click';
+        await h(x.i);
+        assert.equal(n, 1);
+      }
+      assert.equal(
+        x.db.prepare('SELECT count(*) n FROM role_click_receipts').get().n,
+        kind === 'reserve' ? 0 : 1,
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('role click receipt state survives actual SQLite reopen and pending recovers uncertain', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-click-restart-')),
+    path = join(dir, 'db');
+  let db = openDatabase(path);
+  try {
+    let r = new RolePanels(db);
+    r.reserveClick('i', 'g', 'u', 'r');
+    db.close();
+    db = openDatabase(path);
+    r = new RolePanels(db);
+    r.recover();
+    assert.equal(db.prepare('SELECT status FROM role_click_receipts').get().status, 'uncertain');
+    assert.throws(() => r.reserveClick('new', 'g', 'u', 'r'), /roleClickBlocked/);
+    assert.throws(() => r.reserveClick('i', 'other', 'u', 'r'), /roleClickBlocked/);
+    r.reserveClick('other', 'other', 'u', 'r');
+    r.finishClick('other', 'completed');
+    assert.throws(() => r.reserveClick('other', 'other', 'u', 'r'), /roleClickBlocked/);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('role click rejects wrong bot/current app permission and changed panel destination before receipt', async () => {
+  for (const kind of ['bot', 'botGuild', 'permission', 'channel']) {
+    const x = setup();
+    try {
+      await createRolePanel(x.i, x.context, {
+        channelId: x.i.channelId,
+        roleId: x.role.id,
+        label: 'Member',
+      });
+      x.i.user.id = 'member';
+      if (kind === 'bot') x.bot.id = 'other';
+      if (kind === 'botGuild') x.bot.guild.id = 'other';
+      if (kind === 'permission') x.i.appPermissions.has = () => false;
+      if (kind === 'channel')
+        x.s.guild.roles.fetch = async () => {
+          x.db.prepare("UPDATE role_panels SET channel_id='other'").run();
+          return x.role;
+        };
+      await createRoleButtonHandler(x.context)(x.i);
+      assert.equal(x.roles.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM role_click_receipts').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('schema24 role panel and button mappings survive migration25 click receipt addition', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-panel-upgrade-')),
+    path = join(dir, 'db');
+  let db = openDatabase(path);
+  try {
+    const r = new RolePanels(db);
+    const id = r.reserve({
+      guildId: 'g',
+      channelId: 'c',
+      roleId: 'r',
+      label: 'label',
+      interactionId: 'source',
+    });
+    r.complete(id, 'message');
+    db.exec(
+      'DROP TABLE role_click_receipts;DELETE FROM schema_migrations WHERE version IN (25,26);',
+    );
+    db.close();
+    db = openDatabase(path);
+    const after = new RolePanels(db);
+    assert.equal(after.get(id, 'g').status, 'active');
+    assert.equal(after.get(id, 'g').message_id, 'message');
+    assert.equal(after.buttons(id)[0].role_id, 'r');
+    after.reserveClick('click', 'g', 'u', 'r');
+    assert.equal(db.prepare('SELECT status FROM role_click_receipts').get().status, 'pending');
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('panel inspect privately exposes complete stored multi mapping without native reads/effects', async () => {
+  const { default: command } = await import('../src/commands/reactionroles/reactionroles.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    x.context.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+    const panel = x.context.rolePanels.reserve({
+      guildId: 'g',
+      channelId: x.i.channelId,
+      roleId: x.role.id,
+      label: 'First',
+      interactionId: 'source',
+      buttons: [
+        { roleId: x.role.id, label: 'First' },
+        { roleId: '100000000000000004', label: 'Second @everyone' },
+      ],
+    });
+    x.context.rolePanels.complete(panel, 'stored-message');
+    x.i.options = { getSubcommand: () => 'inspect', getInteger: () => panel };
+    x.s.guild.roles.fetch = async () => {
+      throw Error('No native reads needed');
+    };
+    try {
+      await command.execute(x.i, x.context);
+      const p = x.replies[0];
+      assert.deepEqual(p.allowedMentions.parse, []);
+      assert(p.embeds[0].data.description.includes('stored-message'));
+      assert(p.embeds[0].data.description.includes('100000000000000004'));
+      assert.equal(x.s.sent.length, 0);
+      assert.equal(x.roles.length, 0);
+      assert.equal(x.context.rolePanels.get(panel, 'g').status, 'active');
+      x.i.guildId = 'other';
+      await assert.rejects(() => command.execute(x.i, x.context), /roleActorPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('panel inspect requires exact current manager and refuses missing record without output', async () => {
+  const { default: command } = await import('../src/commands/reactionroles/reactionroles.js');
+  for (const kind of ['missing', 'actor']) {
+    const x = setup();
+    x.i.options = { getSubcommand: () => 'inspect', getInteger: () => 999 };
+    if (kind === 'actor') x.actor.id = 'other';
+    try {
+      await assert.rejects(() => command.execute(x.i, x.context));
+      assert.equal(x.replies.length, 0);
+      assert.equal(x.s.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('role panel completion requires exact pending reservation and message identity', () => {
+  const x = setup();
+  try {
+    const id = x.context.rolePanels.reserve({
+      guildId: 'g',
+      channelId: x.s.channel.id,
+      roleId: x.role.id,
+      label: 'safe',
+      interactionId: 'source',
+    });
+    for (const message of [null, undefined, '', 0])
+      assert.throws(() => x.context.rolePanels.complete(id, message), /identity/);
+    x.context.rolePanels.complete(id, 'message');
+    assert.throws(() => x.context.rolePanels.complete(id, 'other'), /not pending/);
+    assert.throws(() => x.context.rolePanels.complete(999, 'message'), /not pending/);
+    assert.equal(x.context.rolePanels.get(id, 'g').message_id, 'message');
+  } finally {
+    x.db.close();
+  }
+});
+test('accepted panel send without returned identity becomes uncertain and cannot replay source', async () => {
+  const x = setup();
+  try {
+    x.s.channel.send = async (p) => {
+      x.s.sent.push(p);
+      return {};
+    };
+    const input = { channelId: x.s.channel.id, roleId: x.role.id, label: 'safe' };
+    await assert.rejects(() => createRolePanel(x.i, x.context, input), /rolePanelStorageFailed/);
+    assert.equal(x.context.rolePanels.get(1, 'g').status, 'uncertain');
+    await assert.rejects(() => createRolePanel(x.i, x.context, input));
+    assert.equal(x.s.sent.length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('role panel publication verifies exact current actor/bot/guild/app authority before reservation', async () => {
+  for (const kind of ['actor', 'actorGuild', 'guild', 'bot', 'botGuild', 'app']) {
+    const x = setup();
+    try {
+      if (kind === 'actor') x.actor.id = 'other';
+      if (kind === 'actorGuild') x.actor.guild.id = 'other';
+      if (kind === 'guild') x.i.guildId = 'other';
+      if (kind === 'bot') x.bot.id = 'other';
+      if (kind === 'botGuild') x.bot.guild.id = 'other';
+      if (kind === 'app') x.i.appPermissions.has = () => false;
+      await assert.rejects(() =>
+        createRolePanel(x.i, x.context, {
+          channelId: x.s.channel.id,
+          roleId: x.role.id,
+          label: 'safe',
+        }),
+      );
+      assert.equal(x.s.sent.length, 0);
+      assert.equal(x.context.rolePanels.list('g').length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('role panel publication reads actor after role/destination awaits and rejects permission loss', async () => {
+  const x = setup();
+  try {
+    const roles = x.s.guild.roles.fetch;
+    x.s.guild.roles.fetch = async (...args) => {
+      x.actor.permissions.has = () => false;
+      return roles(...args);
+    };
+    await assert.rejects(
+      () =>
+        createRolePanel(x.i, x.context, {
+          channelId: x.s.channel.id,
+          roleId: x.role.id,
+          label: 'safe',
+        }),
+      /roleActorPermission/,
+    );
+    assert.equal(x.s.sent.length, 0);
+    assert.equal(x.context.rolePanels.list('g').length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('role receipt inspection isolates member/guild, excludes terminal states and bounds newest ten', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 12; n++) {
+      x.context.rolePanels.reserveClick('i' + n, 'g', 'member', 'r' + n);
+      x.db
+        .prepare('UPDATE role_click_receipts SET created_at=? WHERE interaction_id=?')
+        .run(n, 'i' + n);
+    }
+    x.context.rolePanels.reserveClick('foreign', 'other', 'member', 'r');
+    x.context.rolePanels.reserveClick('other-member', 'g', 'other', 'r');
+    x.context.rolePanels.reserveClick('complete', 'g', 'member', 'complete');
+    x.context.rolePanels.finishClick('complete', 'completed');
+    x.context.rolePanels.reserveClick('failed', 'g', 'member', 'failed');
+    x.context.rolePanels.finishClick('failed', 'failed');
+    x.context.rolePanels.recover();
+    const rows = x.context.rolePanels.unresolvedClicks('g', 'member');
+    assert.equal(rows.length, 10);
+    assert.equal(rows[0].interaction_id, 'i11');
+    assert.equal(rows[9].interaction_id, 'i2');
+    assert(rows.every((r) => r.status === 'uncertain'));
+    assert.deepEqual(x.context.rolePanels.unresolvedClicks('g', 'missing'), []);
+  } finally {
+    x.db.close();
+  }
+});
+test('role receipts manager inspection stays private/localized and performs no native role/member subject lookups or effects', async () => {
+  const { default: command } = await import('../src/commands/reactionroles/reactionroles.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.context.localization = { locale: () => locale };
+      x.context.rolePanels.reserveClick('stored', 'g', 'member', 'stored-role');
+      x.context.rolePanels.finishClick('stored', 'uncertain');
+      x.i.options = { getSubcommand: () => 'receipts', getUser: () => ({ id: 'member' }) };
+      x.s.guild.roles.fetch = async () => {
+        throw Error('no role reads');
+      };
+      await command.execute(x.i, x.context);
+      const reply = x.replies[0];
+      assert(reply.embeds[0].data.description.includes(translate(locale, 'roleClickReceipts')));
+      assert(reply.embeds[0].data.description.includes('stored-role'));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(x.roles.length, 0);
+      assert.equal(x.s.sent.length, 0);
+      assert.equal(x.context.rolePanels.unresolvedClicks('g', 'member')[0].status, 'uncertain');
+      x.i.options.getUser = () => ({ id: 'missing' });
+      await command.execute(x.i, x.context);
+      assert.equal(
+        x.replies[1].embeds[0].data.description,
+        translate(locale, 'roleClickReceiptsEmpty'),
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('role receipt inspection rejects nonmanager and foreign current actor before stored lookup', async () => {
+  const { default: command } = await import('../src/commands/reactionroles/reactionroles.js');
+  for (const kind of ['permission', 'actor', 'guild']) {
+    const x = setup();
+    try {
+      x.i.options = { getSubcommand: () => 'receipts', getUser: () => ({ id: 'member' }) };
+      if (kind === 'permission') x.actor.permissions.has = () => false;
+      if (kind === 'actor') x.actor.id = 'other';
+      if (kind === 'guild') x.actor.guild.id = 'other';
+      x.context.rolePanels.unresolvedClicks = () => {
+        throw Error('must not reach storage');
+      };
+      await assert.rejects(() => command.execute(x.i, x.context), /roleActorPermission/);
+      assert.equal(x.replies.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('role click directed intent is immutable through recovery and invalid directions cannot reserve', () => {
+  const x = setup();
+  try {
+    for (const action of ['add', 'remove', 'unknown']) {
+      x.context.rolePanels.reserveClick(action, 'g', 'member', action, action);
+    }
+    assert.throws(
+      () => x.context.rolePanels.reserveClick('bad', 'g', 'member', 'bad', 'toggle'),
+      TypeError,
+    );
+    x.context.rolePanels.recover();
+    const rows = x.context.rolePanels.unresolvedClicks('g', 'member');
+    assert.deepEqual(rows.map((r) => r.action).sort(), ['add', 'remove', 'unknown']);
+    assert(rows.every((r) => r.status === 'uncertain'));
+    assert.equal(x.db.prepare('SELECT count(*) n FROM role_click_receipts').get().n, 3);
+  } finally {
+    x.db.close();
+  }
+});
+test('native role toggles persist exact add/remove direction before effect without inferring old receipts', async () => {
+  for (const has of [false, true]) {
+    const x = setup();
+    try {
+      await createRolePanel(x.i, x.context, {
+        channelId: x.i.channelId,
+        roleId: x.role.id,
+        label: 'Member',
+      });
+      x.i.user.id = 'member';
+      if (has) x.member.roles.cache.set(x.role.id, x.role);
+      const method = has ? 'remove' : 'add';
+      x.member.roles[method] = async () => {
+        const r = x.db.prepare('SELECT action,status FROM role_click_receipts').get();
+        assert.equal(r.action, method);
+        assert.equal(r.status, 'pending');
+      };
+      await createRoleButtonHandler(x.context)(x.i);
+      assert.equal(
+        x.db.prepare('SELECT action,status FROM role_click_receipts').get().action,
+        method,
+      );
+      assert.equal(
+        x.db.prepare('SELECT action,status FROM role_click_receipts').get().status,
+        'completed',
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('schema25 undirected click receipts migrate to unknown with terminal and unresolved state preserved', async () => {
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'luna-click-intent-')),
+    path = join(dir, 'db');
+  let db = openDatabase(path);
+  try {
+    db.exec(
+      "DROP TABLE role_click_receipts;DELETE FROM schema_migrations WHERE version=26;CREATE TABLE role_click_receipts(interaction_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,user_id TEXT NOT NULL,role_id TEXT NOT NULL,status TEXT NOT NULL,created_at INTEGER NOT NULL);INSERT INTO role_click_receipts VALUES('old','g','u','r','uncertain',10);INSERT INTO role_click_receipts VALUES('done','g','u','other','completed',11);",
+    );
+    db.close();
+    db = openDatabase(path);
+    const rows = db.prepare('SELECT * FROM role_click_receipts ORDER BY interaction_id').all();
+    assert.equal(rows.length, 2);
+    assert(rows.every((r) => r.action === 'unknown'));
+    assert.equal(rows[0].status, 'completed');
+    assert.equal(rows[1].status, 'uncertain');
+    assert.equal(rows[1].created_at, 10);
+    const store = new RolePanels(db);
+    assert.throws(() => store.reserveClick('retry', 'g', 'u', 'r', 'add'), /roleClickBlocked/);
+    store.reserveClick('new', 'g', 'u', 'new', 'remove');
+    db.close();
+    db = openDatabase(path);
+    assert.equal(
+      db.prepare("SELECT action FROM role_click_receipts WHERE interaction_id='new'").get().action,
+      'remove',
+    );
+    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 26);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('directed uncertain role clicks reconcile observed exact member state with no native role effect', async () => {
+  const { reconcileRoleClick } = await import('../src/services/rolePanels.js');
+  for (const action of ['add', 'remove']) {
+    const x = setup();
+    try {
+      x.context.rolePanels.reserveClick('click', 'g', 'member', x.role.id, action);
+      x.context.rolePanels.finishClick('click', 'uncertain');
+      if (action === 'add') x.member.roles.cache.set(x.role.id, x.role);
+      await reconcileRoleClick(x.i, x.context, 'click');
+      assert.equal(x.context.rolePanels.click('click', 'g').status, 'completed');
+      assert.equal(x.roles.length, 0);
+      assert.equal(x.s.sent.length, 0);
+      await assert.rejects(
+        () => reconcileRoleClick(x.i, x.context, 'click'),
+        /roleClickReconcileBlocked/,
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('role reconciliation blocks unknown pending foreign unsafe mismatched and concurrently changed receipts', async () => {
+  const { reconcileRoleClick } = await import('../src/services/rolePanels.js');
+  for (const kind of [
+    'unknown',
+    'pending',
+    'foreign',
+    'mismatch',
+    'actor',
+    'bot',
+    'member',
+    'dangerous',
+    'race',
+  ]) {
+    const x = setup();
+    try {
+      x.context.rolePanels.reserveClick(
+        'click',
+        kind === 'foreign' ? 'foreign' : 'g',
+        'member',
+        x.role.id,
+        kind === 'unknown' ? 'unknown' : 'add',
+      );
+      if (kind !== 'pending') x.context.rolePanels.finishClick('click', 'uncertain');
+      x.member.roles.cache.set(x.role.id, x.role);
+      if (kind === 'mismatch') x.member.roles.cache.clear();
+      if (kind === 'actor') x.actor.permissions.has = () => false;
+      if (kind === 'bot') x.bot.id = 'other';
+      if (kind === 'member') x.member.id = 'other';
+      if (kind === 'dangerous') x.role.permissions.has = () => true;
+      if (kind === 'race')
+        x.s.guild.roles.fetch = async () => {
+          x.db.prepare("UPDATE role_click_receipts SET action='remove'").run();
+          return x.role;
+        };
+      await assert.rejects(() => reconcileRoleClick(x.i, x.context, 'click'));
+      assert.notEqual(
+        x.db.prepare('SELECT status FROM role_click_receipts').get().status,
+        'completed',
+      );
+      assert.equal(x.roles.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('manager click reconciliation requires confirmation and emits private localized observed-only result', async () => {
+  const { default: command } = await import('../src/commands/reactionroles/reactionroles.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.context.localization = { locale: () => locale };
+      x.context.rolePanels.reserveClick('click', 'g', 'member', x.role.id, 'remove');
+      x.context.rolePanels.finishClick('click', 'uncertain');
+      let confirm = false;
+      x.i.options = {
+        getSubcommand: () => 'reconcileclick',
+        getBoolean: () => confirm,
+        getString: () => 'click',
+      };
+      await assert.rejects(() => command.execute(x.i, x.context), /roleClickReconcileConfirm/);
+      assert.equal(x.context.rolePanels.click('click', 'g').status, 'uncertain');
+      confirm = true;
+      await command.execute(x.i, x.context);
+      assert.equal(
+        x.replies[0].embeds[0].data.description,
+        translate(locale, 'roleClickReconciled'),
+      );
+      assert.deepEqual(x.replies[0].allowedMentions.parse, []);
+      assert.equal(x.roles.length, 0);
+    } finally {
+      x.db.close();
+    }
   }
 });

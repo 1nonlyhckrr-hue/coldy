@@ -1,30 +1,130 @@
 # Module status: local checkpoint
 
-32 top-level slash commands,133 executable paths,261 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+40 top-level slash commands,182 executable paths,506 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
 | Antinuke | Configurable audit burst alerts, trust-user exclusions, replay-safe incidents | Prevention, safe intervention/recovery, live attribution and false-positive testing |
-| AutoMod | Literal words, invite/HTTP links, spam, caps, mentions; warning record/single delete/bounded opt-in timeout | Richer policies,false-positive tuning,live limits |
+| AutoMod | Literal words, invite/HTTP links, spam, tunable caps/mentions,exact channel exclusions; warning record/single delete/bounded opt-in timeout | Richer policies,false-positive tuning,live limits |
 | Automations | Persistent offset/named-zone one-time messages,elapsed repeats,cancel/list/config | Daily/weekly wall-clock timezone recurrence,richer tasks |
-| Autoresponder | Exact/literal keyword create/edit/delete/config, cooldown, replay guard | Broader reference equivalence and live Message Content behavior |
-| CustomRole | Safe existing-role mapping, eligibility gate, explicit self claim/release | Self-created role/customization, other-member assignment where authorized |
+| Autoresponder | Exact/literal keyword create/edit/delete/config/preview/pause-resume, cooldown, replay guard | Broader reference equivalence and live Message Content behavior |
+| CustomRole | Safe existing-role mapping, eligibility gate, explicit self claim/release; opt-in unassigned zero-permission self role creation plus explicit claimown/releaseown | Created-role customization/assignment-case reconciliation, other-member assignment where authorized |
 | Fun | 8-ball,coin,dice,choice,optional truth/dare,solo RPS | More reviewed safe games, multiplayer state if requested, external-media source vetting |
 | General | Help,about,ping,uptime,server/user info,settings | Richer reference parity, translated slash/help metadata |
 | Giveaway | Persistent starts/draws/rerolls/list/config, entrant button, validated winners | Full eligibility/config/retention/reference scope, live buttons and restart tests |
 | Leaderboard | Opt-in retained message metrics, exclusions, stats/top/self-delete/personal opt-out/admin count erasure | Voice/invite tracking, rewards, rewards and richer data export controls |
-| Logging | Configured case/action logs and six opt-in member/role/channel metadata events | Message/server/update event coverage, retention/privacy controls |
-| Moderation | Single-member warns/timeouts/kick/ban/unban, case logs, exact-ID preview/confirmed bounded purge | Broader confirmed moderation operations and reference parity |
+| Logging | Configured case/action logs and eight opt-in member/role/channel metadata events | Message/server/update event coverage, retention/privacy controls |
+| Moderation | Single-member warns/timeouts/kick/ban/unban, case logs, exact-ID preview/confirmed bounded purge,confirmed single-text-channel slowmode,confirmed single-member nickname update/reset | Broader confirmed moderation operations and reference parity |
 | Music | Prepared tested queue/direct-audio adapter core, protocol/source/provider research; no activation | No executable Music path yet; actual rights-cleared catalog and free node/source rights, queue/adapter/DAVE live validation,24/7 VC behavior |
 | Permit | Additive persistent per-command user/role restrictions, recovery exemptions | Full channel/subcommand trust policy, reference-specific behavior |
 | ReactionRoles | Safe single/multi button panel create/list/disable, self add/remove | Reaction variants/exclusive groups/panel edit/reconciliation |
 | Ticket | Config/panel/open/claim/close/reopen/private TXT transcripts,stored-content retention/deletion | HTML/multiple categories/user access management/native delete/reconciliation |
-| Utility | Avatar/public banner/role flags/current boosts/native polls/explicit same-channel AFK/role+emoji lists/user/server info/bot stats | Other verified practical utilities and richer inputs |
+| Utility | Avatar/public banner/role flags/current boosts/native polls/explicit same-channel AFK/role+emoji+sticker lists/current emoji info/approximate counts/user/server info/bot stats | Other verified practical utilities and richer inputs |
 | Vanityroles | Current primary-guild identity manual self-refresh reward | Automatic tag update tracking, announcement behavior, uncertain-grant repair |
 | Voice | Six single-member server voice actions, native access/case checks | Safe bulk/channel controls, voice role events |
 | VoiceMaster | Explicit private owner channel create/config/rename/limit/empty close/observed-state repair/confirmed empty-channel lock-unlock | Join-to-create/invite access/transfer/safe orphan cleanup |
-| Welcomer | Persistent welcome/goodbye text templates, events, locale defaults | Richer image/embed options, setup previews/live gateway verification |
+| Welcomer | Persistent welcome/goodbye text templates, events, locale defaults, private template preview, shared welcome/goodbye embed color,confirmed localized template reset | Image/thumbnail/title customization, live gateway/visual verification |
 
-The188-test source checkpoint is published at https://github.com/1nonlyhckrr-hue/coldy. Final head5a06a3f passed Node22/24 CI: https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38081947689. All190 source files byte-verified against the audited local tree.13 normal commits, original history preserved; temporary archive/publisher removed. This is still not a live release.
+The261-test source checkpoint is published at https://github.com/1nonlyhckrr-hue/coldy,commit afa3f4c. Node22/24 CI passed: https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38085474691. All223 source archive files matched the then-public Git blob hashes;the two workflows are preserved separately. Permanent manual publisher verifies exact archive SHA,paths,size,tests and inventory before one normal source commit. Temporary transfer release/tag removed. Original history preserved. This is still not a live release.
 
 Cross-module release gates: native live Discord permissions/hierarchy/rate limits, slash/buttons/menus/visual embeds, startup/restarts under real gateway events, current token/host setup, data retention/export/deletion and operator reconciliation for uncertain side effects. Never test or deploy against unrelated services. Local coverage percentage is not project completion percentage. No paid component or uptime claim.
+
+Shared output-channel validator verifies freshly fetched member identity against current application bot and member guild before resolving output permissions. Channel checks remain forced/exact. This is local regression coverage across existing delivery paths,not live Discord acceptance.
+
+GuildTag setup/reset requires exact forced caller/guild authority. Setup forces exact selected role then refreshes caller and application bot identity/hierarchy. Self refresh verifies exact current member/application bot guild identities before any grant case/reservation or effect. Unknown identity and unresolved grant behavior stay fail-closed. Current local tests444;native acceptance still pending.
+
+Antinuke commands force exact current caller/guild authority. Enable rechecks caller after forced destination validation,then verifies exact application bot with current ViewAuditLog and runtime before consent/config write. Trust validates target member guild and rereads caller authority after lookup;removing departed trusted IDs still needs no target lookup. Alert-only scope unchanged.
+
+Avatar/userinfo now force exact public-user fetch before private output instead of stale interaction users. Userinfo validates native username/bot/date and escapes username formatting. No membership/online-state inference or extra private fields. Current local regression444tests;native acceptance pending.
+
+Serverinfo forces exact current guild with_counts,escaped current name/ID and explicitly approximate member count. No stale guild memberCount fallback,member census,presence/bot split or enumeration. Local suite444;native acceptance pending.
+
+Welcomer requires exact current caller/member guild/interaction guild authority;channel/enable/goodbye/test repeat caller authority after destination validation before saving consent or sending test. Destination/runtime/config-race guards retained. Local suite444;native acceptance pending.
+
+Config view/language independently force current caller identity/member guild/interaction guild and Manage Server before disclosure/mutation instead of relying only on dispatch/default permissions. Unknown subcommands no longer fall through to view. Private locale behavior preserved. Current local suite444,native acceptance pending.
+
+Logging channel-save repeats exact current admin authority after destination lookup. Explicit test logs repeat it after native validation before send via an optional internal delivery guard;ordinary event/action delivery stays governed by configured logging consent. Authority loss causes no save/test send. Local suite444,native acceptance pending.
+
+Giveaway management and creation require exact caller/member guild/interaction guild. Create repeats current management authority after destination/optional role lookups before reserve/send;leave rejects foreign current member without entry deletion. Manual end/reroll now repeats current admin authority before storing draw and before publishing;broader live eligibility review remains a release gate. Local suite444.
+
+Giveaway runner force-fetches exact guild and verifies each entrant member guild. Manual end/reroll rechecks admin authority after eligibility awaits before draw and after message lookup before edit;authority loss after stored draw leaves ending record/winners preserved. Scheduled deadline draws retain configured workflow without a manual actor. Buttons verify current member guild. Local suite444;native acceptance pending.
+
+Roleinfo escapes current role name and validates native name,color,position and managed values. Boostcount rejects negative/unsafe counts and tiers outside0-3. No effective-member permissions/boost availability inference. Local suite444;native acceptance pending.
+
+Metadata lists validate exact row IDs,names,role positions and emoji animation fields before sorting/output;unverifiable values never become guessed labels or malformed lists. Emoji static/animated labels follow stored locale. Current local suite444,native acceptance pending.
+
+AutoMod enable checks exact current application bot/guild for destructive-action prerequisites,then repeats caller authority and runtime before enabling. Role exemption forces exact selected role and refreshes caller after lookup. Local444tests,native false-positive/permission acceptance pending.
+
+`automod removepolicy kind subject-id confirm:true` removes only one exact stored ignored-channel/exempt-role ID,including deleted subjects. Current exact admin required,no native subject lookup;other policy/rules/action/enabled state unchanged. Missing record no mutation,private removed0/1 result.483localtests,38top-level/168paths,SQLite25;native acceptance pending.
+
+Giveaway activation requires exactly one pending reservation and nonempty native message identity. Accepted send without identity becomes uncertain immediately and source remains nonreplayable. Missing/nonpending activation cannot silently report success.483 local tests,SQLite25;native acceptance pending.
+
+Role panel publication completion requires exactly one pending reservation and returned message identity. Accepted send lacking identity immediately marks uncertain;source remains nonreplayable. Missing/nonpending completion rejects.483 localtests,SQLite25;native acceptance pending.
+
+Role panel publication reads forced current actor/bot after destination/role lookups and requires exact caller/application/guild identities plus app ManageRoles before reservation/send. Safe role/hierarchy validation uses that latest authority.483 localtests,SQLite25;native acceptance pending.
+
+Ticket open activation and panel publication completion require exactly one creating/pending record with returned native channel/message identity. Missing/nonpending completion rejects. Accepted panel send lacking identity becomes uncertain immediately,source cannot replay.483 localtests,SQLite25;native acceptance pending.
+
+Ticket open requires exact interaction/member guild and refreshes owner after configuration lookups. Native app bot must match current guild client identity and guild before ticket permissions/privacy work, including transcript reads and state changes.483 localtests;live Discord remains unverified.
+
+Ticket manager commands enforce current exact actor/member/interaction guild and Manage Server permission. Setup rechecks after native category/role validation;panel rechecks after destination validation and confirms config still exists before reserve/send.483 localtests;native Discord acceptance pending.
+
+Ticket transcript read,close/reopen and stored-snapshot forgetting revalidate authority after native channel/appbot lookups. Snapshot/state equality checked before read or mutation. Close/reopen use freshly revalidated channel for overwrite changes.483 localtests;native Discord acceptance pending.
+
+CustomRole manager map/unmap/required/clear/creation/creations validate exact current actor/member/interaction guild. Map refreshes actor and exact appbot after role lookup before hierarchy/save;required role repeats current manager check before gate save.483 local tests;native acceptance pending.
+
+CustomRole member creation refreshes member/appbot after eligibility role lookup and rechecks creation-enabled policy before reservation/native create. Gate loss,foreign member/bot,permission loss or disabled policy stop before reservation.483 local tests;native acceptance pending.
+
+Created-role self claim resolves optional eligibility role first,then force-fetches current member/appbot/owned role for gate possession,safe role and hierarchy before case/effect. Policy/record recheck retained;release remains possible without eligibility.483 local tests;native acceptance pending.
+
+Mapped CustomRole claim/release require exact member/appbot/interaction guild. Claim resolves optional gate before current member/bot/mapped-role fetch;config reread precedes idempotent success and effect.483 local tests;native acceptance pending.
+
+CustomRole uncertain creation reconcile fetches observed role before current manager/appbot authority and hierarchy. Loss during role lookup keeps uncertain record unchanged,no native mutation.483 local tests;native acceptance pending.
+
+Repository made PRIVATE October11,2026 at owner request,verified in GitHub settings and visually on repo header. Existing checkpoint/history unchanged. No future public upload/share is authorized by earlier publication permission.
+
+VoiceMaster creation observation/activation require nonempty native channel identity and exactly one creating reservation. Missing identity after accepted create becomes uncertain and cannot replay.483 local tests;native acceptance pending.
+
+VoiceMaster setup forces exact selected native category then fetches current exact manager/appbot/guild identities before permission/config write.483 local tests;native acceptance pending.
+
+VoiceMaster open/edit fetch destination first then current owner/appbot;exact member/appbot/interaction guild enforced. Open also checks exact configured category ID before reservation.483 local tests;native acceptance pending.
+
+VoiceMaster reconcile verifies current exact owner/appbot/guild and ManageChannels after native tracked-channel lookup,including explicit unknown-channel404. Authority loss keeps stored status unchanged and creates no reconciliation case.483 local tests;native acceptance pending.
+
+`/voicemaster status` privately inspects caller-only stored unresolved ownership,record/channel ID and localized state. Explicitly not live existence/access/occupancy;no native lookup,mutation,case or readiness dependency.483 local tests,38 top-level/177 paths.
+
+`/welcome title kind [text]` sets independent static welcome/goodbye embed titles1-120chars,no @/control characters. Omit text resets selected title;body templates,color,destination,enabled consent unchanged. Preview/test/member events apply kind title verbatim,default Luna footer retained.483 local tests,38 top-level/177 paths;native pixels pending.
+
+`/autoresponder cooldown trigger seconds` edits only elapsed cooldown10-3600seconds for exact normalized stored trigger. Current manager required;response/mode/enabled/last-send/replay history preserved,no native send.483 local tests,38 top-level/177 paths.
+
+`/autoresponder mode trigger mode` edits one exact normalized stored trigger to literal exact/keyword matching only. Current manager required;response,cooldown,enabled,last-send and replay history preserved,no native send.483 local tests,38 top-level/177 paths.
+
+Autoresponder completion requires exactly one reserved delivery. Accepted send must return nonempty message identity;missing identity becomes uncertain without replay.483 local tests;native acceptance pending.
+
+Automation accepted send requires nonempty native identity;missing identity pauses repeat uncertain,no replay.Outcome finalization is transactional,boolean-only and requires exactly one sending reservation.483 local tests;native acceptance pending.
+
+Native poll success finalization requires nonempty string message identity;malformed accepted IDs become uncertain and cannot replay.483 local tests;native acceptance pending.
+
+`/ticket status` private caller-only ten latest stored records/status/channel IDs. No transcript/native lookup/mutation or claim of current existence/access.483 local tests,38 top-level/177 paths.
+
+`/servericon` force-fetches exact current guild and native CDN icon link1024,or explicit null/no icon. Rejects unknown/malformed hash/foreign/noncdn output,private localized no-ping,no member enumeration/state.483 local tests,39 top-level/177 paths;native pixels pending. Source:https://docs.discord.com/developers/resources/guild
+
+`/serverbanner` force-fetches exact current guild and native CDN banner link1024,or explicit null/no banner. Private localized no-ping,no member enumeration/state. Icon animated GIF confirmed against installed REST CDN.483 local tests,40 top-level/177 paths;native pixels pending. Source:https://docs.discord.com/developers/resources/guild
+
+`/permit status command` checks caller-only current stored denies after exact forced member/guild lookup,with owner/recovery exemption. No subjects disclosed,no mutation or claim of Discord permissions/hierarchy/cooldown/availability. Top-level default/static manager gate removed so status is reachable;all management/list branches retain forced exact ManageGuild checks.483 local tests,40top/177paths.
+
+Channel-update metadata logging is opt-in through `/logging event kind:channelupdate`. It compares complete same-guild channel snapshots of name/type/raw position/parent/NSFW flag, but outputs only channel ID, localized event label and unknown actor. Topic/content/overwrites are neither output nor receipt inputs. Unchanged, incomplete and mismatched snapshots fail closed. Text-like channels with a native NSFW field are covered; voice/category snapshots lacking that field are intentionally skipped. Ephemeral HMAC transition receipts suppress same-process duplicate events without storing private channel names. No promise of deduplication across process restart. 485 local tests pass; 40 top-level/177 installed paths, SQLite25. Live Discord acceptance remains pending.
+
+Metadata event delivery completion now transitions exactly one reserved receipt only. Terminal receipt states cannot be rewritten and missing receipts cannot report success. Native send acceptance without a nonempty string message ID becomes uncertain immediately and remains nonreplayable; accepted native identity completes the receipt. 488 local tests pass,40 top-level/177 paths,SQLite25;live Discord acceptance pending.
+
+`/reactionroles receipts member` lets exact current ManageRoles managers privately inspect up to ten unresolved stored click receipts for one member in this guild. Shows only stored interaction/role IDs and receipt status, explicitly not current role possession or desired add/remove direction. Does not retry, clear, reconcile or change roles/panels. Terminal receipts excluded;newest ten bounded;foreign guild/member isolation checked. English/Hindi/Hinglish and permission regressions included. 491 local tests pass,40 top-level/178 paths,SQLite25;native acceptance pending.
+
+`/automod wordlist [page]` privately shows twenty stored normalized literal phrases per page (page1-5),total count and an honest storage-only description. Exact current ManageGuild caller required. Markdown escaped,control characters removed from presentation only,and mentions disabled. No rule enablement,phrase mutation,message event dependency,native subject lookup or moderation effect. Foreign-guild isolation and three locales covered. 494 local tests pass,40 top-level/179 installed paths,SQLite25;native acceptance pending.
+
+SQLite26 stores role click action direction before native effect. New native clicks record exact add/remove intent;schema25 legacy receipts migrate as unknown without guessing or clearing blocks. Pending-to-uncertain recovery preserves intent. `/reactionroles receipts` now displays localized stored action and distinguishes intent from confirmed completion. No reconciliation,clearing or retry added. SQLite reopen/migration preservation and pre-effect direction tests included. 497 local tests pass,40 top-level/179 paths;native acceptance pending.
+
+`/reactionroles reconcileclick interaction-id confirm:true` resolves one directed uncertain receipt only when forced exact same-guild member role possession already matches stored add/remove intent. Role must remain reviewed safe and below current exact manager/appbot hierarchy;manager/appbot/guild identities and permissions refreshed after subject lookups. Stored snapshot compare-and-set prevents concurrent change resolution. Unknown legacy direction,pending/terminal/foreign/missing receipts and mismatched observed role state refuse. No native role effect,no retry. Result says observed state matches intent,not that the old request succeeded. Three locale/confirmation/safety/race regressions included. 500 local tests pass,40 top-level/180 paths,SQLite26;native acceptance pending.
+
+`/automation reschedulezone id local timezone` moves one pending schedule to an explicitly supplied local instant in a named zone. Reuses DST ambiguity/gap rejection;invalid zone/time/bounds,missing/foreign/nonpending records refuse. Resolves zone once,not recurring wall-clock behavior. Text,destination,elapsed repeat,replay metadata and status unchanged. Exact current manager required,no destination lookup/send. Three locales and failure-preservation regressions included. 503 local tests pass,40 top-level/181 paths,SQLite26;native acceptance pending.
+
+`/automation destination id channel` moves one pending schedule to a forced validated output channel,then refreshes exact current manager authority. Stored snapshot compare-and-set refuses concurrent claim,cancel,text/time/interval changes. Text,time,elapsed repeat,status and replay metadata remain unchanged;no send now. Missing/nonpending/foreign/unavailable channel and midlookup permission loss refuse. Future delivery still rechecks access. 506 local tests pass,40 top-level/182 paths,SQLite26;native acceptance pending.

@@ -46,7 +46,34 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('removeexclude')
+      .setDescription(
+        'Manage Server: remove one exact stored exclusion,including deleted channels.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact excluded channel/category ID')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removing this stored exclusion')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('config').setDescription('View tracking status and excluded IDs.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('position')
+      .setDescription('Show only your retained message rank and count,UTC window.')
+      .addStringOption(period),
   )
   .addSubcommand((s) => s.setName('stats').setDescription('Show your own retained message counts.'))
   .addSubcommand((s) =>
@@ -88,9 +115,18 @@ export default {
       t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId);
     let text;
-    if (['enable', 'disable', 'exclude', 'eraseuser'].includes(sub)) {
-      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-      if (!actor.permissions.has(P.ManageGuild)) throw new UserError('userPermission');
+    if (['enable', 'disable', 'exclude', 'removeexclude', 'eraseuser'].includes(sub)) {
+      const authorize = async () => {
+        const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+        if (
+          i.guild.id !== i.guildId ||
+          actor?.id !== i.user.id ||
+          actor.guild?.id !== i.guildId ||
+          !actor.permissions?.has(P.ManageGuild)
+        )
+          throw new UserError('userPermission');
+      };
+      await authorize();
       if (sub === 'enable') {
         if (!c.config.messageEventsEnabled) throw new UserError('responderRuntimeDisabled');
         c.messageRanks.enable(i.guildId, true);
@@ -98,6 +134,14 @@ export default {
       } else if (sub === 'disable') {
         c.messageRanks.enable(i.guildId, false);
         text = t('rankDisabled');
+      } else if (sub === 'removeexclude') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('rankExcludeConfirm');
+        const id = i.options.getString('channel-id', true);
+        if (!/^\d{17,20}$/.test(id)) throw new UserError('rankChannelInvalid');
+        const existed = c.messageRanks.config(i.guildId).excluded.includes(id);
+        if (existed) c.messageRanks.exclude(i.guildId, id, false);
+        text = t('rankExcludeRemoved', { count: existed ? 1 : 0 });
       } else if (sub === 'eraseuser') {
         if (i.options.getBoolean('confirm', true) !== true) throw new UserError('rankEraseConfirm');
         const user = i.options.getUser('user', true);
@@ -106,9 +150,10 @@ export default {
         text = t('rankUserErased', { user: user.id, count });
       } else {
         const selected = i.options.getChannel('channel', true),
-          channel = await i.guild.channels.fetch(selected.id);
+          channel = await i.guild.channels.fetch(selected.id, { force: true });
         if (
           !channel ||
+          channel.id !== selected.id ||
           channel.guildId !== i.guildId ||
           ![
             ChannelType.GuildText,
@@ -117,6 +162,7 @@ export default {
           ].includes(channel.type)
         )
           throw new UserError('rankChannelInvalid');
+        await authorize();
         c.messageRanks.exclude(i.guildId, channel.id, i.options.getBoolean('excluded', true));
         text = t('rankSaved');
       }
@@ -125,6 +171,14 @@ export default {
       text = t('rankConfig', {
         status: t(cfg.enabled ? 'enabled' : 'disabled'),
         excluded: cfg.excluded.join(', ') || '-',
+      });
+    } else if (sub === 'position') {
+      const window = i.options.getString('period') ?? 'week';
+      const r = c.messageRanks.position(i.guildId, i.user.id, window);
+      text = t(r.position === null ? 'rankPositionEmpty' : 'rankPosition', {
+        position: r.position,
+        total: r.total,
+        period: t('rankWindow_' + window),
       });
     } else if (sub === 'stats') {
       const counts = c.messageRanks.stats(i.guildId, i.user.id);

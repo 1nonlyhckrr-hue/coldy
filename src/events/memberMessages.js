@@ -8,12 +8,23 @@ export function createMemberMessageHandler(context, kind) {
       const enabled = kind === 'welcome' ? config.enabled : config.goodbyeEnabled;
       if (!enabled || !config.channelId) return;
       const channel = await validateOutputChannel(member.guild, config.channelId);
-      const content = renderGuildTemplate(config, kind, member, settings.language);
+      const latest = context.guildConfig.get(member.guild.id);
+      const current = latest.welcome;
+      if (
+        !(kind === 'welcome' ? current.enabled : current.goodbyeEnabled) ||
+        current.channelId !== config.channelId
+      )
+        return;
+      const content = renderGuildTemplate(current, kind, member, latest.language);
       // Only the new member may be mentioned, never roles or everyone.
       await channel.send(
         lunaPayload(
           { content, allowedMentions: { parse: [], users: kind === 'welcome' ? [member.id] : [] } },
-          { locale: settings.language },
+          {
+            locale: latest.language,
+            color: current.color,
+            title: kind === 'goodbye' ? current.goodbyeTitle : current.title,
+          },
         ),
       );
     } catch {

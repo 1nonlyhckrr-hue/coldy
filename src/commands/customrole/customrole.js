@@ -4,10 +4,26 @@ import {
   PermissionFlagsBits as P,
   MessageFlags,
 } from 'discord.js';
-import { customRoleEffect } from '../../services/customRoles.js';
+import {
+  customRoleEffect,
+  createOwnRole,
+  ownRoleEffect,
+  reconcileCreation,
+} from '../../services/customRoles.js';
 import { validateSelfRole } from '../../services/rolePanels.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
+async function requireManager(i) {
+  if (!i.guildId || i.guild?.id !== i.guildId) throw new UserError('roleActorPermission');
+  const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+  if (
+    actor?.id !== i.user.id ||
+    actor.guild?.id !== i.guildId ||
+    !actor.permissions?.has(P.ManageRoles)
+  )
+    throw new UserError('roleActorPermission');
+  return actor;
+}
 const name = (o) =>
   o
     .setName('name')
@@ -42,6 +58,79 @@ const data = new SlashCommandBuilder()
         o.setName('role').setDescription('Omit to allow all server members to claim mapped roles.'),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('clear')
+      .setDescription(
+        'Manage Roles:remove all mappings,leaving native roles,assignments and eligibility unchanged.',
+      )
+      .addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Confirm mapping removal only').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('creation')
+      .setDescription('ManageRoles:opt in/out of unassigned zero-permission member role creation.')
+      .addBooleanOption((o) =>
+        o
+          .setName('enabled')
+          .setDescription('Enable member role creation,cap50 per guild')
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm native role creation opt-in policy')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('createown')
+      .setDescription('Create one unassigned zero-permission role for yourself,if manager enabled.')
+      .addStringOption((o) =>
+        o
+          .setName('label')
+          .setDescription('Role name1-32chars,no @')
+          .setMaxLength(32)
+          .setMinLength(1)
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o.setName('hex').setDescription('Optional6hex RGB digits').setMinLength(6).setMaxLength(6),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('reconcile')
+      .setDescription('ManageRoles:verify observed uncertain creation,no native changes.')
+      .addUserOption((o) => o.setName('member').setDescription('Creation owner').setRequired(true))
+      .addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Confirm stored status repair only').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('claimown')
+      .setDescription('Assign your verified zero-permission created role to yourself.'),
+  )
+  .addSubcommand((s) =>
+    s.setName('releaseown').setDescription('Remove your created role from yourself,no deletion.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('created')
+      .setDescription('Privately inspect your stored creation record,no native role changes.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('creations')
+      .setDescription('ManageRoles:private paged creation records,status and IDs only.')
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-5,ten records each').setMinValue(1).setMaxValue(5),
+      ),
+  )
   .addSubcommand((s) => s.setName('list').setDescription('Show mapped names and eligibility role.'))
   .addSubcommand((s) =>
     s
@@ -65,18 +154,52 @@ export default {
       locale = c.localization.locale(i.guildId),
       t = (key, params) => c.localization.t(i.guildId, key, params);
     let text;
-    if (['map', 'unmap', 'required'].includes(sub)) {
-      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
-      if (!actor.permissions.has(P.ManageRoles)) throw new UserError('roleActorPermission');
-      if (sub === 'map') {
+    if (['map', 'unmap', 'required', 'clear', 'creation', 'creations'].includes(sub)) {
+      let actor = await requireManager(i);
+      if (sub === 'creations') {
+        const page = i.options.getInteger('page') ?? 1;
+        const result = c.customRoles.creations(i.guildId, page);
+        text =
+          t('customCreationRecords', { page, count: result.count }) +
+          '\n' +
+          (result.rows
+            .map((r) =>
+              t('customCreationRecord', {
+                owner: r.owner_id,
+                role: r.role_id ?? t('customCreationNoRole'),
+                status: t('customCreationState_' + r.status),
+              }),
+            )
+            .join('\n') || t('customEmpty'));
+      } else if (sub === 'creation') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('customCreationConfirm');
+        c.customRoles.setCreation(i.guildId, i.options.getBoolean('enabled', true));
+        text = t('customCreationSaved');
+      } else if (sub === 'map') {
         const selected = i.options.getRole('role', true),
-          [bot, role] = await Promise.all([
-            i.guild.members.fetchMe({ force: true }),
-            i.guild.roles.fetch(selected.id),
-          ]);
+          role = await i.guild.roles.fetch(selected.id, { force: true });
+        const [current, bot] = await Promise.all([
+          requireManager(i),
+          i.guild.members.fetchMe({ force: true }),
+        ]);
+        actor = current;
+        if (
+          !i.client?.user?.id ||
+          bot?.id !== i.client.user.id ||
+          bot.guild?.id !== i.guildId ||
+          !i.appPermissions?.has(P.ManageRoles)
+        )
+          throw new UserError('roleBotPermission');
+        if (role?.id !== selected.id) throw new UserError('roleInvalid');
         validateSelfRole(role, bot, actor, i.guild);
         c.customRoles.map(i.guildId, i.options.getString('name', true), role.id);
         text = t('customSaved');
+      } else if (sub === 'clear') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('customClearConfirm');
+        const count = c.customRoles.clearMappings(i.guildId);
+        text = t('customCleared', { count });
       } else if (sub === 'unmap') {
         const removed = c.customRoles.unmap(i.guildId, i.options.getString('name', true));
         if (!removed) throw new UserError('customMappingMissing');
@@ -85,15 +208,54 @@ export default {
         const selected = i.options.getRole('role');
         let role = null;
         if (selected) {
-          role = await i.guild.roles.fetch(selected.id);
-          if (!role || role.guild.id !== i.guildId || role.id === i.guildId || role.managed)
+          role = await i.guild.roles.fetch(selected.id, { force: true });
+          if (
+            !role ||
+            role.id !== selected.id ||
+            role.guild.id !== i.guildId ||
+            role.id === i.guildId ||
+            role.managed
+          )
             throw new UserError('customRoleInvalid');
+          actor = await requireManager(i);
           if (actor.id !== i.guild.ownerId && actor.roles.highest.comparePositionTo(role) <= 0)
             throw new UserError('roleActorHierarchy');
         }
         c.customRoles.setRequired(i.guildId, role?.id ?? null);
         text = t('customSaved');
       }
+    } else if (sub === 'reconcile') {
+      const result = await reconcileCreation(i, c, {
+        ownerId: i.options.getUser('member', true).id,
+        confirm: i.options.getBoolean('confirm', true),
+      });
+      text = t('customReconciled', { id: result.roleId });
+    } else if (['claimown', 'releaseown'].includes(sub)) {
+      const result = await ownRoleEffect(i, c, { claim: sub === 'claimown' });
+      text = t(
+        result.changed
+          ? sub === 'claimown'
+            ? 'customClaimed'
+            : 'customReleased'
+          : 'customAlready',
+      );
+    } else if (sub === 'created') {
+      const row = c.customRoles.created(i.guildId, i.user.id);
+      text = row
+        ? t('customCreationRecord', {
+            owner: i.user.id,
+            role: row.role_id ?? t('customCreationNoRole'),
+            status: t('customCreationState_' + row.status),
+          })
+        : t('customCreationNoRecord');
+    } else if (sub === 'createown') {
+      const hex = i.options.getString('hex');
+      if (hex !== null && !/^[a-fA-F0-9]{6}$/.test(hex)) throw new UserError('customCreationInput');
+      const result = await createOwnRole(i, c, {
+        name: i.options.getString('label', true),
+        color: hex === null ? 0 : parseInt(hex, 16),
+      });
+      text = t('customCreatedUnassigned', { id: result.roleId });
     } else if (sub === 'list') {
       const rows = c.customRoles.list(i.guildId);
       text =

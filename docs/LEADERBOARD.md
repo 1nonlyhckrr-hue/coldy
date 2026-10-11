@@ -1,6 +1,6 @@
 # Message leaderboard
 
-Seven paths: `/leaderboard enable`, `disable`, `exclude channel excluded`, `config`, `stats`, `top [period] [page]`, `resetmine`.
+Twelve paths: `/leaderboard enable`, `disable`, `exclude channel excluded`, `config`, `stats`, `top [period] [page]`, `resetmine`, `optout`, `optin`, `eraseuser user confirm`, `position [period]`, `removeexclude channel-id confirm:true`.
 
 Off by default. Current Manage Server needed for enable/disable/exclude. Requires runtime ENABLE_MESSAGE_EVENTS; current shared message runtime also enables Message Content for AutoMod/autoresponder, but this module never reads or stores message content. Only future MessageCreate events count; no history import, edited-message increment, delete decrement or lifetime-total claim. Messages rejected/deleted by AutoMod can count because metrics record received events before moderation. This is count, not quality or verified participation.
 
@@ -10,10 +10,16 @@ Today means current UTC date; week means today plus previous six UTC dates, not 
 
 SQLite v11 config/daily buckets/replay guards. Atomic count/seen writes; storage failures contained and no message content logged. Shared localized EN/HI/Hinglish embeds, metadata English. No invite tracking, voice durations, rewards, manual count inflation, destructive whole-guild reset or retrospective verification in this batch.
 
-Ten new tests,150 project tests pass: opt-in/replay/guild isolation, excluded bots/webhooks/stale/ancestors, calendar ranges/ties/pages, cleanup/self-delete, contribution cap, transaction failure containment, all seven paths/locales, current authorization and restart durability. No live Discord/visual checks. Reference rows remain separate.
+Initial checkpoint tests covered: opt-in/replay/guild isolation, excluded bots/webhooks/stale/ancestors, calendar ranges/ties/pages, cleanup/self-delete, contribution cap, transaction failure containment, all seven paths/locales, current authorization and restart durability. No live Discord/visual checks. Reference rows remain separate.
 
 ## Personal privacy and admin count deletion
 
 `optout` atomically erases only your retained counts in this server and stores your server+user ID opt-out preference. Future messages are ignored until `optin`; server enable/disable changes do not override personal preference. `optin` allows future counts only if server tracking is enabled; no history restoration or backfill. `resetmine` remains count-only reset, not opt-out. Minimal preference identity stays saved while opted out. This is not full identity erasure, and does not change unrelated bot modules.
 
-`eraseuser user confirm` requires current Manage Server plus true confirmation; clears this user's daily rows here, not their privacy preference or other-server data. It does not stop future counts unless the user opted out. Existing message replay keys remain until normal expiry and hold message IDs+times only. SQLitev17 adds personal preference table. Four new tests, latest209 project tests pass including subsequent VoiceMaster repair. No live gateway verification.
+`eraseuser user confirm` requires current Manage Server plus true confirmation; clears this user's daily rows here, not their privacy preference or other-server data. It does not stop future counts unless the user opted out. Existing message replay keys remain until normal expiry and hold message IDs+times only. SQLitev17 adds personal preference table. Privacy and restart tests pass in the current suite. No live gateway verification.
+
+`/leaderboard position [period]` privately shows only caller rank/count for current UTC today/week/retained window,using same descending count/user-ID ascending tie ordering as top. No other member IDs/counts returned,no quality/participation claim. Missing count explicit state.379 local tests,SQLite25,native acceptance pending.
+
+Admin enable/disable/exclude/eraseuser force-fetch the exact caller and verify caller ID,member guild,current Manage Server and interaction guild identity before writes. Exclude force-fetches the exact selected channel and repeats caller authority after that lookup; no cache/foreign/substitute-channel fallback. Current full local suite:379 tests;native acceptance remains unverified.
+
+`removeexclude channel-id confirm:true` requires current exact Manage Server authority and removes only one exact stored channel/category exclusion,including deleted destinations. No native target lookup,tracking toggle,other exclusion/guild changes. Private localized removed0/1 result;missing record no mutation.415 local tests,38 top-level/166paths,SQLite25;native acceptance pending.

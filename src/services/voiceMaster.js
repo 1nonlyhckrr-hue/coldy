@@ -85,16 +85,22 @@ export class VoiceMaster {
     })();
   }
   created(id, channelId) {
-    this.db
+    if (typeof channelId !== 'string' || !channelId)
+      throw new TypeError('Missing voice channel identity');
+    const result = this.db
       .prepare("UPDATE voice_master_channels SET channel_id=? WHERE id=? AND status='creating'")
       .run(channelId, id);
+    if (result.changes !== 1) throw new Error('Voice reservation not creating');
   }
   activate(id, channelId) {
-    this.db
+    if (typeof channelId !== 'string' || !channelId)
+      throw new TypeError('Missing voice channel identity');
+    const result = this.db
       .prepare(
         "UPDATE voice_master_channels SET channel_id=?,status='active' WHERE id=? AND status='creating'",
       )
       .run(channelId, id);
+    if (result.changes !== 1) throw new Error('Voice reservation not creating');
   }
   status(id, status) {
     if (!['deleting', 'closed', 'uncertain'].includes(status))
@@ -109,6 +115,17 @@ export class VoiceMaster {
       .run();
   }
 }
+function verifyVoiceActors(i, owner, bot) {
+  if (
+    i.guild?.id !== i.guildId ||
+    owner?.id !== i.user.id ||
+    owner.guild?.id !== i.guildId ||
+    owner.user?.bot !== false
+  )
+    throw new UserError('customMemberMissing');
+  if (!i.client?.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
+    throw new UserError('vmBotPermission');
+}
 export async function openPrivateVoice(i, c) {
   requireVoiceReady(i, c);
   const key = `${i.guildId}:${i.user.id}`;
@@ -117,14 +134,18 @@ export async function openPrivateVoice(i, c) {
   try {
     const cfg = c.voiceMaster.config(i.guildId);
     if (!cfg) throw new UserError('vmNotConfigured');
-    const [owner, bot, category] = await Promise.all([
+    const category = await i.guild.channels.fetch(cfg.category_id, { force: true });
+    const [owner, bot] = await Promise.all([
       i.guild.members.fetch({ user: i.user.id, force: true }),
       i.guild.members.fetchMe({ force: true }),
-      i.guild.channels.fetch(cfg.category_id, { force: true }),
     ]);
-    if (!owner || owner.id !== i.user.id || owner.user.bot)
-      throw new UserError('customMemberMissing');
-    if (!category || category.guildId !== i.guildId || category.type !== ChannelType.GuildCategory)
+    verifyVoiceActors(i, owner, bot);
+    if (
+      !category ||
+      category.id !== cfg.category_id ||
+      category.guildId !== i.guildId ||
+      category.type !== ChannelType.GuildCategory
+    )
       throw new UserError('vmCategoryInvalid');
     if (!category.permissionsFor(owner)?.has([P.ViewChannel, P.Connect]))
       throw new UserError('vmOwnerPermission');
@@ -189,12 +210,13 @@ export async function editPrivateVoice(i, c, { action, name, limit, share }) {
   try {
     const row = c.voiceMaster.owned(i.guildId, i.user.id);
     if (!row || row.status !== 'active') throw new UserError('vmNotActive');
-    const [owner, bot, channel] = await Promise.all([
+    const channel = await i.guild.channels.fetch(row.channel_id, { force: true });
+    const [owner, bot] = await Promise.all([
       i.guild.members.fetch({ user: i.user.id, force: true }),
       i.guild.members.fetchMe({ force: true }),
-      i.guild.channels.fetch(row.channel_id, { force: true }),
     ]);
-    if (!owner || owner.id !== row.owner_id) throw new UserError('customMemberMissing');
+    verifyVoiceActors(i, owner, bot);
+    if (owner.id !== row.owner_id) throw new UserError('customMemberMissing');
     verifyPrivateVoice(channel, row, bot.id);
     if (
       !channel.permissionsFor(bot)?.has(P.ManageChannels) ||
@@ -269,13 +291,6 @@ export async function reconcilePrivateVoice(i, c, { confirm }) {
     const row = c.voiceMaster.owned(i.guildId, i.user.id);
     if (!row || !['active', 'uncertain'].includes(row.status)) throw new UserError('vmNotActive');
     if (!row.channel_id) throw new UserError('vmRepairNoId');
-    const [owner, bot] = await Promise.all([
-      i.guild.members.fetch({ user: i.user.id, force: true }),
-      i.guild.members.fetchMe({ force: true }),
-    ]);
-    if (!owner || owner.id !== row.owner_id) throw new UserError('customMemberMissing');
-    if (!bot.permissions.has(P.ManageChannels) || !i.appPermissions?.has(P.ManageChannels))
-      throw new UserError('vmBotPermission');
     let channel;
     try {
       channel = await i.guild.channels.fetch(row.channel_id, { force: true });
@@ -283,6 +298,14 @@ export async function reconcilePrivateVoice(i, c, { confirm }) {
       if (error.code === 10003 && error.status === 404) channel = null;
       else throw new UserError('vmRepairUnavailable');
     }
+    const [owner, bot] = await Promise.all([
+      i.guild.members.fetch({ user: i.user.id, force: true }),
+      i.guild.members.fetchMe({ force: true }),
+    ]);
+    verifyVoiceActors(i, owner, bot);
+    if (owner.id !== row.owner_id) throw new UserError('customMemberMissing');
+    if (!bot.permissions.has(P.ManageChannels) || !i.appPermissions?.has(P.ManageChannels))
+      throw new UserError('vmBotPermission');
     if (channel) {
       verifyPrivateVoice(channel, row, bot.id);
       if (!channel.permissionsFor(bot)?.has(P.ManageChannels))

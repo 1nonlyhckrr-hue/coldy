@@ -1,11 +1,27 @@
-# CustomRole
+# CustomRole: local checkpoint
 
-Six original paths: `/customrole map name role`, `unmap name`, `required [role]`, `list`, `claim name`, `release name`.
+Fourteen original Luna paths:map,unmap,required,clear,list,claim,release,creation,createown,created,creations,claimown,releaseown,reconcile. These are not claimed exact reference equivalents. Local tests are not live Discord acceptance.
 
-Maps existing roles to stable names, not dynamic slash commands. Names: lowercase letter first, 1-24 letters/digits/_/-. Maximum20 mappings per guild; role cannot have two mapping names. Manage Roles is fetched and checked for all config edits. Mapping validates role's current safe permission whitelist, guild, bot/actor hierarchy and bot Manage Roles. Managed roles and @everyone are refused. Eligibility gate cannot itself be a mapped self-service role; gate management respects actor hierarchy. Omitting role on required removes the gate. Gate applies to claims only, so losing eligibility doesn't prevent release of an existing mapped role.
+## Existing-role mappings
 
-Claim/release act only on the requester. Fresh member, bot and role fetch, permission whitelist rechecked on every action, bot/app Manage Roles required. Gate role must still exist and be held on claim. Already-matching state is a no-op. After asynchronous checks, mapping and claim-gate configuration are reread to refuse config races. Per-user/guild mutex blocks overlapping self-service effects. Case reservation persists before the single Discord role call; duplicate interaction IDs block repeats, uncertain API failures are not retried, and accepted-effect/storage-failure warns not to repeat. Restart never replays role changes. Discord enforces final role access/hierarchy.
+Map existing reviewed roles to stable names,not dynamic slash commands. Names:lowercase letter first,1-24 letters/digits/_/-. Maximum20 mappings/guild;one name/role. Fresh exact actor ManageRoles for config. Native role identity/guild,safe permission whitelist,bot/actor hierarchy checked. Managed roles/@everyone refused. Eligibility gate cannot overlap mapping;claims require gate,release does not. Unmap/confirmed clear remove only mapping records,not native roles/assignments/gate/cases. Unsafe edited roles remain manager-review only,even for release. No mass revoke.
 
-Unmap changes only config, not assignments. After unmap, roles remain assigned and must be removed by a moderator or by another applicable self-service system; the old name cannot release it. Unsafe role edited to gain staff permissions is refused even on release and needs moderator review. No mass revoke/delete. No new role creation, user-controlled name/color/icon edits or other-member assignment in this batch. No staff trust or native permission grants. Stored fields: guild IDs, mapping names/role IDs, eligibility role and existing effect case metadata.
+## Member-created roles
 
-Replies ephemeral, all mentions disabled, shared EN/HI/Hinglish embeds. Slash metadata remains English. Central five-second cooldown. Ten distinct new tests, 140 project tests pass: storage persistence/isolation, limits/overlap, explicit states, gate loss release, dangerous edits/permissions, mutex/duplicate/database gating, no-retry uncertainty/finalization failure, config race, all six paths and fresh admin authorization. No live Discord or pixel checks. Reference rows stay reference-only because syntax/behavior differ.
+Default disabled. Fresh manager `/customrole creation enabled confirm:true` opts in/out. `/customrole createown label [hex]` creates one UNASSIGNED role/member with explicit zero permissions,no hoist/no mentionable. Names1-32,no @/controls;color optional six hex digits. Maximum50 durable records/guild includes uncertain records. Gate applies. Exact member/bot/guild,current ManageRoles and app permission verified;reserve before native create. Returned observed ID is stored before force-fetch shape verification. Bot force-refetched post-create;current hierarchy/permission required. Completion must update exactly one pending row. Failed/unknown checks retain uncertain record and any observed ID,no automatic retry,assignment,rollback or deletion. Restart in-flight creation becomes uncertain.
+
+`created` privately shows your own record. Manager-only `creations [page]` privately pages ten records,total50:IDs/localized stored state only,no owner-authored labels. Stored state is explicitly not current native validation. Unknown role ID cannot safely be recovered by guessing names.
+
+## Explicit created-role self actions
+
+`claimown`/`releaseown` act only on requester's verified created role. Creation does not assign automatically. Fresh exact member/bot/role and guild bindings,zero permissions/unmanaged/no hoist/no mentionable/bot hierarchy required. Claim requires enabled policy/current eligibility;release does not require policy/gate. Recheck stored creation/config after async validation. Pending/uncertain own-effect case blocks further self changes pending operator review. Case reserved before native add/remove. Definitive native rejection recorded failed;unknown result uncertain;accepted effect with failed finalization leaves blocking pending state. Completed cases prevent same interaction replay. State survives SQLite reopen. No automatic retries.
+
+## Remaining gates
+
+Created-role customization and assignment-case reconciliation still absent. No role delete,other-member assignment,automatic uncertainty repair or reference parity claim. Current safety checks may block release of a role edited by managers into an unsafe state;manager must inspect/remove it. All payloads private,mentions disabled,shared EN/HI/Hinglish embeds;slash metadata English.358 distinct project tests pass,37 top-level156 installed paths,SQLite24. Native permissions/hierarchy/gateway/rate limits and actual embed pixels remain unverified. No deployment.
+
+Native source: https://docs.discord.com/developers/resources/guild . Create-role omitted permissions inherit @everyone,so Luna passes explicit0n. Add/remove member role requires ManageRoles.
+
+## Observed creation reconciliation
+
+`reconcile member confirm:true` repairs stored uncertain creation status only. Previously observed ID mandatory:no supplied/guessed attachment,missing/deleted role remains blocked. Fresh exact manager/bot/guild and ManageRoles/app permissions;exact current observed role with original name/color,zero permissions,no managed/hoist/mentionable and actor/bot hierarchy. Atomic conditional status update includes original role ID/name/color;race fails closed. No native mutations or assignment-case clearing. Policy/gate remain unchanged. Native operator acceptance still pending.

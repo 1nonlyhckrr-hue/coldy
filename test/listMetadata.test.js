@@ -20,7 +20,11 @@ function setup(locale = 'en') {
     page = 1;
   const i = {
       guildId: 'g',
-      guild: { roles: { fetch: async () => records }, emojis: { fetch: async () => records } },
+      guild: {
+        roles: { fetch: async () => records },
+        emojis: { fetch: async () => records },
+        stickers: { fetch: async () => records },
+      },
       options: { getSubcommand: () => kind, getInteger: () => page },
       deferReply: async (p) => assert.equal(p.flags, 64),
       editReply: async (p) => replies.push(p),
@@ -73,4 +77,65 @@ test('unavailable source never substituted from cache and user names escaped for
   };
   await assert.rejects(() => command.execute(s.i, s.c));
   assert.equal(s.replies.length, 1);
+});
+
+test('server stickers fetch current metadata only,paginate and omit uploader/description/image', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup(locale);
+    s.kind('stickers');
+    s.page(2);
+    let n = 0;
+    s.i.guild.stickers.fetch = async () => {
+      n++;
+      return s.records;
+    };
+    for (const r of s.records.values()) {
+      r.description = 'SECRET';
+      r.user = { id: 'PRIVATE' };
+      r.url = 'PRIVATE-IMAGE';
+    }
+    await command.execute(s.i, s.c);
+    assert.equal(n, 1);
+    const text = JSON.stringify(s.replies[0]);
+    assert(!text.includes('SECRET') && !text.includes('PRIVATE'));
+    assert.deepEqual(s.replies[0].allowedMentions.parse, []);
+    s.i.guild.stickers.fetch = async () => {
+      throw new Error('unavailable');
+    };
+    await assert.rejects(() => command.execute(s.i, s.c));
+    assert.equal(s.replies.length, 1);
+  }
+});
+test('sticker native guild identity mismatch never produces a list', async () => {
+  const s = setup();
+  s.kind('stickers');
+  s.records.values().next().value.guild.id = 'other';
+  await assert.rejects(() => command.execute(s.i, s.c), /listIdentityInvalid/);
+  assert.equal(s.replies.length, 0);
+});
+
+test('metadata lists reject unverifiable row IDs,names,role positions and emoji animation before output', async () => {
+  for (const [kind, change] of [
+    ['roles', (r) => (r.id = 'bad')],
+    ['roles', (r) => (r.name = null)],
+    ['roles', (r) => (r.position = -1)],
+    ['roles', (r) => (r.position = 1.5)],
+    ['emojis', (r) => (r.animated = null)],
+    ['stickers', (r) => (r.name = null)],
+  ]) {
+    const s = setup();
+    s.kind(kind);
+    change(s.records.values().next().value);
+    await assert.rejects(() => command.execute(s.i, s.c), /listIdentityInvalid/);
+    assert.equal(s.replies.length, 0);
+  }
+});
+test('emoji lists translate static/animated labels in stored locale', async () => {
+  const s = setup('hi');
+  s.kind('emojis');
+  s.records.values().next().value.animated = true;
+  await command.execute(s.i, s.c);
+  const text = s.replies[0].embeds[0].data.description;
+  assert(text.includes(translate('hi', 'listEmojiAnimated')));
+  assert(text.includes(translate('hi', 'listEmojiStatic')));
 });

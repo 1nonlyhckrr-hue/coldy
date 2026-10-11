@@ -67,3 +67,17 @@ await writeFile(
 console.log(
   `${commands.size} top-level,${rows.length} installed paths. Reference inventory is separate.`,
 );
+// The human-readable index is generated from the same registry as JSON/CSV.
+const { readFile } = await import('node:fs/promises');
+const index = await readFile('COMMAND_INDEX.md', 'utf8');
+const start = index.indexOf('## Installed Luna commands');
+const end = index.indexOf('## Zynrax reference inventory');
+if (start < 0 || end < start) throw new Error('Command index section boundaries missing');
+const cell = (value) => String(value).replaceAll('|', '\\|').replaceAll('\n', ' ');
+const installed =
+  `## Installed Luna commands\n\n${commands.size} top-level commands, ${rows.length} executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.\n\n| Slash path | Behavior | Tested |\n| --- | --- | --- |\n` +
+  rows
+    .map((r) => `| /${cell(r.name)} | ${cell(r.description)} | Local mock/unit only |`)
+    .join('\n') +
+  '\n\n';
+await writeFile('COMMAND_INDEX.md', index.slice(0, start) + installed + index.slice(end));
