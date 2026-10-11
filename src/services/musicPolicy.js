@@ -64,8 +64,15 @@ export function validateMusicCatalog(catalog) {
 }
 export function requireDaveNode(info, source = 'http') {
   const version = info?.version;
-  if (!version || version.major !== 4 || version.minor < 2 || version.preRelease)
+  if (
+    !version ||
+    version.major !== 4 ||
+    !Number.isInteger(version.minor) ||
+    version.minor < 2 ||
+    version.preRelease
+  )
     throw new UserError('musicNodeIncompatible');
-  if (!info.sourceManagers?.includes(source)) throw new UserError('musicHttpUnavailable');
+  if (!Array.isArray(info.sourceManagers) || !info.sourceManagers.includes(source))
+    throw new UserError('musicHttpUnavailable');
   return true;
 }

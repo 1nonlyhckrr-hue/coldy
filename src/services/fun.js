@@ -84,3 +84,24 @@ export function splitTeams(text, count, rng = randomInt) {
   values.forEach((v, n) => teams[n % count].push(v));
   return teams;
 }
+
+export function randomNumber(minimum, maximum, rng = randomInt) {
+  if (
+    !Number.isSafeInteger(minimum) ||
+    !Number.isSafeInteger(maximum) ||
+    minimum < -1000000 ||
+    maximum > 1000000 ||
+    minimum > maximum
+  )
+    throw new UserError('funNumberInvalid');
+  const index = rng(maximum - minimum + 1);
+  if (!Number.isInteger(index) || index < 0 || index > maximum - minimum)
+    throw new TypeError('Invalid random result');
+  return minimum + index;
+}
+export function sampleChoices(text, count, rng = randomInt) {
+  const values = parseChoices(text);
+  if (!Number.isInteger(count) || count < 1 || count > values.length)
+    throw new UserError('funSampleInvalid');
+  return shuffleChoices(text, rng).slice(0, count);
+}

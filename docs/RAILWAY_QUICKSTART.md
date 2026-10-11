@@ -27,3 +27,11 @@ Official hosting references:
 https://docs.railway.com/guides/volumes
 https://docs.railway.com/guides/dockerfiles
 Music protocol/source references:docs/MUSIC_CORE.md.
+
+### Candidate version checked,not automatically selected
+
+LiveREST `https://lavalink.nazha.online/v4/info` checkedOctober11,2026 15:32IST:stable4.2.2 +YouTube,passes existing strictguard. Publiclisting:https://lavalink.darrennathanael.com/SSL/Lavalink-SSL/ . Candidateonly:providertrust/publicnodeterms/privacy,SLA,websocket/client/playbackremainunverified. No config oractivation applied. Do not treat its ownbot'sfreeclaim as an audio-node SLA. Keepflagsfalse untiloperator selectsprovider and completes live isolatedtest. Never send bot token to node;necessary voice session data is still sensitive.
+
+### Offline preflight
+
+Aftersettingenv,run `npm run doctor` before registration/deploy. Failure reports fieldnames/constant diagnostics,not secrets. Verifies supportedNode,configuration shapes,registry and guildIDpresence only;no login/network/registration/provider/database/volumewrite. Passing is NOT live readiness. You muststill verifytoken/intents/permissions/provider/volume using separate isolatedactualtests.

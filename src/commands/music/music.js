@@ -4,6 +4,7 @@ import {
   MessageFlags,
   escapeMarkdown,
 } from 'discord.js';
+import { UserError } from '../../utils/errors.js';
 import { musicRequest, requireMusicVoice } from '../../services/musicRuntime.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
@@ -28,8 +29,33 @@ for (const [name, description] of [
   ['pause', 'Pause current track.'],
   ['resume', 'Resume current track.'],
   ['stop', 'Disconnect and clear this server session.'],
-  ['queue', 'Show current in-memory queue;not persistent history.'],
   ['nowplaying', 'Show current track.'],
+])
+  data.addSubcommand((s) => s.setName(name).setDescription(description));
+data.addSubcommand((s) =>
+  s
+    .setName('queue')
+    .setDescription('Show ten queued tracks per page;current track separate.')
+    .addIntegerOption((o) =>
+      o.setName('page').setDescription('Queue page1-5').setMinValue(1).setMaxValue(5),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('remove')
+    .setDescription('Remove one queued position;never stops current track.')
+    .addIntegerOption((o) =>
+      o
+        .setName('position')
+        .setDescription('Exact queue position1-50')
+        .setMinValue(1)
+        .setMaxValue(50)
+        .setRequired(true),
+    ),
+);
+for (const [name, description] of [
+  ['clear', 'Clear waiting tracks only;current track keeps playing.'],
+  ['shuffle', 'Randomize waiting tracks only;current track unchanged.'],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(description));
 data.addSubcommand((s) =>
@@ -58,12 +84,25 @@ export default {
       locale = c.localization?.locale(i.guildId) ?? c.guildConfig?.language(i.guildId) ?? 'en',
       t = (k, v) => translate(locale, k, v);
     const { channel } = await requireMusicVoice(i, c, { joining: sub === 'play' });
+    const channelId = channel.id;
     if (sub === 'play')
       await c.music.enqueueItem(
         i.guildId,
-        channel.id,
+        channelId,
         musicRequest(i.options.getString('query', true)),
         i.user.id,
+        {
+          beforeEffect: async () => {
+            const now = await requireMusicVoice(i, c, { joining: true });
+            if (now.channel.id !== channelId) throw new UserError('voiceMoved');
+          },
+        },
+      );
+    if (['remove', 'clear', 'shuffle'].includes(sub))
+      await c.music.editQueue(
+        i.guildId,
+        sub,
+        sub === 'remove' ? i.options.getInteger('position', true) : undefined,
       );
     if (sub === 'pause' || sub === 'resume') await c.music.pause(i.guildId, sub === 'pause');
     if (sub === 'stop') await c.music.stop(i.guildId);
@@ -73,17 +112,22 @@ export default {
         ? t('musicTrack', { title: clean(s.current.title), author: clean(s.current.author) })
         : t('musicNone');
     let content = t('musicHeader') + '\n' + t('musicAction_' + sub) + '\n' + current;
-    if (sub === 'queue')
+    if (sub === 'queue') {
+      const page = i.options.getInteger('page') ?? 1;
+      if (!Number.isInteger(page) || page < 1 || page > 5)
+        throw new UserError('musicQueuePosition');
+      content += '\n' + t('musicQueuePage', { page });
       content +=
         '\n' +
-        (s?.queue.length
+        (s?.queue.slice((page - 1) * 10, page * 10).length
           ? s.queue
-              .slice(0, 10)
-              .map((r, n) => `${n + 1}. ${clean(r.title)} | ${clean(r.author)}`)
+              .slice((page - 1) * 10, page * 10)
+              .map((r, n) => `${(page - 1) * 10 + n + 1}. ${clean(r.title)} | ${clean(r.author)}`)
               .join('\n')
           : t('musicQueueEmpty')) +
         '\n' +
         t('musicQueueCount', { n: s?.queue.length ?? 0 });
+    }
     if (s)
       content +=
         '\n' +

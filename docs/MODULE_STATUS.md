@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-41 top-level slash commands,193 executable paths,526 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+41 top-level slash commands,199 executable paths,556 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -140,3 +140,20 @@ SQLite26 stores role click action direction before native effect. New native cli
 `/ticket queue [page]` is Manage Server-only,private stored unresolved-ticket metadata:oldest-first ten per page1-10,excluding closed and foreign-guild records. IDs,state and claimant ID only,no owner details/transcript reads/native channel fetches or mutation. Explicitly not proof of live channel existence,access or occupancy. Forced exact current manager check,three locales,pagination,metadata projection and denial tested.518 local tests pass,40 top-level/186 paths,SQLite26;native acceptance pending. GitHub remains506/182.
 
 Music operator must explicitly configure ENABLE_MUSIC,MUSIC_RISK_ACCEPTED,LAVALINK_URL,LAVALINK_AUTH and ENABLE_VOICE_EVENTS. Public source terms/availability risk accepted by owner;no every-song or24/7 guarantee. First provider snapshot version cannot satisfy stable4.2+DAVE guard;do not bypass. Local526 tests pass,41top-level/193paths,not live verification.
+
+526/193 PUBLIC publication verified at9dcd6f64d3e62e014803387ecc186f61f786ba80;exact-headNode22/24CI38128706406green,temp source release/asset/tag removed. No deployment.
+
+Music waiting queue batch adds remove/clear/shuffle plus paginated ten-track queue with exact global positions. Current track,paused/stay state and provider unchanged;same-channel authority and bounded indices enforced. Random copy commits atomically;session lock/uncertain gates preserved. Late finished event cannot advance an uncertain session (regression fixed).533 local tests,41top-level/196paths,SQLite26;new batch local only,not live or published. Experimental music remains off with compatible free-node gap.
+Exact526published-head CI evidence:https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38128706406 . This is not533CI evidence.
+
+Music safety batch:strict integer stable4.2minor/source-array metadata refuses malformed node declarations;exact video-ID requests reject provider substitutions. Play refreshes exact voice readiness/channel/rights after delayed resolve and again after join before initial playback. Lost authority before join releases reservation;after join freezes for explicit stop with no play or automatic disconnect. Captured channel ID is immutable despite native object changes.540local tests,196paths unchanged;no token/live verification or node-guard bypass.
+
+Help usability batch:/help category/search/page filters installed registry paths only,case-insensitive literal matching,deterministic order,eight complete rows/page,no line truncation or silent page clamping. Strict bounds,unknown category and no-result localized states. All196paths reachable exactly once across pages,private/no-ping. No storage/native lookup or count inflation;descriptions remain English.544local tests,196paths unchanged,not published/native visual verified.
+
+Fun batch:/fun number minimum maximum generates unbiased inclusive integer from-1000000to1000000;singleton allowed,reverse/malformed bounds fail. /fun sample choices count picks unique1-N labels without replacement from2-20distinct supplied labels. Not member selection/assignments/invites/advice/gambling. Cryptographic RNG,private escaped3locale/no-ping output,overflow refuses rather than truncates.549localtests,41top/198paths,SQLite26;local only,native visual acceptance pending.
+
+Automation batch:/automation cancelpending confirm:true cancels all current guild pending future sends in one atomic update. Exact current ManageGuild and literal confirmation required. Sending/uncertain/done/cancelled/foreign records unchanged;body,timing,interval,replay metadata retained. No native message deletion/send,does not stop an already-claimed send. Idempotent count response,private3locale/no-ping.552localtests,41top/199paths,SQLite26;local only,native acceptance pending.
+
+LiveREST metadata candidatehttps://lavalink.nazha.online/v4/info verifiedstable4.2.2+YouTube at15:32IST,strictguardpass. Not selected/configured/activated;providerprivacy/trust/SLA/clientvoice/playbackunknown. No token/botID/voicecredential/search/websocket sent.553localtests,199paths unchanged. SeeMusicguide/sourceURLs.
+
+Offline deploypreflight `npm run doctor` checksNode/required fieldshapes/guild-registrationID/registry,redacts token/node-auth/database path and reports eventflags/musicoff-or-opted-in. No login/network/registration/database access or volume write. Missingguild blocks registration preflight without blocking actualbot code. Passing notlive readiness.556localtests,199pathsunchanged;localunpublished.

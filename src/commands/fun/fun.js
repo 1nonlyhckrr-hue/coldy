@@ -14,6 +14,8 @@ import {
   playRps,
   shuffleChoices,
   splitTeams,
+  randomNumber,
+  sampleChoices,
 } from '../../services/fun.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
@@ -100,6 +102,48 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('number')
+      .setDescription('One uniform integer in an inclusive bounded range;not advice.')
+      .addIntegerOption((o) =>
+        o
+          .setName('minimum')
+          .setDescription('Inclusive minimum,-1000000 to1000000')
+          .setMinValue(-1000000)
+          .setMaxValue(1000000)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('maximum')
+          .setDescription('Inclusive maximum,at least minimum')
+          .setMinValue(-1000000)
+          .setMaxValue(1000000)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('sample')
+      .setDescription('Pick1-20 distinct waiting labels without replacement;no assignments.')
+      .addStringOption((o) =>
+        o
+          .setName('choices')
+          .setDescription('2-20 distinct labels separated by |')
+          .setMinLength(3)
+          .setMaxLength(1800)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('count')
+          .setDescription('How many labels,at most total supplied')
+          .setMinValue(1)
+          .setMaxValue(20)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('truth').setDescription('Get an optional, low-pressure reflection prompt.'),
   )
   .addSubcommand((s) => s.setName('dare').setDescription('Get an optional, safe solo activity.'))
@@ -159,6 +203,19 @@ export default {
         .join('\n');
       if (lines.length > 1700) throw new UserError('funShuffleTooLong');
       text = t('funTeams', { teams: lines });
+    } else if (sub === 'number') {
+      const minimum = i.options.getInteger('minimum', true),
+        maximum = i.options.getInteger('maximum', true);
+      text = t('funNumber', { minimum, maximum, value: randomNumber(minimum, maximum) });
+    } else if (sub === 'sample') {
+      const selected = sampleChoices(
+        i.options.getString('choices', true),
+        i.options.getInteger('count', true),
+      )
+        .map((v, n) => `${n + 1}. ${escapeMarkdown(v)}`)
+        .join('\n');
+      if (selected.length > 1700) throw new UserError('funShuffleTooLong');
+      text = t('funSample', { choices: selected });
     } else if (sub === 'truth')
       text = t('funOptional', { prompt: t(`funTruth_${pick(TRUTH_PROMPTS)}`) });
     else if (sub === 'dare')

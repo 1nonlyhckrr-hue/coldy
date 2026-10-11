@@ -82,7 +82,8 @@ export class YouTubeLavalinkAdapter extends LavalinkAdapter {
       typeof info.author !== 'string' ||
       !Number.isFinite(info.length) ||
       info.length <= 0 ||
-      info.length > 7200000
+      info.length > 7200000 ||
+      (item.id !== 'search' && info.identifier !== item.id)
     )
       throw new UserError('musicLoadFailed');
     return {
@@ -141,5 +142,6 @@ export async function requireMusicVoice(i, c, { joining = false } = {}) {
     current.voice?.channelId !== channel.id
   )
     throw new UserError('voiceMoved');
+  requireVoiceReady(i, c);
   return { channel, actor: current };
 }

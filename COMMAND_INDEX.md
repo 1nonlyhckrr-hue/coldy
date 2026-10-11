@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-41 top-level commands, 193 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+41 top-level commands, 199 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -13,6 +13,7 @@
 | /antinuke threshold | Set mixed-action count and observation window. | Local mock/unit only |
 | /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
 | /automation cancel | Cancel a pending or uncertain schedule. | Local mock/unit only |
+| /automation cancelpending | Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched. | Local mock/unit only |
 | /automation config | Show schedule limits and restart policy. | Local mock/unit only |
 | /automation create | Schedule one message or a fixed elapsed-time repeat. | Local mock/unit only |
 | /automation createzone | Schedule one message using explicit local date/time and named timezone. | Local mock/unit only |
@@ -66,14 +67,16 @@
 | /fun coin | Flip a coin. | Local mock/unit only |
 | /fun dare | Get an optional, safe solo activity. | Local mock/unit only |
 | /fun dice | Roll up to ten dice. | Local mock/unit only |
+| /fun number | One uniform integer in an inclusive bounded range;not advice. | Local mock/unit only |
 | /fun rps | Play one round of rock, paper, scissors against Luna. | Local mock/unit only |
+| /fun sample | Pick1-20 distinct waiting labels without replacement;no assignments. | Local mock/unit only |
 | /fun shuffle | Privately randomize all 2-20 distinct choices,no assignments. | Local mock/unit only |
 | /fun teams | Privately split 2-20 distinct labels into balanced random groups,no invites. | Local mock/unit only |
 | /fun truth | Get an optional, low-pressure reflection prompt. | Local mock/unit only |
 | /about | Show Luna version and implementation status. | Local mock/unit only |
 | /config language | Set English, Hindi or Hinglish for this server. | Local mock/unit only |
 | /config view | View this server configuration. | Local mock/unit only |
-| /help | Show installed commands with pagination. | Local mock/unit only |
+| /help | Privately browse installed paths by page,category or literal search. | Local mock/unit only |
 | /ping | Show Luna gateway latency. | Local mock/unit only |
 | /uptime | Show how long this process has been running. | Local mock/unit only |
 | /giveaway config | Show giveaway limits and policies. | Local mock/unit only |
@@ -113,11 +116,14 @@
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
 | /nickname | Confirmed one-member nickname update or explicit reset,no bulk changes. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode,0 disables,no bulk changes. | Local mock/unit only |
+| /music clear | Clear waiting tracks only;current track keeps playing. | Local mock/unit only |
 | /music nowplaying | Show current track. | Local mock/unit only |
 | /music pause | Pause current track. | Local mock/unit only |
 | /music play | Queue first YouTube search result or exact11-character video ID. | Local mock/unit only |
-| /music queue | Show current in-memory queue;not persistent history. | Local mock/unit only |
+| /music queue | Show ten queued tracks per page;current track separate. | Local mock/unit only |
+| /music remove | Remove one queued position;never stops current track. | Local mock/unit only |
 | /music resume | Resume current track. | Local mock/unit only |
+| /music shuffle | Randomize waiting tracks only;current track unchanged. | Local mock/unit only |
 | /music stay | Keep idle VC connection while this process/node are healthy;not uptime guarantee. | Local mock/unit only |
 | /music stop | Disconnect and clear this server session. | Local mock/unit only |
 | /permit blockrole | Block a role for one entire command. | Local mock/unit only |

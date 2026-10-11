@@ -15,7 +15,8 @@
     "inventory:luna": "node scripts/installed-inventory.js",
     "format": "prettier --write src scripts test package.json .prettierrc.json .github/workflows/ci.yml eslint.config.js",
     "format:check": "prettier --check src scripts test package.json .prettierrc.json .github/workflows/ci.yml eslint.config.js",
-    "lint": "eslint src scripts test"
+    "lint": "eslint src scripts test",
+    "doctor": "node scripts/doctor.js"
   },
   "keywords": [],
   "author": "",

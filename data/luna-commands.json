@@ -193,6 +193,34 @@
     "source": "src/commands/automations/automation.js"
   },
   {
+    "name": "automation cancelpending",
+    "category": "automations",
+    "syntax": "/automation cancelpending (confirm)",
+    "description": "Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/automations/automation.js"
+  },
+  {
     "name": "automation config",
     "category": "automations",
     "syntax": "/automation config",
@@ -1880,6 +1908,39 @@
     "source": "src/commands/fun/fun.js"
   },
   {
+    "name": "fun number",
+    "category": "fun",
+    "syntax": "/fun number (minimum) (maximum)",
+    "description": "One uniform integer in an inclusive bounded range;not advice.",
+    "parameters": [
+      {
+        "name": "minimum",
+        "required": true,
+        "type": 4,
+        "min": -1000000,
+        "max": 1000000
+      },
+      {
+        "name": "maximum",
+        "required": true,
+        "type": 4,
+        "min": -1000000,
+        "max": 1000000
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
     "name": "fun rps",
     "category": "fun",
     "syntax": "/fun rps (move)",
@@ -1903,6 +1964,39 @@
             "value": "scissors"
           }
         ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
+    "name": "fun sample",
+    "category": "fun",
+    "syntax": "/fun sample (choices) (count)",
+    "description": "Pick1-20 distinct waiting labels without replacement;no assignments.",
+    "parameters": [
+      {
+        "name": "choices",
+        "required": true,
+        "type": 3,
+        "minLength": 3,
+        "maxLength": 1800
+      },
+      {
+        "name": "count",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 20
       }
     ],
     "userPermissions": [],
@@ -2079,14 +2173,28 @@
   {
     "name": "help",
     "category": "general",
-    "syntax": "/help [page]",
-    "description": "Show installed commands with pagination.",
+    "syntax": "/help [page] [category] [search]",
+    "description": "Privately browse installed paths by page,category or literal search.",
     "parameters": [
       {
         "name": "page",
         "required": false,
         "type": 4,
-        "min": 1
+        "min": 1,
+        "max": 100
+      },
+      {
+        "name": "category",
+        "required": false,
+        "type": 3,
+        "maxLength": 32
+      },
+      {
+        "name": "search",
+        "required": false,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 80
       }
     ],
     "userPermissions": [],
@@ -3252,6 +3360,24 @@
     "source": "src/commands/moderation/slowmode.js"
   },
   {
+    "name": "music clear",
+    "category": "music",
+    "syntax": "/music clear",
+    "description": "Clear waiting tracks only;current track keeps playing.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/music/music.js"
+  },
+  {
     "name": "music nowplaying",
     "category": "music",
     "syntax": "/music nowplaying",
@@ -3316,9 +3442,43 @@
   {
     "name": "music queue",
     "category": "music",
-    "syntax": "/music queue",
-    "description": "Show current in-memory queue;not persistent history.",
-    "parameters": [],
+    "syntax": "/music queue [page]",
+    "description": "Show ten queued tracks per page;current track separate.",
+    "parameters": [
+      {
+        "name": "page",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/music/music.js"
+  },
+  {
+    "name": "music remove",
+    "category": "music",
+    "syntax": "/music remove (position)",
+    "description": "Remove one queued position;never stops current track.",
+    "parameters": [
+      {
+        "name": "position",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 50
+      }
+    ],
     "userPermissions": [],
     "botPermissions": [],
     "defaultMemberPermissions": [],
@@ -3336,6 +3496,24 @@
     "category": "music",
     "syntax": "/music resume",
     "description": "Resume current track.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/music/music.js"
+  },
+  {
+    "name": "music shuffle",
+    "category": "music",
+    "syntax": "/music shuffle",
+    "description": "Randomize waiting tracks only;current track unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],

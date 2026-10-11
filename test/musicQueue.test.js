@@ -199,3 +199,140 @@ test('failed resolve releases newly reserved queue capacity without joining', as
     assert.equal(s.calls.length, 0);
   }
 });
+
+test('queue remove targets waiting position only and invalid values preserve all state', async () => {
+  const s = setup();
+  for (let n = 0; n < 4; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const current = s.q.sessions.get('g').current;
+  const waiting = [...s.q.sessions.get('g').queue];
+  const calls = s.calls.length;
+  for (const position of [0, -1, 4, 1.5, '1', null])
+    await assert.rejects(() => s.q.editQueue('g', 'remove', position), /musicQueuePosition/);
+  assert.deepEqual(s.q.sessions.get('g').queue, waiting);
+  await s.q.editQueue('g', 'remove', 2);
+  assert.deepEqual(s.q.sessions.get('g').queue, [waiting[0], waiting[2]]);
+  assert.equal(s.q.sessions.get('g').current, current);
+  assert.equal(s.calls.length, calls);
+});
+test('queue clear and shuffle never affect current playback or provider', async () => {
+  const s = setup();
+  for (let n = 0; n < 5; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  await s.q.pause('g', true);
+  await s.q.stay('g', true);
+  const session = s.q.sessions.get('g'),
+    current = session.current;
+  const ids = session.queue.map((t) => t.eventId).sort(),
+    calls = s.calls.length;
+  await s.q.editQueue('g', 'shuffle', undefined, () => 0);
+  assert.deepEqual(session.queue.map((t) => t.eventId).sort(), ids);
+  assert.equal(session.current, current);
+  assert.equal(session.paused, true);
+  assert.equal(session.keepConnected, true);
+  await s.q.editQueue('g', 'clear');
+  assert.equal(session.queue.length, 0);
+  assert.equal(session.current, current);
+  assert.equal(s.calls.length, calls);
+});
+test('queue edits reject missing, uncertain, locked, invalid action and bad RNG without mutation', async () => {
+  const s = setup();
+  await assert.rejects(() => s.q.editQueue('g', 'clear'), /musicNoSession/);
+  for (let n = 0; n < 4; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const before = [...s.q.sessions.get('g').queue];
+  let n = 0;
+  await assert.rejects(() => s.q.editQueue('g', 'shuffle', undefined, () => (++n === 1 ? 0 : 99)));
+  await assert.rejects(() => s.q.editQueue('g', 'other'));
+  assert.deepEqual(s.q.sessions.get('g').queue, before);
+  s.q.active.add('g');
+  await assert.rejects(() => s.q.editQueue('g', 'clear'), /musicBusy/);
+  s.q.active.delete('g');
+  s.q.sessions.get('g').status = 'uncertain';
+  for (const action of ['clear', 'shuffle', 'remove'])
+    await assert.rejects(() => s.q.editQueue('g', action, 1), /musicUncertain/);
+  assert.deepEqual(s.q.sessions.get('g').queue, before);
+});
+test('uncertain current track cannot cascade on a late finished event', async () => {
+  const s = setup();
+  for (let n = 0; n < 2; n++) await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const event = s.q.sessions.get('g').current.eventId,
+    calls = s.calls.length;
+  await s.q.ended('g', event, 'error');
+  assert.equal(await s.q.ended('g', event, 'finished'), false);
+  assert.equal(s.q.snapshot('g').queue.length, 1);
+  assert.equal(s.q.snapshot('g').status, 'uncertain');
+  assert.equal(s.calls.length, calls);
+});
+
+test('malformed node version/source types cannot satisfy stable compatibility guard', () => {
+  for (const minor of [undefined, null, NaN, Infinity, '2', 2.1])
+    assert.throws(() =>
+      requireDaveNode({ version: { major: 4, minor }, sourceManagers: ['http'] }),
+    );
+  for (const sourceManagers of ['http', null, { includes: () => true }])
+    assert.throws(() => requireDaveNode({ version: { major: 4, minor: 2 }, sourceManagers }));
+});
+test('post-resolution lost voice authority removes unjoined reservation without native effect', async () => {
+  const s = setup();
+  let checks = 0;
+  await assert.rejects(
+    () =>
+      s.q.enqueueItem('g', 'vc', catalog[0], 'u', {
+        beforeEffect: async () => {
+          checks++;
+          throw new Error('voiceMoved');
+        },
+      }),
+    /voiceMoved/,
+  );
+  assert.equal(checks, 1);
+  assert.equal(s.q.snapshot('g'), null);
+  assert.equal(s.calls.length, 0);
+});
+test('post-join lost voice authority freezes joined session without playback or automatic disconnect', async () => {
+  const s = setup();
+  let checks = 0;
+  await assert.rejects(
+    () =>
+      s.q.enqueueItem('g', 'vc', catalog[0], 'u', {
+        beforeEffect: async () => {
+          if (++checks === 2) throw new Error('voiceMoved');
+        },
+      }),
+    /voiceMoved/,
+  );
+  assert.deepEqual(s.calls, [['join', 'g', 'vc']]);
+  assert.equal(s.q.snapshot('g').status, 'uncertain');
+  assert.equal(s.q.snapshot('g').current, null);
+  await assert.rejects(() => s.q.enqueue('g', 'vc', 'sample', 'u'), /musicUncertain/);
+  await s.q.stop('g');
+  assert.equal(s.q.snapshot('g'), null);
+});
+test('existing session delayed resolve denial preserves queue and current track', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const before = s.q.snapshot('g'),
+    calls = s.calls.length;
+  await assert.rejects(() =>
+    s.q.enqueueItem('g', 'vc', catalog[0], 'u', {
+      beforeEffect: async () => {
+        throw new Error('voiceMoved');
+      },
+    }),
+  );
+  assert.deepEqual(s.q.snapshot('g'), before);
+  assert.equal(s.calls.length, calls);
+});
+
+test('observed stable4.2.2 metadata shape passes strict guard without enabling a provider', () => {
+  const observed = {
+    version: { semver: '4.2.2', major: 4, minor: 2, patch: 2, preRelease: '' },
+    sourceManagers: ['youtube', 'http'],
+  };
+  assert.equal(requireDaveNode(observed, 'youtube'), true);
+  assert.equal(requireDaveNode(observed, 'http'), true);
+  assert.throws(() =>
+    requireDaveNode(
+      { ...observed, version: { ...observed.version, preRelease: 'SNAPSHOT' } },
+      'youtube',
+    ),
+  );
+});

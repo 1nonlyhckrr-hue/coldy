@@ -172,7 +172,12 @@ function setup() {
     user: { id: 'u' },
     client: { user: { id: 'b' } },
     appPermissions: { has: () => true },
-    options: { getSubcommand: () => 'play', getString: () => 'song', getBoolean: () => true },
+    options: {
+      getSubcommand: () => 'play',
+      getString: () => 'song',
+      getInteger: () => null,
+      getBoolean: () => true,
+    },
     deferReply: async (p) => replies.push(p),
     editReply: async (p) => replies.push(p),
   };
@@ -229,4 +234,107 @@ test('music voice move during recheck refuses play', async () => {
     ++n === 1 ? x.actor : { ...x.actor, voice: { channelId: 'other' } };
   await assert.rejects(() => command.execute(x.i, x.c), /voiceMoved/);
   assert.equal(x.calls.length, 0);
+});
+
+test('queue edit paths dispatch bounded waiting-track actions in all locales privately', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['remove', 'clear', 'shuffle']) {
+      const x = setup(),
+        edits = [];
+      x.c.guildConfig.language = () => locale;
+      x.i.options.getSubcommand = () => sub;
+      x.i.options.getInteger = () => 2;
+      x.c.music.editQueue = async (...args) => edits.push(args);
+      await command.execute(x.i, x.c);
+      assert.deepEqual(edits, [['g', sub, sub === 'remove' ? 2 : undefined]]);
+      assert.equal(x.replies[0].flags, 64);
+      assert.deepEqual(x.replies[1].allowedMentions.parse, []);
+      assert(!x.replies[1].embeds[0].data.description.includes('musicAction_'));
+    }
+});
+test('music queue page preserves global positions and current track across all pages/locales', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (let page = 1; page <= 5; page++) {
+      const x = setup();
+      x.c.guildConfig.language = () => locale;
+      x.i.options.getSubcommand = () => 'queue';
+      x.i.options.getInteger = () => page;
+      x.c.music.snapshot = () => ({
+        channelId: 'vc',
+        status: 'playing',
+        current: { title: 'Current', author: 'A' },
+        queue: Array.from({ length: 49 }, (_, n) => ({ title: 'Track-' + (n + 1), author: 'A' })),
+        paused: false,
+        keepConnected: false,
+      });
+      await command.execute(x.i, x.c);
+      const text = x.replies[1].embeds[0].data.description;
+      const first = (page - 1) * 10 + 1,
+        last = Math.min(page * 10, 49);
+      assert(text.includes(`${first}. Track-${first}`));
+      assert(text.includes(`${last}. Track-${last}`));
+      assert(!text.includes(`${first - 1}. Track-${first - 1}`));
+      assert(!text.includes(`${last + 1}. Track-${last + 1}`));
+      assert(text.includes('Current'));
+      assert.deepEqual(x.replies[1].allowedMentions.parse, []);
+    }
+  for (const page of [0, 6, 1.5, '1']) {
+    const x = setup();
+    x.i.options.getSubcommand = () => 'queue';
+    x.i.options.getInteger = () => page;
+    await assert.rejects(() => command.execute(x.i, x.c), /musicQueuePosition/);
+  }
+});
+test('queue edits refuse wrong channel and voice move before any queue mutation', async () => {
+  for (const sub of ['remove', 'clear', 'shuffle']) {
+    const x = setup();
+    let edits = 0;
+    x.i.options.getSubcommand = () => sub;
+    x.i.options.getInteger = () => 1;
+    x.c.music.editQueue = async () => {
+      edits++;
+    };
+    x.c.music.snapshot = () => ({ channelId: 'other' });
+    await assert.rejects(() => command.execute(x.i, x.c), /musicDifferentChannel/);
+    assert.equal(edits, 0);
+    x.c.music.snapshot = () => ({ channelId: 'vc' });
+    let n = 0;
+    x.i.guild.members.fetch = async () =>
+      ++n === 1 ? x.actor : { ...x.actor, voice: { channelId: 'other' } };
+    await assert.rejects(() => command.execute(x.i, x.c), /voiceMoved/);
+    assert.equal(edits, 0);
+  }
+});
+
+test('exact video ID refuses substituted valid YouTube track and malformed encoded payload', async () => {
+  await assert.rejects(() =>
+    adapter({ loadType: 'track', data: track }).resolve(musicRequest('different12')),
+  );
+  for (const encoded of [null, '', 42, {}])
+    await assert.rejects(() =>
+      adapter({ loadType: 'track', data: { ...track, encoded } }).resolve(
+        musicRequest('abcdefghijk'),
+      ),
+    );
+});
+test('music rechecks voice readiness after native lookup before returning authorization', async () => {
+  const x = setup();
+  let checks = 0;
+  x.c.voiceReadiness.require = () => {
+    if (++checks === 2) throw new Error('voiceStateUnavailable');
+  };
+  await assert.rejects(() => requireMusicVoice(x.i, x.c), /voiceStateUnavailable/);
+  assert.equal(checks, 2);
+});
+test('play passes fresh exact-channel authority callback for delayed provider effect', async () => {
+  const x = setup();
+  let check;
+  x.c.music.enqueueItem = async (...args) => {
+    check = args[4].beforeEffect;
+  };
+  await command.execute(x.i, x.c);
+  await check();
+  x.actor.voice.channelId = 'other';
+  x.channel.id = 'other';
+  await assert.rejects(() => check(), /voiceMoved/);
 });

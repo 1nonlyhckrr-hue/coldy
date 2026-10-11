@@ -903,3 +903,94 @@ test('destination edit rejects missing foreign unavailable and manager permissio
     }
   }
 });
+
+test('bulk pending cancellation is guild-scoped preserves content and skips in-flight uncertain terminal records', () => {
+  const x = setup();
+  try {
+    const records = [];
+    for (const status of ['pending', 'sending', 'uncertain', 'done', 'cancelled']) {
+      const id = x.store.create({ ...x.input, interactionId: status });
+      x.db.prepare('UPDATE message_schedules SET status=? WHERE id=?').run(status, id);
+      records.push(x.store.get(id, 'g'));
+    }
+    const foreign = x.store.create({ ...x.input, guildId: 'other', interactionId: 'other' }),
+      foreignBefore = x.store.get(foreign, 'other');
+    assert.equal(x.store.cancelPending('g'), 1);
+    for (const row of records)
+      assert.deepEqual(
+        x.store.get(row.id, 'g'),
+        row.status === 'pending' ? { ...row, status: 'cancelled' } : row,
+      );
+    assert.deepEqual(x.store.get(foreign, 'other'), foreignBefore);
+    assert.equal(x.store.cancelPending('g'), 0);
+    x.advance(60001);
+    assert.equal(x.store.claim()?.guild_id, 'other');
+    assert.throws(() => x.store.cancelPending(''));
+  } finally {
+    x.db.close();
+  }
+});
+test('cancelpending explicit confirmation produces private localized count without native sends', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      const id = x.store.create(x.input),
+        before = x.store.get(id, 'g');
+      let payload;
+      const i = {
+        guildId: 'g',
+        guild: x.guild,
+        user: { id: 'actor' },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          payload = p;
+        },
+        options: { getSubcommand: () => 'cancelpending', getBoolean: () => true },
+      };
+      await command.execute(i, x.c);
+      assert.equal(
+        payload.embeds[0].data.description,
+        translate(locale, 'automationPendingCancelled', { n: 1 }),
+      );
+      assert.deepEqual(payload.allowedMentions.parse, []);
+      assert.equal(x.sent.length, 0);
+      assert.deepEqual(x.store.get(id, 'g'), { ...before, status: 'cancelled' });
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('cancelpending denied confirmation or current manager identity never changes any schedule', async () => {
+  for (const kind of ['confirm', 'permission', 'actor', 'guild']) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input),
+        before = x.store.get(id, 'g');
+      if (kind !== 'confirm')
+        x.guild.members.fetch = async () => ({
+          id: kind === 'actor' ? 'other' : 'actor',
+          guild: { id: kind === 'guild' ? 'other' : 'g' },
+          permissions: { has: () => kind !== 'permission' },
+        });
+      await assert.rejects(() =>
+        command.execute(
+          {
+            guildId: 'g',
+            guild: x.guild,
+            user: { id: 'actor' },
+            deferReply: async () => {},
+            editReply: async () => assert.fail('no success'),
+            options: { getSubcommand: () => 'cancelpending', getBoolean: () => false },
+          },
+          x.c,
+        ),
+      );
+      assert.deepEqual(x.store.get(id, 'g'), before);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});

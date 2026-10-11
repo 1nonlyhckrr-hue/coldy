@@ -70,9 +70,9 @@ test('RPS computes all nine outcomes', () => {
     }
   assert.throws(() => playRps('gun'));
 });
-test('fun serializes nine real paths and bounded input options', () => {
+test('fun serializes eleven real paths and bounded input options', () => {
   const d = fun.data.toJSON();
-  assert.equal(d.options.length, 9);
+  assert.equal(d.options.length, 11);
   assert.equal(d.contexts[0], 0);
   assert.equal(fun.cooldownMs, 5000);
   assert(d.options.every((o) => o.type === 1));
@@ -240,4 +240,100 @@ test('teams replies are localized private escaped and no-ping without native ass
     assert(p.embeds[0].data.description.includes('\\*\\*A\\*\\*'));
     assert(p.embeds[0].data.description.includes('@everyone'));
   }
+});
+
+test('random integer range includes negative/positive endpoints and singleton without rounding', async () => {
+  const { randomNumber } = await import('../src/services/fun.js');
+  assert.equal(
+    randomNumber(-1000000, 1000000, () => 0),
+    -1000000,
+  );
+  assert.equal(
+    randomNumber(-1000000, 1000000, (n) => n - 1),
+    1000000,
+  );
+  assert.equal(
+    randomNumber(-7, -7, () => 0),
+    -7,
+  );
+  assert.equal(
+    randomNumber(-5, 5, () => 5),
+    0,
+  );
+});
+test('random integer range refuses reversed,out-of-bounds,noninteger and invalid RNG', async () => {
+  const { randomNumber } = await import('../src/services/fun.js');
+  for (const args of [
+    [2, 1],
+    [-1000001, 0],
+    [0, 1000001],
+    [1.5, 2],
+    [0, NaN],
+    ['1', 2],
+  ])
+    assert.throws(() => randomNumber(...args));
+  for (const result of [-1, 3, 1.5, NaN]) assert.throws(() => randomNumber(0, 2, () => result));
+});
+test('sampling uses every unique label at most once and count gates before RNG', async () => {
+  const { sampleChoices } = await import('../src/services/fun.js');
+  for (const count of [1, 2, 3]) {
+    const result = sampleChoices('a|b|c', count, () => 0);
+    assert.equal(result.length, count);
+    assert.equal(new Set(result).size, count);
+    assert(result.every((v) => ['a', 'b', 'c'].includes(v)));
+  }
+  let random = 0;
+  for (const count of [0, 4, 1.5, '1', NaN])
+    assert.throws(() =>
+      sampleChoices('a|b|c', count, () => {
+        random++;
+        return 0;
+      }),
+    );
+  assert.equal(random, 0);
+  for (const labels of ['a|A', 'a||b', 'a|b\n']) assert.throws(() => sampleChoices(labels, 1));
+});
+test('sample and number reply privately in all locales without pings,storage or assignments', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['sample', 'number']) {
+      let p;
+      await fun.execute(
+        {
+          guildId: 'g',
+          options: {
+            getSubcommand: () => sub,
+            getString: () => '**A** @everyone | B',
+            getInteger: (name) => (name === 'count' ? 2 : name === 'minimum' ? -3 : -3),
+          },
+          reply: async (payload) => {
+            p = payload;
+          },
+        },
+        { localization: { locale: () => locale, t: (_g, k, v) => translate(locale, k, v) } },
+      );
+      assert.equal(p.flags, 64);
+      assert.deepEqual(p.allowedMentions.parse, []);
+      assert(p.embeds[0].data.description.length < 2000);
+      if (sub === 'sample') assert(p.embeds[0].data.description.includes('\\*\\*A\\*\\*'));
+      else assert(p.embeds[0].data.description.includes('-3'));
+    }
+});
+test('sample expanded labels refuse output overflow without partial reply', async () => {
+  let replied = false;
+  const text = Array.from({ length: 18 }, (_, n) => '*'.repeat(94) + n).join('|');
+  await assert.rejects(
+    () =>
+      fun.execute(
+        {
+          guildId: 'g',
+          options: { getSubcommand: () => 'sample', getString: () => text, getInteger: () => 18 },
+          reply: async () => {
+            replied = true;
+          },
+        },
+        { localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) } },
+      ),
+    /funShuffleTooLong/,
+  );
+  assert.equal(replied, false);
 });

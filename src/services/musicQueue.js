@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomInt } from 'node:crypto';
 import { UserError } from '../utils/errors.js';
 export class MusicQueues {
   constructor(adapter, catalog, { maxGuilds = 100, maxTracks = 50, logger } = {}) {
@@ -38,7 +38,7 @@ export class MusicQueues {
     if (!item) throw new UserError('musicCatalogMissing');
     return this.enqueueItem(guildId, channelId, item, requesterId);
   }
-  async enqueueItem(guildId, channelId, item, requesterId) {
+  async enqueueItem(guildId, channelId, item, requesterId, { beforeEffect } = {}) {
     return this.locked(guildId, async () => {
       let s = this.sessions.get(guildId);
       if (s && s.channelId !== channelId) throw new UserError('musicDifferentChannel');
@@ -68,6 +68,14 @@ export class MusicQueues {
         if (s.status === 'joining') this.sessions.delete(guildId);
         throw new UserError('musicLoadFailed');
       }
+      if (beforeEffect) {
+        try {
+          await beforeEffect();
+        } catch (error) {
+          if (s.status === 'joining') this.sessions.delete(guildId);
+          throw error;
+        }
+      }
       if (s.status === 'joining') {
         try {
           await this.adapter.join(guildId, channelId);
@@ -75,6 +83,15 @@ export class MusicQueues {
         } catch {
           s.status = 'uncertain';
           throw new UserError('musicUncertain');
+        }
+      }
+      if (beforeEffect && !s.current) {
+        try {
+          await beforeEffect();
+        } catch (error) {
+          // A join may already exist; preserve it frozen for explicit stop, never auto play.
+          s.status = 'uncertain';
+          throw error;
         }
       }
       const track = {
@@ -118,7 +135,8 @@ export class MusicQueues {
     try {
       return await this.locked(guildId, async () => {
         const s = this.sessions.get(guildId);
-        if (!s || !s.current || s.current.eventId !== eventId) return false;
+        if (!s || !s.current || s.current.eventId !== eventId || s.status === 'uncertain')
+          return false;
         if (reason === 'finished') {
           s.current = null;
           await this.advance(guildId, s);
@@ -137,6 +155,29 @@ export class MusicQueues {
       );
       return false;
     }
+  }
+  async editQueue(guildId, action, position, random = randomInt) {
+    return this.locked(guildId, async () => {
+      const s = this.sessions.get(guildId);
+      if (!s) throw new UserError('musicNoSession');
+      if (s.status === 'uncertain') throw new UserError('musicUncertain');
+      if (action === 'remove') {
+        if (!Number.isInteger(position) || position < 1 || position > s.queue.length)
+          throw new UserError('musicQueuePosition');
+        s.queue.splice(position - 1, 1);
+      } else if (action === 'clear') s.queue = [];
+      else if (action === 'shuffle') {
+        // Build separately. A bad RNG cannot partially rewrite a session.
+        const shuffled = [...s.queue];
+        for (let n = shuffled.length - 1; n > 0; n--) {
+          const k = random(n + 1);
+          if (!Number.isInteger(k) || k < 0 || k > n) throw new TypeError('Invalid shuffle RNG');
+          [shuffled[n], shuffled[k]] = [shuffled[k], shuffled[n]];
+        }
+        s.queue = shuffled;
+      } else throw new TypeError('Invalid queue action');
+      return this.snapshot(guildId);
+    });
   }
   async pause(guildId, paused) {
     if (typeof paused !== 'boolean') throw new TypeError('Invalid pause state');

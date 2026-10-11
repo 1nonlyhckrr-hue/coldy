@@ -95,6 +95,19 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('cancelpending')
+      .setDescription(
+        'Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm all pending future sends cancelled')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('reschedule')
       .setDescription(
         'Move pending next send to explicit offset time;repeat stays elapsed interval.',
@@ -272,6 +285,11 @@ export default {
       const id = i.options.getInteger('id', true);
       c.messageSchedules.cancel(id, i.guildId);
       content = t('automationCancelled', { id });
+    }
+    if (sub === 'cancelpending') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationCancelPendingConfirm');
+      content = t('automationPendingCancelled', { n: c.messageSchedules.cancelPending(i.guildId) });
     }
     if (sub === 'reschedule') {
       const dueAt = parseScheduledTime(i.options.getString('at', true));

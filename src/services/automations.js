@@ -112,6 +112,14 @@ export class MessageSchedules {
       .run(id, guildId);
     if (!r.changes) throw new UserError('automationCancelInvalid');
   }
+  cancelPending(guildId) {
+    if (typeof guildId !== 'string' || !guildId) throw new TypeError('Invalid guild identity');
+    return this.db
+      .prepare(
+        "UPDATE message_schedules SET status='cancelled' WHERE guild_id=? AND status='pending'",
+      )
+      .run(guildId).changes;
+  }
   reschedulePending(id, guildId, dueAt) {
     if (
       !Number.isInteger(dueAt) ||
