@@ -36,6 +36,19 @@ export class MessageRanks {
         .run(guildId, cfg.enabled ? 1 : 0, JSON.stringify([...set]));
     })();
   }
+  clearExclusions(guildId) {
+    return this.db.transaction(() => {
+      const cfg = this.config(guildId);
+      const count = cfg.excluded.length;
+      this.db
+        .prepare("UPDATE message_rank_config SET excluded_json='[]' WHERE guild_id=?")
+        .run(guildId);
+      return count;
+    })();
+  }
+  resetPolicy(guildId) {
+    this.db.prepare('DELETE FROM message_rank_config WHERE guild_id=?').run(guildId);
+  }
   optedOut(guildId, userId) {
     return !!this.db
       .prepare('SELECT opted_out FROM message_rank_privacy WHERE guild_id=? AND user_id=?')
@@ -61,9 +74,12 @@ export class MessageRanks {
   }
   record(message, now = Date.now()) {
     if (
+      !Number.isSafeInteger(now) ||
+      now < 0 ||
       !message.guildId ||
       !/^\d{17,20}$/.test(message.author?.id ?? '') ||
-      message.author.bot ||
+      message.author.bot !== false ||
+      message.system ||
       message.webhookId ||
       !/^\d{17,20}$/.test(message.id) ||
       !Number.isFinite(message.createdTimestamp) ||
@@ -203,6 +219,23 @@ export class MessageRanks {
       }
     }
     return { total, activeDays, longest, peakCount, peakDay };
+  }
+  exportMine(guildId, userId, now = Date.now()) {
+    return this.db
+      .prepare(
+        'SELECT day,count FROM message_rank_daily WHERE guild_id=? AND user_id=? AND day>=? AND day<=? ORDER BY day',
+      )
+      .all(guildId, userId, this.since('retained', now), utcDay(now));
+  }
+  overview(guildId, now = Date.now()) {
+    return this.db
+      .prepare(
+        'SELECT count(DISTINCT user_id) AS contributors,COALESCE(sum(count),0) AS messages,count(DISTINCT day) AS days FROM message_rank_daily WHERE guild_id=? AND day>=? AND day<=?',
+      )
+      .get(guildId, this.since('retained', now), utcDay(now));
+  }
+  resetAll(guildId) {
+    return this.db.prepare('DELETE FROM message_rank_daily WHERE guild_id=?').run(guildId).changes;
   }
   resetMine(guildId, userId) {
     return this.db

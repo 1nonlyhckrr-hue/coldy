@@ -31,3 +31,13 @@ Native initial ready and available guild/client required. Voice effects blocked 
 Native discord.js channel.members skips voice states when member is not cached. Empty check now counts raw guild.voiceStates cache channel IDs instead,not member list. Missing voice cache blocks. Also used by move destination capacity. Two new tests,total260,uncached connected member blocks close/unlock. Real gateway state completeness/concurrent join race still unresolved by local tests.
 
 `/voicemaster status`: private caller-only stored unresolved ownership record. No native lookup or mutation,explicitly not live access or occupancy.
+
+## Owned voice settings
+
+`bitrate kbps` sets8-96kbps on your active tracked empty standardvoice channel. `regionauto` sets RTC region null(Discord automatic) on that same empty owned room. Both require voice readiness/current owner+application bot/guild/channel/private-overwrite validation,current ManageChannels and case reservation. Record freezes uncertain before effect;force-refetched exact setting/private-shape receipt restores active on observed success. Unknown/failed observation stays uncertain,no automatic or fresh-interaction retry. No audience/occupant move change. `inspect` privately reads current owned room name/capacity/bitrate under fresh actor ViewChannel,no member list. Native races/reconnect/pixels remain unverified. discord.js14.27.0 setBitrate/setRTCRegion source inspected.
+
+## Stored management library
+
+`/voicemaster resetsetup confirm:true` forgets creation category only,stopping new opens until setup again. Existing tracked ownership/channels/access/cases/replay remain,in-flight creation may finish. `exportconfig` privately attaches stored category object or JSONnull,no ownership/cases. Not backup/access/native readiness proof.
+
+`records [page] [state]` privately pages ten stored ownership records with exact creating/active/deleting/closed/uncertain filter,page1-1000,total,newestfirst. Shows owner/channel IDs/status/stored public_access0/1,no native channel/member enumeration or current-access claim. All3fresh native ManageChannels,private3locale/no-ping,no native mutations. Three tests scope/pagination/isolation/storagefailure/confirmation/currentauthority/configbytes. No live/client visual acceptance.

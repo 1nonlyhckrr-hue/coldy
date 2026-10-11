@@ -40,14 +40,23 @@ function setup() {
         return options.message ? messages.get(options.message) : messages;
       },
     },
-    bulkDelete: async (...args) => calls.push(['delete', ...args]),
+    bulkDelete: async (...args) => {
+      calls.push(['delete', ...args]);
+      return new Map(args[0].map((id) => [id, undefined]));
+    },
   };
   const i = {
     id: 'preview',
     guildId: 'g',
+    client: { user: { id: 'bot' } },
+    appPermissions: { has: () => true },
     user: { id: 'staff' },
     guild: {
-      members: { fetch: async () => ({}), fetchMe: async () => ({}) },
+      id: 'g',
+      members: {
+        fetch: async () => ({ id: 'staff', guild: { id: 'g' } }),
+        fetchMe: async () => ({ id: 'bot', guild: { id: 'g' } }),
+      },
       channels: {
         fetch: async (_id, opts) => {
           assert.equal(opts.force, true);
@@ -226,5 +235,279 @@ test('purge preview/confirm command replies privately in all locales', async () 
     } finally {
       s.db.close();
     }
+  }
+});
+
+test('purge preview requires exact current actor/bot/guild identity before history read or plan reservation', async () => {
+  for (const kind of ['actor', 'actorGuild', 'bot', 'botGuild', 'guild', 'client', 'app']) {
+    const s = setup();
+    try {
+      if (kind === 'actor' || kind === 'actorGuild')
+        s.i.guild.members.fetch = async () => ({
+          id: kind === 'actor' ? 'foreign' : 'staff',
+          guild: { id: kind === 'actorGuild' ? 'foreign' : 'g' },
+        });
+      if (kind === 'bot' || kind === 'botGuild')
+        s.i.guild.members.fetchMe = async () => ({
+          id: kind === 'bot' ? 'foreign' : 'bot',
+          guild: { id: kind === 'botGuild' ? 'foreign' : 'g' },
+        });
+      if (kind === 'guild') s.i.guild.id = 'foreign';
+      if (kind === 'client') s.i.client.user.id = null;
+      if (kind === 'app') s.i.appPermissions.has = () => false;
+      await assert.rejects(() => previewPurge(s.i, s.c, { channelId, count: 3 }, now));
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM purge_plans').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('purge confirmation final identity refresh rejects changed actor or bot before deletion/claim', async () => {
+  for (const kind of ['actor', 'bot']) {
+    const s = setup();
+    try {
+      const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+      s.i.id = 'confirm';
+      let calls = 0;
+      if (kind === 'actor')
+        s.i.guild.members.fetch = async () => ({
+          id: ++calls === 2 ? 'foreign' : 'staff',
+          guild: { id: 'g' },
+        });
+      else
+        s.i.guild.members.fetchMe = async () => ({
+          id: ++calls === 2 ? 'foreign' : 'bot',
+          guild: { id: 'g' },
+        });
+      await assert.rejects(() => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now));
+      assert.equal(s.calls.filter((c) => c[0] === 'delete').length, 0);
+      assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'preview');
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('purge final application permission loss leaves exact preview intact with no destructive call', async () => {
+  const s = setup();
+  try {
+    const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+    s.i.id = 'confirm';
+    let calls = 0;
+    s.i.guild.members.fetchMe = async () => {
+      if (++calls === 2) s.i.appPermissions.has = () => false;
+      return { id: 'bot', guild: { id: 'g' } };
+    };
+    await assert.rejects(
+      () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+      /purgeBotPermission/,
+    );
+    assert.equal(s.calls.filter((c) => c[0] === 'delete').length, 0);
+    assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'preview');
+  } finally {
+    s.db.close();
+  }
+});
+
+test('purge accepted deletion cannot promote a plan recovered uncertain while native call waits', async () => {
+  const s = setup();
+  try {
+    const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+    s.i.id = 'recovered';
+    s.channel.bulkDelete = async (ids) => {
+      s.c.purgePlans.recover();
+      return new Map(ids.map((id) => [id, undefined]));
+    };
+    await assert.rejects(
+      () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+      /purgeUncertain/,
+    );
+    assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'uncertain');
+    assert.equal(s.db.prepare('SELECT status FROM moderation_cases').get().status, 'pending');
+  } finally {
+    s.db.close();
+  }
+});
+test('purge late native failure cannot demote completed receipt or recreate deleted plan', async () => {
+  for (const state of ['completed', 'deleted']) {
+    const s = setup();
+    try {
+      const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+      s.i.id = 'late';
+      s.channel.bulkDelete = async () => {
+        if (state === 'completed') s.c.purgePlans.finish(r.id, 'completed');
+        else s.db.prepare('DELETE FROM purge_plans WHERE id=?').run(r.id);
+        throw Error('late failure');
+      };
+      await assert.rejects(
+        () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+        /purgeUncertain/,
+      );
+      assert.equal(
+        s.c.purgePlans.get(r.id, 'g', 'staff')?.status,
+        state === 'completed' ? 'completed' : undefined,
+      );
+      assert.equal(s.db.prepare('SELECT status FROM moderation_cases').get().status, 'uncertain');
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('purge finish requires one executing plan and preserves previews/final receipts', () => {
+  const s = setup();
+  try {
+    const id = s.c.purgePlans.reserve(s.i, channelId, ['100000000000000100'], now);
+    assert.throws(() => s.c.purgePlans.finish(id, 'completed'), /not executing/);
+    assert.throws(() => s.c.purgePlans.finish(999, 'uncertain'), /not executing/);
+    assert.equal(s.c.purgePlans.get(id, 'g', 'staff').status, 'preview');
+    s.c.purgePlans.claim(id, now);
+    s.c.purgePlans.finish(id, 'completed');
+    assert.throws(() => s.c.purgePlans.finish(id, 'uncertain'), /not executing/);
+    assert.equal(s.c.purgePlans.get(id, 'g', 'staff').status, 'completed');
+  } finally {
+    s.db.close();
+  }
+});
+
+test('purge confirmation refuses changed exact preview IDs after awaited message verification', async () => {
+  const s = setup();
+  try {
+    const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+    s.i.id = 'changed-preview';
+    const fetch = s.channel.messages.fetch;
+    s.channel.messages.fetch = async (options) => {
+      const m = await fetch(options);
+      s.db
+        .prepare('UPDATE purge_plans SET ids_json=? WHERE id=?')
+        .run(JSON.stringify([r.ids[0]]), r.id);
+      return m;
+    };
+    await assert.rejects(
+      () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+      /purgeChanged/,
+    );
+    assert.equal(s.calls.filter((c) => c[0] === 'delete').length, 0);
+    assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'preview');
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('purge final preview reread rejects replaced actor/channel/created/interaction identity', async () => {
+  for (const [field, value] of [
+    ['actor_id', 'foreign'],
+    ['channel_id', '100000000000000999'],
+    ['created_at', now + 1],
+    ['interaction_id', 'replacement'],
+  ]) {
+    const s = setup();
+    try {
+      const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+      s.i.id = 'changed-identity';
+      let calls = 0;
+      s.i.guild.members.fetchMe = async () => {
+        if (++calls === 2)
+          s.db.prepare(`UPDATE purge_plans SET ${field}=? WHERE id=?`).run(value, r.id);
+        return { id: 'bot', guild: { id: 'g' } };
+      };
+      await assert.rejects(
+        () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+        /purgeChanged/,
+      );
+      assert.equal(s.calls.filter((c) => c[0] === 'delete').length, 0);
+      const stored = s.db.prepare('SELECT * FROM purge_plans WHERE id=?').get(r.id);
+      assert.equal(stored[field], value);
+      assert.equal(stored.status, 'preview');
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('purge deleted or completed preview during final refresh cannot create destructive case', async () => {
+  for (const state of ['deleted', 'completed']) {
+    const s = setup();
+    try {
+      const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+      s.i.id = 'final-state';
+      let calls = 0;
+      s.i.guild.members.fetchMe = async () => {
+        if (++calls === 2) {
+          if (state === 'deleted') s.db.prepare('DELETE FROM purge_plans WHERE id=?').run(r.id);
+          else s.db.prepare("UPDATE purge_plans SET status='completed' WHERE id=?").run(r.id);
+        }
+        return { id: 'bot', guild: { id: 'g' } };
+      };
+      await assert.rejects(
+        () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+        /purgeChanged/,
+      );
+      assert.equal(s.calls.filter((c) => c[0] === 'delete').length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+
+test('purge missing/partial/foreign deletion receipts remain uncertain and cannot be retried', async () => {
+  for (const kind of ['missing', 'partial', 'foreign', 'fake']) {
+    const s = setup();
+    try {
+      const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+      s.i.id = 'receipt';
+      let attempts = 0;
+      s.channel.bulkDelete = async (ids) => {
+        attempts++;
+        if (kind === 'missing') return undefined;
+        if (kind === 'partial') return new Map([[ids[0], undefined]]);
+        if (kind === 'foreign') return new Map(['1', '2', '3'].map((id) => [id, undefined]));
+        return { size: ids.length };
+      };
+      await assert.rejects(
+        () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+        /purgeUncertain/,
+      );
+      assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'uncertain');
+      assert.equal(s.db.prepare('SELECT status FROM moderation_cases').get().status, 'uncertain');
+      await assert.rejects(
+        () => confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now),
+        /purgePlanExpired/,
+      );
+      assert.equal(attempts, 1);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('purge exact deletion ID collection accepts undefined message values and reports requested count', async () => {
+  const s = setup();
+  try {
+    const r = await previewPurge(s.i, s.c, { channelId, count: 3 }, now);
+    s.i.id = 'exact-receipt';
+    s.channel.bulkDelete = async (ids) => new Map([...ids].reverse().map((id) => [id, undefined]));
+    const result = await confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now);
+    assert.equal(result.count, 3);
+    assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'completed');
+    assert.equal(s.db.prepare('SELECT status FROM moderation_cases').get().status, 'completed');
+  } finally {
+    s.db.close();
+  }
+});
+
+test('purge one-message uncached deletion honors discord.js documented empty collection after accepted REST delete', async () => {
+  const s = setup();
+  try {
+    const first = [...s.messages.entries()][0];
+    s.messages.clear();
+    s.messages.set(...first);
+    const r = await previewPurge(s.i, s.c, { channelId, count: 1 }, now);
+    s.i.id = 'single-empty';
+    s.channel.bulkDelete = async () => new Map();
+    const result = await confirmPurge(s.i, s.c, { id: r.id, confirm: true }, now);
+    assert.equal(result.count, 1);
+    assert.equal(s.c.purgePlans.get(r.id, 'g', 'staff').status, 'completed');
+  } finally {
+    s.db.close();
   }
 });

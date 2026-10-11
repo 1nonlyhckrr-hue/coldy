@@ -5,6 +5,9 @@ import { UserError } from '../utils/errors.js';
 export const actionPermissions = Object.freeze({
   warn: PermissionFlagsBits.ModerateMembers,
   warnings: PermissionFlagsBits.ModerateMembers,
+  clearwarning: PermissionFlagsBits.ModerateMembers,
+  editwarning: PermissionFlagsBits.ModerateMembers,
+  exportwarnings: PermissionFlagsBits.ModerateMembers,
   clearwarns: PermissionFlagsBits.ModerateMembers,
   timeout: PermissionFlagsBits.ModerateMembers,
   untimeout: PermissionFlagsBits.ModerateMembers,
@@ -44,6 +47,57 @@ export class ModerationCases {
       .run(status, id);
     if (r.changes !== 1) throw new Error('Case not pending');
   }
+  inspectCase(guildId, id) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('caseHistoryInvalid');
+    const row = this.db
+      .prepare(
+        'SELECT id,action,actor_id,target_id,reason,status,created_at FROM moderation_cases WHERE guild_id=? AND id=?',
+      )
+      .get(guildId, id);
+    if (!row) throw new UserError('caseHistoryInvalid');
+    return row;
+  }
+  casePage(guildId, page = 1, state = null) {
+    if (
+      !Number.isInteger(page) ||
+      page < 1 ||
+      page > 1000 ||
+      (state !== null && !['pending', 'completed', 'failed', 'uncertain'].includes(state))
+    )
+      throw new UserError('caseHistoryInvalid');
+    return this.db.transaction(() => {
+      const total = this.db
+          .prepare(
+            'SELECT count(*) n FROM moderation_cases WHERE guild_id=? AND (? IS NULL OR status=?)',
+          )
+          .get(guildId, state, state).n,
+        pages = Math.max(1, Math.ceil(total / 10));
+      if (page > pages) throw new UserError('caseHistoryInvalid');
+      return {
+        total,
+        pages,
+        page,
+        rows: this.db
+          .prepare(
+            'SELECT id,action,target_id,status FROM moderation_cases WHERE guild_id=? AND (? IS NULL OR status=?) ORDER BY id DESC LIMIT 10 OFFSET ?',
+          )
+          .all(guildId, state, state, (page - 1) * 10),
+      };
+    })();
+  }
+  exportCases(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+          .prepare('SELECT count(*) n FROM moderation_cases WHERE guild_id=?')
+          .get(guildId).n,
+        cases = this.db
+          .prepare(
+            'SELECT id,action,actor_id,target_id,reason,status,created_at FROM moderation_cases WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+          )
+          .all(guildId);
+      return { total, truncated: total > cases.length, cases };
+    })();
+  }
   warn(record) {
     return this.db.transaction(() => {
       const id = this.begin(record);
@@ -79,6 +133,49 @@ export class ModerationCases {
       )
       .all(guildId, targetId, (page - 1) * 2);
     return { rows, total, page, pages };
+  }
+  activeWarning(id, guildId, targetId) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('modWarningIdInvalid');
+    const row = this.db
+      .prepare(
+        'SELECT id,reason,created_at FROM warnings WHERE id=? AND guild_id=? AND target_id=? AND cleared_at IS NULL',
+      )
+      .get(id, guildId, targetId);
+    if (!row) throw new UserError('modWarningIdInvalid');
+    return row;
+  }
+  changeWarning(record, id, { clear = false } = {}) {
+    return this.db.transaction(() => {
+      this.activeWarning(id, record.guildId, record.targetId);
+      const caseId = this.begin(record);
+      const r = clear
+        ? this.db
+            .prepare(
+              'UPDATE warnings SET cleared_at=? WHERE id=? AND guild_id=? AND target_id=? AND cleared_at IS NULL',
+            )
+            .run(Date.now(), id, record.guildId, record.targetId)
+        : this.db
+            .prepare(
+              'UPDATE warnings SET reason=? WHERE id=? AND guild_id=? AND target_id=? AND cleared_at IS NULL',
+            )
+            .run(record.reason, id, record.guildId, record.targetId);
+      if (r.changes !== 1) throw new UserError('modWarningIdInvalid');
+      this.finish(caseId, 'completed');
+      return { id: caseId, warningId: id };
+    })();
+  }
+  exportWarnings(guildId, targetId) {
+    const total = this.db
+      .prepare(
+        'SELECT count(*) n FROM warnings WHERE guild_id=? AND target_id=? AND cleared_at IS NULL',
+      )
+      .get(guildId, targetId).n;
+    const rows = this.db
+      .prepare(
+        'SELECT id,reason,created_at FROM warnings WHERE guild_id=? AND target_id=? AND cleared_at IS NULL ORDER BY id DESC LIMIT 2000',
+      )
+      .all(guildId, targetId);
+    return { total, truncated: total > rows.length, rows };
   }
   clearWarnings(record) {
     return this.db.transaction(() => {
@@ -173,6 +270,16 @@ export async function moderate(interaction, context, input) {
   if (action === 'warnings') {
     const warningPage = context.cases.warningPage(interaction.guildId, targetId, input.page ?? 1);
     return { warnings: warningPage.rows, warningPage };
+  }
+  if (action === 'exportwarnings')
+    return { warningExport: context.cases.exportWarnings(interaction.guildId, targetId) };
+  if (['editwarning', 'clearwarning'].includes(action)) {
+    if (input.confirm !== true) throw new UserError('modWarningConfirm');
+    if (action === 'editwarning' && (typeof input.reason !== 'string' || !input.reason.trim()))
+      throw new UserError('modReasonText');
+    return context.cases.changeWarning(record, input.warningId, {
+      clear: action === 'clearwarning',
+    });
   }
   if (action === 'warn') return { id: context.cases.warn(record) };
   if (action === 'clearwarns') return context.cases.clearWarnings(record);

@@ -14,7 +14,7 @@ test('offline preflight reports registry/counts with explicit unverified live ga
   const text = JSON.stringify(result);
   assert(!text.includes(env.DISCORD_TOKEN));
   assert(!text.includes(env.DATABASE_PATH));
-  assert(text.includes('214 executable'));
+  assert(text.includes('352 executable'));
   assert(text.includes('NOT live readiness'));
   assert(text.includes('Music off'));
   assert(text.includes('ownership and backup policy NOT checked'));
@@ -47,4 +47,46 @@ test('preflight guild-registration gate and enabled music retain honest untested
   assert(!text.includes('NODE_SECRET'));
   assert(!text.includes('private-provider'));
   assert(text.includes('voice/client/playback NOT checked'));
+});
+
+test('preflight runtime cannot claim supported for partial/malformed/pre-release/unsafe version metadata', async () => {
+  for (const version of [
+    '24',
+    '24.bad',
+    '24.0',
+    '24.0.0.extra',
+    '24.0.0-rc.1',
+    '24.0.0+build',
+    '24.0.NaN',
+    '024.0.0',
+    '24.00.0',
+    '24.-1.0',
+    '22.13',
+    '22.13.0x',
+    '24.9007199353740992.0',
+    null,
+    24,
+    {},
+    undefined,
+  ]) {
+    if (version === undefined) continue;
+    const result = await preflight(env, version);
+    assert.equal(result.checks.find((c) => c.name === 'node').ok, false);
+    assert.equal(result.ok, false);
+  }
+});
+test('preflight exact supported runtime boundaries preserve strict offline limitations and secret redaction', async () => {
+  for (const [version, expected] of [
+    ['22.12.99', false],
+    ['22.13.0', true],
+    ['22.13.1', true],
+    ['24.0.0', true],
+    ['24.99.99', true],
+    ['25.0.0', false],
+  ]) {
+    const result = await preflight(env, version);
+    assert.equal(result.checks.find((c) => c.name === 'node').ok, expected);
+    assert(result.limitations.includes('No login,network'));
+    assert(!JSON.stringify(result).includes(env.DISCORD_TOKEN));
+  }
 });

@@ -1,7 +1,9 @@
+import { importLogging } from '../../services/loggingLibrary.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   ChannelType,
@@ -60,8 +62,78 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('preview')
+      .setDescription(
+        'Private sample case-log payload only,no native delivery or readiness claim.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('pauseevents')
+      .setDescription(
+        'Confirmed clear all metadata-event opt-ins;case master/channel/replay receipts kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping selected metadata events')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('reset')
+      .setDescription(
+        'Confirmed stop logging and forget destination/event opt-ins,no native log deletion.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm clearing all stored logging config here')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('test').setDescription('Send one test log to the configured channel.'),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('export')
+    .setDescription('Private stored logging policy JSON;no case or delivery history.'),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('import')
+    .setDescription(
+      'Replace strict stored logging policy JSON,force disabled;review destination later.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('json')
+        .setDescription('Strict enabled/channelId/events object,4000characters max')
+        .setMinLength(2)
+        .setMaxLength(4000)
+        .setRequired(true),
+    )
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm replacing logging policy and stopping delivery')
+        .setRequired(true),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('clearchannel')
+    .setDescription('Stop logging and forget only destination;event opt-ins/history retained.')
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm stopping delivery and forgetting destination')
+        .setRequired(true),
+    ),
+);
 export default {
   category: 'logging',
   data,
@@ -82,7 +154,62 @@ export default {
     };
     await authorize();
     const sub = i.options.getSubcommand();
-    let text;
+    let text, files;
+    if (sub === 'export') {
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(JSON.stringify(c.guildConfig.get(i.guildId).logging, null, 2) + '\n', 'utf8'),
+          { name: 'luna-logging-policy.json' },
+        ),
+      ];
+      text = t('logPolicyExported');
+    }
+    if (['import', 'clearchannel'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('logResetConfirm');
+      if (sub === 'import') {
+        importLogging(c.guildConfig, i.guildId, i.options.getString('json', true));
+        text = t('logPolicyImported');
+      } else {
+        c.guildConfig.patch(i.guildId, 'logging', { enabled: false, channelId: undefined });
+        text = t('logChannelCleared');
+      }
+    }
+    if (sub === 'preview') {
+      text =
+        t('logPrivatePreview') +
+        '\n' +
+        t('logEntry', {
+          kind: 'test',
+          action: 'event',
+          caseId: '-',
+          actorId: i.user.id,
+          targetId: '-',
+        });
+    }
+    if (['pauseevents', 'reset'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('logResetConfirm');
+      if (sub === 'pauseevents') c.guildConfig.patch(i.guildId, 'logging', { events: [] });
+      else c.guildConfig.reset(i.guildId, 'logging');
+      text = t(sub === 'pauseevents' ? 'logEventsPaused' : 'logResetSaved');
+    }
+    if (
+      ![
+        'export',
+        'import',
+        'clearchannel',
+        'preview',
+        'pauseevents',
+        'reset',
+        'channel',
+        'enable',
+        'disable',
+        'config',
+        'event',
+        'test',
+      ].includes(sub)
+    )
+      throw new UserError('unknownCommand');
+
     if (sub === 'channel') {
       const id = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, id);
@@ -151,6 +278,11 @@ export default {
       );
       text = t(result.sent ? 'logTestSent' : 'logTestNotSent');
     }
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

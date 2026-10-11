@@ -31,6 +31,28 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('grants')
+      .setDescription(
+        'ManageRoles:inspect stored grant metadata,no live identity/access or changes.',
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('page')
+          .setDescription('Stored IDs ascending10/page1-1000')
+          .setMinValue(1)
+          .setMaxValue(1000),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('state')
+          .setDescription('One stored receipt state')
+          .addChoices(
+            ...['pending', 'granted', 'uncertain'].map((value) => ({ name: value, value })),
+          ),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('refresh')
       .setDescription('Check your current primary-guild identity and own reward role.'),
   );
@@ -44,7 +66,7 @@ export default {
       t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId);
     let text;
-    if (['setup', 'reset'].includes(sub)) {
+    if (['setup', 'reset', 'grants'].includes(sub)) {
       const authorize = async () => {
         const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
         if (
@@ -70,6 +92,17 @@ export default {
         validateSelfRole(role, bot, actor, i.guild);
         c.guildTags.setup(i.guildId, role.id);
         text = t('tagSetup');
+      } else if (sub === 'grants') {
+        const page = i.options.getInteger('page') ?? 1,
+          rows = c.guildTags.grants(i.guildId, page, {
+            state: i.options.getString('state') ?? null,
+          });
+        text =
+          t('tagGrantList', { page }) +
+          '\n' +
+          (rows
+            .map((r) => `${r.user_id} | ${r.role_id} | ${t('tagStored_' + r.status)}`)
+            .join('\n') || t('tagGrantEmpty'));
       } else {
         c.guildTags.reset(i.guildId);
         text = t('tagReset');

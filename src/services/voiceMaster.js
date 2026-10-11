@@ -49,6 +49,37 @@ export class VoiceMaster {
       .prepare('SELECT category_id FROM voice_master_config WHERE guild_id=?')
       .get(guildId);
   }
+  resetSetup(guildId) {
+    return this.db.prepare('DELETE FROM voice_master_config WHERE guild_id=?').run(guildId).changes;
+  }
+  records(guildId, page = 1, state = null) {
+    if (
+      !Number.isInteger(page) ||
+      page < 1 ||
+      page > 1000 ||
+      (state !== null && !['creating', 'active', 'deleting', 'closed', 'uncertain'].includes(state))
+    )
+      throw new UserError('vmRecordsInvalid');
+    return this.db.transaction(() => {
+      const total = this.db
+          .prepare(
+            'SELECT count(*) n FROM voice_master_channels WHERE guild_id=? AND (? IS NULL OR status=?)',
+          )
+          .get(guildId, state, state).n,
+        pages = Math.max(1, Math.ceil(total / 10));
+      if (page > pages) throw new UserError('vmRecordsInvalid');
+      return {
+        total,
+        pages,
+        page,
+        rows: this.db
+          .prepare(
+            'SELECT id,owner_id,channel_id,status,public_access FROM voice_master_channels WHERE guild_id=? AND (? IS NULL OR status=?) ORDER BY id DESC LIMIT 10 OFFSET ?',
+          )
+          .all(guildId, state, state, (page - 1) * 10),
+      };
+    })();
+  }
   setup(guildId, categoryId) {
     if (!/^\d{17,20}$/.test(categoryId)) throw new UserError('vmCategoryInvalid');
     this.db
@@ -85,22 +116,42 @@ export class VoiceMaster {
     })();
   }
   created(id, channelId) {
-    if (typeof channelId !== 'string' || !channelId)
-      throw new TypeError('Missing voice channel identity');
-    const result = this.db
-      .prepare("UPDATE voice_master_channels SET channel_id=? WHERE id=? AND status='creating'")
-      .run(channelId, id);
-    if (result.changes !== 1) throw new Error('Voice reservation not creating');
-  }
-  activate(id, channelId) {
-    if (typeof channelId !== 'string' || !channelId)
+    if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
       throw new TypeError('Missing voice channel identity');
     const result = this.db
       .prepare(
-        "UPDATE voice_master_channels SET channel_id=?,status='active' WHERE id=? AND status='creating'",
+        "UPDATE voice_master_channels SET channel_id=? WHERE id=? AND status='creating' AND (channel_id IS NULL OR channel_id=?)",
       )
-      .run(channelId, id);
+      .run(channelId, id, channelId);
     if (result.changes !== 1) throw new Error('Voice reservation not creating');
+  }
+  activate(id, channelId) {
+    if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
+      throw new TypeError('Missing voice channel identity');
+    const result = this.db
+      .prepare(
+        "UPDATE voice_master_channels SET channel_id=?,status='active' WHERE id=? AND status='creating' AND (channel_id IS NULL OR channel_id=?)",
+      )
+      .run(channelId, id, channelId);
+    if (result.changes !== 1) throw new Error('Voice reservation not creating');
+  }
+  creationUncertain(id) {
+    return this.db
+      .prepare(
+        "UPDATE voice_master_channels SET status='uncertain' WHERE id=? AND status='creating'",
+      )
+      .run(id).changes;
+  }
+  transition(id, expected, status) {
+    if (
+      !['active', 'deleting'].includes(expected) ||
+      !['deleting', 'closed', 'uncertain'].includes(status)
+    )
+      throw new TypeError('Invalid VoiceMaster transition');
+    const result = this.db
+      .prepare('UPDATE voice_master_channels SET status=? WHERE id=? AND status=?')
+      .run(status, id, expected);
+    if (result.changes !== 1) throw new Error('Voice state changed');
   }
   status(id, status) {
     if (!['deleting', 'closed', 'uncertain'].includes(status))
@@ -169,7 +220,7 @@ export async function openPrivateVoice(i, c) {
         reason: 'Luna private temporary voice channel',
       });
     } catch {
-      c.voiceMaster.status(id, 'uncertain');
+      c.voiceMaster.creationUncertain(id);
       throw new UserError('vmCreateUncertain', { id });
     }
     try {
@@ -181,7 +232,7 @@ export async function openPrivateVoice(i, c) {
       );
       c.voiceMaster.activate(id, channel.id);
     } catch {
-      c.voiceMaster.status(id, 'uncertain');
+      c.voiceMaster.creationUncertain(id);
       throw new UserError('vmCreateUncertain', { id });
     }
     return { id, channelId: channel.id };
@@ -189,9 +240,9 @@ export async function openPrivateVoice(i, c) {
     c.voiceMaster.active.delete(key);
   }
 }
-export async function editPrivateVoice(i, c, { action, name, limit, share }) {
+export async function editPrivateVoice(i, c, { action, name, limit, share, bitrate }) {
   requireVoiceReady(i, c);
-  if (!['rename', 'limit', 'close', 'lock', 'unlock'].includes(action))
+  if (!['rename', 'limit', 'close', 'lock', 'unlock', 'bitrate', 'regionauto'].includes(action))
     throw new UserError('vmActionInvalid');
   if (
     action === 'rename' &&
@@ -203,6 +254,8 @@ export async function editPrivateVoice(i, c, { action, name, limit, share }) {
     throw new UserError('vmNameInvalid');
   if (action === 'limit' && (!Number.isInteger(limit) || limit < 1 || limit > 99))
     throw new UserError('vmUserLimitInvalid');
+  if (action === 'bitrate' && (!Number.isSafeInteger(bitrate) || bitrate < 8000 || bitrate > 96000))
+    throw new UserError('vmBitrateInvalid');
   if (action === 'unlock' && share !== true) throw new UserError('vmPublicConfirm');
   const key = `${i.guildId}:${i.user.id}`;
   if (c.voiceMaster.active.has(key)) throw new UserError('roleActionBusy');
@@ -224,7 +277,7 @@ export async function editPrivateVoice(i, c, { action, name, limit, share }) {
     )
       throw new UserError('vmBotPermission');
     if (
-      (action === 'close' || action === 'lock' || action === 'unlock') &&
+      ['close', 'lock', 'unlock', 'bitrate', 'regionauto'].includes(action) &&
       voiceOccupancy(i.guild, channel.id) !== 0
     )
       throw new UserError('vmNotEmpty');
@@ -244,12 +297,20 @@ export async function editPrivateVoice(i, c, { action, name, limit, share }) {
       reason: 'Owner requested private voice channel change',
       interactionId: i.id,
     });
-    if (action === 'close') c.voiceMaster.status(row.id, 'deleting');
-    if (['lock', 'unlock'].includes(action)) c.voiceMaster.status(row.id, 'uncertain');
+    if (action === 'close') c.voiceMaster.transition(row.id, 'active', 'deleting');
+    if (['lock', 'unlock', 'bitrate', 'regionauto'].includes(action))
+      c.voiceMaster.transition(row.id, 'active', 'uncertain');
     try {
       if (action === 'rename') await channel.setName(name.trim(), 'Luna owner voice rename');
       else if (action === 'limit') await channel.setUserLimit(limit, 'Luna owner voice limit');
-      else if (['lock', 'unlock'].includes(action)) {
+      else if (action === 'bitrate' || action === 'regionauto') {
+        if (action === 'bitrate') await channel.setBitrate(bitrate, 'Luna owner voice bitrate');
+        else await channel.setRTCRegion(null, 'Luna owner automatic voice region');
+        const current = await i.guild.channels.fetch(row.channel_id, { force: true });
+        verifyPrivateVoice(current, row, bot.id);
+        if (action === 'bitrate' ? current.bitrate !== bitrate : current.rtcRegion !== null)
+          throw new Error('Voice setting not observed');
+      } else if (['lock', 'unlock'].includes(action)) {
         await channel.permissionOverwrites.set(
           privateVoiceOverwrites(i.guildId, bot.id, i.user.id, action === 'unlock'),
           'Luna owner confirmed voice access change',
@@ -258,18 +319,39 @@ export async function editPrivateVoice(i, c, { action, name, limit, share }) {
         verifyPrivateVoice(current, { ...row, public_access: action === 'unlock' ? 1 : 0 }, bot.id);
       } else await channel.delete('Luna owner closed empty private voice channel');
     } catch {
-      if (action === 'close') c.voiceMaster.status(row.id, 'uncertain');
+      if (action === 'close') {
+        try {
+          c.voiceMaster.transition(row.id, 'deleting', 'uncertain');
+        } catch {}
+      }
       c.cases.finish(caseId, 'uncertain');
       throw new UserError('vmEditUncertain', { id: caseId });
     }
     try {
-      if (action === 'close') c.voiceMaster.status(row.id, 'closed');
-      if (['lock', 'unlock'].includes(action))
-        c.voiceMaster.db
+      if (action === 'close') c.voiceMaster.transition(row.id, 'deleting', 'closed');
+      if (['bitrate', 'regionauto'].includes(action)) {
+        const result = c.voiceMaster.db
           .prepare(
-            "UPDATE voice_master_channels SET status='active',public_access=? WHERE id=? AND status='uncertain'",
+            "UPDATE voice_master_channels SET status='active' WHERE id=? AND guild_id=? AND owner_id=? AND channel_id=? AND public_access=? AND status='uncertain'",
           )
-          .run(action === 'unlock' ? 1 : 0, row.id);
+          .run(row.id, row.guild_id, row.owner_id, row.channel_id, row.public_access);
+        if (result.changes !== 1) throw new Error('Voice setting receipt changed');
+      }
+      if (['lock', 'unlock'].includes(action)) {
+        const result = c.voiceMaster.db
+          .prepare(
+            "UPDATE voice_master_channels SET status='active',public_access=? WHERE id=? AND status='uncertain' AND guild_id=? AND owner_id=? AND channel_id=? AND public_access=?",
+          )
+          .run(
+            action === 'unlock' ? 1 : 0,
+            row.id,
+            row.guild_id,
+            row.owner_id,
+            row.channel_id,
+            row.public_access,
+          );
+        if (result.changes !== 1) throw new Error('Voice access receipt changed');
+      }
       c.cases.finish(caseId, 'completed');
     } catch {
       throw new UserError('vmEditUncertain', { id: caseId });

@@ -13,3 +13,17 @@ Luna checks due records once per minute while online and catches up after restar
 Local tests cover schema, isolation, duplicate protection, bounded unique sampling, joins, late joins, current eligibility, vanished members, network failures, stored-result retries, button message matching, bots, locale output, scheduler lifecycle and all five management paths. Live Discord button and restart behavior has not been tested yet. Prize policy, giveaway staff-role grants, banner customization and cancellation commands are not implemented. Luna slash syntax is original; the nine verified Zynrax reference paths are not marked equivalent or fully implemented.
 
 Reference: https://docs.zynrax.site/miscellaneous/giveaway
+
+## Inspect, stop and erase entrant records
+
+`inspect id` privately shows stored prize/state/destination/deadline/maxwinners/drawversion and entrant count,no entrant IDs/live membership/eligibility/delivery proof. `cancel id confirm:true` changes only active stored status to cancelled,preventing future entries and draws. No pending/ending/uncertain/ended cancellation or publish rollback. Native announcement/button remains visible but cannot accept entries. This deliberately does not publish a cancellation notice or modify/delete native messages. Entrants retained until explicitly erased. A draw that has already reached ending is not cancelled.
+
+`forgetentries id confirm:true` erases entrant IDs only for ended/cancelled giveaway. Keeps prize/metadata/winnerhistory/cases/native messages. Future rerolls cannot use erased entrants,so may produce no winners. Existing winnerIDs are not erased,explicitly disclosed. Not secure erase of backups/native announcements. Current exact ManageGuild required for all three paths;private localized no-ping replies. Cancelling during async eligibility causes draw state check to reject before publication. Local mocks only,no native button/visual acceptance.
+
+## Bulk stored giveaway controls
+
+`/giveaway cancelall confirm:true` cancels every active stored giveaway only. Pending/ending/uncertain states remain,no native message/button update or announcement,no entrant deletion. In-flight draws may finish.
+
+`forgetfinishedentries confirm:true` erases entrant IDs only for ended/cancelled giveaways in this server. Other states,stored winner history,native messages and other servers remain. Later rerolls lose erased candidates.
+
+`export` privately attaches latest100stored giveaway records with total/truncated:prize,state,channel/message binding,deadline,winner-count and required-role setting. No entrant/winner/staff/source IDs. Keep authored prize/bindings private;not full backup or native message readiness. Fresh native Manage Server before reading/writing,private3locale/no-ping. Three tests scope/state/native-binding retention,isolation/exporttruncation/databaseabort and authority/confirmation/attachmentbytes. No live/client visual acceptance.

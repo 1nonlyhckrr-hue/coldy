@@ -13,3 +13,9 @@ Eight new distinct tests cover selection endpoints/bad RNG, dice bounds, choices
 Number uses inclusive bounds from-1000000to1000000,unbiased system RNG,including singleton. Sample picks1-N distinct labels without replacement,no native member assignments/invites. Labels/output safety identical to shuffle;escaped oversized output refuses before reply.549localtests,198installedpaths;no live acceptance.
 
 `dicekeep count keep mode [sides]`:roll1-10dice,sides2-1000(default6),keep1-count highest/lowest. Shows originalrolls,keptsortedvalues,sum;tiesareindividualdice,notdistinctvalue filtering. `rpsseries moves`:2-10 pipe-separated rock/paper/scissors,case-insensitive;duplicates allowed. EntireinputvalidatedbeforeRNG,independentcryptographicbotmoveeachround,completeperroundresults pluswin/loss/drawcounts andwin-vs-lossseriesresult. No persistentstate,stakes ortargetperson.6new tests,586fullsuite/207installedpaths;livepixelacceptancepending.
+
+## Fresh card draw and word/dice activities
+
+`/fun cards [count]` draws1-10distinct cards without replacement from a fresh52card deck per invocation;no saved hand,stakes or betting. Cryptographic RNG,localized suit labels. `wordscramble word` scrambles3-20ASCIIletters with at least2distinctletters,lowercases input,shows answer in a spoiler. Preserves exact letter multiset and changes order;fallback swap if shuffle happens to match original,so not an unbiased distinct-anagram sampler. Suppliedword only,no dictionary/guess history.
+
+`dicetarget target [count] [sides]` rolls1-10dice,sides2-1000(default6),counts rolls at least target2-sides,inclusive. No saved game/stakes/otherperson. Private3locale/no mentions,no native effects/storage. Three tests deck/multiset/endpoints/RNG/bounds/target/privatepayloads.16Funpaths total;no live/client visual acceptance.

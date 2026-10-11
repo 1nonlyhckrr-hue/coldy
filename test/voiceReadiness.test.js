@@ -42,3 +42,57 @@ test('occupancy counts native voice states even when corresponding members are n
   assert.equal(voiceOccupancy(guild, 'room'), 1);
   assert.throws(() => voiceOccupancy({}, 'room'), /voiceStateUnavailable/);
 });
+
+test('occupancy incomplete native states fail closed instead of reporting a safe empty room', async () => {
+  const { voiceOccupancy } = await import('../src/services/voiceReadiness.js');
+  for (const state of [
+    undefined,
+    null,
+    {},
+    { channelId: undefined },
+    { channelId: 0 },
+    { channelId: '' },
+  ]) {
+    const guild = { voiceStates: { cache: new Map([['unknown', state]]) } };
+    assert.throws(() => voiceOccupancy(guild, 'room'), /voiceStateUnavailable/);
+  }
+});
+test('occupancy explicit disconnected states and other rooms retain correct current count', async () => {
+  const { voiceOccupancy } = await import('../src/services/voiceReadiness.js');
+  const guild = {
+    voiceStates: {
+      cache: new Map([
+        ['a', { channelId: 'room' }],
+        ['b', { channelId: 'room' }],
+        ['c', { channelId: null }],
+        ['d', { channelId: 'other' }],
+      ]),
+    },
+  };
+  assert.equal(voiceOccupancy(guild, 'room'), 2);
+  assert.equal(voiceOccupancy(guild, 'empty'), 0);
+});
+
+test('voice readiness exact operator flag prevents malformed truthy values from enabling effects', () => {
+  const v = new VoiceReadiness();
+  v.initialReady();
+  const i = { client: { isReady: () => true }, guild: { shardId: 0 } };
+  for (const value of ['true', 'false', 1, {}, null, undefined])
+    assert.throws(
+      () => v.require(i, { config: { voiceEventsEnabled: value } }),
+      /voiceRuntimeDisabled/,
+    );
+  v.require(i, { config: { voiceEventsEnabled: true } });
+});
+test('voice native client readiness must positively equal true rather than a truthy unknown result', () => {
+  const v = new VoiceReadiness();
+  v.initialReady();
+  const c = { config: { voiceEventsEnabled: true } },
+    i = { guild: { shardId: 0 }, client: {} };
+  for (const value of ['true', 1, {}, null, undefined, false]) {
+    i.client.isReady = () => value;
+    assert.throws(() => v.require(i, c), /voiceStateUnavailable/);
+  }
+  i.client.isReady = () => true;
+  v.require(i, c);
+});

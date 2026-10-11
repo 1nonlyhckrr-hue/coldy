@@ -239,8 +239,8 @@ test('Permit rejects owner, everyone, managed roles, protected/unknown command a
     db.close();
   }
 });
-test('Permit metadata exposes eight paths and runtime role loss takes effect', async () => {
-  assert.equal(permit.data.toJSON().options.length, 8);
+test('Permit metadata exposes seventeen paths and runtime role loss takes effect', async () => {
+  assert.equal(permit.data.toJSON().options.length, 17);
   const db = openDatabase(':memory:');
   try {
     const { r, guild, member } = fixture(db);
@@ -548,5 +548,202 @@ test('filtered permit empty results use page one and never imply command/Discord
     assert.deepEqual(r.list('g'), []);
   } finally {
     db.close();
+  }
+});
+
+test('channel deny is exact scope,persistent/idempotent/additive with owner/recovery exemptions', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-channel-deny-'));
+  let db = openDatabase(join(dir, 'db'));
+  try {
+    let { r, guild } = fixture(db);
+    const channel = '100000000000000004',
+      i = { guildId: 'g', guild, user: { id: user }, channelId: channel };
+    assert.equal(r.setChannel('g', 'fun', channel, true), 1);
+    assert.equal(r.setChannel('g', 'fun', channel, true), 0);
+    await assert.rejects(() => r.enforce(i, 'fun'), /permitDenied/);
+    await r.enforce({ ...i, channelId: '100000000000000005' }, 'fun');
+    await r.enforce({ ...i, guildId: 'other' }, 'fun');
+    assert.equal(await r.ownStatus(i, 'fun'), 'denied');
+    await r.enforce({ ...i, user: { id: owner } }, 'fun');
+    await r.enforce(i, 'help');
+    assert.throws(() => r.setChannel('g', 'permit', channel, true), /permitProtected/);
+    db.close();
+    db = openDatabase(join(dir, 'db'));
+    r = new CommandRestrictions(db);
+    assert.equal(r.channelRules('g', 'fun').length, 1);
+    r.set('g', 'fun', 'user', user, true);
+    r.setChannel('g', 'fun', channel, false);
+    await assert.rejects(() => r.enforce(i, 'fun'), /permitDenied/);
+    assert.equal(r.channelRules('g').length, 0);
+    assert.equal(r.list('g').length, 1);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+test('channel deny100rule cap/invalidinputs/no native permissions changes', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new CommandRestrictions(db);
+    for (let n = 0; n < 100; n++)
+      r.setChannel('g', 'fun', String(100000000000000100n + BigInt(n)), true);
+    assert.equal(r.channelRules('g').length, 100);
+    assert.throws(() => r.setChannel('g', 'fun', '100000000000000999', true), /permitLimit/);
+    for (const id of ['', null, 'bad']) assert.throws(() => r.setChannel('g', 'fun', id, true));
+    assert.throws(() => r.setChannel('g', 'fun', '100000000000000100', 'true'));
+    assert.equal(r.setChannel('g', 'fun', '100000000000000100', false), 1);
+    assert.equal(r.channelRules('other').length, 0);
+  } finally {
+    db.close();
+  }
+});
+test('channel deny commands private3locale/currentmanager/blocknativeidentity/revocation/list/unblockdeleted', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const { r, member, guild } = fixture(db),
+        id = '100000000000000004';
+      let sub = 'blockchannel',
+        reply;
+      guild.channels = {
+        fetch: async () => ({
+          id,
+          guildId: 'g',
+          type: 0,
+          permissionsFor: () => ({ has: () => true }),
+        }),
+      };
+      const c = {
+        commandRestrictions: r,
+        commands: new Map([['fun', {}]]),
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      const i = {
+        guild,
+        guildId: 'g',
+        user: { id: user },
+        options: {
+          getSubcommand: () => sub,
+          getString: (n) => (n === 'command' ? 'fun' : id),
+          getInteger: () => 1,
+        },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+      };
+      await permit.execute(i, c);
+      assert.equal(r.channelRules('g').length, 1);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      sub = 'channelrules';
+      await permit.execute(i, c);
+      assert(reply.embeds[0].data.description.includes(id));
+      sub = 'unblockchannel';
+      guild.channels.fetch = async () => {
+        throw new Error('deleted');
+      };
+      await permit.execute(i, c);
+      assert.equal(r.channelRules('g').length, 0);
+      sub = 'blockchannel';
+      guild.channels.fetch = async () => {
+        member.permissions.has = () => false;
+        return { id, guildId: 'g', type: 0, permissionsFor: () => ({ has: () => true }) };
+      };
+      await assert.rejects(() => permit.execute(i, c), /userPermission/);
+      assert.equal(r.channelRules('g').length, 0);
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('combined permit clear exact storedcommand/both tables/guild/idempotence and scoped metadata export', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new CommandRestrictions(db);
+    r.set('g', 'fun', 'user', user, true);
+    r.set('g', 'music', 'role', role, true);
+    r.setChannel('g', 'fun', role, true);
+    r.setChannel('g', 'music', user, true);
+    r.set('other', 'fun', 'user', user, true);
+    r.setChannel('other', 'fun', role, true);
+    assert.deepEqual(r.exportRules('g'), { subjects: r.list('g'), channels: r.channelRules('g') });
+    assert.deepEqual(r.clearCombined('g', 'fun'), { subjects: 1, channels: 1 });
+    assert.deepEqual(r.clearCombined('g', 'removed'), { subjects: 0, channels: 0 });
+    assert.equal(r.list('g')[0].command_name, 'music');
+    assert.throws(() => r.clearCombined('g', 'Bad name'));
+    assert.deepEqual(r.clearCombined('g'), { subjects: 1, channels: 1 });
+    assert.deepEqual(r.clearCombined('g'), { subjects: 0, channels: 0 });
+    assert.equal(r.list('other').length, 1);
+    assert.equal(r.channelRules('other').length, 1);
+  } finally {
+    db.close();
+  }
+});
+test('combined permit clear is atomic if channel table erase fails and does not change native authority', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const { r, guild } = fixture(db);
+    r.set('g', 'fun', 'user', user, true);
+    r.setChannel('g', 'fun', role, true);
+    db.exec(
+      "CREATE TRIGGER deny_delete BEFORE DELETE ON command_channel_restrictions BEGIN SELECT RAISE(ABORT,'storage'); END;",
+    );
+    assert.throws(() => r.clearCombined('g'), /storage/);
+    assert.equal(r.list('g').length, 1);
+    assert.equal(r.channelRules('g').length, 1);
+    db.exec('DROP TRIGGER deny_delete');
+    r.clearCombined('g');
+    await r.enforce({ guild, guildId: 'g', user: { id: user }, channelId: role }, 'fun');
+  } finally {
+    db.close();
+  }
+});
+test('permit export/clearall/clearcommand private3locale bytes,current manager and explicit confirmation', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const { r, member, guild } = fixture(db);
+      r.set('g', 'fun', 'user', user, true);
+      r.setChannel('g', 'fun', role, true);
+      let sub = 'export',
+        confirm = false,
+        reply;
+      const c = {
+        commandRestrictions: r,
+        commands: new Map(),
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      const i = {
+        guildId: 'g',
+        guild,
+        user: { id: user },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+        options: { getSubcommand: () => sub, getBoolean: () => confirm, getString: () => 'fun' },
+      };
+      await permit.execute(i, c);
+      assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), r.exportRules('g'));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      sub = 'clearcommand';
+      await assert.rejects(() => permit.execute(i, c), /permitClearConfirm/);
+      assert.equal(r.list('g').length, 1);
+      confirm = true;
+      await permit.execute(i, c);
+      assert.equal(r.list('g').length, 0);
+      assert.equal(r.channelRules('g').length, 0);
+      sub = 'clearall';
+      r.set('g', 'music', 'role', role, true);
+      member.permissions.has = () => false;
+      await assert.rejects(() => permit.execute(i, c), /userPermission/);
+      assert.equal(r.list('g').length, 1);
+      member.permissions.has = () => true;
+      await permit.execute(i, c);
+      assert.equal(r.list('g').length, 0);
+    } finally {
+      db.close();
+    }
   }
 });

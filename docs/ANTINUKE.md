@@ -15,3 +15,15 @@ Official sources inspected:
 - https://docs.discord.com/developers/resources/audit-log
 
 AcceptednativealertsendmustreturnnonemptystringmessageID;otherwiseuncertainwithoutreplay. Finalizationtransitionsone recordedreservationonly. /antinuke unresolved [page] is private exactcurrentmanager storedmetadatareview,oldestfirst10/page1-10,terminal/foreignexcluded. No currentdanger/delivery/punishmentclaim,nativefetch,retryorcleanup.560localtests,new200pathscheckpointlocalonly.
+
+## Stored alert-policy management
+
+`exportpolicy` privately exports destination/enabled/threshold/window/trusted-userIDs,no audit events/incidents/actor history. Keep file private. Not import/restore/live readiness/prevention proof.
+
+`resetpolicy confirm:true` restores disabled defaults(threshold5,window60seconds,emptytrustedIDs,no destination),keeps events/incidents/replayguards/cases/nativepermissions. `removetrust user-id confirm:true` removes one exact stored trustedID including departedusers,no native member lookup. Missing storedID returns0. Owner/applicationbot exemptions always retained by detection. No native permissions/role change,punishment or rollback. Fresh exact ManageGuild for all three paths,explicitconfirmation for mutations. Nativevalidation late reset stops alert and marks existing incident unavailable,no replay. Alreadyinflightalerts mayfinish,no atomicrecall guarantee. Private localized/no-ping sharedembeds/JSONbytes locally tested;liveaudit/visual acceptance pending.
+
+## Stored alert-policy library
+
+`/antinuke importpolicy json confirm:true` replaces one strict policy object4000characters max,using existing defaults/limits,unique trusted-user IDs,and forces monitoring disabled. Stored channel/trust IDs are not live verified by import;review before explicit enable. Audit events,incidents and replay suppression stay intact. No punishment/prevention/rollback.
+
+`cleartrust confirm:true` removes all stored user exemptions,retaining owner/bot exemptions and monitoring/destination/thresholds. When enabled,future actions by formerly trusted users may contribute to alerts. `clearchannel confirm:true` stops monitoring and forgets only destination,retaining trust/thresholds/history. In-flight alerts may finish. All3fresh native Manage Server/explicit confirmation/private3locale/no-ping,no native target mutation. Three tests cover replacement/defaults/forceddisable/isolation/validation/storagefail/scope/commands. No live/client visual acceptance.

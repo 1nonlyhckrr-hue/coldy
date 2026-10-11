@@ -4,28 +4,28 @@ import { helpPage, commandDetails } from '../src/services/helpIndex.js';
 import { loadCommands } from '../src/services/registry.js';
 import command from '../src/commands/general/help.js';
 const commands = await loadCommands();
-test('help pages expose all214 installed paths exactly once with complete sorted lines', () => {
+test('help pages expose all352 installed paths exactly once with complete sorted lines', () => {
   const first = helpPage(commands),
     lines = [];
-  assert.equal(first.total, 214);
+  assert.equal(first.total, 352);
   for (let page = 1; page <= first.pages; page++) {
     const result = helpPage(commands, { page });
     assert(result.lines.length <= 8);
     lines.push(...result.lines);
   }
-  assert.equal(lines.length, 214);
-  assert.equal(new Set(lines).size, 214);
+  assert.equal(lines.length, 352);
+  assert.equal(new Set(lines).size, 352);
   assert.deepEqual(lines, [...lines].sort());
 });
 test('help category and case-insensitive literal search combine without changing registry', () => {
-  assert.equal(helpPage(commands, { category: 'music' }).total, 12);
+  assert.equal(helpPage(commands, { category: 'music' }).total, 18);
   assert.deepEqual(
     helpPage(commands, { category: 'music', search: 'SHUFFLE' }).lines.map((l) => l.split(':')[0]),
     ['/music shuffle'],
   );
   assert.equal(helpPage(commands, { search: '.*' }).total, 0);
   assert.equal(helpPage(commands, { category: 'music', search: 'ban' }).total, 0);
-  assert.equal(commands.size, 41);
+  assert.equal(commands.size, 47);
 });
 test('help refuses malformed/out-of-range pages/categories/search without clamping', () => {
   for (const page of [0, -1, 101, 1.5, '1', NaN]) assert.throws(() => helpPage(commands, { page }));

@@ -18,6 +18,15 @@ const schema = z
   })
   .strict();
 export function sampleWinners(candidates, count, random = randomInt) {
+  if (
+    !Array.isArray(candidates) ||
+    candidates.some((id) => typeof id !== 'string' || !id) ||
+    !Number.isInteger(count) ||
+    count < 1 ||
+    count > 20 ||
+    typeof random !== 'function'
+  )
+    throw new TypeError('Invalid giveaway sampling input');
   const values = [...new Set(candidates)];
   for (let n = values.length - 1; n > 0; n--) {
     const swap = random(n + 1);
@@ -63,7 +72,7 @@ export class Giveaways {
     return this.db.prepare('SELECT * FROM giveaways WHERE id=? AND guild_id=?').get(id, guildId);
   }
   activate(id, messageId) {
-    if (typeof messageId !== 'string' || !messageId)
+    if (typeof messageId !== 'string' || !messageId.trim())
       throw new TypeError('Missing giveaway message identity');
     const result = this.db
       .prepare("UPDATE giveaways SET message_id=?,status='active' WHERE id=? AND status='pending'")
@@ -87,6 +96,69 @@ export class Giveaways {
       pages = Math.max(1, Math.ceil(rows.length / 2));
     if (page > pages) throw new UserError('responderPageInvalid', { pages });
     return { rows: rows.slice((page - 1) * 2, page * 2), pages, total: rows.length, page };
+  }
+  inspect(id, guildId) {
+    const row = this.get(id, guildId);
+    if (!row) throw new UserError('giveawayNotFound');
+    return {
+      id: row.id,
+      prize: row.prize,
+      status: row.status,
+      channelId: row.channel_id,
+      endsAt: row.ends_at,
+      winnerCount: row.winner_count,
+      drawVersion: row.draw_version,
+      entries: this.db
+        .prepare('SELECT count(*) n FROM giveaway_entries WHERE giveaway_id=?')
+        .get(id).n,
+    };
+  }
+  cancelAllActive(guildId) {
+    return this.db
+      .prepare("UPDATE giveaways SET status='cancelled' WHERE guild_id=? AND status='active'")
+      .run(guildId).changes;
+  }
+  forgetFinishedEntries(guildId) {
+    return this.db
+      .prepare(
+        "DELETE FROM giveaway_entries WHERE giveaway_id IN (SELECT id FROM giveaways WHERE guild_id=? AND status IN ('ended','cancelled'))",
+      )
+      .run(guildId).changes;
+  }
+  exportRecords(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT count(*) n FROM giveaways WHERE guild_id=?')
+        .get(guildId).n;
+      const rows = this.list(guildId).map((r) => ({
+        id: r.id,
+        prize: r.prize,
+        status: r.status,
+        channelId: r.channel_id,
+        messageId: r.message_id,
+        endsAt: r.ends_at,
+        winnerCount: r.winner_count,
+        requiredRoleId: r.required_role_id,
+      }));
+      return { total, truncated: total > rows.length, records: rows };
+    })();
+  }
+  cancelActive(id, guildId) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('giveawayNotFound');
+    const r = this.db
+      .prepare(
+        "UPDATE giveaways SET status='cancelled' WHERE id=? AND guild_id=? AND status='active'",
+      )
+      .run(id, guildId);
+    if (r.changes !== 1) throw new UserError('giveawayCancelInvalid');
+  }
+  forgetEntries(id, guildId) {
+    return this.db.transaction(() => {
+      const row = this.get(id, guildId);
+      if (!row || !['ended', 'cancelled'].includes(row.status))
+        throw new UserError('giveawayForgetInvalid');
+      return this.db.prepare('DELETE FROM giveaway_entries WHERE giveaway_id=?').run(id).changes;
+    })();
   }
   due() {
     return this.db
@@ -135,6 +207,12 @@ export class Giveaways {
     })();
   }
   draw(id, guildId, eligible, { reroll = false, random = randomInt } = {}) {
+    if (
+      typeof reroll !== 'boolean' ||
+      !Array.isArray(eligible) ||
+      eligible.some((user) => typeof user !== 'string' || !user)
+    )
+      throw new UserError('giveawayDrawInvalid');
     return this.db.transaction(() => {
       const g = this.get(id, guildId);
       if (!g) throw new UserError('giveawayNotFound');

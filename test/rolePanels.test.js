@@ -230,7 +230,7 @@ test('role panel slash create, list, disable wrapper handles persisted records',
     getSubcommand: () => sub,
     getChannel: () => ({ id: x.i.channelId }),
     getRole: () => x.role,
-    getString: () => 'Member',
+    getString: (n) => (n === 'label' ? 'Member' : null),
     getInteger: () => 1,
   };
   try {
@@ -856,7 +856,7 @@ test('schema25 undirected click receipts migrate to unknown with terminal and un
       db.prepare("SELECT action FROM role_click_receipts WHERE interaction_id='new'").get().action,
       'remove',
     );
-    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 26);
+    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 27);
   } finally {
     db.close();
     rmSync(dir, { recursive: true, force: true });
@@ -1072,6 +1072,134 @@ test('bulk disable rejects unconfirmed and wrong current actor without stored ch
     x.s.guild.members.fetch = async () => ({ ...x.actor, id: 'wrong' });
     await assert.rejects(() => cmd.execute(x.i, x.context), /roleActorPermission/);
     assert.equal(x.context.rolePanels.get(id, 'g').status, 'active');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('stored panel state filter happens before pages preserving guild scope complete rows newest order and no mutation', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 25; n++) {
+      const id = x.context.rolePanels.reserve({
+        guildId: 'g',
+        channelId: 'c',
+        roleId: x.role.id,
+        label: 'label',
+        interactionId: 's' + n,
+      });
+      x.db
+        .prepare('UPDATE role_panels SET status=? WHERE id=?')
+        .run(n % 2 ? 'disabled' : 'uncertain', id);
+    }
+    const before = x.db.prepare('SELECT * FROM role_panels ORDER BY id').all();
+    assert.equal(x.context.rolePanels.list('g', 1, { state: 'uncertain' }).length, 10);
+    assert.equal(x.context.rolePanels.list('g', 2, { state: 'uncertain' }).length, 3);
+    assert.equal(x.context.rolePanels.list('g', 1, { state: 'uncertain' })[0].id, 25);
+    assert.deepEqual(x.context.rolePanels.list('other', 1, { state: 'uncertain' }), []);
+    for (const state of ['bad', false, 0])
+      assert.throws(() => x.context.rolePanels.list('g', 1, { state }), /rolePanelStateInvalid/);
+    assert.deepEqual(x.db.prepare('SELECT * FROM role_panels ORDER BY id').all(), before);
+  } finally {
+    x.db.close();
+  }
+});
+test('filtered panel list slash manager private localized no role/message effect and no status promotion', async () => {
+  const { default: command } = await import('../src/commands/reactionroles/reactionroles.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.context.guildConfig = { get: () => ({ language: locale }) };
+      x.context.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+      const id = x.context.rolePanels.reserve({
+        guildId: 'g',
+        channelId: 'c',
+        roleId: x.role.id,
+        label: 'L',
+        interactionId: 'one',
+      });
+      x.context.rolePanels.complete(id, 'message');
+      x.i.options = {
+        getSubcommand: () => 'list',
+        getInteger: () => 1,
+        getString: () => 'uncertain',
+      };
+      const replies = [];
+      x.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      x.i.editReply = async (p) => replies.push(p);
+      await command.execute(x.i, x.context);
+      assert(!replies[0].embeds[0].data.description.includes('#1 |'));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.equal(x.context.rolePanels.get(id, 'g').status, 'active');
+      assert.equal(x.roles.length, 0);
+      assert.equal(x.s.sent.length, 0);
+      x.actor.permissions.has = () => false;
+      await assert.rejects(() => command.execute(x.i, x.context));
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('role panel publication requires nonblank string receipt and preserves uncertainty without resend', async () => {
+  for (const returned of [{ id: 1 }, { id: ' ' }, { id: '' }, {}]) {
+    const x = setup();
+    let attempts = 0;
+    try {
+      const channel = {
+        id: x.i.channelId,
+        guildId: 'g',
+        type: 0,
+        permissionsFor: () => ({ has: () => true }),
+        send: async () => {
+          attempts++;
+          return returned;
+        },
+      };
+      x.i.guild.channels.fetch = async () => channel;
+      await assert.rejects(
+        () =>
+          createRolePanel(x.i, x.context, {
+            channelId: x.i.channelId,
+            roleId: x.role.id,
+            label: 'Join',
+          }),
+        /rolePanelStorageFailed/,
+      );
+      assert.equal(x.context.rolePanels.get(1, 'g').status, 'uncertain');
+      assert.equal(attempts, 1);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('role panel late publication failure cannot demote already completed active receipt', async () => {
+  const x = setup();
+  try {
+    const channel = {
+      id: x.i.channelId,
+      guildId: 'g',
+      type: 0,
+      permissionsFor: () => ({ has: () => true }),
+      send: async () => {
+        x.context.rolePanels.complete(1, 'observed');
+        throw Error('late');
+      },
+    };
+    x.i.guild.channels.fetch = async () => channel;
+    await assert.rejects(
+      () =>
+        createRolePanel(x.i, x.context, {
+          channelId: x.i.channelId,
+          roleId: x.role.id,
+          label: 'Join',
+        }),
+      /rolePanelUncertain/,
+    );
+    assert.equal(x.context.rolePanels.get(1, 'g').status, 'active');
+    assert.equal(x.context.rolePanels.get(1, 'g').message_id, 'observed');
+    assert.equal(x.context.rolePanels.publicationUncertain(1), 0);
   } finally {
     x.db.close();
   }

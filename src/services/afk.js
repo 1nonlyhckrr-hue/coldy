@@ -36,6 +36,40 @@ export class AfkStates {
       )
       .run(guildId, userId, channelId, reason.trim(), this.now());
   }
+  updateReason(guildId, userId, reason) {
+    if (
+      typeof reason !== 'string' ||
+      !reason.trim() ||
+      reason.length > 200 ||
+      /[\u0000-\u001f\u007f]/u.test(reason)
+    )
+      throw new UserError('afkReasonInvalid');
+    if (!this.get(guildId, userId)) throw new UserError('afkNotSet');
+    this.db
+      .prepare('UPDATE afk_states SET reason=? WHERE guild_id=? AND user_id=?')
+      .run(reason.trim(), guildId, userId);
+  }
+  move(guildId, userId, channelId) {
+    if (!this.get(guildId, userId)) throw new UserError('afkNotSet');
+    this.db
+      .prepare('UPDATE afk_states SET channel_id=? WHERE guild_id=? AND user_id=?')
+      .run(channelId, guildId, userId);
+  }
+  clearAll(guildId) {
+    return this.db.prepare('DELETE FROM afk_states WHERE guild_id=?').run(guildId).changes;
+  }
+  clearChannel(guildId, channelId) {
+    if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
+      throw new UserError('afkStoredScopeInvalid');
+    return this.db
+      .prepare('DELETE FROM afk_states WHERE guild_id=? AND channel_id=?')
+      .run(guildId, channelId).changes;
+  }
+  clearUser(guildId, userId) {
+    if (typeof userId !== 'string' || !/^\d{17,20}$/.test(userId))
+      throw new UserError('afkStoredScopeInvalid');
+    return this.clear(guildId, userId);
+  }
   clear(guildId, userId) {
     return this.db
       .prepare('DELETE FROM afk_states WHERE guild_id=? AND user_id=?')
@@ -64,19 +98,32 @@ export class AfkStates {
     })();
   }
 }
-export function createAfkHandler(c) {
+function recentMessage(message, now) {
+  let clock;
+  try {
+    clock = now();
+  } catch {
+    return false;
+  }
+  return (
+    Number.isSafeInteger(clock) &&
+    clock >= 0 &&
+    Number.isFinite(message.createdTimestamp) &&
+    Math.abs(clock - message.createdTimestamp) <= 300000
+  );
+}
+export function createAfkHandler(c, now = Date.now) {
   return async (message) => {
     if (
-      !c.config.messageEventsEnabled ||
+      c.config.messageEventsEnabled !== true ||
       !message.guildId ||
       message.guild?.id !== message.guildId ||
       !message.author ||
-      message.author.bot ||
+      message.author.bot !== false ||
       message.webhookId ||
       message.system ||
       !/^[0-9]{17,20}$/.test(message.id) ||
-      !Number.isFinite(message.createdTimestamp) ||
-      Math.abs(Date.now() - message.createdTimestamp) > 300000
+      !recentMessage(message, now)
     )
       return;
     try {
@@ -107,7 +154,11 @@ export function createAfkHandler(c) {
         !message.guild.client?.user?.id ||
         bot?.id !== message.guild.client.user.id ||
         bot.guild?.id !== message.guildId ||
-        !c.config.messageEventsEnabled ||
+        c.config.messageEventsEnabled !== true ||
+        !recentMessage(message, now) ||
+        message.author?.bot !== false ||
+        message.system ||
+        message.webhookId ||
         !channel
           .permissionsFor(bot)
           ?.has([
@@ -123,7 +174,6 @@ export function createAfkHandler(c) {
           ])
       )
         return;
-      if (!c.afk.reserve(message.id, message.guildId, message.channelId)) return;
       const rowsNow = rows.filter((row) => {
         const latest = c.afk.get(message.guildId, row.user_id);
         return (
@@ -133,6 +183,7 @@ export function createAfkHandler(c) {
         );
       });
       if (!rowsNow.length) return;
+      if (!c.afk.reserve(message.id, message.guildId, message.channelId)) return;
       await channel.send(
         lunaPayload(
           {
@@ -141,7 +192,7 @@ export function createAfkHandler(c) {
                 c.localization.t(message.guildId, 'afkNotice', {
                   user: row.user_id,
                   reason: row.reason,
-                  minutes: Math.max(0, Math.floor((Date.now() - row.created_at) / 60000)),
+                  minutes: Math.max(0, Math.floor((now() - row.created_at) / 60000)),
                 }),
               )
               .join('\n'),

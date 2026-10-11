@@ -117,6 +117,7 @@ test('audit handler sends localized no-ping alert once without any punishment AP
     },
     c = {
       antinuke: r,
+      config: { auditEventsEnabled: true },
       localization: { locale: () => 'hi', t: (_g, k, p) => translate('hi', k, p) },
       logger: { warn() {} },
     };
@@ -158,6 +159,7 @@ test('alert channel rejection and uncertain send never repeat', async () => {
       },
       c = {
         antinuke: r,
+        config: { auditEventsEnabled: true },
         localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
         logger: { warn() {} },
       };
@@ -284,6 +286,7 @@ test('stale trusted user can be removed without current member but adding still 
   const actor = { id: ids.actor, guild: { id: 'g' }, permissions: { has: () => true } };
   const c = {
       antinuke: r,
+      config: { auditEventsEnabled: true },
       localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
     },
     i = {
@@ -370,6 +373,7 @@ test('antinuke trust verifies member guild and repeats admin authority after tar
       let allowed = true;
       const c = {
         antinuke: r,
+        config: { auditEventsEnabled: true },
         localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
       };
       const i = {
@@ -441,6 +445,7 @@ test('accepted audit send missing native identity becomes uncertain without auto
     };
     const h = createAntinukeHandler({
       antinuke: r,
+      config: { auditEventsEnabled: true },
       localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
       logger: { warn() {} },
     });
@@ -511,6 +516,7 @@ test('unresolved audit slash is exact current manager gated private localized an
       };
       const c = {
         antinuke: r,
+        config: { auditEventsEnabled: true },
         localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
       };
       const before = r.incidents('g');
@@ -615,6 +621,7 @@ test('audit alert checks latest disabled destination/trust policy after lookup b
         },
         h = createAntinukeHandler({
           antinuke: r,
+          config: { auditEventsEnabled: true },
           localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
           logger: { warn() {} },
         });
@@ -655,6 +662,7 @@ test('audit alert owner change during destination lookup suppresses scheduled al
       },
       h = createAntinukeHandler({
         antinuke: r,
+        config: { auditEventsEnabled: true },
         localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
         logger: { warn() {} },
       });
@@ -665,5 +673,453 @@ test('audit alert owner change during destination lookup suppresses scheduled al
     assert.equal(r.incidents('g')[0].status, 'unavailable');
   } finally {
     db.close();
+  }
+});
+
+test('antinuke alert finalized or deleted while native channel lookup waits cannot send stale incident', async () => {
+  for (const status of ['uncertain', 'alerted', 'deleted']) {
+    const { db, r } = setup();
+    let sends = 0;
+    const g = {
+      ...guild,
+      members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+      channels: {
+        fetch: async () => {
+          if (status === 'deleted') db.prepare('DELETE FROM antinuke_incidents').run();
+          else r.finish(1, status);
+          return {
+            id: ids.channel,
+            guildId: 'g',
+            type: ChannelType.GuildText,
+            permissionsFor: () => ({ has: () => true }),
+            send: async () => {
+              sends++;
+              return { id: 'receipt' };
+            },
+          };
+        },
+      },
+    };
+    const c = {
+      antinuke: r,
+      config: { auditEventsEnabled: true },
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      logger: { warn() {} },
+    };
+    try {
+      const h = createAntinukeHandler(c);
+      await h(entry(1), g);
+      await h(entry(2), g);
+      assert.equal(sends, 0);
+      assert.equal(r.incidents('g')[0]?.status, status === 'deleted' ? undefined : status);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('antinuke recorded gate exact guild/state and blank send receipt never reports alerted', async () => {
+  const { db, r } = setup();
+  let sends = 0;
+  const g = {
+    ...guild,
+    members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+    channels: {
+      fetch: async () => ({
+        id: ids.channel,
+        guildId: 'g',
+        type: ChannelType.GuildText,
+        permissionsFor: () => ({ has: () => true }),
+        send: async () => {
+          sends++;
+          assert(r.recorded(1, 'g'));
+          assert(!r.recorded(1, 'other'));
+          return { id: ' ' };
+        },
+      }),
+    },
+  };
+  const c = {
+    antinuke: r,
+    config: { auditEventsEnabled: true },
+    localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+    logger: { warn() {} },
+  };
+  try {
+    const h = createAntinukeHandler(c);
+    await h(entry(1), g);
+    await h(entry(2), g);
+    assert.equal(sends, 1);
+    assert.equal(r.incidents('g')[0].status, 'uncertain');
+    assert(!r.recorded(1, 'g'));
+  } finally {
+    db.close();
+  }
+});
+
+test('antinuke invalid audit clock cannot record event or mutate cleanup watermark/incident', () => {
+  const { db, r } = setup();
+  try {
+    for (const clock of [null, NaN, Infinity, -1, 1.5, '1000']) {
+      assert.equal(r.record(entry(1), guild, clock), null);
+      assert.equal(r.lastCleanup, 0);
+    }
+    assert.equal(db.prepare('SELECT count(*) n FROM antinuke_events').get().n, 0);
+    assert.equal(r.incidents('g').length, 0);
+    assert.equal(r.record(entry(1), guild, now), null);
+    assert(r.record(entry(2), guild, now));
+  } finally {
+    db.close();
+  }
+});
+test('antinuke invalid cleanup clock preserves event and incident records;zero clock is accepted', () => {
+  const { db, r } = setup();
+  try {
+    r.record(entry(1), guild, now);
+    r.record(entry(2), guild, now);
+    const events = db.prepare('SELECT * FROM antinuke_events').all();
+    const incidents = r.incidents('g');
+    for (const clock of [null, NaN, Infinity, -1, 1.5, '1000']) {
+      assert.throws(() => r.cleanup(clock), /clock/);
+      assert.deepEqual(db.prepare('SELECT * FROM antinuke_events').all(), events);
+      assert.deepEqual(r.incidents('g'), incidents);
+    }
+    r.cleanup(0);
+    assert.deepEqual(r.incidents('g'), incidents);
+  } finally {
+    db.close();
+  }
+});
+
+test('antinuke clock rollback cannot count future audit records into current threshold', () => {
+  const { db, r } = setup();
+  try {
+    assert.equal(r.record(entry(1), guild, now), null);
+    assert.equal(r.record(entry(2), guild, now - 1), null);
+    assert.equal(r.incidents('g').length, 0);
+    const incident = r.record(entry(3), guild, now - 1);
+    assert.equal(incident.count, 2);
+    assert.equal(r.incidents('g').length, 1);
+  } finally {
+    db.close();
+  }
+});
+test('antinuke future stored incident cannot suppress current-window alert after clock rollback', () => {
+  const { db, r } = setup();
+  try {
+    db.prepare(
+      "INSERT INTO antinuke_incidents(guild_id,actor_id,action,event_count,status,created_at) VALUES(?,?,?,?,'recorded',?)",
+    ).run('g', ids.actor, AuditLogEvent.ChannelDelete, 2, now + 1000);
+    assert.equal(r.record(entry(1), guild, now), null);
+    const incident = r.record(entry(2), guild, now);
+    assert.equal(incident.count, 2);
+    assert.equal(r.incidents('g').length, 2);
+    assert.equal(r.record(entry(3), guild, now), null);
+  } finally {
+    db.close();
+  }
+});
+
+test('antinuke enable rejects malformed runtime consent without activating stored alert policy', async () => {
+  for (const flag of [undefined, null, 1, 'true', 'false', {}]) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new AntinukeAlerts(db);
+      const g = {
+        ...guild,
+        members: {
+          fetch: async () => ({
+            id: ids.actor,
+            guild: { id: 'g' },
+            permissions: { has: () => true },
+          }),
+        },
+      };
+      const i = {
+        guild: g,
+        guildId: 'g',
+        user: { id: ids.actor },
+        options: { getSubcommand: () => 'enable' },
+        deferReply: async () => {},
+        editReply: async () => {
+          throw new Error('unexpected reply');
+        },
+      };
+      const c = {
+        antinuke: r,
+        config: { auditEventsEnabled: flag },
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+      await assert.rejects(() => command.execute(i, c), /antinukeRuntimeDisabled/);
+      assert.equal(r.get('g').enabled, false);
+      assert.equal(db.prepare('SELECT count(*) n FROM antinuke_config').get().n, 0);
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('antinuke runtime revoked initially or during channel validation cannot record/send new alert', async () => {
+  for (const stage of ['initial', 'final']) {
+    for (const flag of [false, undefined, null, 1, 'true', 'false', {}]) {
+      const { db, r } = setup();
+      let sends = 0;
+      const c = {
+        antinuke: r,
+        config: { auditEventsEnabled: stage === 'initial' ? flag : true },
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+        logger: { warn() {} },
+      };
+      const g = {
+        ...guild,
+        members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+        channels: {
+          fetch: async () => {
+            c.config.auditEventsEnabled = flag;
+            return {
+              id: ids.channel,
+              guildId: 'g',
+              type: ChannelType.GuildText,
+              permissionsFor: () => ({ has: () => true }),
+              send: async () => {
+                sends++;
+                return { id: 'receipt' };
+              },
+            };
+          },
+        },
+      };
+      try {
+        const h = createAntinukeHandler(c);
+        await h(entry(1), g);
+        await h(entry(2), g);
+        assert.equal(sends, 0);
+        assert.equal(r.incidents('g').length, stage === 'initial' ? 0 : 1);
+        if (stage === 'final') assert.equal(r.incidents('g')[0].status, 'unavailable');
+        assert.equal(
+          db.prepare('SELECT count(*) n FROM antinuke_events').get().n,
+          stage === 'initial' ? 0 : 2,
+        );
+      } finally {
+        db.close();
+      }
+    }
+  }
+});
+
+test('antinuke threshold/window policy changed during native lookup prevents stale alert with no retry', async () => {
+  for (const change of [
+    { threshold: 3 },
+    { windowSeconds: 10 },
+    { threshold: 20, windowSeconds: 300 },
+  ]) {
+    const { db, r } = setup();
+    let sends = 0;
+    const g = {
+      ...guild,
+      members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+      channels: {
+        fetch: async () => {
+          r.patch('g', change);
+          return {
+            id: ids.channel,
+            guildId: 'g',
+            type: ChannelType.GuildText,
+            permissionsFor: () => ({ has: () => true }),
+            send: async () => {
+              sends++;
+              return { id: 'receipt' };
+            },
+          };
+        },
+      },
+    };
+    const c = {
+      antinuke: r,
+      config: { auditEventsEnabled: true },
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      logger: { warn() {} },
+    };
+    try {
+      const h = createAntinukeHandler(c);
+      await h(entry(1), g);
+      await h(entry(2), g);
+      await h(entry(2), g);
+      assert.equal(sends, 0);
+      assert.equal(r.incidents('g')[0].status, 'unavailable');
+      assert.equal(r.incidents('g')[0].event_count, 2);
+      for (const [key, value] of Object.entries(change)) assert.equal(r.get('g')[key], value);
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('antinuke recorded snapshot gate matches original actor/action/count and does not mutate metadata', () => {
+  const { db, r } = setup();
+  try {
+    r.record(entry(1), guild, now);
+    const incident = r.record(entry(2), guild, now);
+    assert.equal(r.recorded(incident.id, 'g', incident), true);
+    for (const change of [
+      { actorId: ids.owner },
+      { action: AuditLogEvent.RoleDelete },
+      { count: 3 },
+    ])
+      assert.equal(r.recorded(incident.id, 'g', { ...incident, ...change }), false);
+    assert.equal(r.recorded(incident.id, 'other', incident), false);
+    assert.equal(r.incidents('g')[0].event_count, 2);
+  } finally {
+    db.close();
+  }
+});
+test('antinuke changed stored incident actor/action/count during native lookup cannot send stale alert', async () => {
+  for (const [column, value] of [
+    ['actor_id', ids.owner],
+    ['action', AuditLogEvent.RoleDelete],
+    ['event_count', 3],
+  ]) {
+    const { db, r } = setup();
+    let sends = 0;
+    const g = {
+      ...guild,
+      members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+      channels: {
+        fetch: async () => {
+          db.prepare(`UPDATE antinuke_incidents SET ${column}=? WHERE id=1`).run(value);
+          return {
+            id: ids.channel,
+            guildId: 'g',
+            type: ChannelType.GuildText,
+            permissionsFor: () => ({ has: () => true }),
+            send: async () => {
+              sends++;
+              return { id: 'receipt' };
+            },
+          };
+        },
+      },
+    };
+    const c = {
+      antinuke: r,
+      config: { auditEventsEnabled: true },
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      logger: { warn() {} },
+    };
+    try {
+      const h = createAntinukeHandler(c);
+      await h(entry(1), g);
+      await h(entry(2), g);
+      assert.equal(sends, 0);
+      assert.equal(r.incidents('g')[0][column], value);
+      assert.equal(r.incidents('g')[0].status, 'recorded');
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('audit alert policyreset/trustIDremoval exactscope/defaults/receipts preserved without nativepermissions', () => {
+  const { db, r } = setup();
+  try {
+    r.trust('g', ids.actor, true);
+    r.patch('other', { enabled: true, trustedUsers: [ids.actor] });
+    assert.equal(r.removeTrust('g', ids.actor), 1);
+    assert.equal(r.removeTrust('g', ids.actor), 0);
+    assert.throws(() => r.removeTrust('g', 'bad'));
+    r.record(entry(1), guild, now);
+    r.record(entry(2), guild, now);
+    const events = db.prepare('SELECT count(*) n FROM antinuke_events').get().n;
+    const reset = r.resetPolicy('g');
+    assert.deepEqual(reset, { enabled: false, threshold: 5, windowSeconds: 60, trustedUsers: [] });
+    assert.equal(r.get('other').enabled, true);
+    assert.equal(db.prepare('SELECT count(*) n FROM antinuke_events').get().n, events);
+    assert.equal(r.incidents('g').length, 1);
+    assert.equal(r.record(entry(3), guild, now), null);
+  } finally {
+    db.close();
+  }
+});
+test('audit reset during nativealertvalidation suppresses send while preserving unavailable incident', async () => {
+  const { db, r } = setup();
+  try {
+    let sent = 0;
+    const g = {
+      ...guild,
+      members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+      channels: {
+        fetch: async () => {
+          r.resetPolicy('g');
+          return {
+            id: ids.channel,
+            guildId: 'g',
+            type: 0,
+            permissionsFor: () => ({ has: () => true }),
+            send: async () => {
+              sent++;
+              return { id: 'message' };
+            },
+          };
+        },
+      },
+    };
+    const c = {
+      antinuke: r,
+      config: { auditEventsEnabled: true },
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      logger: { warn: () => {} },
+    };
+    r.record(entry(1), g, Date.now());
+    await createAntinukeHandler(c)(entry(2), g);
+    assert.equal(sent, 0);
+    assert.equal(r.incidents('g')[0].status, 'unavailable');
+  } finally {
+    db.close();
+  }
+});
+test('audit exportpolicy/resetpolicy/removetrust private3locale bytes/currentmanager/confirm no native lookup', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const { db, r } = setup();
+    try {
+      r.trust('g', ids.actor, true);
+      const member = { id: ids.actor, guild: { id: 'g' }, permissions: { has: () => true } };
+      const g = { ...guild, members: { fetch: async () => member } };
+      let sub = 'exportpolicy',
+        confirm = false,
+        reply;
+      const c = {
+        antinuke: r,
+        config: { auditEventsEnabled: false },
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      const i = {
+        guild: g,
+        guildId: 'g',
+        user: { id: ids.actor },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+        options: {
+          getSubcommand: () => sub,
+          getBoolean: () => confirm,
+          getString: () => ids.actor,
+        },
+      };
+      await command.execute(i, c);
+      assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), r.get('g'));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      sub = 'removetrust';
+      await assert.rejects(() => command.execute(i, c), /antinukeResetConfirm/);
+      confirm = true;
+      await command.execute(i, c);
+      assert.deepEqual(r.get('g').trustedUsers, []);
+      sub = 'resetpolicy';
+      await command.execute(i, c);
+      assert.equal(r.get('g').enabled, false);
+      member.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, c), /userPermission/);
+    } finally {
+      db.close();
+    }
   }
 });

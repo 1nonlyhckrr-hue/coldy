@@ -2,6 +2,7 @@ import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   ChannelType,
@@ -116,6 +117,17 @@ const data = new SlashCommandBuilder()
       .setDescription('List ten complete panel records per page,newest100maximum.')
       .addIntegerOption((o) =>
         o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('state')
+          .setDescription('Only stored state,not live native message/role readiness')
+          .addChoices(
+            ...['pending', 'active', 'disabled', 'uncertain'].map((value) => ({
+              name: value,
+              value,
+            })),
+          ),
       ),
   )
   .addSubcommand((s) =>
@@ -128,6 +140,55 @@ const data = new SlashCommandBuilder()
         o
           .setName('confirm')
           .setDescription('Confirm stopping active role-panel buttons here')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('export')
+      .setDescription(
+        'Private latest100 stored panel bindings/button mappings;no member or click receipts.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('disablechannel')
+      .setDescription(
+        'Disable active panels for one stored channel ID;no native edits or role changes.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact stored channel ID,even if channel departed')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping active panels for this channel')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('disablerole')
+      .setDescription(
+        'Disable entire active panels containing one role ID;no native edits or role changes.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('role-id')
+          .setDescription('Exact stored role ID,even if role departed')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm disabling whole panels containing this role')
           .setRequired(true),
       ),
   )
@@ -157,7 +218,29 @@ export default {
     )
       throw new UserError('roleActorPermission');
     const sub = i.options.getSubcommand();
-    let content;
+    let content, files;
+    if (sub === 'export') {
+      const report = c.rolePanels.exportMappings(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-role-panels.json',
+        }),
+      ];
+      content = t('rolePanelExported', {
+        count: report.panels.length,
+        total: report.total,
+        truncated: t(report.truncated ? 'enabled' : 'disabled'),
+      });
+    }
+    if (['disablechannel', 'disablerole'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('rolePanelDisableActiveConfirm');
+      const kind = sub === 'disablechannel' ? 'channel' : 'role',
+        id = i.options.getString(kind + '-id', true);
+      content = t('rolePanelScopedDisabled', {
+        count: c.rolePanels.disableFor(i.guildId, kind, id),
+      });
+    }
     if (sub === 'create') {
       const result = await createRolePanel(i, c, {
         channelId: i.options.getChannel('channel', true).id,
@@ -226,7 +309,9 @@ export default {
     }
     if (sub === 'list') {
       const page = i.options.getInteger('page') ?? 1,
-        panels = c.rolePanels.list(i.guildId, page);
+        panels = c.rolePanels.list(i.guildId, page, {
+          state: i.options.getString?.('state') ?? null,
+        });
       content =
         t('rolePanelListHeader', { page }) +
         '\n' +
@@ -247,6 +332,11 @@ export default {
       c.rolePanels.status(id, 'disabled');
       content = t('rolePanelDisabled', { id });
     }
-    await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

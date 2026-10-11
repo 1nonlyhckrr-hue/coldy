@@ -49,6 +49,49 @@ export class AntinukeAlerts {
       return cfg;
     })();
   }
+  resetPolicy(guildId) {
+    this.db.prepare('DELETE FROM antinuke_config WHERE guild_id=?').run(guildId);
+    return this.get(guildId);
+  }
+  importPolicy(guildId, text) {
+    let cfg;
+    try {
+      if (typeof text !== 'string' || text.length > 4000) throw Error('bounds');
+      const v = JSON.parse(text);
+      if (v === null || typeof v !== 'object' || Array.isArray(v)) throw Error('object');
+      cfg = schema.parse(v);
+      if (new Set(cfg.trustedUsers).size !== cfg.trustedUsers.length) throw Error('duplicate');
+      cfg.enabled = false;
+    } catch {
+      throw new UserError('antinukeImportInvalid');
+    }
+    this.db
+      .prepare(
+        'INSERT INTO antinuke_config VALUES(?,?) ON CONFLICT(guild_id) DO UPDATE SET settings_json=excluded.settings_json',
+      )
+      .run(guildId, JSON.stringify(cfg));
+    return cfg;
+  }
+  clearTrust(guildId) {
+    return this.db.transaction(() => {
+      const n = this.get(guildId).trustedUsers.length;
+      this.patch(guildId, { trustedUsers: [] });
+      return n;
+    })();
+  }
+  clearChannel(guildId) {
+    return this.patch(guildId, { enabled: false, channelId: undefined });
+  }
+  removeTrust(guildId, userId) {
+    if (typeof userId !== 'string' || !/^\d{17,20}$/.test(userId))
+      throw new UserError('antinukeUserInvalid');
+    return this.db.transaction(() => {
+      const cfg = this.get(guildId),
+        present = cfg.trustedUsers.includes(userId);
+      this.patch(guildId, { trustedUsers: cfg.trustedUsers.filter((id) => id !== userId) });
+      return Number(present);
+    })();
+  }
   trust(guildId, userId, trusted) {
     if (!/^\d{17,20}$/.test(userId) || typeof trusted !== 'boolean')
       throw new UserError('antinukeUserInvalid');
@@ -61,6 +104,7 @@ export class AntinukeAlerts {
     })();
   }
   record(entry, guild, now = Date.now()) {
+    if (!Number.isSafeInteger(now) || now < 0) return null;
     const cfg = this.get(guild.id);
     if (
       !cfg.enabled ||
@@ -96,16 +140,16 @@ export class AntinukeAlerts {
       const since = now - cfg.windowSeconds * 1000;
       const count = this.db
         .prepare(
-          'SELECT count(*) n FROM antinuke_events WHERE guild_id=? AND actor_id=? AND created_at>=?',
+          'SELECT count(*) n FROM antinuke_events WHERE guild_id=? AND actor_id=? AND created_at>=? AND created_at<=?',
         )
-        .get(guild.id, entry.executorId, since).n;
+        .get(guild.id, entry.executorId, since, now).n;
       if (count < cfg.threshold) return null;
       if (
         this.db
           .prepare(
-            'SELECT 1 FROM antinuke_incidents WHERE guild_id=? AND actor_id=? AND created_at>=?',
+            'SELECT 1 FROM antinuke_incidents WHERE guild_id=? AND actor_id=? AND created_at>=? AND created_at<=?',
           )
-          .get(guild.id, entry.executorId, since)
+          .get(guild.id, entry.executorId, since, now)
       )
         return null;
       const incidentId = Number(
@@ -121,9 +165,24 @@ export class AntinukeAlerts {
         count,
         action: entry.action,
         window: cfg.windowSeconds,
+        threshold: cfg.threshold,
         channelId: cfg.channelId,
       };
     })();
+  }
+  recorded(id, guildId, expected = null) {
+    const row = this.db
+      .prepare(
+        "SELECT actor_id,action,event_count FROM antinuke_incidents WHERE id=? AND guild_id=? AND status='recorded'",
+      )
+      .get(id, guildId);
+    return (
+      !!row &&
+      (expected === null ||
+        (row.actor_id === expected.actorId &&
+          row.action === expected.action &&
+          row.event_count === expected.count))
+    );
   }
   finish(id, status) {
     if (!['alerted', 'uncertain', 'unavailable'].includes(status))
@@ -150,6 +209,7 @@ export class AntinukeAlerts {
       .all(guildId, (page - 1) * 10);
   }
   cleanup(now = Date.now()) {
+    if (!Number.isSafeInteger(now) || now < 0) throw new TypeError('Invalid antinuke clock');
     this.db.transaction(() => {
       this.db.prepare('DELETE FROM antinuke_events WHERE created_at<?').run(now - 86400000);
       this.db.prepare('DELETE FROM antinuke_incidents WHERE created_at<?').run(now - 30 * 86400000);
@@ -159,6 +219,7 @@ export class AntinukeAlerts {
 export function createAntinukeHandler(c) {
   return async (entry, guild) => {
     let incident;
+    if (c.config?.auditEventsEnabled !== true) return;
     try {
       incident = c.antinuke.record(entry, guild);
       if (!incident) return;
@@ -178,8 +239,11 @@ export function createAntinukeHandler(c) {
       }
       const latest = c.antinuke.get(guild.id);
       if (
+        c.config?.auditEventsEnabled !== true ||
         !latest.enabled ||
         latest.channelId !== incident.channelId ||
+        latest.windowSeconds !== incident.window ||
+        latest.threshold !== incident.threshold ||
         latest.trustedUsers.includes(incident.actorId) ||
         guild.ownerId === incident.actorId ||
         guild.client.user.id === incident.actorId
@@ -187,11 +251,12 @@ export function createAntinukeHandler(c) {
         c.antinuke.finish(incident.id, 'unavailable');
         return;
       }
+      if (!c.antinuke.recorded(incident.id, guild.id, incident)) return;
       try {
         const sent = await channel.send(
           lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }),
         );
-        if (typeof sent?.id !== 'string' || !sent.id)
+        if (typeof sent?.id !== 'string' || !sent.id.trim())
           throw new Error('Missing accepted audit alert identity');
       } catch {
         c.antinuke.finish(incident.id, 'uncertain');

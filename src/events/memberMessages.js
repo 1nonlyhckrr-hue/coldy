@@ -1,3 +1,4 @@
+import { welcomeStyle } from '../services/welcomeAssets.js';
 import { lunaPayload } from '../utils/embeds.js';
 import { renderGuildTemplate, validateOutputChannel } from '../services/guildConfig.js';
 export function createMemberMessageHandler(context, kind) {
@@ -28,8 +29,7 @@ export function createMemberMessageHandler(context, kind) {
           },
           {
             locale: latest.language,
-            color: current.color,
-            title: kind === 'goodbye' ? current.goodbyeTitle : current.title,
+            ...welcomeStyle(current, kind),
           },
         ),
       );

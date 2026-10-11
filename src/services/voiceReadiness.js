@@ -11,10 +11,10 @@ export class VoiceReadiness {
     this.unsafeShards.add(shardId);
   }
   require(i, c) {
-    if (!c.config?.voiceEventsEnabled) throw new UserError('voiceRuntimeDisabled');
+    if (c.config?.voiceEventsEnabled !== true) throw new UserError('voiceRuntimeDisabled');
     if (
       !this.ready ||
-      !i.client?.isReady?.() ||
+      i.client?.isReady?.() !== true ||
       i.guild?.available === false ||
       this.unsafeShards.has(i.guild?.shardId ?? 0)
     )
@@ -30,6 +30,11 @@ export function voiceOccupancy(guild, channelId) {
   if (!cache || typeof cache.values !== 'function') throw new UserError('voiceStateUnavailable');
   let count = 0;
   for (const state of cache.values()) {
+    if (
+      !state ||
+      !(state.channelId === null || (typeof state.channelId === 'string' && state.channelId))
+    )
+      throw new UserError('voiceStateUnavailable');
     if (state.channelId === channelId) count++;
   }
   return count;

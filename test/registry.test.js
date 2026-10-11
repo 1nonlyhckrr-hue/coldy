@@ -14,6 +14,8 @@ test('installed command names and option limits validate', async () => {
     'avatar',
     'banner',
     'boostcount',
+    'casehistory',
+    'channel',
     'config',
     'customrole',
     'emojiinfo',
@@ -32,8 +34,11 @@ test('installed command names and option limits validate', async () => {
     'permit',
     'ping',
     'poll',
+    'pollmanage',
     'reactionroles',
+    'role',
     'roleinfo',
+    'schedulecleanup',
     'serverbanner',
     'servericon',
     'serverinfo',
@@ -41,6 +46,7 @@ test('installed command names and option limits validate', async () => {
     'stats',
     'stickerinfo',
     'ticket',
+    'tools',
     'uptime',
     'userinfo',
     'voice',
@@ -73,13 +79,19 @@ test('foundation and utility commands execute mock replies', async () => {
         'membercount',
         'afk',
         'poll',
+        'pollmanage',
         'banner',
         'boostcount',
+        'casehistory',
+        'channel',
+        'role',
         'roleinfo',
+        'schedulecleanup',
         'antinuke',
         'automod',
         'automation',
         'ticket',
+        'tools',
         'giveaway',
         'giveawayleave',
         'autoresponder',
@@ -108,7 +120,11 @@ test('foundation and utility commands execute mock replies', async () => {
     };
     const i = {
       user,
-      options: { getUser: () => null, getInteger: () => null },
+      options: {
+        getSubcommand: () => 'color',
+        getUser: () => null,
+        getInteger: () => null,
+      },
       client: { ws: { ping: 42 } },
       guild: { name: 'Test', id: '1', memberCount: 3 },
       reply: async (v) => calls.push(v),
@@ -120,5 +136,54 @@ test('foundation and utility commands execute mock replies', async () => {
     });
     assert.equal(calls.length, 1);
     assert(calls[0].embeds[0].data.description.length <= 2000);
+  }
+});
+
+test('registry rejects invalid cooldown metadata at load rather than breaking first live interaction', async () => {
+  const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const root = await mkdtemp(join(tmpdir(), 'luna-cooldown-registry-'));
+  try {
+    for (const [n, value] of [
+      '0',
+      '-1',
+      'NaN',
+      'Infinity',
+      '1.5',
+      '86400001',
+      "'1000'",
+      'null',
+    ].entries()) {
+      const dir = join(root, String(n), 'test');
+      await mkdir(dir, { recursive: true });
+      await writeFile(
+        join(dir, 'sample.js'),
+        `export default {category:'test',cooldownMs:${value},data:{name:'sample',toJSON:()=>({name:'sample'})},execute:async()=>{}};`,
+      );
+      await assert.rejects(() => loadCommands(join(root, String(n))), /Invalid command cooldown/);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+test('registry accepts default and inclusive valid cooldown bounds without changing metadata', async () => {
+  const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const root = await mkdtemp(join(tmpdir(), 'luna-valid-cooldown-'));
+  try {
+    for (const [n, value] of [undefined, 1, 86400000].entries()) {
+      const dir = join(root, String(n), 'test');
+      await mkdir(dir, { recursive: true });
+      await writeFile(
+        join(dir, 'sample.js'),
+        `export default {category:'test',${value === undefined ? '' : `cooldownMs:${value},`}data:{name:'sample',toJSON:()=>({name:'sample'})},execute:async()=>{}};`,
+      );
+      const registry = await loadCommands(join(root, String(n)));
+      assert.equal(registry.get('sample').cooldownMs, value);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
   }
 });

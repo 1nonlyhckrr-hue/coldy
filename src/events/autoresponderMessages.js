@@ -1,12 +1,26 @@
 import { PermissionFlagsBits as P } from 'discord.js';
 import { lunaPayload } from '../utils/embeds.js';
-export function createAutoresponderHandler(context) {
+function recentMessage(message, now) {
+  let clock;
+  try {
+    clock = now();
+  } catch {
+    return false;
+  }
+  return (
+    Number.isSafeInteger(clock) &&
+    clock >= 0 &&
+    Number.isFinite(message.createdTimestamp) &&
+    Math.abs(clock - message.createdTimestamp) <= 300000
+  );
+}
+export function createAutoresponderHandler(context, now = Date.now) {
   return async (message) => {
     if (
-      !context.config.messageEventsEnabled ||
+      context.config.messageEventsEnabled !== true ||
       !message.guild ||
       !message.author ||
-      message.author.bot ||
+      message.author.bot !== false ||
       message.webhookId ||
       message.system ||
       !message.content ||
@@ -14,11 +28,7 @@ export function createAutoresponderHandler(context) {
     )
       return;
     // Edits are not handled. Very old messages/replayed events are not eligible.
-    if (
-      !Number.isFinite(message.createdTimestamp) ||
-      Math.abs(Date.now() - message.createdTimestamp) > 300000
-    )
-      return;
+    if (!recentMessage(message, now)) return;
     let reserved = false;
     try {
       // Read-only preflight avoids native calls for unmatched/cooldown/replayed messages.
@@ -29,7 +39,11 @@ export function createAutoresponderHandler(context) {
         message.guild.channels.fetch(message.channel.id, { force: true }),
       ]);
       if (
-        !context.config.messageEventsEnabled ||
+        context.config.messageEventsEnabled !== true ||
+        !recentMessage(message, now) ||
+        message.author?.bot !== false ||
+        message.system ||
+        message.webhookId ||
         !me ||
         me.id !== message.client.user.id ||
         me.guild?.id !== message.guild.id ||
@@ -56,7 +70,7 @@ export function createAutoresponderHandler(context) {
           { locale },
         ),
       );
-      if (typeof sent?.id !== 'string' || !sent.id)
+      if (typeof sent?.id !== 'string' || !sent.id.trim())
         throw new Error('Missing accepted responder message identity');
       context.autoresponders.finish(message.id, 'sent');
     } catch {

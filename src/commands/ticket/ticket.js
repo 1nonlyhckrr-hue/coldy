@@ -136,6 +136,59 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s.setName('config').setDescription('Show ticket configuration to server managers.'),
   );
+for (const sub of ['resetsetup', 'forgetalltranscripts', 'releaseclaims'])
+  data.addSubcommand((s) =>
+    s
+      .setName(sub)
+      .setDescription(
+        sub === 'resetsetup'
+          ? 'Confirmed stop newticket opens/panels by forgettingsetup;existingtickets/nativechannels kept.'
+          : sub === 'forgetalltranscripts'
+            ? 'Confirmed erase allguild storedtranscripts,no native/exportedmessage deletion.'
+            : 'Confirmed release allopen storedclaims,not access/ownership/nativechannels.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stored setup/content/claim change,no native effect')
+          .setRequired(true),
+      ),
+  );
+for (const name of ['forgetbyid', 'forgetusertranscripts', 'forgetclosedtranscripts'])
+  data.addSubcommand((s) => {
+    s.setName(name)
+      .setDescription(
+        name === 'forgetbyid'
+          ? 'Erase one stored ticket snapshot by ID,not native messages or ticket state.'
+          : name === 'forgetusertranscripts'
+            ? 'Erase all stored snapshots for one owner ID here;no native messages or state changes.'
+            : 'Erase snapshots of closed tickets only;open/uncertain snapshots and native history kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm this stored-only private transcript erasure')
+          .setRequired(true),
+      );
+    if (name === 'forgetbyid')
+      s.addIntegerOption((o) =>
+        o
+          .setName('id')
+          .setDescription('Exact stored ticket ID in this server')
+          .setMinValue(1)
+          .setRequired(true),
+      );
+    if (name === 'forgetusertranscripts')
+      s.addStringOption((o) =>
+        o
+          .setName('owner-id')
+          .setDescription('Exact stored ticket owner ID,departed users allowed')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      );
+    return s;
+  });
 export default {
   category: 'ticket',
   data,
@@ -145,8 +198,43 @@ export default {
       locale = c.guildConfig.get(i.guildId).language,
       t = (key, p) => translate(locale, key, p);
     let content, files;
-    if (['setup', 'panel', 'config', 'retention', 'queue'].includes(sub)) {
+    if (
+      [
+        'setup',
+        'panel',
+        'config',
+        'retention',
+        'queue',
+        'resetsetup',
+        'forgetalltranscripts',
+        'releaseclaims',
+        'forgetbyid',
+        'forgetusertranscripts',
+        'forgetclosedtranscripts',
+      ].includes(sub)
+    ) {
       await requireTicketManager(i);
+    }
+    if (['forgetbyid', 'forgetusertranscripts', 'forgetclosedtranscripts'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('ticketStoredConfirm');
+      const count =
+        sub === 'forgetbyid'
+          ? c.tickets.forgetById(i.guildId, i.options.getInteger('id', true))
+          : sub === 'forgetusertranscripts'
+            ? c.tickets.forgetUserTranscripts(i.guildId, i.options.getString('owner-id', true))
+            : c.tickets.forgetClosedTranscripts(i.guildId);
+      content = t('ticketScopedForgotten', { count });
+    }
+    if (['resetsetup', 'forgetalltranscripts', 'releaseclaims'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('ticketStoredConfirm');
+      const method = {
+        resetsetup: 'resetSetup',
+        forgetalltranscripts: 'forgetAllTranscripts',
+        releaseclaims: 'releaseClaims',
+      }[sub];
+      content = t('ticketBulk_' + sub, { count: c.tickets[method](i.guildId) });
     }
     if (sub === 'setup') {
       const categoryId = i.options.getChannel('category', true).id,

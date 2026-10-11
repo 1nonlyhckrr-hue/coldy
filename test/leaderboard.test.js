@@ -103,7 +103,7 @@ test('retention clears older days/replay ids, resetmine leaves other users and r
     const r = new MessageRanks(db);
     r.enable('g', true);
     r.record(message(), now);
-    r.record(message(2, { author: { id: '100000000000000009' } }), now);
+    r.record(message(2, { author: { id: '100000000000000009', bot: false } }), now);
     db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g', user, '2026-01-01', 3);
     db.prepare('INSERT INTO message_rank_seen VALUES(?,?)').run('old', now - 8 * 86400000);
     r.cleanup(now);
@@ -268,7 +268,7 @@ test('optout erases only own server counts, survives config toggles, optin never
     const r = new MessageRanks(db);
     r.enable('g', true);
     r.record(message(), now);
-    r.record(message(2, { author: { id: '100000000000000009' } }), now);
+    r.record(message(2, { author: { id: '100000000000000009', bot: false } }), now);
     r.enable('other', true);
     r.record(message(3, { guildId: 'other' }), now);
     assert.equal(r.privacy('g', user, true), 1);
@@ -895,5 +895,170 @@ test('near-midnight legitimate thirty-second future event only contributes when 
     assert.equal(r.position('g', user, 'today', anchor + 20000).position, 1);
   } finally {
     db.close();
+  }
+});
+
+test('message ranks ignore system events and unknown author bot flags without stored contribution', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    for (const extra of [
+      { system: true },
+      { author: { id: user } },
+      { author: { id: user, bot: null } },
+      { author: { id: user, bot: 0 } },
+      { author: { id: user, bot: 'false' } },
+    ])
+      assert.equal(r.record(message(1, extra), now), false);
+    assert.equal(r.stats('g', user, now).retained, 0);
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n, 0);
+    assert(r.record(message(1, { system: false }), now));
+    assert.equal(r.stats('g', user, now).today, 1);
+  } finally {
+    db.close();
+  }
+});
+
+test('leaderboard enable refuses malformed operator runtime consent without storing tracking', async () => {
+  for (const flag of [undefined, null, 1, 'true', 'false', {}]) {
+    const db = openDatabase(':memory:');
+    try {
+      const c = {
+        messageRanks: new MessageRanks(db),
+        config: { messageEventsEnabled: flag },
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+      const i = {
+        guildId: 'g',
+        user: { id: user },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({ id: user, guild: { id: 'g' }, permissions: { has: () => true } }),
+          },
+        },
+        options: { getSubcommand: () => 'enable' },
+        deferReply: async () => {},
+        editReply: async () => {
+          throw new Error('unexpected reply');
+        },
+      };
+      await assert.rejects(() => command.execute(i, c), /responderRuntimeDisabled/);
+      assert.equal(c.messageRanks.config('g').enabled, false);
+      assert.equal(db.prepare('SELECT count(*) n FROM message_rank_config').get().n, 0);
+    } finally {
+      db.close();
+    }
+  }
+});
+
+test('rank invalid event clock refuses replay/count mutation and preserves cleanup watermark', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    for (const clock of [NaN, Infinity, -1, '123', null, 1.5]) {
+      assert.equal(r.record(message(), clock), false);
+      assert.equal(r.lastCleanup, 0);
+    }
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_seen').get().n, 0);
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_daily').get().n, 0);
+    assert.equal(r.record(message(), now), true);
+  } finally {
+    db.close();
+  }
+});
+
+test('rank ownexport/overview exact90UTCday window/guildscope aggregates do not expose foreign/old/future rows', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    for (const [g, u, day, count] of [
+      ['g', user, '2026-10-11', 2],
+      ['g', 'other', '2026-10-11', 3],
+      ['other', user, '2026-10-11', 9],
+      ['g', user, '2025-01-01', 10],
+      ['g', user, '2027-01-01', 10],
+    ])
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(g, u, day, count);
+    assert.deepEqual(r.exportMine('g', user, now), [{ day: '2026-10-11', count: 2 }]);
+    assert.deepEqual(r.overview('g', now), { contributors: 2, messages: 5, days: 1 });
+    assert.deepEqual(r.overview('none', now), { contributors: 0, messages: 0, days: 0 });
+  } finally {
+    db.close();
+  }
+});
+test('rank resetall preserves optouts/config/replay and foreigncounts;idempotent no event replay', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    r.record(message(), now);
+    r.record(message(2, { guildId: 'other' }), now);
+    r.privacy('g', '100000000000000009', true);
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+      'other',
+      user,
+      '2026-10-11',
+      5,
+    );
+    assert.equal(r.resetAll('g'), 1);
+    assert.equal(r.resetAll('g'), 0);
+    assert.equal(r.config('g').enabled, true);
+    assert(r.optedOut('g', '100000000000000009'));
+    assert.equal(r.record(message(), now), false);
+    assert.equal(r.stats('other', user, now).today, 5);
+  } finally {
+    db.close();
+  }
+});
+test('rank exportmine private3locale exactcaller CSV/no otherusers and bulk controls manager/confirmation gates', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new MessageRanks(db);
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+        'g',
+        user,
+        new Date().toISOString().slice(0, 10),
+        2,
+      );
+      let sub = 'exportmine',
+        confirm = false,
+        reply;
+      const actor = { id: user, guild: { id: 'g' }, permissions: { has: () => true } };
+      const i = {
+        guildId: 'g',
+        guild: { id: 'g', members: { fetch: async () => actor } },
+        user: { id: user },
+        options: { getSubcommand: () => sub, getBoolean: () => confirm },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+      };
+      const c = {
+        messageRanks: r,
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      await command.execute(i, c);
+      assert.equal(reply.files.length, 1);
+      assert(reply.files[0].attachment.toString().startsWith('utc_day,message_count\n'));
+      assert(!reply.files[0].attachment.toString().includes(user));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      sub = 'overview';
+      await command.execute(i, c);
+      assert.equal(reply.files, undefined);
+      sub = 'resetall';
+      await assert.rejects(() => command.execute(i, c), /rankResetAllConfirm/);
+      confirm = true;
+      await command.execute(i, c);
+      assert.equal(db.prepare('SELECT count(*) n FROM message_rank_daily').get().n, 0);
+      actor.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, c), /userPermission/);
+    } finally {
+      db.close();
+    }
   }
 });

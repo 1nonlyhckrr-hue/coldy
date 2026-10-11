@@ -5,6 +5,9 @@ import {
   escapeMarkdown,
 } from 'discord.js';
 import {
+  drawCards,
+  scrambleWord,
+  rollTarget,
   BALL_ANSWERS,
   TRUTH_PROMPTS,
   DARE_PROMPTS,
@@ -205,6 +208,48 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('cards')
+    .setDescription('Draw1-10 distinct cards from a fresh52card deck,no betting/saved game.')
+    .addIntegerOption((o) =>
+      o.setName('count').setDescription('Cards1-10,default1').setMinValue(1).setMaxValue(10),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('wordscramble')
+    .setDescription(
+      'Scramble your supplied ASCII word,answer in spoiler;no dictionary/guess tracking.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('word')
+        .setDescription('3-20Englishletters,at least2distinct;kept private/not saved')
+        .setMinLength(3)
+        .setMaxLength(20)
+        .setRequired(true),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('dicetarget')
+    .setDescription('Roll dice and count values at or above an explicit target,no stakes.')
+    .addIntegerOption((o) =>
+      o
+        .setName('target')
+        .setDescription('Target2-sides')
+        .setMinValue(2)
+        .setMaxValue(1000)
+        .setRequired(true),
+    )
+    .addIntegerOption((o) =>
+      o.setName('count').setDescription('Dice1-10,default1').setMinValue(1).setMaxValue(10),
+    )
+    .addIntegerOption((o) =>
+      o.setName('sides').setDescription('Sides2-1000,default6').setMinValue(2).setMaxValue(1000),
+    ),
+);
 export default {
   category: 'fun',
   data,
@@ -214,7 +259,22 @@ export default {
       t = (key, params) => c.localization.t(i.guildId, key, params);
     const sub = i.options.getSubcommand();
     let text;
-    if (sub === '8ball') {
+    if (sub === 'cards')
+      text = t('funCards', {
+        cards: drawCards(i.options.getInteger('count') ?? 1)
+          .map((v) => v.rank + ' ' + t('funSuit_' + v.suit))
+          .join(', '),
+      });
+    else if (sub === 'wordscramble')
+      text = t('funWordScramble', scrambleWord(i.options.getString('word', true)));
+    else if (sub === 'dicetarget') {
+      const r = rollTarget(
+        i.options.getInteger('sides') ?? 6,
+        i.options.getInteger('count') ?? 1,
+        i.options.getInteger('target', true),
+      );
+      text = t('funDiceTarget', { ...r, rolls: r.rolls.join(', ') });
+    } else if (sub === '8ball') {
       const question = i.options.getString('question', true);
       if (typeof question !== 'string' || !question.trim() || question.length > 300)
         throw new UserError('funQuestionInvalid');

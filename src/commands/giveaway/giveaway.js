@@ -1,5 +1,6 @@
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   ChannelType,
@@ -83,6 +84,49 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show giveaway limits and policies.'));
+for (const sub of ['inspect', 'cancel', 'forgetentries'])
+  data.addSubcommand((s) => {
+    s.setName(sub)
+      .setDescription(
+        sub === 'inspect'
+          ? 'Private stored prize/state/entrycount,no entrantIDs/live readiness.'
+          : sub === 'cancel'
+            ? 'Confirmed stop stored activegiveaway,no native announcement/button edit.'
+            : 'Confirmed erase ended/cancelled entrantIDs;future rerolls lose candidates.',
+      )
+      .addIntegerOption(idOption);
+    if (sub !== 'inspect')
+      s.addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stored stop/entry erasure;native messages untouched')
+          .setRequired(true),
+      );
+    return s;
+  });
+data.addSubcommand((s) =>
+  s
+    .setName('export')
+    .setDescription(
+      'Private latest100 stored giveaway prize/schedule/binding records,no entrant/winner IDs.',
+    ),
+);
+for (const name of ['cancelall', 'forgetfinishedentries'])
+  data.addSubcommand((s) =>
+    s
+      .setName(name)
+      .setDescription(
+        name === 'cancelall'
+          ? 'Cancel all active giveaways in storage only;no native message edits or announcements.'
+          : 'Erase entrant IDs for ended/cancelled giveaways;winner history/native messages kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm this server-wide stored giveaway change')
+          .setRequired(true),
+      ),
+  );
 export default {
   category: 'giveaway',
   data,
@@ -92,7 +136,7 @@ export default {
     const sub = i.options.getSubcommand(),
       locale = c.guildConfig.get(i.guildId).language,
       t = (key, p) => translate(locale, key, p);
-    let content;
+    let content, files;
     // Re-fetch moderator permissions for state changes, including manual draws.
     const authorize = async () => {
       const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
@@ -105,6 +149,63 @@ export default {
         throw new UserError('userPermission');
     };
     await authorize();
+    if (sub === 'export') {
+      const report = c.giveaways.exportRecords(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-giveaway-records.json',
+        }),
+      ];
+      content = t('giveawayRecordsExported', { count: report.records.length, total: report.total });
+    }
+    if (['cancelall', 'forgetfinishedentries'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('giveawayStoredConfirm');
+      const count =
+        sub === 'cancelall'
+          ? c.giveaways.cancelAllActive(i.guildId)
+          : c.giveaways.forgetFinishedEntries(i.guildId);
+      content = t(sub === 'cancelall' ? 'giveawayAllCancelled' : 'giveawayFinishedForgotten', {
+        count,
+      });
+    }
+
+    if (sub === 'inspect') {
+      const r = c.giveaways.inspect(i.options.getInteger('id', true), i.guildId);
+      content = t('giveawayInspectValue', {
+        ...r,
+        prize: escapeMarkdown(r.prize.replace(/[\u0000-\u001f\u007f]/gu, ' ')),
+        iso: new Date(r.endsAt).toISOString(),
+      });
+    }
+    if (['cancel', 'forgetentries'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('giveawayStoredConfirm');
+      const id = i.options.getInteger('id', true);
+      if (sub === 'cancel') {
+        c.giveaways.cancelActive(id, i.guildId);
+        content = t('giveawayCancelledStored', { id });
+      } else
+        content = t('giveawayEntriesForgotten', {
+          count: c.giveaways.forgetEntries(id, i.guildId),
+        });
+    }
+    if (
+      ![
+        'start',
+        'end',
+        'reroll',
+        'list',
+        'config',
+        'inspect',
+        'cancel',
+        'forgetentries',
+        'export',
+        'cancelall',
+        'forgetfinishedentries',
+      ].includes(sub)
+    )
+      throw new UserError('unknownCommand');
     if (sub === 'start') {
       const id = await createGiveaway(i, c, {
         channelId: i.options.getChannel('channel', true).id,
@@ -142,6 +243,11 @@ export default {
           .join('\n') || t('giveawayEmpty'));
     }
     if (sub === 'config') content = t('giveawayConfig');
-    await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

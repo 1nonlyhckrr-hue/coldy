@@ -1,8 +1,10 @@
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   MessageFlags,
+  ChannelType,
 } from 'discord.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
@@ -30,6 +32,40 @@ for (const kind of ['user', 'role'])
           )
         : s.addRoleOption((o) => o.setName('role').setDescription('Server role').setRequired(true));
     });
+for (const sub of ['blockchannel', 'unblockchannel'])
+  data.addSubcommand((s) =>
+    s
+      .setName(sub)
+      .setDescription(
+        sub === 'blockchannel'
+          ? 'Deny one command in this exact channel,no inheritance/Discord overwrite.'
+          : 'Remove exact stored channel deny,including deleted channels.',
+      )
+      .addStringOption(command)
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact server channel ID17-20digits')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      ),
+  );
+data.addSubcommand((s) =>
+  s
+    .setName('channelrules')
+    .setDescription('Private stored channel denies,ten perpage;not Discord permissions.')
+    .addIntegerOption((o) =>
+      o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+    )
+    .addStringOption((o) =>
+      o
+        .setName('command')
+        .setDescription('Optional exact stored command name')
+        .setMinLength(1)
+        .setMaxLength(32),
+    ),
+);
 data
   .addSubcommand((s) =>
     s
@@ -93,6 +129,63 @@ data
       .setDescription('Remove all restrictions for one command.')
       .addStringOption(command),
   );
+data
+  .addSubcommand((s) =>
+    s
+      .setName('export')
+      .setDescription(
+        'Private JSON of stored user/role/channel deny IDs,no permissions or native grants.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clearall')
+      .setDescription(
+        'Confirmed remove all guild Luna denies,user/role/channel;native permissions unchanged.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removing all guild deny rules')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clearcommand')
+      .setDescription(
+        'Confirmed remove bothsubject/channel denies for one storedcommand,including removed ones.',
+      )
+      .addStringOption(command)
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removing all denies for this exact storedcommand')
+          .setRequired(true),
+      ),
+  );
+for (const kind of ['user', 'role', 'channel'])
+  data.addSubcommand((s) =>
+    s
+      .setName('clear' + kind)
+      .setDescription(
+        'Remove all stored ' + kind + ' denies across commands;no Discord permission grants.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('id')
+          .setDescription('Exact stored ' + kind + ' ID,departed/deleted resources allowed')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removing all denies for this exact ' + kind)
+          .setRequired(true),
+      ),
+  );
 export default {
   category: 'permit',
   data,
@@ -124,8 +217,49 @@ export default {
       !actor.permissions.has(P.ManageGuild)
     )
       throw new UserError('userPermission');
-    let text;
-    if (sub === 'list') {
+    let text, files;
+    if (['clearuser', 'clearrole', 'clearchannel'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('permitClearConfirm');
+      const kind = sub.slice(5),
+        id = i.options.getString('id', true);
+      text = t('permitScopeCleared', {
+        count: c.commandRestrictions.clearScope(i.guildId, kind, id),
+      });
+    } else if (sub === 'export') {
+      const rules = c.commandRestrictions.exportRules(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(rules, null, 2) + '\n', 'utf8'), {
+          name: 'luna-permit-denies.json',
+        }),
+      ];
+      text = t('permitExported', {
+        subjects: rules.subjects.length,
+        channels: rules.channels.length,
+      });
+    } else if (['clearall', 'clearcommand'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('permitClearConfirm');
+      const r = c.commandRestrictions.clearCombined(
+        i.guildId,
+        sub === 'clearcommand' ? i.options.getString('command', true) : null,
+      );
+      text = t('permitCombinedCleared', r);
+    } else if (sub === 'channelrules') {
+      const rows = c.commandRestrictions.channelRules(
+          i.guildId,
+          i.options.getString('command') ?? null,
+        ),
+        page = i.options.getInteger('page') ?? 1,
+        pages = Math.max(1, Math.ceil(rows.length / 10));
+      if (!Number.isInteger(page) || page < 1 || page > pages)
+        throw new UserError('permitPageInvalid', { pages });
+      text =
+        t('permitChannelList', { page, pages, count: rows.length }) +
+        '\n' +
+        (rows
+          .slice((page - 1) * 10, page * 10)
+          .map((r) => `/${r.command_name} | ${r.channel_id}`)
+          .join('\n') || t('permitEmpty'));
+    } else if (sub === 'list') {
       const rows = c.commandRestrictions.filtered(i.guildId, {
           commandName: i.options.getString?.('command') ?? null,
           kind: i.options.getString?.('kind') ?? null,
@@ -148,7 +282,40 @@ export default {
       const name = i.options.getString('command', true);
       if (!c.commands.has(name)) throw new UserError('permitCommandInvalid');
       if (RECOVERY_COMMANDS.has(name)) throw new UserError('permitProtected');
-      if (sub === 'remove') {
+      if (['blockchannel', 'unblockchannel'].includes(sub)) {
+        const id = i.options.getString('channel-id', true);
+        if (!/^\d{17,20}$/.test(id)) throw new UserError('permitChannelInvalid');
+        const blocked = sub === 'blockchannel';
+        if (blocked) {
+          const channel = await i.guild.channels.fetch(id, { force: true });
+          if (
+            channel?.id !== id ||
+            channel.guildId !== i.guildId ||
+            ![
+              ChannelType.GuildText,
+              ChannelType.GuildAnnouncement,
+              ChannelType.PublicThread,
+              ChannelType.PrivateThread,
+              ChannelType.AnnouncementThread,
+              ChannelType.GuildVoice,
+              ChannelType.GuildStageVoice,
+              ChannelType.GuildForum,
+              ChannelType.GuildMedia,
+            ].includes(channel.type)
+          )
+            throw new UserError('permitChannelInvalid');
+          const current = await i.guild.members.fetch({ user: i.user.id, force: true });
+          if (
+            current?.id !== i.user.id ||
+            current.guild?.id !== i.guildId ||
+            !current.permissions?.has(P.ManageGuild) ||
+            !channel.permissionsFor(current)?.has(P.ViewChannel)
+          )
+            throw new UserError('userPermission');
+        }
+        const count = c.commandRestrictions.setChannel(i.guildId, name, id, blocked);
+        text = t('permitChannelSaved', { command: name, id, count });
+      } else if (sub === 'remove') {
         if (i.options.getBoolean('confirm', true) !== true)
           throw new UserError('permitRemoveConfirm');
         const count = c.commandRestrictions.removeStored(
@@ -196,6 +363,11 @@ export default {
         text = t(blocked ? 'permitBlocked' : 'permitUnblocked', { command: name });
       } else throw new UserError('unknownCommand');
     }
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

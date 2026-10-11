@@ -3,6 +3,7 @@ import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   MessageFlags,
   ChannelType,
@@ -53,6 +54,34 @@ for (const action of actions)
     if (action !== 'warnings')
       s.addStringOption((o) =>
         o.setName('reason').setDescription('Reason recorded in the case').setMaxLength(400),
+      );
+    return s;
+  });
+for (const action of ['editwarning', 'clearwarning', 'exportwarnings'])
+  data.addSubcommand((s) => {
+    s.setName(action)
+      .setDescription('CurrentModerateMembers/hierarchy:one target stored warning ' + action + '.')
+      .addUserOption((o) =>
+        o.setName('member').setDescription('One current target member').setRequired(true),
+      );
+    if (action !== 'exportwarnings')
+      s.addIntegerOption((o) =>
+        o
+          .setName('warning-id')
+          .setDescription('Exact active warning ID for this target/server')
+          .setMinValue(1)
+          .setRequired(true),
+      ).addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Confirm stored warning change').setRequired(true),
+      );
+    if (action === 'editwarning')
+      s.addStringOption((o) =>
+        o
+          .setName('reason')
+          .setDescription('Replacement reason1-400characters,recorded in new case')
+          .setMinLength(1)
+          .setMaxLength(400)
+          .setRequired(true),
       );
     return s;
   });
@@ -124,14 +153,44 @@ export default {
     }
     const result = await moderate(i, context, {
       action,
+      ...(['editwarning', 'clearwarning'].includes(action)
+        ? {
+            warningId: i.options.getInteger('warning-id', true),
+            confirm: i.options.getBoolean('confirm', true),
+          }
+        : {}),
       page: action === 'warnings' ? (i.options.getInteger('page') ?? 1) : undefined,
       targetId:
         action === 'unban'
           ? i.options.getString('user-id', true)
           : i.options.getUser('member', true).id,
-      reason: action === 'warnings' ? undefined : i.options.getString('reason'),
+      reason: ['warnings', 'exportwarnings', 'clearwarning'].includes(action)
+        ? undefined
+        : i.options.getString('reason'),
       duration: action === 'timeout' ? i.options.getString('duration', true) : undefined,
     });
+    if (result.warningExport) {
+      const r = result.warningExport;
+      await i.editReply(
+        lunaPayload(
+          {
+            content: t('modWarningsExported', {
+              count: r.rows.length,
+              total: r.total,
+              status: t(r.truncated ? 'ticketPartial' : 'ticketComplete'),
+            }),
+            files: [
+              new AttachmentBuilder(Buffer.from(JSON.stringify(r, null, 2) + '\n', 'utf8'), {
+                name: 'luna-active-warnings.json',
+              }),
+            ],
+            allowedMentions: { parse: [] },
+          },
+          { locale },
+        ),
+      );
+      return;
+    }
     if (result.id && context.serverLogs) {
       const delivered = await context.serverLogs.emit(i.guild, {
         kind: 'moderation',
@@ -164,6 +223,8 @@ export default {
         }) +
         '\n' +
         content;
+    if (result.warningId !== undefined)
+      content += ' ' + t('modWarningChanged', { id: result.warningId });
     if (result.count !== undefined) content += ' ' + t('modCleared', { count: result.count });
     if (result.logUnavailable) content += ' ' + t('modLogUnavailable');
     await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));

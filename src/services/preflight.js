@@ -1,8 +1,16 @@
 import { loadConfig } from '../config/env.js';
 import { loadCommands } from './registry.js';
 export async function preflight(env = process.env, nodeVersion = process.versions.node) {
-  const [major, minor] = nodeVersion.split('.').map(Number);
-  const nodeSupported = (major === 22 && minor >= 13) || major === 24;
+  const version =
+    typeof nodeVersion === 'string'
+      ? /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(nodeVersion)
+      : null;
+  const parts = version ? version.slice(1).map(Number) : [];
+  const [major, minor] = parts;
+  const nodeSupported =
+    !!version &&
+    parts.every(Number.isSafeInteger) &&
+    ((major === 22 && minor >= 13) || major === 24);
   const checks = [
     {
       name: 'node',

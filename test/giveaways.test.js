@@ -606,3 +606,444 @@ test('stored giveaway listing requires refreshed exact manager identity and reje
     }
   }
 });
+
+test('giveaway publication refuses a later draw replacing the saved snapshot during message lookup', async () => {
+  const x = setup();
+  try {
+    create(x);
+    x.giveaways.enter(1, 'g', user1);
+    x.giveaways.enter(1, 'g', user2);
+    x.channel.messages.fetch = async () => {
+      x.giveaways.endPublished(1, 1);
+      x.giveaways.draw(1, 'g', [user1, user2], { reroll: true });
+      return x.message;
+    };
+    await assert.rejects(() => x.context.giveawayRunner.finish(1, 'g'), /giveawayDrawInvalid/);
+    assert.equal(x.edits.length, 0);
+    assert.equal(x.giveaways.get(1, 'g').draw_version, 2);
+    assert.equal(x.giveaways.get(1, 'g').status, 'ending');
+  } finally {
+    x.db.close();
+  }
+});
+test('giveaway publication after final async authorization rejects completion or deletion without stale edit', async () => {
+  for (const state of ['done', 'deleted']) {
+    const x = setup();
+    let calls = 0;
+    try {
+      create(x);
+      await assert.rejects(
+        () =>
+          x.context.giveawayRunner.finish(1, 'g', {
+            authorize: async () => {
+              if (++calls !== 2) return;
+              if (state === 'done') x.giveaways.endPublished(1, 1);
+              else x.db.prepare('DELETE FROM giveaways WHERE id=1').run();
+            },
+          }),
+        /giveawayDrawInvalid/,
+      );
+      assert.equal(x.edits.length, 0);
+      assert.equal(x.giveaways.get(1, 'g')?.status, state === 'done' ? 'ended' : undefined);
+      assert.equal(x.context.giveawayRunner.busy.size, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('giveaway publication rejects changed payload or native destination snapshot without overwriting stored state', async () => {
+  for (const [field, value] of [
+    ['prize', 'new prize'],
+    ['message_id', 'different'],
+    ['channel_id', '100000000000000009'],
+    ['winners_json', '[]'],
+    ['winner_count', 2],
+    ['ends_at', 1],
+    ['required_role_id', 'different-role'],
+  ]) {
+    const x = setup();
+    try {
+      create(x);
+      x.giveaways.enter(1, 'g', user1);
+      x.channel.messages.fetch = async () => {
+        x.db.prepare(`UPDATE giveaways SET ${field}=? WHERE id=1`).run(value);
+        return x.message;
+      };
+      await assert.rejects(() => x.context.giveawayRunner.finish(1, 'g'), /giveawayDrawInvalid/);
+      assert.equal(x.edits.length, 0);
+      assert.equal(x.giveaways.get(1, 'g')[field], value);
+      assert.equal(x.giveaways.get(1, 'g').status, 'ending');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('giveaway publication malformed accepted identities become uncertain without promoting active record', async () => {
+  for (const returned of [{ id: 1 }, { id: ' ' }, { id: '' }, {}]) {
+    const x = setup();
+    let attempts = 0;
+    try {
+      x.channel.send = async () => {
+        attempts++;
+        return returned;
+      };
+      await assert.rejects(
+        () =>
+          createGiveaway(x.i, x.context, {
+            channelId,
+            prize: 'Book',
+            winnerCount: 1,
+            durationMs: 60000,
+          }),
+        /giveawayStorageUncertain/,
+      );
+      assert.equal(x.giveaways.get(1, 'g').status, 'uncertain');
+      assert.equal(x.giveaways.get(1, 'g').message_id, null);
+      assert.equal(attempts, 1);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('giveaway activation rejects blank strings and late send failure cannot demote completed publication', async () => {
+  const x = setup();
+  try {
+    const id = x.giveaways.reserve(input);
+    assert.throws(() => x.giveaways.activate(id, ' '), /identity/);
+    assert.equal(x.giveaways.get(id, 'g').status, 'pending');
+    x.i.id = 'new';
+    x.channel.send = async () => {
+      x.giveaways.activate(2, 'native');
+      throw Error('late');
+    };
+    await assert.rejects(
+      () =>
+        createGiveaway(x.i, x.context, {
+          channelId,
+          prize: 'Book',
+          winnerCount: 1,
+          durationMs: 60000,
+        }),
+      /giveawaySendUncertain/,
+    );
+    assert.equal(x.giveaways.get(2, 'g').status, 'active');
+    assert.equal(x.giveaways.get(2, 'g').message_id, 'native');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('giveaway sampling rejects malformed count/candidates/random source before sampling', () => {
+  for (const count of [0, -1, 1.5, 21, NaN, '1'])
+    assert.throws(() => sampleWinners(['a'], count), /sampling input/);
+  for (const candidates of [null, {}, 'a', [null], [1], ['']])
+    assert.throws(() => sampleWinners(candidates, 1), /sampling input/);
+  assert.throws(() => sampleWinners(['a'], 1, null), /sampling input/);
+  assert.deepEqual(sampleWinners(['a', 'a', 'b'], 20, () => 0).sort(), ['a', 'b']);
+});
+test('giveaway invalid reroll flag cannot treat truthy value as authority to replace ended winners', () => {
+  const x = setup();
+  try {
+    create(x);
+    x.giveaways.enter(1, 'g', user1);
+    const g = x.giveaways.draw(1, 'g', [user1]);
+    x.giveaways.endPublished(1, g.draw_version);
+    const before = x.giveaways.get(1, 'g');
+    for (const reroll of [null, 0, 1, 'false', {}])
+      assert.throws(() => x.giveaways.draw(1, 'g', [user1], { reroll }), /giveawayDrawInvalid/);
+    assert.deepEqual(x.giveaways.get(1, 'g'), before);
+  } finally {
+    x.db.close();
+  }
+});
+test('giveaway malformed eligibility or random result leaves active draw unmodified', () => {
+  const x = setup();
+  try {
+    create(x);
+    x.giveaways.enter(1, 'g', user1);
+    x.giveaways.enter(1, 'g', user2);
+    const before = x.giveaways.get(1, 'g');
+    for (const eligible of [null, {}, 'string', [undefined], [1], ['']])
+      assert.throws(() => x.giveaways.draw(1, 'g', eligible), /giveawayDrawInvalid/);
+    assert.throws(
+      () => x.giveaways.draw(1, 'g', [user1, user2], { random: () => NaN }),
+      /random source/,
+    );
+    assert.deepEqual(x.giveaways.get(1, 'g'), before);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('giveaway eligibility await cannot draw against changed required role/count/destination record', async () => {
+  for (const [field, value] of [
+    ['required_role_id', 'new-role'],
+    ['winner_count', 2],
+    ['ends_at', 1],
+    ['channel_id', '100000000000000009'],
+    ['message_id', 'replacement'],
+  ]) {
+    const x = setup();
+    try {
+      create(x);
+      x.giveaways.enter(1, 'g', user1);
+      const fetch = x.guild.members.fetch;
+      x.guild.members.fetch = async (opts) => {
+        x.db.prepare(`UPDATE giveaways SET ${field}=? WHERE id=1`).run(value);
+        return fetch(opts);
+      };
+      await assert.rejects(() => x.context.giveawayRunner.finish(1, 'g'), /giveawayDrawInvalid/);
+      assert.equal(x.giveaways.get(1, 'g').draw_version, 0);
+      assert.equal(x.giveaways.get(1, 'g').status, 'active');
+      assert.equal(x.edits.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('giveaway final draw authorization cannot replace another completed draw or deleted record', async () => {
+  for (const kind of ['drawn', 'deleted']) {
+    const x = setup();
+    try {
+      create(x);
+      x.giveaways.enter(1, 'g', user1);
+      await assert.rejects(
+        () =>
+          x.context.giveawayRunner.finish(1, 'g', {
+            authorize: async () => {
+              if (kind === 'drawn') {
+                const saved = x.giveaways.draw(1, 'g', [user1]);
+                x.giveaways.endPublished(1, saved.draw_version);
+              } else x.db.prepare('DELETE FROM giveaways WHERE id=1').run();
+            },
+          }),
+        /giveawayDrawInvalid/,
+      );
+      assert.equal(x.edits.length, 0);
+      assert.equal(x.giveaways.get(1, 'g')?.status, kind === 'drawn' ? 'ended' : undefined);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('giveaway button refuses changed entry requirement/destination/state during member lookup', async () => {
+  for (const [field, value] of [
+    ['required_role_id', 'new-role'],
+    ['message_id', 'replacement'],
+    ['channel_id', '100000000000000009'],
+    ['status', 'ended'],
+    ['ends_at', 1],
+  ]) {
+    const x = setup();
+    try {
+      create(x);
+      const fetch = x.guild.members.fetch;
+      x.guild.members.fetch = async (opts) => {
+        x.db.prepare(`UPDATE giveaways SET ${field}=? WHERE id=1`).run(value);
+        return fetch(opts);
+      };
+      await createGiveawayButtonHandler(x.context)(x.i);
+      assert.deepEqual(x.giveaways.entries(1), []);
+      assert.equal(x.giveaways.get(1, 'g')[field], value);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('giveaway button unknown human/bot identity or deleted record cannot create entry', async () => {
+  for (const kind of ['unknown', 'deleted']) {
+    const x = setup();
+    try {
+      create(x);
+      const fetch = x.guild.members.fetch;
+      x.guild.members.fetch = async (opts) => {
+        const m = await fetch(opts);
+        if (kind === 'unknown') m.user = {};
+        else x.db.prepare('DELETE FROM giveaways WHERE id=1').run();
+        return m;
+      };
+      await createGiveawayButtonHandler(x.context)(x.i);
+      assert.deepEqual(x.giveaways.entries(1), []);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('giveaway newly entered user during eligibility lookup prevents unfair draw from old entrant snapshot', async () => {
+  const x = setup();
+  try {
+    create(x);
+    x.giveaways.enter(1, 'g', user1);
+    const fetch = x.guild.members.fetch;
+    x.guild.members.fetch = async (opts) => {
+      x.giveaways.enter(1, 'g', user2);
+      return fetch(opts);
+    };
+    await assert.rejects(
+      () => x.context.giveawayRunner.finish(1, 'g'),
+      /giveawayEligibilityUnavailable/,
+    );
+    assert.deepEqual(x.giveaways.entries(1), [user1, user2]);
+    assert.equal(x.giveaways.get(1, 'g').draw_version, 0);
+    assert.equal(x.edits.length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('giveaway entry withdrawn during final authorization is not selected from stale eligibility', async () => {
+  const x = setup();
+  try {
+    create(x);
+    x.giveaways.enter(1, 'g', user1);
+    await assert.rejects(
+      () =>
+        x.context.giveawayRunner.finish(1, 'g', {
+          authorize: async () =>
+            x.db.prepare('DELETE FROM giveaway_entries WHERE giveaway_id=1').run(),
+        }),
+      /giveawayEligibilityUnavailable/,
+    );
+    assert.deepEqual(x.giveaways.entries(1), []);
+    assert.equal(x.giveaways.get(1, 'g').draw_version, 0);
+    assert.equal(x.edits.length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('giveaway draw unknown bot status is unverifiable eligibility rather than a human winner', async () => {
+  for (const flag of [undefined, null, 0, 'false']) {
+    const x = setup();
+    try {
+      create(x);
+      x.giveaways.enter(1, 'g', user1);
+      x.guild.members.fetch = async ({ user }) => ({ ...x.member, id: user, user: { bot: flag } });
+      await assert.rejects(
+        () => x.context.giveawayRunner.finish(1, 'g'),
+        /giveawayEligibilityUnavailable/,
+      );
+      assert.equal(x.giveaways.get(1, 'g').status, 'active');
+      assert.equal(x.giveaways.get(1, 'g').draw_version, 0);
+      assert.equal(x.edits.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('giveaway verified bot entry is excluded while positively human member remains eligible', async () => {
+  const x = setup();
+  try {
+    create(x);
+    x.giveaways.enter(1, 'g', user1);
+    x.giveaways.enter(1, 'g', user2);
+    x.guild.members.fetch = async ({ user }) => ({
+      ...x.member,
+      id: user,
+      user: { bot: user === user2 },
+    });
+    await x.context.giveawayRunner.finish(1, 'g');
+    assert.deepEqual(JSON.parse(x.giveaways.get(1, 'g').winners_json), [user1]);
+    assert.equal(x.giveaways.get(1, 'g').status, 'ended');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('giveaway active cancellation stops due/entries/draws,not native messages;final entrant erasure scoped', () => {
+  const s = setup();
+  try {
+    const id = s.context.giveaways.reserve(input);
+    s.context.giveaways.activate(id, 'message');
+    s.context.giveaways.enter(id, 'g', user1);
+    const other = s.context.giveaways.reserve({
+      ...input,
+      guildId: 'foreign',
+      interactionId: 'foreign',
+    });
+    s.context.giveaways.activate(other, 'other');
+    s.context.giveaways.enter(other, 'foreign', user2);
+    const r = s.context.giveaways.inspect(id, 'g');
+    assert.equal(r.entries, 1);
+    assert(!JSON.stringify(r).includes(user1));
+    assert.throws(() => s.context.giveaways.inspect(id, 'foreign'));
+    assert.throws(() => s.context.giveaways.forgetEntries(id, 'g'), /giveawayForgetInvalid/);
+    s.context.giveaways.cancelActive(id, 'g');
+    assert.throws(() => s.context.giveaways.enter(id, 'g', user1));
+    assert.throws(() => s.context.giveaways.draw(id, 'g', [user1]));
+    assert.throws(() => s.context.giveaways.cancelActive(id, 'g'), /giveawayCancelInvalid/);
+    assert.equal(s.context.giveaways.forgetEntries(id, 'g'), 1);
+    assert.equal(s.context.giveaways.forgetEntries(id, 'g'), 0);
+    assert.equal(s.context.giveaways.entries(other).length, 1);
+    assert.equal(s.edits.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('giveaway cancelled during asynceligibility cannot publish draw;ended erasure keepswinnerhistory/no rerollcandidates', async () => {
+  const s = setup();
+  try {
+    const id = s.context.giveaways.reserve(input);
+    s.context.giveaways.activate(id, 'message');
+    s.context.giveaways.enter(id, 'g', user1);
+    const fetch = s.guild.members.fetch;
+    s.guild.members.fetch = async (o) => {
+      s.context.giveaways.cancelActive(id, 'g');
+      return fetch(o);
+    };
+    await assert.rejects(() => s.context.giveawayRunner.finish(id, 'g'));
+    assert.equal(s.edits.length, 0);
+    assert.equal(s.context.giveaways.get(id, 'g').draw_version, 0);
+    s.guild.members.fetch = fetch;
+    const second = s.context.giveaways.reserve({ ...input, interactionId: 'second' });
+    s.context.giveaways.activate(second, 'second');
+    s.context.giveaways.enter(second, 'g', user1);
+    const drawn = s.context.giveaways.draw(second, 'g', [user1]);
+    s.context.giveaways.endPublished(second, drawn.draw_version);
+    s.context.giveaways.forgetEntries(second, 'g');
+    assert.equal(s.context.giveaways.get(second, 'g').winners_json, drawn.winners_json);
+    assert.equal(
+      s.context.giveaways.draw(second, 'g', [user1], { reroll: true }).winners_json,
+      '[]',
+    );
+  } finally {
+    s.db.close();
+  }
+});
+test('giveaway inspect/cancel/forgetentries private3locale currentmanager confirmation no nativeeffect', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      s.context.guildConfig.setLanguage('g', locale);
+      const id = s.context.giveaways.reserve(input);
+      s.context.giveaways.activate(id, 'message');
+      s.context.giveaways.enter(id, 'g', user1);
+      let sub = 'inspect',
+        confirm = false;
+      s.i.options = { getSubcommand: () => sub, getInteger: () => id, getBoolean: () => confirm };
+      await command.execute(s.i, s.context);
+      assert(!JSON.stringify(s.replies.at(-1)).includes(user1));
+      sub = 'cancel';
+      await assert.rejects(() => command.execute(s.i, s.context), /giveawayStoredConfirm/);
+      confirm = true;
+      await command.execute(s.i, s.context);
+      sub = 'forgetentries';
+      await command.execute(s.i, s.context);
+      assert.equal(s.context.giveaways.entries(id).length, 0);
+      assert.equal(s.sent.length, 0);
+      assert.equal(s.edits.length, 0);
+      s.guild.members.fetch = async () => ({
+        id: user1,
+        guild: { id: 'g' },
+        permissions: { has: () => false },
+      });
+      await assert.rejects(() => command.execute(s.i, s.context), /userPermission/);
+    } finally {
+      s.db.close();
+    }
+  }
+});

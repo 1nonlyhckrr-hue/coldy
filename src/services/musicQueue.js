@@ -285,3 +285,71 @@ export class MusicQueues {
     });
   }
 }
+
+// Waiting-track transforms never call the player adapter or change current playback.
+MusicQueues.prototype.transformWaiting = async function (
+  guildId,
+  action,
+  { from, to, count, requesterId, beforeEffect } = {},
+) {
+  return this.locked(guildId, async () => {
+    const s = this.sessions.get(guildId);
+    if (!s) throw new UserError('musicNoSession');
+    if (s.status === 'uncertain') throw new UserError('musicUncertain');
+    if (
+      !['reverse', 'deduplicate', 'removerange', 'trim', 'duplicate', 'removeown'].includes(action)
+    )
+      throw new TypeError('Invalid waiting transform');
+    if (
+      action === 'removerange' &&
+      (!Number.isInteger(from) ||
+        !Number.isInteger(to) ||
+        from < 1 ||
+        to < from ||
+        to > s.queue.length)
+    )
+      throw new UserError('musicQueuePosition');
+    if (
+      (action === 'trim' && (!Number.isInteger(count) || count < 0 || count > s.queue.length)) ||
+      (action === 'duplicate' &&
+        (!Number.isInteger(from) ||
+          from < 1 ||
+          from > s.queue.length ||
+          typeof requesterId !== 'string' ||
+          !requesterId)) ||
+      (action === 'removeown' && (typeof requesterId !== 'string' || !requesterId))
+    )
+      throw new UserError('musicQueuePosition');
+    if (action === 'duplicate' && s.queue.length + (s.current ? 1 : 0) >= this.maxTracks)
+      throw new UserError('musicQueueFull');
+    const revision = s.queue.map((t) => t.eventId).join('|');
+    if (beforeEffect) await beforeEffect();
+    if (
+      this.sessions.get(guildId) !== s ||
+      s.status === 'uncertain' ||
+      s.queue.map((t) => t.eventId).join('|') !== revision
+    )
+      throw new UserError('musicUncertain');
+    let queue = [...s.queue];
+    if (action === 'trim') queue = queue.slice(0, count);
+    else if (action === 'duplicate') {
+      const track = queue[from - 1];
+      queue.push({ ...track, eventId: randomUUID(), requesterId });
+    } else if (action === 'removeown') queue = queue.filter((t) => t.requesterId !== requesterId);
+    else if (action === 'reverse') queue.reverse();
+    else if (action === 'removerange') queue.splice(from - 1, to - from + 1);
+    else {
+      const seen = new Set();
+      // Provider item IDs,not labels or requester IDs,identify repeated waiting tracks.
+      if (queue.some((t) => typeof t.item.id !== 'string' || !t.item.id))
+        throw new UserError('musicLoadFailed');
+      queue = queue.filter((t) => {
+        if (seen.has(t.item.id)) return false;
+        seen.add(t.item.id);
+        return true;
+      });
+    }
+    s.queue = queue;
+    return this.snapshot(guildId);
+  });
+};

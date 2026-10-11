@@ -14,6 +14,8 @@ export function lunaEmbed({
   timestamp = false,
   locale = 'en',
   color,
+  image,
+  thumbnail,
 } = {}) {
   const style = styles[kind] ?? styles.info;
   const embed = new EmbedBuilder()
@@ -34,12 +36,14 @@ export function lunaEmbed({
         inline: !!f.inline,
       })),
     );
+  if (image) embed.setImage(image);
+  if (thumbnail) embed.setThumbnail(thumbnail);
   if (timestamp) embed.setTimestamp();
   return embed;
 }
 export function lunaPayload(
   payload,
-  { title, kind = 'info', timestamp = false, locale = 'en', color } = {},
+  { title, kind = 'info', timestamp = false, locale = 'en', color, image, thumbnail } = {},
 ) {
   if (typeof payload === 'string') payload = { content: payload };
   const { content, ...rest } = payload;
@@ -47,7 +51,7 @@ export function lunaPayload(
   return {
     ...rest,
     embeds: [
-      lunaEmbed({ title, description: content, kind, timestamp, locale, color }),
+      lunaEmbed({ title, description: content, kind, timestamp, locale, color, image, thumbnail }),
       ...(rest.embeds ?? []),
     ],
   };

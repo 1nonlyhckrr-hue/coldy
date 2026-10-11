@@ -1,5 +1,6 @@
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   MessageFlags,
@@ -65,6 +66,85 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s.setName('incidents').setDescription('Show20 recent stored audit burst alerts.'),
   );
+data
+  .addSubcommand((s) =>
+    s
+      .setName('exportpolicy')
+      .setDescription(
+        'Private storedalert config/trustedIDs JSON,not audit history/preventionproof.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetpolicy')
+      .setDescription(
+        'Confirmed stopalerts/forgetdestination/trust/defaultthresholds,receipts kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm resetting all stored alert settings here')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('removetrust')
+      .setDescription(
+        'Confirmed remove one exactstored trustedID,including departedusers,not nativeaccess.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('user-id')
+          .setDescription('ExactstoreduserID17-20digits')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removing this stored alert exemption')
+          .setRequired(true),
+      ),
+  );
+data.addSubcommand((s) =>
+  s
+    .setName('importpolicy')
+    .setDescription(
+      'Replace stored alert policy from strict JSON,force disabled,no native actions.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('json')
+        .setDescription('Policy object4000chars max;stored IDs not live verified')
+        .setMinLength(2)
+        .setMaxLength(4000)
+        .setRequired(true),
+    )
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm replacing alert policy and disabling monitoring')
+        .setRequired(true),
+    ),
+);
+for (const name of ['cleartrust', 'clearchannel'])
+  data.addSubcommand((s) =>
+    s
+      .setName(name)
+      .setDescription(
+        name === 'cleartrust'
+          ? 'Clear all stored user exemptions;owner/bot exemptions kept,alert-only.'
+          : 'Stop monitoring and forget alert destination;threshold/trust/history kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm this stored alert-policy change')
+          .setRequired(true),
+      ),
+  );
 export default {
   category: 'antinuke',
   data,
@@ -85,9 +165,40 @@ export default {
     const t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId),
       sub = i.options.getSubcommand();
-    let text;
-    if (sub === 'enable') {
-      if (!c.config.auditEventsEnabled) throw new UserError('antinukeRuntimeDisabled');
+    let text, files;
+    if (['importpolicy', 'cleartrust', 'clearchannel'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('antinukeResetConfirm');
+      if (sub === 'importpolicy') {
+        c.antinuke.importPolicy(i.guildId, i.options.getString('json', true));
+        text = t('antinukePolicyImported');
+      } else if (sub === 'cleartrust')
+        text = t('antinukeTrustCleared', { count: c.antinuke.clearTrust(i.guildId) });
+      else {
+        c.antinuke.clearChannel(i.guildId);
+        text = t('antinukeChannelCleared');
+      }
+    } else if (sub === 'exportpolicy') {
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(JSON.stringify(c.antinuke.get(i.guildId), null, 2) + '\n', 'utf8'),
+          { name: 'luna-audit-alert-policy.json' },
+        ),
+      ];
+      text = t('antinukePolicyExported');
+    } else if (sub === 'resetpolicy') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('antinukeResetConfirm');
+      c.antinuke.resetPolicy(i.guildId);
+      text = t('antinukePolicyReset');
+    } else if (sub === 'removetrust') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('antinukeResetConfirm');
+      text = t('antinukeTrustRemoved', {
+        count: c.antinuke.removeTrust(i.guildId, i.options.getString('user-id', true)),
+      });
+    } else if (sub === 'enable') {
+      if (c.config.auditEventsEnabled !== true) throw new UserError('antinukeRuntimeDisabled');
       const channel = await validateOutputChannel(
         i.guild,
         i.options.getChannel('channel', true).id,
@@ -102,7 +213,7 @@ export default {
       )
         throw new UserError('antinukeBotPermission');
       await authorize();
-      if (!c.config.auditEventsEnabled) throw new UserError('antinukeRuntimeDisabled');
+      if (c.config.auditEventsEnabled !== true) throw new UserError('antinukeRuntimeDisabled');
       c.antinuke.patch(i.guildId, { enabled: true, channelId: channel.id });
       text = t('antinukeEnabled');
     } else if (sub === 'disable') {
@@ -154,6 +265,11 @@ export default {
         (rows.map((r) => `#${r.id} | ${r.actor_id} | ${r.event_count} | ${r.status}`).join('\n') ||
           t('antinukeEmpty'));
     } else throw new UserError('unknownCommand');
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

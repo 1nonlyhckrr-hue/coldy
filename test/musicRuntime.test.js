@@ -446,3 +446,60 @@ test('music joining capacity is rechecked after final actor refresh and existing
     assert.equal(x.calls.length, 0);
   }
 });
+
+test('waiting transform commands private3locale dispatch exactrange and revalidate samevoice before queuewrite', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['reverse', 'deduplicate', 'removerange']) {
+      const x = setup();
+      x.c.guildConfig.language = () => locale;
+      x.i.options.getSubcommand = () => sub;
+      x.i.options.getInteger = (n) => (n === 'from' ? 1 : 2);
+      let seen;
+      x.c.music.transformWaiting = async (g, a, o) => {
+        seen = { g, a, from: o.from, to: o.to };
+        await o.beforeEffect();
+      };
+      await command.execute(x.i, x.c);
+      assert.deepEqual(seen, {
+        g: 'g',
+        a: sub,
+        from: sub === 'removerange' ? 1 : undefined,
+        to: sub === 'removerange' ? 2 : undefined,
+      });
+      assert.deepEqual(x.replies[1].allowedMentions.parse, []);
+      x.c.music.transformWaiting = async (_g, _a, o) => {
+        x.actor.voice.channelId = 'changed';
+        await o.beforeEffect();
+      };
+      await assert.rejects(() => command.execute(x.i, x.c));
+    }
+});
+test('trim duplicate removeown private3locale exactcaller arguments/freshsamevoice guard no player effects', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['trim', 'duplicate', 'removeown']) {
+      const x = setup();
+      x.c.guildConfig.language = () => locale;
+      x.i.options.getSubcommand = () => sub;
+      x.i.options.getInteger = () => 2;
+      let seen;
+      x.c.music.transformWaiting = async (g, a, o) => {
+        seen = { g, a, count: o.count, from: o.from, requesterId: o.requesterId };
+        await o.beforeEffect();
+      };
+      await command.execute(x.i, x.c);
+      assert.deepEqual(seen, {
+        g: 'g',
+        a: sub,
+        count: sub === 'trim' ? 2 : undefined,
+        from: sub === 'duplicate' ? 2 : undefined,
+        requesterId: x.i.user.id,
+      });
+      assert.deepEqual(x.replies[1].allowedMentions.parse, []);
+      assert.equal(x.replies[0].flags, 64);
+      x.c.music.transformWaiting = async (_g, _a, o) => {
+        x.actor.voice.channelId = 'changed';
+        await o.beforeEffect();
+      };
+      await assert.rejects(() => command.execute(x.i, x.c));
+    }
+});

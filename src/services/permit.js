@@ -70,20 +70,102 @@ export class CommandRestrictions {
       .prepare('DELETE FROM command_restrictions WHERE guild_id=? AND command_name=?')
       .run(guildId, commandName).changes;
   }
+  clearCombined(guildId, commandName = null) {
+    if (
+      commandName !== null &&
+      (typeof commandName !== 'string' || !/^[a-z0-9_-]{1,32}$/.test(commandName))
+    )
+      throw new UserError('permitCommandInvalid');
+    return this.db.transaction(() => {
+      const subjects = this.db
+        .prepare(
+          'DELETE FROM command_restrictions WHERE guild_id=? AND (? IS NULL OR command_name=?)',
+        )
+        .run(guildId, commandName, commandName).changes;
+      const channels = this.db
+        .prepare(
+          'DELETE FROM command_channel_restrictions WHERE guild_id=? AND (? IS NULL OR command_name=?)',
+        )
+        .run(guildId, commandName, commandName).changes;
+      return { subjects, channels };
+    })();
+  }
+  clearScope(guildId, kind, id) {
+    if (
+      !['user', 'role', 'channel'].includes(kind) ||
+      typeof id !== 'string' ||
+      !subjectId.test(id)
+    )
+      throw new UserError('permitSubjectInvalid');
+    return kind === 'channel'
+      ? this.db
+          .prepare('DELETE FROM command_channel_restrictions WHERE guild_id=? AND channel_id=?')
+          .run(guildId, id).changes
+      : this.db
+          .prepare(
+            'DELETE FROM command_restrictions WHERE guild_id=? AND subject_kind=? AND subject_id=?',
+          )
+          .run(guildId, kind, id).changes;
+  }
+  exportRules(guildId) {
+    return { subjects: this.list(guildId), channels: this.channelRules(guildId) };
+  }
+  channelRules(guildId, commandName = null) {
+    if (
+      commandName !== null &&
+      (typeof commandName !== 'string' || !/^[a-z0-9_-]{1,32}$/.test(commandName))
+    )
+      throw new UserError('permitCommandInvalid');
+    return this.db
+      .prepare(
+        'SELECT command_name,channel_id FROM command_channel_restrictions WHERE guild_id=? AND (? IS NULL OR command_name=?) ORDER BY command_name,channel_id',
+      )
+      .all(guildId, commandName, commandName);
+  }
+  setChannel(guildId, commandName, channelId, blocked) {
+    this.validate(commandName, 'user', channelId);
+    if (typeof blocked !== 'boolean') throw new TypeError('Invalid restriction state');
+    return this.db.transaction(() => {
+      if (blocked) {
+        const existing = this.db
+          .prepare(
+            'SELECT 1 FROM command_channel_restrictions WHERE guild_id=? AND command_name=? AND channel_id=?',
+          )
+          .get(guildId, commandName, channelId);
+        if (!existing && this.channelRules(guildId).length >= 100)
+          throw new UserError('permitLimit');
+        return this.db
+          .prepare('INSERT OR IGNORE INTO command_channel_restrictions VALUES(?,?,?,?)')
+          .run(guildId, commandName, channelId, Date.now()).changes;
+      }
+      return this.db
+        .prepare(
+          'DELETE FROM command_channel_restrictions WHERE guild_id=? AND command_name=? AND channel_id=?',
+        )
+        .run(guildId, commandName, channelId).changes;
+    })();
+  }
+  channelDenied(i, commandName) {
+    return this.channelRules(i.guildId, commandName).some((r) => r.channel_id === i.channelId);
+  }
   async ownStatus(i, commandName) {
     if (i.guild?.id !== i.guildId) throw new UserError('permitMemberMissing');
     const member = await i.guild.members.fetch({ user: i.user.id, force: true });
     if (member?.id !== i.user.id || member.guild?.id !== i.guildId)
       throw new UserError('permitMemberMissing');
     if (RECOVERY_COMMANDS.has(commandName) || member.id === i.guild.ownerId) return 'exempt';
-    return this.list(i.guildId, commandName).some((r) =>
-      r.subject_kind === 'user' ? r.subject_id === member.id : member.roles.cache.has(r.subject_id),
-    )
+    return this.channelDenied(i, commandName) ||
+      this.list(i.guildId, commandName).some((r) =>
+        r.subject_kind === 'user'
+          ? r.subject_id === member.id
+          : member.roles.cache.has(r.subject_id),
+      )
       ? 'denied'
       : 'notdenied';
   }
   async enforce(i, commandName) {
     if (RECOVERY_COMMANDS.has(commandName) || i.user.id === i.guild?.ownerId) return;
+    if (this.channelDenied(i, commandName)) throw new UserError('permitDenied');
     const rows = this.list(i.guildId, commandName);
     if (!rows.length) return;
     // A configured restriction must never depend on a stale interaction member snapshot.

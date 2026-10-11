@@ -17,6 +17,13 @@ export async function loadCommands(directory = new URL('../commands/', import.me
       if (command.category !== category.name) throw new Error(`Category mismatch: ${file}`);
       if (registry.has(command.data.name))
         throw new Error(`Duplicate command: ${command.data.name}`);
+      if (
+        command.cooldownMs !== undefined &&
+        (!Number.isSafeInteger(command.cooldownMs) ||
+          command.cooldownMs < 1 ||
+          command.cooldownMs > 86400000)
+      )
+        throw new Error(`Invalid command cooldown: ${category.name}/${file}`);
       command.data.toJSON();
       registry.set(command.data.name, command);
     }

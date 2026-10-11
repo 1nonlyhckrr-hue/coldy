@@ -1,9 +1,17 @@
 import { z } from 'zod';
 import { ChannelType, PermissionFlagsBits as P } from 'discord.js';
 import { translate } from './localization.js';
+import { validateWelcomeAsset } from './welcomeAssets.js';
 import { UserError } from '../utils/errors.js';
 const id = z.string().regex(/^\d{17,20}$/);
 const message = z.string().min(1).max(1800);
+const asset = z.string().superRefine((value, ctx) => {
+  try {
+    validateWelcomeAsset(value);
+  } catch {
+    ctx.addIssue({ code: 'custom', message: 'Invalid welcome asset' });
+  }
+});
 export const guildConfigSchema = z
   .object({
     language: z.enum(['en', 'hi', 'hinglish']).default('en'),
@@ -46,6 +54,10 @@ export const guildConfigSchema = z
           .max(120)
           .regex(/^[^\u0000-\u001f\u007f@]+$/u)
           .optional(),
+        image: asset.optional(),
+        thumbnail: asset.optional(),
+        goodbyeImage: asset.optional(),
+        goodbyeThumbnail: asset.optional(),
         color: z.number().int().min(0).max(0xffffff).optional(),
         messageCustom: z.boolean().optional(),
         goodbyeCustom: z.boolean().optional(),

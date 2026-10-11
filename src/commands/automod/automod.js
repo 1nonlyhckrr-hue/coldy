@@ -1,5 +1,6 @@
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   MessageFlags,
@@ -226,6 +227,11 @@ const data = new SlashCommandBuilder()
         o.setName('page').setDescription('Page1-5').setMinValue(1).setMaxValue(5),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('stats')
+      .setDescription('Private aggregate stored incident outcomes;no content,IDs or retries.'),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show configured rules and limits.'))
   .addSubcommand((s) =>
     s
@@ -238,7 +244,89 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
-    s.setName('incidents').setDescription('Show 20 recent action outcomes, no message content.'),
+    s
+      .setName('incidents')
+      .setDescription('Show 20 recent stored outcomes,optionally filtered,no message content.')
+      .addStringOption((o) =>
+        o
+          .setName('status')
+          .setDescription('Stored outcome filter before newest20 selection')
+          .addChoices(
+            ...['reserved', 'completed', 'uncertain', 'failed'].map((value) => ({
+              name: value,
+              value,
+            })),
+          ),
+      ),
+  );
+data
+  .addSubcommand((s) =>
+    s
+      .setName('exportpolicy')
+      .setDescription(
+        'Private JSON of stored rules/literal words/exemptIDs,not incident/message history.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clearwords')
+      .setDescription('Confirmed remove all storedliteralblockedwords;other rules/settings kept.')
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm clearing this guild literalword list')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetpolicy')
+      .setDescription(
+        'Confirmed disabled/defaultpolicy reset,words/exemptions cleared;incidents/cases kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping AutoMod and clearing storedpolicy/exemptions')
+          .setRequired(true),
+      ),
+  );
+data.addSubcommand((s) =>
+  s
+    .setName('importpolicy')
+    .setDescription(
+      'Replace strict policy JSON,force disabled,clear own spam memory;no native effects.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('json')
+        .setDescription('Policy object,4000chars max;IDs are stored only,review before enable')
+        .setMinLength(2)
+        .setMaxLength(4000)
+        .setRequired(true),
+    )
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm replacing current policy and stopping AutoMod')
+        .setRequired(true),
+    ),
+);
+for (const name of ['clearignored', 'clearexempt'])
+  data.addSubcommand((s) =>
+    s
+      .setName(name)
+      .setDescription(
+        name === 'clearignored'
+          ? 'Clear ignored channels;if enabled,future messages there may be moderated.'
+          : 'Clear role exemptions;if enabled,future messages by these roles may be moderated.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm removing all exclusions in this scope')
+          .setRequired(true),
+      ),
   );
 export default {
   category: 'automod',
@@ -260,9 +348,40 @@ export default {
     const sub = i.options.getSubcommand(),
       locale = c.guildConfig.get(i.guildId).language,
       t = (k, p) => translate(locale, k, p);
-    let content;
+    let content, files;
+    if (['importpolicy', 'clearignored', 'clearexempt'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automodResetConfirm');
+      if (sub === 'importpolicy') {
+        c.automod.importPolicy(i.guildId, i.options.getString('json', true));
+        content = t('automodPolicyImported');
+      } else {
+        const kind = sub === 'clearignored' ? 'ignoredChannels' : 'exemptRoles';
+        content = t('automodScopeCleared', { count: c.automod.clearScope(i.guildId, kind) });
+      }
+    }
+    if (sub === 'exportpolicy') {
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(JSON.stringify(c.automod.get(i.guildId), null, 2) + '\n', 'utf8'),
+          { name: 'luna-automod-policy.json' },
+        ),
+      ];
+      content = t('automodPolicyExported');
+    }
+    if (['clearwords', 'resetpolicy'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automodResetConfirm');
+      if (sub === 'clearwords')
+        content = t('automodWordsCleared', { count: c.automod.clearWords(i.guildId) });
+      else {
+        c.automod.resetPolicy(i.guildId);
+        content = t('automodPolicyReset');
+      }
+    }
+
     if (sub === 'enable') {
-      if (!c.config.messageEventsEnabled) throw new UserError('responderRuntimeDisabled');
+      if (c.config.messageEventsEnabled !== true) throw new UserError('responderRuntimeDisabled');
       const action = i.options.getString('action', true);
       if (action === 'delete') {
         const bot = await i.guild.members.fetchMe({ force: true });
@@ -287,7 +406,7 @@ export default {
           throw new UserError('automodTimeoutPermission');
       }
       await authorize();
-      if (!c.config.messageEventsEnabled) throw new UserError('responderRuntimeDisabled');
+      if (c.config.messageEventsEnabled !== true) throw new UserError('responderRuntimeDisabled');
       c.automod.patch(i.guildId, { enabled: true, action });
       content = t('automodEnabled');
     }
@@ -462,14 +581,38 @@ export default {
           )
           .join('\n') || t('automodEmpty'));
     }
+    if (sub === 'stats') {
+      const counts = {
+        total: 0,
+        reserved: 0,
+        completed: 0,
+        uncertain: 0,
+        failed: 0,
+        warn: 0,
+        delete: 0,
+        timeout: 0,
+      };
+      for (const row of c.automod.stats(i.guildId)) {
+        counts.total += row.count;
+        counts[row.status] += row.count;
+        counts[row.action] += row.count;
+      }
+      content = t('automodStats', counts);
+    }
     if (sub === 'incidents') {
-      const rows = c.automod.incidents(i.guildId);
+      const status = i.options.getString('status') ?? null,
+        rows = c.automod.incidents(i.guildId, status);
       content =
         t('automodIncidents') +
         '\n' +
         (rows.map((r) => `${r.message_id} | ${r.rule} | ${r.action} | ${r.status}`).join('\n') ||
           t('automodEmpty'));
     }
-    await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

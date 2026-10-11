@@ -11,6 +11,12 @@ const input = z
 export function normalizeTrigger(text) {
   return text.normalize('NFKC').toLocaleLowerCase('en').trim().replace(/\s+/gu, ' ');
 }
+function validatedTrigger(value) {
+  const trigger = normalizeTrigger(input.shape.trigger.parse(value));
+  if (!trigger || trigger.length > 100 || /[\u0000-\u001f\u007f]/u.test(trigger))
+    throw new UserError('responderInvalidTrigger');
+  return trigger;
+}
 export function matchesTrigger(content, trigger, mode) {
   const text = normalizeTrigger(content),
     needle = normalizeTrigger(trigger);
@@ -30,15 +36,36 @@ export class Autoresponders {
     this.db = db;
     this.now = now;
   }
-  list(guildId) {
+  list(guildId, { enabled = null } = {}) {
+    if (enabled !== null && typeof enabled !== 'boolean')
+      throw new UserError('responderFilterInvalid');
     return this.db
-      .prepare('SELECT * FROM autoresponders WHERE guild_id=? ORDER BY id')
-      .all(guildId);
+      .prepare(
+        'SELECT * FROM autoresponders WHERE guild_id=? AND (? IS NULL OR enabled=?) ORDER BY id',
+      )
+      .all(
+        guildId,
+        enabled === null ? null : Number(enabled),
+        enabled === null ? null : Number(enabled),
+      );
+  }
+  stats(guildId) {
+    return {
+      rules: this.db
+        .prepare(
+          'SELECT enabled,mode,count(*) AS count FROM autoresponders WHERE guild_id=? GROUP BY enabled,mode ORDER BY enabled,mode',
+        )
+        .all(guildId),
+      deliveries: this.db
+        .prepare(
+          'SELECT status,count(*) AS count FROM autoresponder_deliveries WHERE guild_id=? GROUP BY status ORDER BY status',
+        )
+        .all(guildId),
+    };
   }
   create(guildId, value) {
     const v = input.parse(value),
-      trigger = normalizeTrigger(v.trigger);
-    if (!trigger) throw new UserError('responderInvalidTrigger');
+      trigger = validatedTrigger(v.trigger);
     return this.db.transaction(() => {
       if (this.list(guildId).length >= 50) throw new UserError('responderLimit');
       if (this.find(guildId, trigger)) throw new UserError('responderExists');
@@ -56,9 +83,7 @@ export class Autoresponders {
       .get(guildId, normalizeTrigger(trigger));
   }
   rename(guildId, trigger, newTrigger) {
-    const target = normalizeTrigger(input.shape.trigger.parse(newTrigger));
-    if (!target || target.length > 100 || /[\u0000-\u001f\u007f]/u.test(target))
-      throw new UserError('responderInvalidTrigger');
+    const target = validatedTrigger(newTrigger);
     return this.db.transaction(() => {
       const row = this.find(guildId, trigger);
       if (!row) throw new UserError('responderNotFound');
@@ -97,6 +122,111 @@ export class Autoresponders {
       .prepare('UPDATE autoresponders SET enabled=? WHERE guild_id=? AND trigger=?')
       .run(Number(enabled), guildId, normalizeTrigger(trigger));
     if (!result.changes) throw new UserError('responderNotFound');
+  }
+  clone(guildId, trigger, newTrigger) {
+    return this.db.transaction(() => {
+      const row = this.find(guildId, trigger);
+      if (!row) throw new UserError('responderNotFound');
+      const id = this.create(guildId, {
+        trigger: newTrigger,
+        response: row.response,
+        mode: row.mode,
+        cooldownSeconds: row.cooldown_seconds,
+      });
+      this.db
+        .prepare('UPDATE autoresponders SET enabled=0 WHERE id=? AND guild_id=?')
+        .run(id, guildId);
+      return id;
+    })();
+  }
+  exportRules(guildId) {
+    return this.list(guildId).map((r) => ({
+      trigger: r.trigger,
+      response: r.response,
+      mode: r.mode,
+      cooldownSeconds: r.cooldown_seconds,
+    }));
+  }
+  importRules(guildId, text) {
+    if (typeof text !== 'string' || text.length > 4000)
+      throw new UserError('responderImportInvalid');
+    let values;
+    try {
+      values = z.array(input).min(1).max(10).parse(JSON.parse(text));
+    } catch {
+      throw new UserError('responderImportInvalid');
+    }
+    return this.db.transaction(() => {
+      const ids = values.map((value) => {
+        const id = this.create(guildId, value);
+        this.db
+          .prepare('UPDATE autoresponders SET enabled=0 WHERE id=? AND guild_id=?')
+          .run(id, guildId);
+        return id;
+      });
+      return ids.length;
+    })();
+  }
+  replaceRules(guildId, text) {
+    if (typeof text !== 'string' || text.length > 4000)
+      throw new UserError('responderImportInvalid');
+    let values;
+    try {
+      values = z.array(input).min(1).max(10).parse(JSON.parse(text));
+    } catch {
+      throw new UserError('responderImportInvalid');
+    }
+    const triggers = values.map((v) => validatedTrigger(v.trigger));
+    if (new Set(triggers).size !== triggers.length) throw new UserError('responderExists');
+    return this.db.transaction(() => {
+      const rows = triggers.map((t) => this.find(guildId, t));
+      if (rows.some((r) => !r)) throw new UserError('responderNotFound');
+      values.forEach((v, n) => {
+        const r = rows[n],
+          result = this.db
+            .prepare(
+              'UPDATE autoresponders SET response=?,mode=?,cooldown_seconds=?,enabled=0 WHERE id=? AND guild_id=? AND trigger=?',
+            )
+            .run(v.response, v.mode, v.cooldownSeconds, r.id, guildId, r.trigger);
+        if (result.changes !== 1) throw new UserError('responderNotFound');
+      });
+      return rows.length;
+    })();
+  }
+  deletePaused(guildId) {
+    return this.db.prepare('DELETE FROM autoresponders WHERE guild_id=? AND enabled=0').run(guildId)
+      .changes;
+  }
+  cooldownAll(guildId, seconds) {
+    const v = input.shape.cooldownSeconds.parse(seconds);
+    return this.db
+      .prepare(
+        'UPDATE autoresponders SET cooldown_seconds=? WHERE guild_id=? AND cooldown_seconds<>?',
+      )
+      .run(v, guildId, v).changes;
+  }
+  dryRun(guildId, content) {
+    if (typeof content !== 'string' || !content.trim() || content.length > 1800)
+      throw new UserError('responderDryInvalid');
+    const now = this.now();
+    if (!Number.isSafeInteger(now) || now < 0) throw new UserError('responderDryInvalid');
+    const matches = this.list(guildId)
+      .filter((r) => matchesTrigger(content, r.trigger, r.mode))
+      .sort((a, b) => (a.mode === 'exact' ? 0 : 1) - (b.mode === 'exact' ? 0 : 1) || a.id - b.id)
+      .map((r) => ({
+        id: r.id,
+        mode: r.mode,
+        state:
+          r.enabled !== 1
+            ? 'paused'
+            : now - r.last_sent_at < r.cooldown_seconds * 1000
+              ? 'cooldown'
+              : 'eligible',
+      }));
+    return { matches, chosen: matches.find((r) => r.state === 'eligible')?.id ?? null };
+  }
+  deleteAll(guildId) {
+    return this.db.prepare('DELETE FROM autoresponders WHERE guild_id=?').run(guildId).changes;
   }
   disableAll(guildId) {
     return this.db

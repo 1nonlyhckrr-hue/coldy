@@ -854,3 +854,792 @@ test('bulk paused autoresponders and their retained cooldown/receipt survive rea
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('create rejects compatibility-expanded triggers over100 after normalization without partial writes', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db);
+    assert.throws(
+      () => r.create('g', { trigger: 'ﬃ'.repeat(34), response: 'safe' }),
+      /responderInvalidTrigger/,
+    );
+    assert.equal(r.list('g').length, 0);
+    r.create('g', { trigger: 'ﬃ'.repeat(33), response: 'safe' });
+    assert.equal(r.list('g')[0].trigger.length, 99);
+  } finally {
+    db.close();
+  }
+});
+test('create rejects normalized control characters while legitimate whitespace normalization remains supported', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db);
+    for (const trigger of ['a\u0000b', 'a\u001bb', 'a\u007fb']) {
+      assert.throws(() => r.create('g', { trigger, response: 'safe' }), /responderInvalidTrigger/);
+      assert.equal(r.list('g').length, 0);
+    }
+    r.create('g', { trigger: ' hello\t\nworld ', response: 'safe' });
+    assert.equal(r.list('g')[0].trigger, 'hello world');
+    assert(r.claim('g', 'm1', 'hello world'));
+  } finally {
+    db.close();
+  }
+});
+test('create and rename share normalized limits and collision rules preserving metadata/receipts across SQLite reopen', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-trigger-normal-')),
+    path = join(dir, 'db');
+  let db;
+  try {
+    db = openDatabase(path);
+    let r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'ＦＯＯ', response: 'same' });
+    r.claim('g', 'm1', 'foo');
+    const before = r.find('g', 'foo'),
+      receipt = db.prepare('SELECT * FROM autoresponder_deliveries').get();
+    assert.throws(
+      () => r.create('g', { trigger: 'foo', response: 'duplicate' }),
+      /responderExists/,
+    );
+    for (const bad of ['ﬃ'.repeat(34), 'a\u0000b'])
+      assert.throws(() => r.rename('g', 'foo', bad), /responderInvalidTrigger/);
+    assert.deepEqual(r.find('g', 'foo'), before);
+    r.rename('g', 'foo', 'ＢＡＲ');
+    db.close();
+    db = openDatabase(path);
+    r = new Autoresponders(db, () => 100000);
+    assert.deepEqual(r.find('g', 'bar'), { ...before, trigger: 'bar' });
+    assert.deepEqual(db.prepare('SELECT * FROM autoresponder_deliveries').get(), receipt);
+    assert.equal(r.claim('g', 'm1', 'bar'), null);
+    assert.equal(r.claim('g', 'm2', 'bar'), null);
+  } finally {
+    db?.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('responder freshness rechecked after async native lookup prevents newly stale delivery without consuming cooldown', async () => {
+  const x = setup();
+  let now = 1000000;
+  try {
+    x.m.createdTimestamp = now - 299999;
+    x.m.guild.members.fetchMe = async () => {
+      now += 2;
+      return { id: 'b', guild: { id: 'g' } };
+    };
+    const before = x.c.autoresponders.find('g', 'hello');
+    await createAutoresponderHandler(x.c, () => now)(x.m);
+    assert.equal(x.sent.length, 0);
+    assert.deepEqual(x.c.autoresponders.find('g', 'hello'), before);
+    assert.equal(x.db.prepare('SELECT count(*) AS n FROM autoresponder_deliveries').get().n, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('responder clock rollback beyond future tolerance while native lookups wait fails closed without receipt', async () => {
+  const x = setup();
+  let now = 1000000;
+  try {
+    x.m.createdTimestamp = now;
+    x.m.guild.channels.fetch = async () => {
+      now -= 300001;
+      return x.m.channel;
+    };
+    await createAutoresponderHandler(x.c, () => now)(x.m);
+    assert.equal(x.sent.length, 0);
+    assert.equal(x.db.prepare('SELECT count(*) AS n FROM autoresponder_deliveries').get().n, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('responder final freshness inclusive five-minute boundary still sends once while nonfinite timestamps do not', async () => {
+  const x = setup();
+  let now = 1000000;
+  try {
+    const handler = createAutoresponderHandler(x.c, () => now);
+    for (const stamp of [NaN, Infinity, -Infinity]) {
+      x.m.createdTimestamp = stamp;
+      await handler(x.m);
+    }
+    assert.equal(x.sent.length, 0);
+    x.m.createdTimestamp = now - 299999;
+    x.m.guild.members.fetchMe = async () => {
+      now++;
+      return { id: 'b', guild: { id: 'g' } };
+    };
+    await handler(x.m);
+    assert.equal(x.sent.length, 1);
+    assert.equal(x.db.prepare('SELECT status FROM autoresponder_deliveries').get().status, 'sent');
+    await handler(x.m);
+    assert.equal(x.sent.length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('responder enabled state filter preserves guild order and metadata without affecting claims or mutation', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db);
+    for (let n = 0; n < 25; n++) {
+      r.create('g', { trigger: 't' + n, response: 'x' });
+      if (n % 2) r.setEnabled('g', 't' + n, false);
+    }
+    r.create('foreign', { trigger: 't0', response: 'foreign' });
+    const before = r.list('g');
+    assert.deepEqual(
+      r.list('g', { enabled: true }),
+      before.filter((x) => x.enabled === 1),
+    );
+    assert.deepEqual(
+      r.list('g', { enabled: false }),
+      before.filter((x) => x.enabled === 0),
+    );
+    assert.deepEqual(r.list('g', { enabled: null }), before);
+    for (const enabled of [0, 1, 'true', {}, []])
+      assert.throws(() => r.list('g', { enabled }), /responderFilterInvalid/);
+    assert.deepEqual(r.list('g'), before);
+    assert.equal(r.list('foreign', { enabled: true }).length, 1);
+  } finally {
+    db.close();
+  }
+});
+test('responder config slash filters before paging and stays private/no effects in all locales', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      for (let n = 0; n < 24; n++) {
+        x.c.autoresponders.create('g', { trigger: 't' + n, response: 'DO NOT SEND' });
+        if (n % 2) x.c.autoresponders.setEnabled('g', 't' + n, false);
+      }
+      const before = x.c.autoresponders.list('g'),
+        replies = [];
+      const i = {
+        guildId: 'g',
+        user: { id: 'u' },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({ id: 'u', guild: { id: 'g' }, permissions: { has: () => true } }),
+          },
+        },
+        options: { getSubcommand: () => 'config', getInteger: () => 2, getBoolean: () => false },
+        reply: async (p) => replies.push(p),
+      };
+      await command.execute(i, x.c);
+      const content = replies[0].embeds[0].data.description;
+      for (const row of before.filter((r) => !r.enabled).slice(10, 20))
+        assert(content.includes(`#${row.id} |`));
+      assert(!content.includes('DO NOT SEND'));
+      assert.equal(replies[0].flags, 64);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.deepEqual(x.c.autoresponders.list('g'), before);
+      assert.equal(x.sent.length, 0);
+      i.options.getInteger = () => 3;
+      await assert.rejects(() => command.execute(i, x.c), /responderPageInvalid/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('responder config native enabled filter is optional bool and empty selected state has only page1', async () => {
+  const config = command.data.toJSON().options.find((s) => s.name === 'config');
+  assert.equal(config.options.find((o) => o.name === 'enabled').type, 5);
+  assert(!config.options.find((o) => o.name === 'enabled').required);
+  const x = setup();
+  try {
+    const i = {
+      guildId: 'g',
+      user: { id: 'u' },
+      guild: {
+        id: 'g',
+        members: {
+          fetch: async () => ({ id: 'u', guild: { id: 'g' }, permissions: { has: () => true } }),
+        },
+      },
+      options: { getSubcommand: () => 'config', getInteger: () => 1, getBoolean: () => false },
+      reply: async () => {},
+    };
+    await command.execute(i, x.c);
+    i.options.getInteger = () => 2;
+    await assert.rejects(() => command.execute(i, x.c), /responderPageInvalid/);
+    i.options.getInteger = () => 1;
+    i.options.getBoolean = () => 'false';
+    await assert.rejects(() => command.execute(i, x.c), /responderFilterInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('responder stats aggregate exact stored guild rule and receipt counts without sensitive bodies or mutation', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'SECRET', response: 'SECRET' });
+    r.create('g', { trigger: 'paused', response: 'PRIVATE', mode: 'keyword' });
+    r.setEnabled('g', 'paused', false);
+    r.create('foreign', { trigger: 'SECRET', response: 'SECRET' });
+    r.claim('g', 'm1', 'secret');
+    r.finish('m1', 'sent');
+    const before = r.list('g'),
+      receipts = db.prepare('SELECT * FROM autoresponder_deliveries').all();
+    assert.deepEqual(r.stats('g'), {
+      rules: [
+        { enabled: 0, mode: 'keyword', count: 1 },
+        { enabled: 1, mode: 'exact', count: 1 },
+      ],
+      deliveries: [{ status: 'sent', count: 1 }],
+    });
+    assert.deepEqual(r.stats('none'), { rules: [], deliveries: [] });
+    assert(!JSON.stringify(r.stats('g')).includes('SECRET'));
+    assert.deepEqual(r.list('g'), before);
+    assert.deepEqual(db.prepare('SELECT * FROM autoresponder_deliveries').all(), receipts);
+  } finally {
+    db.close();
+  }
+});
+test('responder stats current manager command is private/localized/read-only and does not claim live status', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      const replies = [],
+        actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } },
+        before = x.c.autoresponders.list('g');
+      const i = {
+        guildId: 'g',
+        user: { id: 'u' },
+        guild: { id: 'g', members: { fetch: async () => actor } },
+        options: { getSubcommand: () => 'stats' },
+        reply: async (p) => replies.push(p),
+      };
+      await command.execute(i, x.c);
+      assert.equal(replies[0].flags, 64);
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert(!JSON.stringify(replies[0]).includes('@everyone hi'));
+      assert.deepEqual(x.c.autoresponders.list('g'), before);
+      assert.equal(x.sent.length, 0);
+      actor.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('responder stats distinguish reserved/uncertain receipts and retain history after rule deletion', () => {
+  const db = openDatabase(':memory:');
+  try {
+    let now = 100000;
+    const r = new Autoresponders(db, () => now);
+    r.create('g', { trigger: 'hello', response: 'x', cooldownSeconds: 10 });
+    r.claim('g', 'm1', 'hello');
+    now += 10001;
+    r.claim('g', 'm2', 'hello');
+    r.finish('m2', 'uncertain');
+    r.delete('g', 'hello');
+    assert.deepEqual(r.stats('g'), {
+      rules: [],
+      deliveries: [
+        { status: 'reserved', count: 1 },
+        { status: 'uncertain', count: 1 },
+      ],
+    });
+    r.recover();
+    assert.deepEqual(r.stats('g').deliveries, [{ status: 'uncertain', count: 2 }]);
+  } finally {
+    db.close();
+  }
+});
+
+test('autoresponder blank native receipt remains uncertain and original message cannot replay', async () => {
+  const x = setup();
+  let attempts = 0;
+  try {
+    x.m.channel.send = async () => {
+      attempts++;
+      return { id: ' ' };
+    };
+    const h = createAutoresponderHandler(x.c);
+    await h(x.m);
+    await h(x.m);
+    assert.equal(attempts, 1);
+    assert.equal(
+      x.db.prepare('SELECT status FROM autoresponder_deliveries').get().status,
+      'uncertain',
+    );
+  } finally {
+    x.db.close();
+  }
+});
+
+test('message automation requires exact runtime enable flag rather than malformed truthy opt-in', async () => {
+  for (const value of ['true', 'false', 1, {}, null]) {
+    const x = setup();
+    try {
+      x.c.config.messageEventsEnabled = value;
+      await createAutoresponderHandler(x.c)(x.m);
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('autoresponder requires positively human author before rule receipt or automatic reply', async () => {
+  for (const flag of [undefined, null, 0, '', 'false', {}, true]) {
+    const x = setup();
+    try {
+      x.m.author.bot = flag;
+      await createAutoresponderHandler(x.c)(x.m);
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('autoresponder create refuses malformed runtime consent before persisting active response', async () => {
+  for (const flag of [undefined, null, 1, 'true', 'false', {}]) {
+    const x = setup();
+    try {
+      x.c.config.messageEventsEnabled = flag;
+      const before = x.c.autoresponders.list('g');
+      const i = {
+        guildId: 'g',
+        user: { id: 'u' },
+        guild: {
+          id: 'g',
+          members: {
+            fetch: async () => ({ id: 'u', guild: { id: 'g' }, permissions: { has: () => true } }),
+          },
+        },
+        options: { getSubcommand: () => 'create' },
+        reply: async () => {
+          throw new Error('unexpected reply');
+        },
+      };
+      await assert.rejects(() => command.execute(i, x.c), /responderRuntimeDisabled/);
+      assert.deepEqual(x.c.autoresponders.list('g'), before);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('autoresponder invalid clock initial or after native lookup cannot bypass freshness or reserve reply', async () => {
+  for (const value of [NaN, Infinity, -1, undefined, '123', null, 1.5]) {
+    for (const stage of ['initial', 'final']) {
+      const x = setup();
+      let clock = stage === 'initial' ? value : Date.now();
+      try {
+        const fetch = x.m.guild.members.fetchMe;
+        x.m.guild.members.fetchMe = async (...args) => {
+          clock = value;
+          return fetch(...args);
+        };
+        await createAutoresponderHandler(x.c, () => clock)(x.m);
+        assert.equal(x.sent.length, 0);
+        assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 0);
+      } finally {
+        x.db.close();
+      }
+    }
+  }
+});
+
+test('autoresponder throwing clock at initial/final gate is contained with no response or reservation', async () => {
+  for (const stage of ['initial', 'final']) {
+    const x = setup();
+    let fail = stage === 'initial';
+    try {
+      const fetch = x.m.guild.members.fetchMe;
+      x.m.guild.members.fetchMe = async (...args) => {
+        fail = true;
+        return fetch(...args);
+      };
+      const clock = () => {
+        if (fail) throw new Error('SECRET_CLOCK');
+        return Date.now();
+      };
+      await createAutoresponderHandler(x.c, clock)(x.m);
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('autoresponder post-lookup author/system/webhook changes cannot claim or send response', async () => {
+  for (const change of [
+    { author: { id: 'u', bot: true } },
+    { author: { id: 'u' } },
+    { system: true },
+    { webhookId: 'hook' },
+  ]) {
+    const x = setup();
+    try {
+      const fetch = x.m.guild.members.fetchMe;
+      x.m.guild.members.fetchMe = async (...args) => {
+        Object.assign(x.m, change);
+        return fetch(...args);
+      };
+      await createAutoresponderHandler(x.c)(x.m);
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('responder clone copies literal response/mode/cooldown into unique paused rule without replay/cooldown history', () => {
+  const x = setup();
+  try {
+    x.c.autoresponders.setMode('g', 'hello', 'keyword');
+    x.c.autoresponders.setCooldown('g', 'hello', 120);
+    x.c.autoresponders.claim('g', 'receipt', 'hello');
+    const before = x.c.autoresponders.find('g', 'hello');
+    const id = x.c.autoresponders.clone('g', 'hello', 'Copy');
+    const copy = x.c.autoresponders.find('g', 'copy');
+    assert.equal(copy.id, id);
+    assert.equal(copy.enabled, 0);
+    assert.equal(copy.last_sent_at, 0);
+    assert.equal(copy.response, before.response);
+    assert.equal(copy.mode, 'keyword');
+    assert.equal(copy.cooldown_seconds, 120);
+    assert.equal(x.c.autoresponders.eligible('g', 'new', 'copy'), false);
+    assert.deepEqual(x.c.autoresponders.find('g', 'hello'), before);
+    assert.throws(() => x.c.autoresponders.clone('g', 'hello', 'COPY'), /responderExists/);
+    assert.throws(() => x.c.autoresponders.clone('other', 'hello', 'copy'), /responderNotFound/);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 1);
+  } finally {
+    x.db.close();
+  }
+});
+test('responder deleteall exact guild/idempotent preserves replay receipts and old event cannot claim new rule', () => {
+  const x = setup();
+  try {
+    x.c.autoresponders.claim('g', 'event', 'hello');
+    x.c.autoresponders.create('other', { trigger: 'hello', response: 'other' });
+    assert.equal(x.c.autoresponders.deleteAll('g'), 1);
+    assert.equal(x.c.autoresponders.deleteAll('g'), 0);
+    assert.equal(x.c.autoresponders.list('other').length, 1);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 1);
+    x.c.autoresponders.create('g', { trigger: 'hello', response: 'replacement' });
+    assert.equal(x.c.autoresponders.claim('g', 'event', 'hello'), null);
+  } finally {
+    x.db.close();
+  }
+});
+test('responder clone/info/deleteall commands private3locale,currentmanager,explicitdeleteconfirmation/no native send', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      let sub = 'clone',
+        confirm = false,
+        reply;
+      const actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } };
+      const i = {
+        guildId: 'g',
+        user: { id: 'u' },
+        guild: { id: 'g', members: { fetch: async () => actor } },
+        options: {
+          getSubcommand: () => sub,
+          getString: (n) => (n === 'new-trigger' ? 'copy' : sub === 'info' ? 'copy' : 'hello'),
+          getBoolean: () => confirm,
+        },
+        reply: async (p) => {
+          reply = p;
+        },
+      };
+      await command.execute(i, x.c);
+      assert.equal(reply.flags, 64);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(x.c.autoresponders.find('g', 'copy').enabled, 0);
+      sub = 'info';
+      await command.execute(i, x.c);
+      assert(reply.embeds[0].data.description.includes('@everyone hi'));
+      sub = 'deleteall';
+      await assert.rejects(() => command.execute(i, x.c), /responderConfirmRequired/);
+      assert.equal(x.c.autoresponders.list('g').length, 2);
+      confirm = true;
+      await command.execute(i, x.c);
+      assert.equal(x.c.autoresponders.list('g').length, 0);
+      assert.equal(x.sent.length, 0);
+      actor.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('responder library JSON export is scoped/text-only and atomic paused import preserves receipts', () => {
+  const x = setup();
+  try {
+    const s = x.c.autoresponders;
+    s.claim('g', 'original', 'hello');
+    s.create('other', { trigger: 'foreign', response: 'PRIVATE' });
+    const values = s.exportRules('g');
+    assert.deepEqual(Object.keys(values[0]).sort(), [
+      'cooldownSeconds',
+      'mode',
+      'response',
+      'trigger',
+    ]);
+    assert(!JSON.stringify(values).includes('PRIVATE'));
+    assert.equal(s.importRules('copy', JSON.stringify(values)), 1);
+    assert.equal(s.find('copy', 'hello').enabled, 0);
+    assert.equal(s.find('copy', 'hello').last_sent_at, 0);
+    assert.equal(s.find('copy', 'hello').response, values[0].response);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 1);
+    for (const text of [
+      'no',
+      '[]',
+      '{}',
+      JSON.stringify([{ trigger: 'x', response: 'a', enabled: true }]),
+      JSON.stringify([
+        { trigger: 'a', response: 'a' },
+        { trigger: 'A', response: 'b' },
+      ]),
+      JSON.stringify([
+        { trigger: 'new', response: 'a' },
+        { trigger: 'hello', response: 'b' },
+      ]),
+    ]) {
+      const before = s.exportRules('g');
+      assert.throws(() => s.importRules('g', text));
+      assert.deepEqual(s.exportRules('g'), before);
+    }
+    const capped = new Autoresponders(x.db);
+    for (let n = 0; n < 49; n++) capped.create('cap', { trigger: 't' + n, response: 'x' });
+    assert.throws(
+      () =>
+        capped.importRules(
+          'cap',
+          JSON.stringify([
+            { trigger: 'a', response: 'a' },
+            { trigger: 'b', response: 'b' },
+          ]),
+        ),
+      /responderLimit/,
+    );
+    assert.equal(capped.list('cap').length, 49);
+  } finally {
+    x.db.close();
+  }
+});
+test('responder dryrun uses exact-first literal priority and paused/cooldown states without writes/content storage', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const s = new Autoresponders(db, () => 100000);
+    const keyword = s.create('g', { trigger: 'hello', response: 'x', mode: 'keyword' });
+    const exact = s.create('g', { trigger: 'hello world', response: 'y' });
+    s.create('other', { trigger: 'hello world', response: 'SECRET' });
+    const before = s.list('g');
+    let r = s.dryRun('g', 'HELLO WORLD');
+    assert.equal(r.chosen, exact);
+    assert.equal(r.matches.length, 2);
+    assert.deepEqual(s.list('g'), before);
+    s.setEnabled('g', 'hello world', false);
+    r = s.dryRun('g', 'hello world');
+    assert.equal(r.chosen, keyword);
+    assert.equal(r.matches[0].state, 'paused');
+    s.claim('g', 'one', 'hello world');
+    r = s.dryRun('g', 'hello world');
+    assert.equal(r.chosen, null);
+    assert.equal(r.matches[1].state, 'cooldown');
+    assert.deepEqual(s.dryRun('g', 'scat').matches, []);
+    assert.equal(db.prepare('SELECT count(*) n FROM autoresponder_deliveries').get().n, 1);
+    for (const v of ['', null, 'x'.repeat(1801)])
+      assert.throws(() => s.dryRun('g', v), /responderDryInvalid/);
+  } finally {
+    db.close();
+  }
+});
+test('responder export/import/dryrun private three-locale byte delivery,confirmation,current authority and no runtime enable', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      x.c.config.messageEventsEnabled = false;
+      let sub = 'export',
+        confirm = false,
+        reply;
+      const actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } };
+      const i = {
+        guildId: 'g',
+        user: { id: 'u' },
+        guild: { id: 'g', members: { fetch: async () => actor } },
+        options: {
+          getSubcommand: () => sub,
+          getBoolean: () => confirm,
+          getString: (n) =>
+            n === 'json'
+              ? JSON.stringify([{ trigger: 'copy', response: '@everyone test' }])
+              : 'hello',
+        },
+        reply: async (p) => {
+          reply = p;
+        },
+      };
+      await command.execute(i, x.c);
+      assert.equal(reply.flags, 64);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.deepEqual(
+        JSON.parse(reply.files[0].attachment.toString('utf8')),
+        x.c.autoresponders.exportRules('g'),
+      );
+      sub = 'import';
+      await assert.rejects(() => command.execute(i, x.c), /responderConfirmRequired/);
+      assert.equal(x.c.autoresponders.list('g').length, 1);
+      confirm = true;
+      await command.execute(i, x.c);
+      assert.equal(x.c.autoresponders.find('g', 'copy').enabled, 0);
+      sub = 'dryrun';
+      await command.execute(i, x.c);
+      assert(reply.embeds[0].data.description.includes('#'));
+      assert.equal(x.sent.length, 0);
+      actor.permissions.has = () => false;
+      for (sub of ['export', 'import', 'dryrun'])
+        await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('replace existing rules atomic strict unique paused identity/history preserved, no unrelated rules', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'one', response: 'old' });
+    r.create('g', { trigger: 'two', response: 'two' });
+    r.create('other', { trigger: 'one', response: 'private' });
+    r.claim('g', 'm', 'one');
+    const before = r.find('g', 'one');
+    assert.equal(
+      r.replaceRules(
+        'g',
+        JSON.stringify([
+          { trigger: 'ONE', response: 'new', mode: 'keyword', cooldownSeconds: 100 },
+        ]),
+      ),
+      1,
+    );
+    const after = r.find('g', 'one');
+    assert.equal(after.id, before.id);
+    assert.equal(after.last_sent_at, before.last_sent_at);
+    assert.equal(after.created_at, before.created_at);
+    assert.equal(after.enabled, 0);
+    assert.equal(after.response, 'new');
+    assert.equal(after.mode, 'keyword');
+    assert.equal(r.find('g', 'two').enabled, 1);
+    assert.equal(r.find('other', 'one').response, 'private');
+    assert.equal(r.claim('g', 'm', 'one'), null);
+    const snapshot = JSON.stringify(r.list('g'));
+    for (const text of [
+      '[]',
+      '{}',
+      JSON.stringify([
+        { trigger: 'one', response: 'oops' },
+        { trigger: 'absent', response: 'no' },
+      ]),
+      JSON.stringify([
+        { trigger: 'one', response: 'oops' },
+        { trigger: 'ＯＮＥ', response: 'duplicate' },
+      ]),
+      JSON.stringify([{ trigger: 'one', response: 'oops', enabled: true }]),
+      'x'.repeat(4001),
+    ]) {
+      assert.throws(() => r.replaceRules('g', text));
+      assert.equal(JSON.stringify(r.list('g')), snapshot);
+    }
+    db.exec(
+      "CREATE TRIGGER fail_replace BEFORE UPDATE ON autoresponders WHEN NEW.trigger='two' BEGIN SELECT RAISE(ABORT,'stop');END;",
+    );
+    assert.throws(() =>
+      r.replaceRules(
+        'g',
+        JSON.stringify([
+          { trigger: 'one', response: 'partial' },
+          { trigger: 'two', response: 'stop' },
+        ]),
+      ),
+    );
+    assert.equal(JSON.stringify(r.list('g')), snapshot);
+  } finally {
+    db.close();
+  }
+});
+test('deletepaused and cooldownall keep replay/last-send, guild isolation and enable states', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'a', response: 'a' });
+    r.create('g', { trigger: 'b', response: 'b' });
+    r.create('other', { trigger: 'a', response: 'private' });
+    r.claim('g', 'm', 'a');
+    r.setEnabled('g', 'a', false);
+    assert.throws(() => r.cooldownAll('g', 9));
+    assert.equal(r.cooldownAll('g', 10), 2);
+    assert.equal(r.cooldownAll('g', 10), 0);
+    assert.equal(r.find('g', 'a').last_sent_at, 100000);
+    assert.equal(r.find('g', 'a').enabled, 0);
+    assert.equal(r.find('g', 'b').enabled, 1);
+    assert.equal(r.find('other', 'a').cooldown_seconds, 60);
+    assert.equal(r.deletePaused('g'), 1);
+    assert.equal(r.deletePaused('g'), 0);
+    assert.equal(r.list('g').length, 1);
+    assert.equal(
+      db.prepare('SELECT status FROM autoresponder_deliveries WHERE message_id=?').get('m').status,
+      'reserved',
+    );
+    r.create('g', { trigger: 'a', response: 'again' });
+    assert.equal(r.claim('g', 'm', 'a'), null);
+  } finally {
+    db.close();
+  }
+});
+test('replace/deletepaused/cooldownall current manager confirmation private3locale no message sends', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['replace', 'deletepaused', 'cooldownall']) {
+      const db = openDatabase(':memory:');
+      try {
+        const r = new Autoresponders(db);
+        r.create('g', { trigger: 'a', response: 'old' });
+        let confirm = false,
+          reply;
+        const actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } },
+          i = {
+            guildId: 'g',
+            user: { id: 'u' },
+            guild: { id: 'g', members: { fetch: async () => actor } },
+            options: {
+              getSubcommand: () => sub,
+              getBoolean: () => confirm,
+              getString: () => JSON.stringify([{ trigger: 'a', response: 'new' }]),
+              getInteger: () => 10,
+            },
+            reply: async (p) => {
+              reply = p;
+            },
+          };
+        const c = { guildConfig: { get: () => ({ language: locale }) }, autoresponders: r };
+        await assert.rejects(() => command.execute(i, c), /responderConfirmRequired/);
+        assert.equal(r.find('g', 'a').response, 'old');
+        confirm = true;
+        await command.execute(i, c);
+        assert.equal(reply.flags, 64);
+        assert.deepEqual(reply.allowedMentions.parse, []);
+        assert(!reply.embeds[0].data.description.includes('responderAllCooldown'));
+        actor.permissions.has = () => false;
+        await assert.rejects(() => command.execute(i, c), /userPermission/);
+      } finally {
+        db.close();
+      }
+    }
+});

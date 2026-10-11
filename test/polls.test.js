@@ -275,3 +275,41 @@ test('poll success completion refuses nonstring native identity and accepted mal
     }
   }
 });
+
+test('native poll blank accepted identity remains uncertain without sent promotion or duplicate publication', async () => {
+  const s = setup();
+  let attempts = 0;
+  try {
+    s.channel.send = async () => {
+      attempts++;
+      return { id: ' ' };
+    };
+    await assert.rejects(() => publishPoll(s.i, s.c, s.input), /pollUncertain/);
+    assert.equal(
+      s.db.prepare('SELECT status,message_id FROM native_polls').get().status,
+      'uncertain',
+    );
+    assert.equal(s.db.prepare('SELECT message_id FROM native_polls').get().message_id, null);
+    await assert.rejects(() => publishPoll(s.i, s.c, s.input));
+    assert.equal(attempts, 1);
+  } finally {
+    s.db.close();
+  }
+});
+test('native poll late send failure cannot demote completed receipt or leak finalization failure', async () => {
+  const s = setup();
+  try {
+    s.channel.send = async () => {
+      s.c.polls.finish(1, 'sent', 'observed');
+      throw Error('SECRET');
+    };
+    await assert.rejects(() => publishPoll(s.i, s.c, s.input), /pollUncertain/);
+    assert.deepEqual(s.db.prepare('SELECT status,message_id FROM native_polls').get(), {
+      status: 'sent',
+      message_id: 'observed',
+    });
+    assert.throws(() => s.c.polls.finish(1, 'uncertain'), /not pending/);
+  } finally {
+    s.db.close();
+  }
+});

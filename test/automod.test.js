@@ -11,6 +11,7 @@ function setup() {
     member = {
       id: 'u',
       guild: { id: 'g' },
+      communicationDisabledUntilTimestamp: null,
       permissions: { has: () => false },
       roles: { cache: new Map() },
     },
@@ -156,7 +157,14 @@ test('eight management paths enforce runtime, save settings and localize results
         editReply: async (p) => replies.push(p),
         options: {
           getSubcommand: () => sub,
-          getString: (name) => (name === 'action' ? 'warn' : name === 'name' ? 'words' : 'bad'),
+          getString: (name) =>
+            name === 'status'
+              ? null
+              : name === 'action'
+                ? 'warn'
+                : name === 'name'
+                  ? 'words'
+                  : 'bad',
           getBoolean: () => true,
           getRole: () => ({ id: '100000000000000001' }),
         },
@@ -1179,5 +1187,778 @@ test('spam threshold config and unresolved recovery survive actual SQLite reopen
   } finally {
     db.close();
     rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('automod word mode and exemptions require exact booleans without widening exemptions on truthy inputs', () => {
+  const x = setup();
+  try {
+    const before = x.c.automod.get('g');
+    for (const mode of [undefined, null, 0, 1, 'false', {}]) {
+      assert.throws(() => x.c.automod.word('g', 'bad', mode), /mode/);
+      assert.throws(() => x.c.automod.exempt('g', '100000000000000001', mode), /mode/);
+      assert.deepEqual(x.c.automod.get('g'), before);
+    }
+  } finally {
+    x.db.close();
+  }
+});
+test('automod literal words validate raw and normalized bounds/control characters before write', () => {
+  const x = setup();
+  try {
+    const r = x.c.automod;
+    for (const bad of [
+      undefined,
+      123,
+      {},
+      'a'.repeat(51),
+      'ﬃ'.repeat(17),
+      'a\u0000b',
+      'a\u001bb',
+      'a\u007fb',
+    ])
+      assert.throws(() => r.word('g', bad, true), /automodWordInvalid/);
+    assert.deepEqual(r.get('g').words, []);
+    r.word('g', 'ＦＯＯ', true);
+    r.word('g', 'foo', true);
+    assert.deepEqual(r.get('g').words, ['foo']);
+    r.word('g', ' hello\tworld ', true);
+    assert.deepEqual(r.get('g').words, ['foo', 'hello world']);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod malformed truthy runtime flag cannot authorize warning or delete effect', async () => {
+  for (const value of ['true', 'false', 1, {}, null]) {
+    const x = setup();
+    try {
+      x.c.automod.patch('g', { enabled: true, action: 'delete', rules: { words: true } });
+      x.c.automod.word('g', 'bad', true);
+      x.c.config.messageEventsEnabled = value;
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(x.deleted.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod runtime disabled during member lookup cannot reserve incident or warning', async () => {
+  const x = setup();
+  try {
+    x.automod.patch('g', { enabled: true, rules: { words: true } });
+    x.automod.word('g', 'bad', true);
+    x.guild.members.fetch = async () => {
+      x.c.config.messageEventsEnabled = false;
+      return x.member;
+    };
+    await createAutoModHandler(x.c)(x.m);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 0);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod runtime revoked during delete bot lookup fails reserved incident without deleting message', async () => {
+  const x = setup();
+  try {
+    x.automod.patch('g', { enabled: true, action: 'delete', rules: { words: true } });
+    x.automod.word('g', 'bad', true);
+    x.guild.members.fetchMe = async () => {
+      x.c.config.messageEventsEnabled = false;
+      return x.bot;
+    };
+    await createAutoModHandler(x.c)(x.m);
+    assert.equal(x.deleted.length, 0);
+    assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod message aging out or becoming future-dated during member lookup creates no warning/incident', async () => {
+  for (const offset of [-600000, 600000]) {
+    const x = setup();
+    try {
+      x.automod.patch('g', { enabled: true, rules: { words: true }, words: ['bad'] });
+      x.guild.members.fetch = async () => {
+        x.m.createdTimestamp = Date.now() + offset;
+        return x.member;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod message aging out during delete authority lookup fails reservation without native delete', async () => {
+  const x = setup();
+  try {
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'delete',
+      rules: { words: true },
+      words: ['bad'],
+    });
+    x.guild.members.fetchMe = async () => {
+      x.m.createdTimestamp = Date.now() - 300001;
+      return x.bot;
+    };
+    await createAutoModHandler(x.c)(x.m);
+    assert.equal(x.deleted.length, 0);
+    assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod message aging out during timeout authority lookup fails reservation without native timeout', async () => {
+  const x = setup();
+  let timeouts = 0;
+  try {
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'timeout',
+      rules: { words: true },
+      words: ['bad'],
+    });
+    x.member.user = { bot: false };
+    x.member.moderatable = true;
+    x.member.roles.highest = {};
+    x.member.disableCommunicationUntil = async () => {
+      timeouts++;
+    };
+    x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+    x.guild.members.fetchMe = async () => {
+      x.m.createdTimestamp = Date.now() - 300001;
+      return x.bot;
+    };
+    await createAutoModHandler(x.c)(x.m);
+    assert.equal(timeouts, 0);
+    assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod requires positively human author before member lookup or moderation reservation', async () => {
+  for (const flag of [undefined, null, 0, '', 'false', {}, true]) {
+    const x = setup();
+    let fetches = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'delete',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.m.author.bot = flag;
+      x.guild.members.fetch = async () => {
+        fetches++;
+        return x.member;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(fetches, 0);
+      assert.equal(x.deleted.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod timeout requires positively human fresh target before native moderation', async () => {
+  for (const flag of [undefined, null, 0, '', 'false', {}, true]) {
+    const x = setup();
+    let calls = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'timeout',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.member.user = { bot: false };
+      x.member.moderatable = true;
+      x.member.roles.highest = {};
+      x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+      x.member.disableCommunicationUntil = async () => {
+        calls++;
+      };
+      let fetches = 0;
+      x.guild.members.fetch = async () => {
+        if (++fetches === 2) x.member.user = { bot: flag };
+        return x.member;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(calls, 0);
+      assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod timeout requires exact native moderatable true;truthy unknown cannot authorize action', async () => {
+  for (const flag of [undefined, null, 0, 1, 'true', 'false', {}, false]) {
+    const x = setup();
+    let calls = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'timeout',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.member.user = { bot: false };
+      x.member.moderatable = flag;
+      x.member.roles.highest = {};
+      x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+      x.member.disableCommunicationUntil = async () => {
+        calls++;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(calls, 0);
+      assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod stats aggregate stored outcomes/actions with exact guild scope and no identities/content', () => {
+  const x = setup();
+  try {
+    for (const [id, guild, action, status] of [
+      ['SECRET1', 'g', 'warn', 'completed'],
+      ['SECRET2', 'g', 'delete', 'failed'],
+      ['SECRET3', 'g', 'timeout', 'uncertain'],
+      ['SECRET4', 'g', 'warn', 'reserved'],
+      ['FOREIGN', 'other', 'delete', 'reserved'],
+    ]) {
+      x.automod.reserve(
+        { id, guild: { id: guild }, author: { id: 'PRIVATE_USER' } },
+        'words',
+        action,
+      );
+      if (status !== 'reserved') x.automod.finish(id, status);
+    }
+    const before = x.db.prepare('SELECT * FROM automod_incidents').all();
+    assert.deepEqual(x.automod.stats('g'), [
+      { status: 'completed', action: 'warn', rule: 'words', count: 1 },
+      { status: 'failed', action: 'delete', rule: 'words', count: 1 },
+      { status: 'reserved', action: 'warn', rule: 'words', count: 1 },
+      { status: 'uncertain', action: 'timeout', rule: 'words', count: 1 },
+    ]);
+    assert.deepEqual(x.automod.stats('none'), []);
+    assert(!JSON.stringify(x.automod.stats('g')).includes('SECRET'));
+    assert(!JSON.stringify(x.automod.stats('g')).includes('PRIVATE_USER'));
+    assert.deepEqual(x.db.prepare('SELECT * FROM automod_incidents').all(), before);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod stats command uses current manager/private localized no-ping read-only aggregates', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      x.member.permissions.has = () => true;
+      x.automod.reserve(x.m, 'words', 'warn');
+      x.automod.finish(x.m.id, 'completed');
+      const before = x.db.prepare('SELECT * FROM automod_incidents').all();
+      let reply;
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        options: { getSubcommand: () => 'stats' },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+      };
+      await command.execute(i, x.c);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(
+        reply.embeds[0].data.description,
+        translate(locale, 'automodStats', {
+          total: 1,
+          reserved: 0,
+          completed: 1,
+          uncertain: 0,
+          failed: 0,
+          warn: 1,
+          delete: 0,
+          timeout: 0,
+        }),
+      );
+      assert.deepEqual(x.db.prepare('SELECT * FROM automod_incidents').all(), before);
+      assert.equal(x.deleted.length, 0);
+      x.member.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod stats distinguish recovered unresolved reservations without retries or cleanup mutation', () => {
+  const x = setup();
+  try {
+    x.automod.reserve(x.m, 'words', 'delete');
+    assert.equal(x.automod.stats('g')[0].status, 'reserved');
+    x.automod.recover();
+    assert.deepEqual(x.automod.stats('g'), [
+      { status: 'uncertain', action: 'delete', rule: 'words', count: 1 },
+    ]);
+    x.db.prepare('UPDATE automod_incidents SET created_at=0').run();
+    assert.equal(x.automod.stats('g')[0].count, 1);
+    assert.equal(x.automod.incidents('g').length, 1);
+    assert.equal(x.deleted.length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod enable cannot persist operator consent from truthy malformed runtime flags', async () => {
+  for (const flag of [undefined, null, 1, 'true', 'false', {}]) {
+    const x = setup();
+    try {
+      x.member.permissions.has = () => true;
+      x.c.config.messageEventsEnabled = flag;
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        options: { getSubcommand: () => 'enable', getString: () => 'warn' },
+        deferReply: async () => {},
+        editReply: async () => {
+          throw new Error('unexpected reply');
+        },
+      };
+      await assert.rejects(() => command.execute(i, x.c), /responderRuntimeDisabled/);
+      assert.equal(x.automod.get('g').enabled, false);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod enable rechecks exact runtime after authority refresh and before settings write', async () => {
+  for (const action of ['warn', 'delete', 'timeout']) {
+    const x = setup();
+    try {
+      x.member.permissions.has = () => true;
+      let checks = 0;
+      x.guild.members.fetch = async () => {
+        if (++checks === 2) x.c.config.messageEventsEnabled = 'true';
+        return x.member;
+      };
+      const i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        options: { getSubcommand: () => 'enable', getString: () => action, getBoolean: () => true },
+        deferReply: async () => {},
+        editReply: async () => {
+          throw new Error('unexpected reply');
+        },
+      };
+      await assert.rejects(() => command.execute(i, x.c), /responderRuntimeDisabled/);
+      assert.equal(checks, 2);
+      assert.equal(x.automod.get('g').enabled, false);
+      assert.equal(x.automod.get('g').action, 'warn');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod invalid spam clock cannot alter history or count repeated messages', () => {
+  const x = setup();
+  try {
+    const settings = x.automod.patch('g', { rules: { spam: true }, spamRepeats: 2 });
+    let clock = 100000;
+    x.automod.now = () => clock;
+    assert.equal(x.automod.detect({ ...x.m, id: 'first', content: 'repeat' }, settings), null);
+    const before = structuredClone([...x.automod.recent]);
+    for (const bad of [undefined, null, NaN, Infinity, -1, 1.5, '100001']) {
+      clock = bad;
+      assert.equal(x.automod.detect({ ...x.m, id: 'second', content: 'repeat' }, settings), null);
+      assert.deepEqual([...x.automod.recent], before);
+    }
+    clock = 100001;
+    assert.equal(x.automod.detect({ ...x.m, id: 'second', content: 'repeat' }, settings), 'spam');
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod spam clock rollback cannot treat future history as current violations', () => {
+  const x = setup();
+  try {
+    const settings = x.automod.patch('g', { rules: { spam: true }, spamRepeats: 2 });
+    let clock = 100000;
+    x.automod.now = () => clock;
+    assert.equal(x.automod.detect({ ...x.m, id: 'first', content: 'repeat' }, settings), null);
+    clock = 99999;
+    assert.equal(x.automod.detect({ ...x.m, id: 'second', content: 'repeat' }, settings), null);
+    assert.deepEqual(
+      x.automod.recent.get('g:u').map((r) => r.id),
+      ['second'],
+    );
+    clock = 100000;
+    assert.equal(x.automod.detect({ ...x.m, id: 'third', content: 'repeat' }, settings), 'spam');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod cannot shorten unknown native timeout deadline;malformed state fails reserved incident', async () => {
+  for (const deadline of [undefined, NaN, Infinity, -1, '9999999999999', {}, 1.5]) {
+    const x = setup();
+    let effects = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'timeout',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.member.user = { bot: false };
+      x.member.moderatable = true;
+      x.member.roles.highest = {};
+      x.member.communicationDisabledUntilTimestamp = deadline;
+      x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+      x.member.disableCommunicationUntil = async () => {
+        effects++;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(effects, 0);
+      assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod accepts explicit absent/expired native deadlines and preserves longer verified timeout', async () => {
+  for (const deadline of [null, 0, Date.now() - 1000, Date.now() + 3600000]) {
+    const x = setup();
+    let effects = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'timeout',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.member.user = { bot: false };
+      x.member.moderatable = true;
+      x.member.roles.highest = {};
+      x.member.communicationDisabledUntilTimestamp = deadline;
+      x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+      x.member.disableCommunicationUntil = async () => {
+        effects++;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(effects, deadline > Date.now() ? 0 : 1);
+      assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'completed');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod malformed native hierarchy comparison cannot authorize timeout', async () => {
+  for (const comparison of [undefined, null, NaN, Infinity, -Infinity, '1', {}, 1.5, 0, -1]) {
+    const x = setup();
+    let effects = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'timeout',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.member.user = { bot: false };
+      x.member.moderatable = true;
+      x.member.roles.highest = {};
+      x.bot.roles = { highest: { comparePositionTo: () => comparison } };
+      x.member.disableCommunicationUntil = async () => {
+        effects++;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(effects, 0);
+      assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('AutoMod valid positive native hierarchy permits timeout;missing highest role is contained', async () => {
+  for (const comparison of [1, 10, Number.MAX_SAFE_INTEGER, 'missing']) {
+    const x = setup();
+    let effects = 0;
+    try {
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'timeout',
+        rules: { words: true },
+        words: ['bad'],
+      });
+      x.member.user = { bot: false };
+      x.member.moderatable = true;
+      x.member.roles.highest = {};
+      x.bot.roles =
+        comparison === 'missing' ? {} : { highest: { comparePositionTo: () => comparison } };
+      x.member.disableCommunicationUntil = async () => {
+        effects++;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(effects, comparison === 'missing' ? 0 : 1);
+      assert.equal(
+        x.db.prepare('SELECT status FROM automod_incidents').get().status,
+        comparison === 'missing' ? 'failed' : 'completed',
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod post-lookup author/system/webhook changes cannot reserve warning', async () => {
+  for (const change of [
+    { author: { id: 'u', bot: true } },
+    { author: { id: 'u' } },
+    { system: true },
+    { webhookId: 'hook' },
+  ]) {
+    const x = setup();
+    try {
+      x.automod.patch('g', { enabled: true, rules: { words: true }, words: ['bad'] });
+      x.guild.members.fetch = async () => {
+        Object.assign(x.m, change);
+        return x.member;
+      };
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('AutoMod incident status filter applies before newest20 limit and remains guild scoped', () => {
+  const x = setup();
+  try {
+    let clock = 100000;
+    x.automod.now = () => clock;
+    for (let n = 0; n < 25; n++) {
+      x.automod.reserve({ ...x.m, id: 'old' + n }, 'words', 'delete');
+      x.automod.finish('old' + n, 'uncertain');
+      clock++;
+    }
+    for (let n = 0; n < 25; n++) {
+      x.automod.reserve({ ...x.m, id: 'new' + n }, 'words', 'warn');
+      x.automod.finish('new' + n, 'completed');
+      clock++;
+    }
+    x.automod.reserve({ ...x.m, id: 'foreign', guild: { id: 'other' } }, 'words', 'delete');
+    x.automod.finish('foreign', 'uncertain');
+    assert.equal(x.automod.incidents('g').length, 20);
+    assert(x.automod.incidents('g').every((r) => r.status === 'completed'));
+    const rows = x.automod.incidents('g', 'uncertain');
+    assert.equal(rows.length, 20);
+    assert.equal(rows[0].message_id, 'old24');
+    assert.equal(rows[19].message_id, 'old5');
+    assert.deepEqual(x.automod.incidents('none', 'uncertain'), []);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod incident invalid status filters fail without mutating retained records', () => {
+  const x = setup();
+  try {
+    x.automod.reserve(x.m, 'words', 'warn');
+    const before = x.automod.incidents('g');
+    for (const status of ['', 'all', 'COMPLETED', 'completed ', 1, true, {}, []])
+      assert.throws(() => x.automod.incidents('g', status), /automodIncidentStatusInvalid/);
+    assert.deepEqual(x.automod.incidents('g'), before);
+    assert.equal(x.automod.incidents('g', 'reserved').length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod incidents slash advertises bounded status choices and privately returns filtered stored metadata', async () => {
+  const x = setup();
+  try {
+    const option = command.data.toJSON().options.find((s) => s.name === 'incidents').options[0];
+    assert.equal(option.name, 'status');
+    assert.deepEqual(
+      option.choices.map((v) => v.value),
+      ['reserved', 'completed', 'uncertain', 'failed'],
+    );
+    x.member.permissions.has = () => true;
+    x.automod.reserve(x.m, 'words', 'delete');
+    x.automod.finish(x.m.id, 'uncertain');
+    x.automod.reserve({ ...x.m, id: 'completed-other' }, 'words', 'warn');
+    x.automod.finish('completed-other', 'completed');
+    let reply;
+    const i = {
+      guild: x.guild,
+      guildId: 'g',
+      user: { id: 'u' },
+      options: { getSubcommand: () => 'incidents', getString: () => 'uncertain' },
+      deferReply: async (p) => assert.equal(p.flags, 64),
+      editReply: async (p) => {
+        reply = p;
+      },
+    };
+    await command.execute(i, x.c);
+    assert.deepEqual(reply.allowedMentions.parse, []);
+    assert(reply.embeds[0].data.description.includes('uncertain'));
+    assert(!reply.embeds[0].data.description.includes('completed-other'));
+    assert.equal(x.deleted.length, 0);
+    x.member.permissions.has = () => false;
+    await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod reservation validates action/rule and clock before recording metadata', () => {
+  const x = setup();
+  try {
+    for (const rule of [null, '', 'WORDS', 'unknown', {}])
+      assert.throws(() => x.automod.reserve(x.m, rule, 'warn'), /reservation/);
+    for (const action of [null, '', 'WARN', 'ban', {}])
+      assert.throws(() => x.automod.reserve(x.m, 'words', action), /reservation/);
+    for (const clock of [undefined, null, NaN, Infinity, -1, 1.5, '1000']) {
+      x.automod.now = () => clock;
+      assert.throws(() => x.automod.reserve(x.m, 'words', 'warn'), /clock/);
+    }
+    assert.equal(x.automod.incidents('g').length, 0);
+    x.automod.now = () => 0;
+    assert.equal(x.automod.reserve(x.m, 'words', 'warn'), true);
+    assert.equal(x.automod.incidents('g')[0].created_at, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod invalid cleanup clock preserves retained incidents/history and rollback excludes future history', () => {
+  const x = setup();
+  try {
+    let clock = 100000;
+    x.automod.now = () => clock;
+    x.automod.reserve(x.m, 'words', 'warn');
+    const settings = x.automod.patch('g', { rules: { spam: true } });
+    x.automod.detect(x.m, settings);
+    const before = structuredClone([...x.automod.recent]);
+    for (const value of [undefined, null, NaN, Infinity, -1, 1.5, '1000']) {
+      clock = value;
+      assert.throws(() => x.automod.cleanup(), /clock/);
+      assert.deepEqual([...x.automod.recent], before);
+      assert.equal(x.automod.incidents('g').length, 1);
+    }
+    clock = 99999;
+    x.automod.cleanup();
+    assert.equal(x.automod.recent.size, 0);
+    assert.equal(x.automod.incidents('g').length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('AutoMod wordclear keeps otherpolicy;fullreset stops defaults/erases exemptions/spammemory not incidents/cases/foreign', () => {
+  const x = setup();
+  try {
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'delete',
+      words: ['bad', 'worse'],
+      rules: { words: true, spam: true },
+      ignoredChannels: ['100000000000000001'],
+      exemptRoles: ['100000000000000002'],
+    });
+    x.automod.patch('other', { words: ['FOREIGN'] });
+    x.automod.recent.set('g:u', [{ text: 'PRIVATE' }]);
+    x.automod.recent.set('other:u', [{ text: 'KEEP' }]);
+    x.automod.reserve(x.m, 'words', 'delete');
+    const before = x.automod.get('g');
+    assert.equal(x.automod.clearWords('g'), 2);
+    assert.deepEqual(x.automod.get('g'), { ...before, words: [] });
+    const reset = x.automod.resetPolicy('g');
+    assert.equal(reset.enabled, false);
+    assert.equal(reset.action, 'warn');
+    assert(Object.values(reset.rules).every((v) => v === false));
+    assert.deepEqual(reset.exemptRoles, []);
+    assert.deepEqual(reset.ignoredChannels, []);
+    assert(!x.automod.recent.has('g:u'));
+    assert(x.automod.recent.has('other:u'));
+    assert.deepEqual(x.automod.get('other').words, ['FOREIGN']);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 1);
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod policyreset during pendingnativecheck suppresses destructiveaction and retains failed reservation', async () => {
+  const x = setup();
+  try {
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'delete',
+      words: ['bad'],
+      rules: { words: true },
+    });
+    x.guild.members.fetchMe = async () => {
+      x.automod.resetPolicy('g');
+      return x.bot;
+    };
+    await createAutoModHandler(x.c)(x.m);
+    assert.equal(x.deleted.length, 0);
+    assert.equal(x.db.prepare('SELECT count(*) n FROM automod_incidents').get().n, 1);
+    assert.equal(x.db.prepare('SELECT status FROM automod_incidents').get().status, 'failed');
+  } finally {
+    x.db.close();
+  }
+});
+test('AutoMod exportpolicy/clearwords/resetpolicy private3locale bytes/confirmation/currentauthority/nativeunchanged', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.guildConfig.setLanguage('g', locale);
+      x.member.permissions.has = () => true;
+      x.automod.word('g', 'bad', true);
+      let sub = 'exportpolicy',
+        confirm = false,
+        reply;
+      const i = {
+        guildId: 'g',
+        guild: x.guild,
+        user: { id: 'u' },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+        options: { getSubcommand: () => sub, getBoolean: () => confirm },
+      };
+      await command.execute(i, x.c);
+      assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), x.automod.get('g'));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      sub = 'clearwords';
+      await assert.rejects(() => command.execute(i, x.c), /automodResetConfirm/);
+      assert.equal(x.automod.get('g').words.length, 1);
+      confirm = true;
+      await command.execute(i, x.c);
+      sub = 'resetpolicy';
+      await command.execute(i, x.c);
+      x.member.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+      assert.equal(x.deleted.length, 0);
+    } finally {
+      x.db.close();
+    }
   }
 });

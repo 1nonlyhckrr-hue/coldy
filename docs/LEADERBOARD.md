@@ -25,3 +25,15 @@ Admin enable/disable/exclude/eraseuser force-fetch the exact caller and verify c
 `removeexclude channel-id confirm:true` requires current exact Manage Server authority and removes only one exact stored channel/category exclusion,including deleted destinations. No native target lookup,tracking toggle,other exclusion/guild changes. Private localized removed0/1 result;missing record no mutation.415 local tests,38 top-level/166paths,SQLite25;native acceptance pending.
 
 `activity`:private own retained90UTC-day total,active days,longest consecutive counted-day run,peakday/count(earliesttie). Counts only,not activityquality;missing dayszero,no historybackfill;future/out-of-retentiondates excluded. `privacy`:own currentstoredoptout andserver switch,readonly. Absenceofoptoutisnot personalopt-inrecord. Eligibility/channel exclusions stillapply;erasedcountsnotrestored.5newtests,596localfullsuite/209paths. Published591/207 exactCI38134372642 remains priorcheckpoint,newbatchlocal.
+
+## Export and guild privacy controls
+
+`exportmine` attaches private CSV containing only caller retained90UTC-day count rows(day,count),no userIDs/messageIDs/content. Fresh exact native caller required;downloaded copies leave bot retention. `overview` is current ManageGuild-only aggregate contributors/messages/calendar-days,no identities or live membership inference. `resetall confirm:true` erases guild dailycounts but keeps tracking config,personal opt-outs and event replay guards;future eligible events can still count. Foreignguild/native messages untouched. Private3locale/no-ping. CSVbytes tested,live attachment/client render acceptance pending.
+
+## Stored tracking policy controls
+
+`/leaderboard exportconfig` privately exports only enabled/excluded fields as JSON. No counts,contributors,user privacy preferences,message/replay IDs or live readiness claims. Not a full backup.
+
+`/leaderboard clearexclusions confirm:true` clears every stored excluded channel/category ID without changing the tracking switch. If tracking is already on,future eligible messages in formerly excluded places may count. Counts,privacy preferences and replay guards stay intact. Does not create configuration for an unconfigured server.
+
+`/leaderboard resetpolicy confirm:true` stops tracking and forgets all exclusions by removing server policy. Retained counts,user privacy preferences and replay guards remain. Native messages remain;in-flight counts may finish. Re-enable later explicitly. All3require fresh native Manage Server and private3locale/no-ping replies. Three tests cover isolation/history/disabled defaults/idempotence/storagefailure/confirmation/authority/exportbytes. No live/client visual acceptance.

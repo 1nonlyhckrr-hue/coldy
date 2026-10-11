@@ -157,14 +157,16 @@ export class RolePanels {
   get(id, guildId) {
     return this.db.prepare('SELECT * FROM role_panels WHERE id=? AND guild_id=?').get(id, guildId);
   }
-  list(guildId, page = 1) {
+  list(guildId, page = 1, { state = null } = {}) {
     if (!Number.isInteger(page) || page < 1 || page > 10)
       throw new UserError('rolePanelPageInvalid');
+    if (state !== null && !['pending', 'active', 'disabled', 'uncertain'].includes(state))
+      throw new UserError('rolePanelStateInvalid');
     return this.db
       .prepare(
-        'SELECT id,channel_id,message_id,role_id,label,status FROM role_panels WHERE guild_id=? ORDER BY id DESC LIMIT 10 OFFSET ?',
+        'SELECT id,channel_id,message_id,role_id,label,status FROM role_panels WHERE guild_id=? AND (? IS NULL OR status=?) ORDER BY id DESC LIMIT 10 OFFSET ?',
       )
-      .all(guildId, (page - 1) * 10);
+      .all(guildId, state, state, (page - 1) * 10);
   }
   disableActive(guildId) {
     if (typeof guildId !== 'string' || !guildId) throw new TypeError('Invalid guild');
@@ -172,8 +174,38 @@ export class RolePanels {
       .prepare("UPDATE role_panels SET status='disabled' WHERE guild_id=? AND status='active'")
       .run(guildId).changes;
   }
+  exportMappings(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT count(*) n FROM role_panels WHERE guild_id=?')
+        .get(guildId).n;
+      const rows = this.db
+        .prepare(
+          'SELECT id,channel_id,message_id,status FROM role_panels WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return {
+        total,
+        truncated: total > rows.length,
+        panels: rows.map((r) => ({ ...r, buttons: this.buttons(r.id) })),
+      };
+    })();
+  }
+  disableFor(guildId, kind, id) {
+    if (!['channel', 'role'].includes(kind) || typeof id !== 'string' || !/^\d{17,20}$/.test(id))
+      throw new UserError('rolePanelScopeInvalid');
+    return (
+      kind === 'channel'
+        ? this.db.prepare(
+            "UPDATE role_panels SET status='disabled' WHERE guild_id=? AND status='active' AND channel_id=?",
+          )
+        : this.db.prepare(
+            "UPDATE role_panels SET status='disabled' WHERE guild_id=? AND status='active' AND EXISTS(SELECT 1 FROM role_panel_buttons b WHERE b.panel_id=role_panels.id AND b.role_id=?)",
+          )
+    ).run(guildId, id).changes;
+  }
   complete(id, messageId) {
-    if (typeof messageId !== 'string' || !messageId)
+    if (typeof messageId !== 'string' || !messageId.trim())
       throw new TypeError('Missing panel message identity');
     const result = this.db
       .prepare(
@@ -181,6 +213,11 @@ export class RolePanels {
       )
       .run(messageId, id);
     if (result.changes !== 1) throw new Error('Panel reservation not pending');
+  }
+  publicationUncertain(id) {
+    return this.db
+      .prepare("UPDATE role_panels SET status='uncertain' WHERE id=? AND status='pending'")
+      .run(id).changes;
   }
   status(id, status) {
     if (!['disabled', 'uncertain', 'failed'].includes(status))
@@ -264,12 +301,12 @@ export async function createMultiRolePanel(i, c, { channelId, buttons }) {
       ),
     );
   } catch {
-    c.rolePanels.status(panelId, 'uncertain');
+    c.rolePanels.publicationUncertain(panelId);
     throw new UserError('rolePanelUncertain', { id: panelId });
   }
   try {
-    if (!message?.id) {
-      c.rolePanels.status(panelId, 'uncertain');
+    if (typeof message?.id !== 'string' || !message.id.trim()) {
+      c.rolePanels.publicationUncertain(panelId);
       throw new Error('Missing panel message identity');
     }
     c.rolePanels.complete(panelId, message.id);

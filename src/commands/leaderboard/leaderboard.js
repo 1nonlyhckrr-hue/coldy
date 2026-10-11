@@ -4,6 +4,7 @@ import {
   PermissionFlagsBits as P,
   MessageFlags,
   ChannelType,
+  AttachmentBuilder,
 } from 'discord.js';
 import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
@@ -97,6 +98,62 @@ const data = new SlashCommandBuilder()
         'Only your stored counting preference and server tracking switch;no changes.',
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('exportmine')
+      .setDescription('Private CSV of only your retained UTC daily counts;no message content.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('overview')
+      .setDescription('Manage Server:aggregate retained contributors/messages/days,no identities.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetall')
+      .setDescription(
+        'Manage Server:erase all retained guild counts;tracking/preferences/replayguards kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm erasing every retained count here')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('exportconfig')
+      .setDescription(
+        'Private stored tracking switch/excluded IDs only;no people,counts or privacy records.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clearexclusions')
+      .setDescription(
+        'Clear stored exclusion IDs;tracking/counts/preferences/replay guards stay as-is.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm allowing future eligible messages from formerly excluded places')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetpolicy')
+      .setDescription(
+        'Stop tracking and forget exclusions;retain counts/preferences/replay guards.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping tracking and resetting server policy')
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('stats').setDescription('Show your own retained message counts.'))
   .addSubcommand((s) =>
     s
@@ -136,8 +193,21 @@ export default {
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId);
-    let text;
-    if (['enable', 'disable', 'exclude', 'removeexclude', 'eraseuser'].includes(sub)) {
+    let text, files;
+    if (
+      [
+        'enable',
+        'disable',
+        'exclude',
+        'removeexclude',
+        'eraseuser',
+        'overview',
+        'resetall',
+        'exportconfig',
+        'clearexclusions',
+        'resetpolicy',
+      ].includes(sub)
+    ) {
       const authorize = async () => {
         const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
         if (
@@ -149,8 +219,31 @@ export default {
           throw new UserError('userPermission');
       };
       await authorize();
-      if (sub === 'enable') {
-        if (!c.config.messageEventsEnabled) throw new UserError('responderRuntimeDisabled');
+      if (sub === 'exportconfig') {
+        files = [
+          new AttachmentBuilder(
+            Buffer.from(JSON.stringify(c.messageRanks.config(i.guildId), null, 2) + '\n', 'utf8'),
+            { name: 'luna-message-rank-config.json' },
+          ),
+        ];
+        text = t('rankConfigExported');
+      } else if (sub === 'clearexclusions') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('rankExcludeConfirm');
+        text = t('rankExclusionsCleared', { count: c.messageRanks.clearExclusions(i.guildId) });
+      } else if (sub === 'resetpolicy') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('rankPolicyConfirm');
+        c.messageRanks.resetPolicy(i.guildId);
+        text = t('rankPolicyReset');
+      } else if (sub === 'overview') {
+        text = t('rankOverview', c.messageRanks.overview(i.guildId));
+      } else if (sub === 'resetall') {
+        if (i.options.getBoolean('confirm', true) !== true)
+          throw new UserError('rankResetAllConfirm');
+        text = t('rankResetAll', { count: c.messageRanks.resetAll(i.guildId) });
+      } else if (sub === 'enable') {
+        if (c.config.messageEventsEnabled !== true) throw new UserError('responderRuntimeDisabled');
         c.messageRanks.enable(i.guildId, true);
         text = t('rankEnabled');
       } else if (sub === 'disable') {
@@ -188,6 +281,37 @@ export default {
         c.messageRanks.exclude(i.guildId, channel.id, i.options.getBoolean('excluded', true));
         text = t('rankSaved');
       }
+    } else if (sub === 'exportmine') {
+      if (i.guild?.id !== i.guildId) throw new UserError('permitMemberMissing');
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (actor?.id !== i.user.id || actor.guild?.id !== i.guildId)
+        throw new UserError('permitMemberMissing');
+      const rows = c.messageRanks.exportMine(i.guildId, i.user.id);
+      if (
+        rows.length > 90 ||
+        rows.some(
+          (r) =>
+            !/^\d{4}-\d{2}-\d{2}$/.test(r.day) || !Number.isSafeInteger(r.count) || r.count < 0,
+        )
+      )
+        throw new UserError('rankExportInvalid');
+      const csv =
+        'utc_day,message_count\n' + rows.map((r) => r.day + ',' + r.count).join('\n') + '\n';
+      await i.editReply(
+        lunaPayload(
+          {
+            content: t('rankExported', { count: rows.length }),
+            allowedMentions: { parse: [] },
+            files: [
+              new AttachmentBuilder(Buffer.from(csv, 'utf8'), {
+                name: 'luna-own-message-counts.csv',
+              }),
+            ],
+          },
+          { locale },
+        ),
+      );
+      return;
     } else if (sub === 'config') {
       const cfg = c.messageRanks.config(i.guildId);
       text = t('rankConfig', {
@@ -239,6 +363,11 @@ export default {
           .map((r, n) => `${(result.page - 1) * 10 + n + 1}. ${r.user_id}: ${r.total}`)
           .join('\n') || t('rankEmpty'));
     } else throw new UserError('unknownCommand');
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

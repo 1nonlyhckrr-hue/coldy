@@ -1003,3 +1003,222 @@ test('ticket receipt guarded storage writes remain guarded after actual SQLite r
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('ticket transcript rejects nonadvancing pages even when they contain unseen newer message IDs', async () => {
+  let calls = 0;
+  const channel = {
+    id: ids.channel,
+    messages: {
+      fetch: async () => {
+        const base = 100000000000000000n + (calls++ ? 1000n : 0n);
+        return new Map(
+          Array.from({ length: 100 }, (_, n) => {
+            const id = String(base + BigInt(n));
+            return [id, { id, createdTimestamp: 0 }];
+          }),
+        );
+      },
+    },
+  };
+  await assert.rejects(() => collectTicketTranscript(channel), /ticketTranscriptPagination/);
+  assert.equal(calls, 2);
+});
+test('ticket transcript validates native message IDs,timestamps and explicit channel provenance before export', async () => {
+  for (const change of [
+    { id: 'bad' },
+    { id: 123 },
+    { id: '1' },
+    { createdTimestamp: NaN },
+    { createdTimestamp: Infinity },
+    { createdTimestamp: 1e20 },
+    { channelId: 'foreign' },
+  ]) {
+    const msg = {
+      id: '100000000000000001',
+      createdTimestamp: 0,
+      channelId: ids.channel,
+      ...change,
+    };
+    const channel = { id: ids.channel, messages: { fetch: async () => new Map([['m', msg]]) } };
+    await assert.rejects(() => collectTicketTranscript(channel), /ticketTranscriptPagination/);
+  }
+});
+test('ticket transcript bounds reject invalid requests without reads and valid descending cursor exports oldest first', async () => {
+  let calls = 0;
+  const channel = {
+    id: ids.channel,
+    messages: {
+      fetch: async ({ before }) => {
+        calls++;
+        if (before) {
+          assert.equal(before, '100000000000000100');
+          return new Map([
+            ['old', { id: '100000000000000099', createdTimestamp: 0, channelId: ids.channel }],
+          ]);
+        }
+        return new Map(
+          Array.from({ length: 100 }, (_, n) => {
+            const id = String(100000000000000100n + BigInt(n));
+            return [id, { id, createdTimestamp: 0, channelId: ids.channel }];
+          }),
+        );
+      },
+    },
+  };
+  for (const options of [
+    { limit: 0 },
+    { limit: 1001 },
+    { limit: 1.5 },
+    { maxBytes: 99 },
+    { maxBytes: 1000001 },
+    { maxBytes: '500' },
+  ])
+    await assert.rejects(() => collectTicketTranscript(channel, options), /bounds/);
+  assert.equal(calls, 0);
+  const result = await collectTicketTranscript(channel);
+  assert.equal(calls, 2);
+  assert.equal(result.count, 101);
+  assert.equal(result.truncated, false);
+  const lines = result.body
+    .split('\n')
+    .filter((l) => l.startsWith('{'))
+    .map(JSON.parse);
+  assert.equal(lines[0].id, '100000000000000099');
+  assert.equal(lines.at(-1).id, '100000000000000199');
+});
+
+test('ticket transcript duplicate IDs in one native page fail closed instead of exporting two versions', async () => {
+  const id = '100000000000000001';
+  let calls = 0;
+  const channel = {
+    id: ids.channel,
+    messages: {
+      fetch: async () => {
+        calls++;
+        return new Map([
+          ['first', { id, createdTimestamp: 0, content: 'first' }],
+          ['second', { id, createdTimestamp: 0, content: 'conflicting' }],
+        ]);
+      },
+    },
+  };
+  await assert.rejects(() => collectTicketTranscript(channel), /ticketTranscriptPagination/);
+  assert.equal(calls, 1);
+});
+test('ticket transcript duplicate identities in a full older page fail without misleading complete export', async () => {
+  let calls = 0;
+  const channel = {
+    id: ids.channel,
+    messages: {
+      fetch: async () => {
+        const older = calls++ > 0,
+          base = older ? 100000000000000000n : 100000000000000200n;
+        return new Map(
+          Array.from({ length: 100 }, (_, n) => {
+            const id = String(base + BigInt(older && n === 99 ? 0 : n));
+            return [String(n), { id, createdTimestamp: 0, content: 'safe' }];
+          }),
+        );
+      },
+    },
+  };
+  await assert.rejects(() => collectTicketTranscript(channel), /ticketTranscriptPagination/);
+  assert.equal(calls, 2);
+});
+
+test('ticket channel and panel receipts reject blank identities without promoting reservations', () => {
+  const x = setup();
+  try {
+    const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'blank-ticket'),
+      panel = x.tickets.reservePanel(ids.guild, ids.channel, 'blank-panel');
+    for (const value of ['', ' ', '\t', null, 1]) {
+      assert.throws(() => x.tickets.activate(id, value), /identity/);
+      assert.throws(() => x.tickets.panelSent(panel, value), /identity/);
+    }
+    assert.equal(x.tickets.get(id, ids.guild).status, 'creating');
+    assert.equal(x.tickets.panel(panel, ids.guild).status, 'pending');
+    x.tickets.activate(id, ids.channel);
+    x.tickets.panelSent(panel, 'observed');
+    assert.equal(x.tickets.get(id, ids.guild).status, 'open');
+    assert.equal(x.tickets.panel(panel, ids.guild).status, 'active');
+  } finally {
+    x.db.close();
+  }
+});
+
+test('ticket setupreset/transcriptallforget/claimrelease exactguild/state/idempotence preserve records/nativeaccess', () => {
+  const s = setup();
+  try {
+    const id = s.tickets.reserve(ids.guild, ids.owner, ids.role, 'one');
+    s.tickets.activate(id, ids.channel);
+    s.tickets.claim(id, 'staff');
+    s.tickets.saveTranscript(id, { body: 'SECRET', count: 1, truncated: false });
+    const foreign = s.tickets.reserve('foreign', 'owner2', 'support2', 'other');
+    s.tickets.activate(foreign, 'channel2');
+    s.tickets.claim(foreign, 'staff2');
+    s.tickets.saveTranscript(foreign, { body: 'FOREIGN', count: 1, truncated: false });
+    assert.equal(s.tickets.releaseClaims(ids.guild), 1);
+    assert.equal(s.tickets.releaseClaims(ids.guild), 0);
+    assert.equal(s.tickets.get(id, ids.guild).owner_id, ids.owner);
+    assert.equal(s.tickets.get(foreign, 'foreign').claimed_by, 'staff2');
+    assert.equal(s.tickets.forgetAllTranscripts(ids.guild), 1);
+    assert.equal(s.tickets.forgetAllTranscripts(ids.guild), 0);
+    assert(s.tickets.transcript(foreign));
+    assert(s.tickets.get(id, ids.guild));
+    assert.equal(s.tickets.resetSetup(ids.guild), 1);
+    assert.equal(s.tickets.resetSetup(ids.guild), 0);
+    assert.equal(s.tickets.get(id, ids.guild).status, 'open');
+    assert.equal(s.sent.length, 0);
+    assert.equal(s.creates.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('ticket reset during outputvalidation blocks newopen,closed/uncertain claims kept,transcripts can be newly saved', async () => {
+  const s = setup();
+  try {
+    const fetch = s.guild.channels.fetch;
+    s.guild.channels.fetch = async (...args) => {
+      s.tickets.resetSetup(ids.guild);
+      return fetch(...args);
+    };
+    await assert.rejects(() => openTicket(s.i, s.c));
+    assert.equal(s.creates.length, 0);
+    const id = s.tickets.reserve(ids.guild, ids.owner, ids.role, 'one');
+    s.tickets.activate(id, ids.channel);
+    s.tickets.claim(id, 'staff');
+    s.tickets.transition(id, 'open', 'closed');
+    assert.equal(s.tickets.releaseClaims(ids.guild), 0);
+    assert.equal(s.tickets.get(id, ids.guild).claimed_by, 'staff');
+    s.tickets.saveTranscript(id, { body: 'OLD', count: 1, truncated: false });
+    s.tickets.forgetAllTranscripts(ids.guild);
+    s.tickets.saveTranscript(id, { body: 'NEW', count: 1, truncated: false });
+    assert.equal(s.tickets.transcript(id).body, 'NEW');
+  } finally {
+    s.db.close();
+  }
+});
+test('ticket three storedbulkcommands private3locale exactmanager/confirmation no nativeeffects', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      s.c.guildConfig.setLanguage(ids.guild, locale);
+      s.owner.permissions.has = () => true;
+      let sub = 'resetsetup',
+        confirm = false;
+      s.i.options = { getSubcommand: () => sub, getBoolean: () => confirm };
+      await assert.rejects(() => command.execute(s.i, s.c), /ticketStoredConfirm/);
+      assert(s.tickets.config(ids.guild));
+      confirm = true;
+      for (sub of ['resetsetup', 'forgetalltranscripts', 'releaseclaims'])
+        await command.execute(s.i, s.c);
+      assert.equal(s.sent.length, 0);
+      assert.equal(s.creates.length, 0);
+      for (const p of s.replies) assert.deepEqual(p.allowedMentions.parse, []);
+      s.owner.permissions.has = () => false;
+      await assert.rejects(() => command.execute(s.i, s.c), /userPermission/);
+    } finally {
+      s.db.close();
+    }
+  }
+});

@@ -1,6 +1,7 @@
 import { resolveZonedTime } from '../../services/zonedTime.js';
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   ChannelType,
@@ -48,6 +49,45 @@ const data = new SlashCommandBuilder()
           .setDescription('Optional fixed interval, 10 minutes to 30 days')
           .setMinValue(10)
           .setMaxValue(43200),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('stoprepeats')
+      .setDescription(
+        'Make all pending repeats one-time;next due/body/channel preserved,sending untouched.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping repeats after each pending nextsend')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('forgetfinished')
+      .setDescription(
+        'Erase bodies of done/cancelled schedules;metadata kept,no native message change.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm erasing all finished stored bodies')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clearfinished')
+      .setDescription(
+        'Delete done/cancelled schedule records;active/uncertain/native messages kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm deleting all finished stored metadata/body')
+          .setRequired(true),
       ),
   )
   .addSubcommand((s) =>
@@ -246,6 +286,63 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('shift')
+      .setDescription(
+        'Confirmed pending nextsend offset +/- minutes;repeat interval/body/channel kept.',
+      )
+      .addIntegerOption((o) =>
+        o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('minutes')
+          .setDescription(
+            'Signed offset,-525600 to525600,not0;new due must remain1min-365days ahead',
+          )
+          .setMinValue(-525600)
+          .setMaxValue(525600)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Confirm nextsend time shift').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clone')
+      .setDescription(
+        'Confirmed copy of pending body/destination into new one-time future send,no repeats.',
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('id')
+          .setDescription('Pending source schedule ID')
+          .setMinValue(1)
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('at')
+          .setDescription('New ISO time with offset,one minute to365days ahead')
+          .setMaxLength(25)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm one new future send of this stored body')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('export')
+      .setDescription(
+        'Private JSON of latest100stored schedules including body/destination;not backup/replay.',
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('config').setDescription('Show schedule limits and restart policy.'),
   );
 export default {
@@ -268,7 +365,48 @@ export default {
     const sub = i.options.getSubcommand(),
       locale = c.guildConfig.get(i.guildId).language,
       t = (key, p) => translate(locale, key, p);
-    let content;
+    let content, files;
+    if (sub === 'export') {
+      const rows = c.messageSchedules.exportRecords(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(rows, null, 2) + '\n', 'utf8'), {
+          name: 'luna-schedules.json',
+        }),
+      ];
+      content = t('automationExported', { count: rows.length });
+    }
+    if (sub === 'shift') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationShiftConfirm');
+      const dueAt = c.messageSchedules.shiftPending(
+        i.options.getInteger('id', true),
+        i.guildId,
+        i.options.getInteger('minutes', true),
+      );
+      content = t('automationShifted', { iso: new Date(dueAt).toISOString() });
+    }
+    if (sub === 'clone') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationShiftConfirm');
+      const snapshot = c.messageSchedules.get(i.options.getInteger('id', true), i.guildId);
+      if (snapshot?.status !== 'pending') throw new UserError('automationEditInvalid');
+      const dueAt = parseScheduledTime(i.options.getString('at', true));
+      await validateOutputChannel(i.guild, snapshot.channel_id);
+      await authorize();
+      const id = c.messageSchedules.clonePending(snapshot, { dueAt, interactionId: i.id });
+      content = t('automationCloned', { id });
+    }
+
+    if (['stoprepeats', 'forgetfinished', 'clearfinished'].includes(sub)) {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationBulkConfirm');
+      const method = {
+        stoprepeats: 'stopRepeats',
+        forgetfinished: 'forgetFinished',
+        clearfinished: 'clearFinished',
+      }[sub];
+      content = t('automationBulk_' + sub, { count: c.messageSchedules[method](i.guildId) });
+    }
     if (sub === 'create') {
       const channelId = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, channelId);
@@ -420,6 +558,11 @@ export default {
           .join('\n') || t('automationEmpty'));
     }
     if (sub === 'config') content = t('automationConfig');
-    await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

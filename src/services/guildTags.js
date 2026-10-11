@@ -23,6 +23,17 @@ export class GuildTags {
       .prepare('SELECT role_id,status FROM guild_tag_grants WHERE guild_id=? AND user_id=?')
       .get(guildId, userId);
   }
+  grants(guildId, page = 1, { state = null } = {}) {
+    if (!Number.isInteger(page) || page < 1 || page > 1000)
+      throw new UserError('tagGrantPageInvalid');
+    if (state !== null && !['pending', 'granted', 'uncertain'].includes(state))
+      throw new UserError('tagGrantStateInvalid');
+    return this.db
+      .prepare(
+        'SELECT user_id,role_id,status FROM guild_tag_grants WHERE guild_id=? AND (? IS NULL OR status=?) ORDER BY user_id LIMIT 10 OFFSET ?',
+      )
+      .all(guildId, state, state, (page - 1) * 10);
+  }
   setup(guildId, roleId) {
     if (!/^\d{17,20}$/.test(roleId)) throw new UserError('customRoleInvalid');
     const current = this.config(guildId);
@@ -72,7 +83,7 @@ export async function refreshGuildTag(i, c) {
   try {
     const cfg = c.guildTags.config(i.guildId);
     if (!cfg) throw new UserError('tagNotConfigured');
-    const [member, bot, user, role] = await Promise.all([
+    let [member, bot, user, role] = await Promise.all([
       i.guild.members.fetch({ user: i.user.id, force: true }),
       i.guild.members.fetchMe({ force: true }),
       i.client.users.fetch(i.user.id, { force: true }),
@@ -87,6 +98,21 @@ export async function refreshGuildTag(i, c) {
     )
       throw new UserError('customMemberMissing');
     if (!i.client.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
+      throw new UserError('roleBotPermission');
+    // Role lookup can outlive identity/permission reads. Refresh action-driving principals last.
+    [member, bot, user] = await Promise.all([
+      i.guild.members.fetch({ user: i.user.id, force: true }),
+      i.guild.members.fetchMe({ force: true }),
+      i.client.users.fetch(i.user.id, { force: true }),
+    ]);
+    if (
+      i.guild.id !== i.guildId ||
+      member?.id !== i.user.id ||
+      member.guild?.id !== i.guildId ||
+      user?.id !== i.user.id
+    )
+      throw new UserError('customMemberMissing');
+    if (bot?.id !== i.client.user?.id || bot.guild?.id !== i.guildId)
       throw new UserError('roleBotPermission');
     const state = guildTagState(user, i.guildId);
     if (state === 'unknown') throw new UserError('tagUnavailable');

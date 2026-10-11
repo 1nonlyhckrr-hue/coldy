@@ -475,3 +475,129 @@ test('warning slash rejects invalid pages before reply and normalizes display co
     s.db.close();
   }
 });
+
+test('individual warning edit/clear exact active target/guild transactional case and bounded active-only export', async () => {
+  const s = setup();
+  try {
+    await moderate(s.i, s.context, { action: 'warn', targetId: ids.target, reason: 'Original' });
+    const warning = s.context.cases.warnings('guild', ids.target)[0];
+    s.i.id = 'edit';
+    await moderate(s.i, s.context, {
+      action: 'editwarning',
+      targetId: ids.target,
+      warningId: warning.id,
+      reason: 'New reason',
+      confirm: true,
+    });
+    assert.equal(s.context.cases.warnings('guild', ids.target)[0].reason, 'New reason');
+    const exported = await moderate(s.i, s.context, {
+      action: 'exportwarnings',
+      targetId: ids.target,
+    });
+    assert.equal(exported.warningExport.total, 1);
+    assert.deepEqual(Object.keys(exported.warningExport.rows[0]).sort(), [
+      'created_at',
+      'id',
+      'reason',
+    ]);
+    assert.throws(() => s.context.cases.activeWarning(warning.id, 'other', ids.target));
+    assert.throws(() => s.context.cases.activeWarning(warning.id, 'guild', ids.owner));
+    s.i.id = 'clear';
+    await moderate(s.i, s.context, {
+      action: 'clearwarning',
+      targetId: ids.target,
+      warningId: warning.id,
+      confirm: true,
+    });
+    assert.equal(s.context.cases.exportWarnings('guild', ids.target).total, 0);
+    s.i.id = 'again';
+    await assert.rejects(() =>
+      moderate(s.i, s.context, {
+        action: 'editwarning',
+        targetId: ids.target,
+        warningId: warning.id,
+        reason: 'x',
+        confirm: true,
+      }),
+    );
+    assert.equal(s.calls.length, 0);
+    const insert = s.db.prepare(
+      'INSERT INTO warnings(guild_id,target_id,actor_id,reason,created_at) VALUES(?,?,?,?,?)',
+    );
+    s.db.transaction(() => {
+      for (let n = 0; n < 2001; n++) insert.run('guild', ids.target, ids.actor, 'r', n);
+    })();
+    const r = s.context.cases.exportWarnings('guild', ids.target);
+    assert.equal(r.rows.length, 2000);
+    assert.equal(r.total, 2001);
+    assert.equal(r.truncated, true);
+  } finally {
+    s.db.close();
+  }
+});
+test('individual warning mutations require confirmation/currentauthority/hierarchy and rollback on case storage failure', async () => {
+  for (const kind of ['confirm', 'permission', 'hierarchy', 'storage']) {
+    const s = setup();
+    try {
+      await moderate(s.i, s.context, { action: 'warn', targetId: ids.target, reason: 'Original' });
+      const id = s.context.cases.warnings('guild', ids.target)[0].id;
+      s.i.id = 'edit';
+      if (kind === 'permission') s.actor.permissions.has = () => false;
+      if (kind === 'hierarchy') s.target.roles.highest.position = 9;
+      if (kind === 'storage')
+        s.context.cases.finish = () => {
+          throw Error('db');
+        };
+      await assert.rejects(() =>
+        moderate(s.i, s.context, {
+          action: 'editwarning',
+          targetId: ids.target,
+          warningId: id,
+          reason: 'New',
+          confirm: kind !== 'confirm',
+        }),
+      );
+      assert.equal(s.context.cases.warnings('guild', ids.target)[0].reason, 'Original');
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 1);
+      assert.equal(s.calls.length, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('individual warning three commands private3locale embeds/JSON bytes/exact records no native action', async () => {
+  const { default: command } = await import('../src/commands/moderation/moderation.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      await moderate(s.i, s.context, { action: 'warn', targetId: ids.target, reason: 'Original' });
+      const id = s.context.cases.warnings('guild', ids.target)[0].id;
+      s.context.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+      let sub = 'exportwarnings',
+        reply;
+      s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      s.i.editReply = async (p) => {
+        reply = p;
+      };
+      s.i.options = {
+        getSubcommand: () => sub,
+        getUser: () => ({ id: ids.target }),
+        getInteger: () => id,
+        getBoolean: () => true,
+        getString: () => 'Updated',
+      };
+      await command.execute(s.i, s.context);
+      assert.equal(JSON.parse(reply.files[0].attachment.toString()).rows[0].reason, 'Original');
+      for (sub of ['editwarning', 'clearwarning']) {
+        s.i.id = sub;
+        await command.execute(s.i, s.context);
+        assert.deepEqual(reply.allowedMentions.parse, []);
+      }
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.context.cases.exportWarnings('guild', ids.target).total, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});

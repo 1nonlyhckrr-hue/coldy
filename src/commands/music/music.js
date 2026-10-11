@@ -92,6 +92,56 @@ data.addSubcommand((s) =>
       o.setName('enabled').setDescription('Keep connection after queue ends').setRequired(true),
     ),
 );
+for (const sub of ['reverse', 'deduplicate', 'removerange'])
+  data.addSubcommand((s) => {
+    s.setName(sub).setDescription(
+      sub === 'reverse'
+        ? 'Reverse waitingtrackorder only,currentplayback unchanged.'
+        : sub === 'deduplicate'
+          ? 'Keep first waitingtrack perproviderID,currenttrack/requesterhistory not compared.'
+          : 'Remove inclusivewaitingpositionrange,currentplayback untouched.',
+    );
+    if (sub === 'removerange')
+      for (const n of ['from', 'to'])
+        s.addIntegerOption((o) =>
+          o
+            .setName(n)
+            .setDescription('Inclusivewaitingposition1-50')
+            .setMinValue(1)
+            .setMaxValue(50)
+            .setRequired(true),
+        );
+    return s;
+  });
+for (const name of ['trim', 'duplicate', 'removeown'])
+  data.addSubcommand((s) => {
+    s.setName(name).setDescription(
+      name === 'trim'
+        ? 'Keep first N waiting tracks,discard later ones;current playback unchanged.'
+        : name === 'duplicate'
+          ? 'Append one waiting track copy attributed to you;current playback unchanged.'
+          : 'Remove only waiting tracks requested by you;current playback unchanged.',
+    );
+    if (name === 'trim')
+      s.addIntegerOption((o) =>
+        o
+          .setName('count')
+          .setDescription('Keep0-50waiting tracks')
+          .setMinValue(0)
+          .setMaxValue(50)
+          .setRequired(true),
+      );
+    if (name === 'duplicate')
+      s.addIntegerOption((o) =>
+        o
+          .setName('position')
+          .setDescription('Existing waiting position1-50')
+          .setMinValue(1)
+          .setMaxValue(50)
+          .setRequired(true),
+      );
+    return s;
+  });
 const clean = (s) =>
   escapeMarkdown(
     String(s)
@@ -128,6 +178,19 @@ export default {
         sub,
         sub === 'remove' ? i.options.getInteger('position', true) : undefined,
       );
+    if (['reverse', 'deduplicate', 'removerange', 'trim', 'duplicate', 'removeown'].includes(sub))
+      await c.music.transformWaiting(i.guildId, sub, {
+        requesterId: i.user.id,
+        ...(sub === 'trim' ? { count: i.options.getInteger('count', true) } : {}),
+        ...(sub === 'duplicate' ? { from: i.options.getInteger('position', true) } : {}),
+        ...(sub === 'removerange'
+          ? { from: i.options.getInteger('from', true), to: i.options.getInteger('to', true) }
+          : {}),
+        beforeEffect: async () => {
+          const now = await requireMusicVoice(i, c);
+          if (now.channel.id !== channelId) throw new UserError('voiceMoved');
+        },
+      });
     if (sub === 'move')
       await c.music.moveQueued(
         i.guildId,

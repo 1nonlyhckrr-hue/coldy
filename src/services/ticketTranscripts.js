@@ -1,5 +1,14 @@
 import { UserError } from '../utils/errors.js';
 export async function collectTicketTranscript(channel, { limit = 1000, maxBytes = 1000000 } = {}) {
+  if (
+    !Number.isInteger(limit) ||
+    limit < 1 ||
+    limit > 1000 ||
+    !Number.isInteger(maxBytes) ||
+    maxBytes < 100 ||
+    maxBytes > 1000000
+  )
+    throw new TypeError('Invalid transcript bounds');
   const messages = [],
     seen = new Set();
   let before,
@@ -11,6 +20,20 @@ export async function collectTicketTranscript(channel, { limit = 1000, maxBytes 
       exhausted = true;
       break;
     }
+    if (
+      page.length > 100 ||
+      new Set(page.map((m) => m?.id)).size !== page.length ||
+      page.some(
+        (m) =>
+          typeof m?.id !== 'string' ||
+          !/^\d{17,20}$/.test(m.id) ||
+          (before && BigInt(m.id) >= BigInt(before)) ||
+          (m.channelId !== undefined && m.channelId !== channel.id) ||
+          !Number.isFinite(m.createdTimestamp) ||
+          !Number.isFinite(new Date(m.createdTimestamp).getTime()),
+      )
+    )
+      throw new UserError('ticketTranscriptPagination');
     const fresh = page.filter((m) => !seen.has(m.id));
     if (!fresh.length) throw new UserError('ticketTranscriptPagination');
     for (const m of fresh) {

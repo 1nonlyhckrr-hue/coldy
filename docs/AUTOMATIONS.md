@@ -29,3 +29,21 @@ Create/createzone repeat exact current admin authority after destination validat
 `/automation cancelpending confirm:true` cancels all still-pending schedules in this guild atomically. Requires exact current manager and explicit confirmation. In-flight/uncertain/terminal/foreign records stay unchanged;not proof a previously claimed send will stop. Text remains stored;individual forget supports cancelled record erasure. No native message deletion or immediate send. Empty/idempotent invocation returns0.552localtests;not live acceptance.
 
 `upcoming [page]`:private manager-only pending queue,oldest due first withIDtie-break,10/page,page1-3. ID/channelID/due/repeat only,notbody. Pending includesoverdue;no send or readinessclaim. `overview`:state counts across allstoredrecords,notlimitedrecent100;earliestpendingdue included. Done means acceptedmessageidentitywasrecorded,notdeliveryreceipt;uncertain jobs neverautomaticallyretry. No record mutations. `/automation list` strictly validatesintegerpage>=1.580localtests/205paths,notnativeverified.
+
+## Confirmed bulk controls
+
+`stoprepeats confirm:true` sets pending repeats to one-time,next due/body/channel preserved. It does **not** cancel their next send or change already-sending/uncertain records. `forgetfinished confirm:true` erases retained bodies of done/cancelled schedules,keeps metadata. `clearfinished confirm:true` deletes done/cancelled records/bodies. Active/uncertain/foreign-guild records and native messages untouched. Allthree require current ManageGuild,private localized no-ping results. Idempotent changed counts. These modify stored future/retained state,not runner uptime or delivery guarantees. Live acceptance pending.
+
+## Adjust, reuse and export stored schedules
+
+`shift id minutes confirm:true` shifts one pending nextsend by signed nonzero integer minutes within +/-525600. New due still must be1minute-365days ahead. Original body,destination,elapsed repeat interval and source interaction remain unchanged. Done/sending/uncertain/cancelled records are not shifted. No timezone recurrence conversion.
+
+`clone id at confirm:true` copies one pending stored body/destination into a new one-time future schedule using explicit offset time. Repeat interval is deliberately not copied. Destination validated fresh;current manager checked again after validation. Original full source snapshot rechecked inside transaction before creation;changed body/time/channel/repeat/state aborts. Existing cap25 and unique interaction ID apply. No send now;this is a confirmed new future send,not paused draft. Source untouched.
+
+`export` privately delivers latest100stored records as JSON including body,channel ID,schedule ID,nextdue,repeat interval and state. No actor/guild/interaction IDs or receipts. Keep file private. Not a full backup,import/replay file,delivery proof or native readiness result;older rows can be omitted. Clear/forget policy still controls retained contents. Export does not change state or send elsewhere. All three paths current exact ManageGuild and private localized/no-ping shared embeds. Local JSON bytes/nativevalidation mocks verified,not live Discord/client pixels.
+
+## Exact stored destination cleanup
+
+`/schedulecleanup cancel channel-id confirm:true` cancels pending schedules bound to one exact stored destination in this server. `stoprepeats` clears recurring intervals of pending schedules in that destination,keeping next pending send. `erasefinished` erases body text only for done/cancelled schedules in that destination.
+
+Unknown/sending states,other destinations/guilds,source IDs,schedule identities and native messages stay intact. Deleted destination IDs can be cleaned without live lookup because these are stored-only stop/erasure operations. Current native Manage Server,explicit confirmation,private3locale/no-ping. Three tests scope/status/identity/storageabort/input/authority/commands. No live/client visual acceptance.

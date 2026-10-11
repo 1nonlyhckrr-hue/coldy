@@ -42,6 +42,13 @@ export class EventLogDelivery {
         .run(status, key).changes === 1
     );
   }
+  reserved(key, guildId) {
+    return !!this.db
+      .prepare(
+        "SELECT 1 FROM event_log_deliveries WHERE event_key=? AND guild_id=? AND status='reserved'",
+      )
+      .get(key, guildId);
+  }
   recover() {
     this.db
       .prepare("UPDATE event_log_deliveries SET status='uncertain' WHERE status='reserved'")
@@ -95,6 +102,7 @@ export function createMetadataLogHandler(c, kind, now = Date.now) {
         c.eventLogs.finish(key, 'unavailable');
         return;
       }
+      if (!c.eventLogs.reserved(key, guild.id)) return;
       const text = c.localization.t(guild.id, 'logMetadataEvent', {
         kind: c.localization.t(guild.id, `logKind_${kind}`),
         id: resource.id,

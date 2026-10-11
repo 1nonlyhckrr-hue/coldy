@@ -1,6 +1,6 @@
 # AutoMod
 
-Eleven Luna paths: enable/disable/rule/wordadd/wordremove/exempt/config/incidents/timeoutminutes/ignorechannel/thresholds under `/automod`. Manage Server is refreshed for management actions. Message Content intent/runtime opt-in is required. Rules and automatic moderation start disabled. Enable selects warning-record or single-message-delete mode; bounded explicitly confirmed timeout is available;no auto-kick/ban.
+Seventeen Luna paths under `/automod`: enable,disable,rule,wordadd,wordremove,exempt,config,incidents,timeoutminutes,ignorechannel,thresholds,testtext,spamthresholds,removepolicy,wordlist,unresolved,stats. Manage Server is refreshed for management actions. Message Content intent/runtime opt-in is required. Rules and automatic moderation start disabled. Enable selects warning-record or single-message-delete mode; bounded explicitly confirmed timeout is available;no auto-kick/ban.
 
 Rules: literal bad-word/phrase boundaries, Discord invites, HTTP(S) links, five-or-more mentions (everyone counts as five), more than 80% uppercase after at least 20 letters, or spam (six messages or three identical normalized messages within ten seconds). Unicode normalization is used; phrase matching never executes user regex. Thresholds may have false positives; choose rules cautiously. Other link schemes, obfuscation/evasion and historical edit scanning are not handled.
 
@@ -25,3 +25,23 @@ Three new tests,total238 local tests. No live native timeout test,no permission-
 `spamthresholds [messages] [repeats] [seconds]` tunes3-10 total messages,2-10 identical normalized messages,5-30s rollingwindow. Atleastoneoption,currentmanagerrequired. Doesnotenable/changeactions/rules;defaults6/3/10. Recenthistorymemorymax10/userguild,bounded10000keys,resetsonrestart;short-livednormalizedcontentsretainedupto30s,notSQLite. Configchangecomparesfullsnapshotbeforetimeout/delete. Tune warningonlyfirst,falsepositivespossible. Finishrequiresone reservedreceipt;loggingfailurecannotrewritecompletedterminalstatus.571localtests,new202pathssourcelocalonly.
 
 `unresolved [page]`:private current-manager metadata review,oldestfirst10/page,page1-10,max100visible records. Onlyreserved/uncertain,notcompleted/failed orforeignguilds. IDs,userID,rule,action,statusonly,nooriginalmessage/content. Doesnotretryorchange records;uncertain means outcomeunknown,notfailure/currentrisk. Standardcleanup30days;metadatareviewcannotprove nativeDiscordoutcome. Reservedrows recoveruncertain after restart,noautomaticreplay.575localtests/203paths;source unpublished beyond556checkpoint.
+
+## Stored count summary
+
+`/automod stats` requires current ManageGuild and returns a private localized,no-ping aggregate of retained incident outcomes and action counts. No message content,IDs or user details are shown. This reads stored records only,not current risk or native outcomes,and performs no retry or mutation. Retention is subject to separate cleanup;older retained rows can remain until cleanup runs.
+
+Timeout safety requires the refreshed native restriction deadline to be explicit null (no restriction) or a nonnegative safe integer. Unknown or malformed deadlines fail the reserved incident rather than risk shortening an unverifiable existing timeout.
+
+`/automod incidents [status]` filters stored reserved/completed/uncertain/failed outcomes before selecting the newest20 records. Omit status for all outcomes. Read-only/private/current-manager;does not fetch source messages or retry actions.
+
+## Policy export and reset
+
+`exportpolicy` privately exports stored enabled/action/rules/thresholds/literal words/exempt-role/ignored-channel IDs. No incidents/message content history/actor IDs/live readiness proof. Keep file private;not an import/restore operation.
+
+`clearwords confirm:true` erases only literal word list,retains words-rule toggle/other rules/action/enabled/exemptions/incidents/cases. `resetpolicy confirm:true` restores disabled defaults(allrulesoff,warn/default thresholds,emptywords/exemptions/ignoredchannels). Clears only this guild's short-lived in-memory spam history,not another guild's. Persistent incidents/cases/replayguards/native messages unchanged. Stopping/resetting remains allowed while runtime off and needs exact fresh ManageGuild+confirmation. Already-in-flight actions may finish. If config reset happens during native pre-effect validation,existing exactpolicy recheck stops effect and marks existing reservation failed rather than deleting its replayguard. No atomic recall guarantee. All replies private localized/no-ping/JSONbytes locally tested;live false-positive/gateway/visual acceptance pending.
+
+## Safe policy replacement and exclusion clearing
+
+`/automod importpolicy json confirm:true` accepts one strict policy object up to4000characters. Uses existing policy schema/defaults,normalizes literal words,rejects empty/duplicate/control words and duplicate role/channel IDs. Complete replacement restores unspecified defaults,forces enabled=false,clears own guild spam memory only after successful storage. Incident/case/replay guards remain. Imported role/channel IDs are stored configuration only,not live existence/permission verification. Review settings and explicitly enable later;exported maximum policies may exceed import limit. No native effects during import.
+
+`clearignored confirm:true` clears stored ignored channels;`clearexempt confirm:true` clears stored exempt role IDs. Other settings and guards remain,including enabled/action. If enabled,future messages previously excluded can be moderated. No native role/channel mutation or existence checks are needed for forgetting exclusions. In-flight actions can finish. Fresh native Manage Server,private3locale/no-ping. Three tests cover schema/bounds/normalization/replacement/defaults/disable/memory/storagefailure,scope/isolation and commandauthority/confirmation. No live/client visual acceptance.

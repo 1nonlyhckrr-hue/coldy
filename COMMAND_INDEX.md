@@ -2,41 +2,63 @@
 
 ## Installed Luna commands
 
-41 top-level commands, 214 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+47 top-level commands, 352 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
+| /antinuke clearchannel | Stop monitoring and forget alert destination;threshold/trust/history kept. | Local mock/unit only |
+| /antinuke cleartrust | Clear all stored user exemptions;owner/bot exemptions kept,alert-only. | Local mock/unit only |
 | /antinuke config | Show alert settings and limitations. | Local mock/unit only |
 | /antinuke disable | Stop alert-only audit monitoring. | Local mock/unit only |
 | /antinuke enable | Enable alert-only detection for supported audit actions. | Local mock/unit only |
+| /antinuke exportpolicy | Private storedalert config/trustedIDs JSON,not audit history/preventionproof. | Local mock/unit only |
+| /antinuke importpolicy | Replace stored alert policy from strict JSON,force disabled,no native actions. | Local mock/unit only |
 | /antinuke incidents | Show20 recent stored audit burst alerts. | Local mock/unit only |
+| /antinuke removetrust | Confirmed remove one exactstored trustedID,including departedusers,not nativeaccess. | Local mock/unit only |
+| /antinuke resetpolicy | Confirmed stopalerts/forgetdestination/trust/defaultthresholds,receipts kept. | Local mock/unit only |
 | /antinuke threshold | Set mixed-action count and observation window. | Local mock/unit only |
 | /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
 | /antinuke unresolved | Privately inspect stored unresolved alert metadata;no retry or punishment. | Local mock/unit only |
 | /automation cancel | Cancel a pending or uncertain schedule. | Local mock/unit only |
 | /automation cancelpending | Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched. | Local mock/unit only |
+| /automation clearfinished | Delete done/cancelled schedule records;active/uncertain/native messages kept. | Local mock/unit only |
+| /automation clone | Confirmed copy of pending body/destination into new one-time future send,no repeats. | Local mock/unit only |
 | /automation config | Show schedule limits and restart policy. | Local mock/unit only |
 | /automation create | Schedule one message or a fixed elapsed-time repeat. | Local mock/unit only |
 | /automation createzone | Schedule one message using explicit local date/time and named timezone. | Local mock/unit only |
 | /automation destination | Move one pending message schedule to a validated channel;does not send now. | Local mock/unit only |
 | /automation edit | Replace text of a pending schedule only;time/destination unchanged. | Local mock/unit only |
+| /automation export | Private JSON of latest100stored schedules including body/destination;not backup/replay. | Local mock/unit only |
 | /automation forget | Erase stored text of a completed/cancelled schedule,not Discord messages. | Local mock/unit only |
+| /automation forgetfinished | Erase bodies of done/cancelled schedules;metadata kept,no native message change. | Local mock/unit only |
 | /automation inspect | Privately review one stored schedule,text and metadata;no native effects. | Local mock/unit only |
 | /automation list | List recent schedule records. | Local mock/unit only |
 | /automation overview | Privately count stored schedule states;not delivery receipts or live readiness. | Local mock/unit only |
 | /automation repeat | Change pending elapsed repeat;omit minutes to make next send one-time. | Local mock/unit only |
 | /automation reschedule | Move pending next send to explicit offset time;repeat stays elapsed interval. | Local mock/unit only |
 | /automation reschedulezone | Move one pending schedule using explicit local time and named timezone. | Local mock/unit only |
+| /automation shift | Confirmed pending nextsend offset +/- minutes;repeat interval/body/channel kept. | Local mock/unit only |
+| /automation stoprepeats | Make all pending repeats one-time;next due/body/channel preserved,sending untouched. | Local mock/unit only |
 | /automation upcoming | Privately inspect pending sends ordered by time;no content or sending. | Local mock/unit only |
+| /schedulecleanup cancel | Cancel pending schedules in one stored destination;unknown/in-flight left alone. | Local mock/unit only |
+| /schedulecleanup erasefinished | Erase done/cancelled text in one stored destination;pending/unknown/in-flight kept. | Local mock/unit only |
+| /schedulecleanup stoprepeats | Make pending repeats in one stored destination one-time;next sends still happen. | Local mock/unit only |
+| /automod clearexempt | Clear role exemptions;if enabled,future messages by these roles may be moderated. | Local mock/unit only |
+| /automod clearignored | Clear ignored channels;if enabled,future messages there may be moderated. | Local mock/unit only |
+| /automod clearwords | Confirmed remove all storedliteralblockedwords;other rules/settings kept. | Local mock/unit only |
 | /automod config | Show configured rules and limits. | Local mock/unit only |
 | /automod disable | Stop automatic message moderation. | Local mock/unit only |
 | /automod enable | Enable configured rules; all rules start disabled. | Local mock/unit only |
 | /automod exempt | Add or remove an exempt server role. | Local mock/unit only |
+| /automod exportpolicy | Private JSON of stored rules/literal words/exemptIDs,not incident/message history. | Local mock/unit only |
 | /automod ignorechannel | Ignore/unignore one channel for automatic message moderation. | Local mock/unit only |
-| /automod incidents | Show 20 recent action outcomes, no message content. | Local mock/unit only |
+| /automod importpolicy | Replace strict policy JSON,force disabled,clear own spam memory;no native effects. | Local mock/unit only |
+| /automod incidents | Show 20 recent stored outcomes,optionally filtered,no message content. | Local mock/unit only |
 | /automod removepolicy | Remove one stored ignored channel/exempt role ID,including deleted subjects. | Local mock/unit only |
+| /automod resetpolicy | Confirmed disabled/defaultpolicy reset,words/exemptions cleared;incidents/cases kept. | Local mock/unit only |
 | /automod rule | Enable or disable one rule. | Local mock/unit only |
 | /automod spamthresholds | Tune bounded spam counts/window;does not enable moderation. | Local mock/unit only |
+| /automod stats | Private aggregate stored incident outcomes;no content,IDs or retries. | Local mock/unit only |
 | /automod testtext | Private dry-run of literal/caps/link rules,no punishment or spam tracking. | Local mock/unit only |
 | /automod thresholds | Tune mention/caps thresholds;does not enable rules or moderation. | Local mock/unit only |
 | /automod timeoutminutes | Set automatic timeout duration1-60 minutes;does not enable rules. | Local mock/unit only |
@@ -44,36 +66,57 @@
 | /automod wordadd | Add a literal word/phrase to the filter. | Local mock/unit only |
 | /automod wordlist | Privately inspect twenty stored literal phrases per page. | Local mock/unit only |
 | /automod wordremove | Remove a literal filtered word/phrase. | Local mock/unit only |
-| /autoresponder config | List trigger configuration. | Local mock/unit only |
+| /autoresponder clone | Copy response/mode/cooldown into a new paused rule;no send or replay history copy. | Local mock/unit only |
+| /autoresponder config | List stored trigger configuration,optionally filtered by enabled state. | Local mock/unit only |
 | /autoresponder cooldown | Change one stored trigger cooldown10-3600s;last-send/replay history retained. | Local mock/unit only |
+| /autoresponder cooldownall | Set all stored rule cooldowns;last-send/replay/enable states kept. | Local mock/unit only |
 | /autoresponder create | Create an exact or literal keyword trigger. | Local mock/unit only |
 | /autoresponder delete | Delete an existing trigger. | Local mock/unit only |
+| /autoresponder deleteall | Delete all guild response rules;retained replay receipts kept,no message deletion. | Local mock/unit only |
+| /autoresponder deletepaused | Delete paused rule text/settings only;retain enabled rules and all replay receipts. | Local mock/unit only |
 | /autoresponder disableall | Pause all stored guild triggers;in-flight responses may finish,history retained. | Local mock/unit only |
+| /autoresponder dryrun | Private literal-match diagnostic,no content storage/send/cooldown change. | Local mock/unit only |
 | /autoresponder edit | Edit the response for an existing trigger. | Local mock/unit only |
+| /autoresponder export | Private JSON of guild rule text/settings,no receipts or automatic enable. | Local mock/unit only |
+| /autoresponder import | Atomically add1-10 unique rules from JSON,all paused;no automatic send. | Local mock/unit only |
+| /autoresponder info | Privately inspect one stored trigger settings and response;no native delivery. | Local mock/unit only |
 | /autoresponder mode | Set literal exact/keyword matching,retaining response/cooldown/replay history. | Local mock/unit only |
 | /autoresponder preview | Privately preview stored response,no send or cooldown change. | Local mock/unit only |
 | /autoresponder rename | Change one stored trigger while preserving response and replay history. | Local mock/unit only |
+| /autoresponder replace | Replace1-10 existing rule settings atomically;pause them,retain IDs/replay/cooldowns. | Local mock/unit only |
+| /autoresponder stats | Private stored rule/receipt counts only;not live delivery or readiness. | Local mock/unit only |
 | /autoresponder toggle | Pause/resume one trigger,retaining response/cooldown/history. | Local mock/unit only |
 | /customrole claim | Assign one configured safe role to yourself. | Local mock/unit only |
 | /customrole claimown | Assign your verified zero-permission created role to yourself. | Local mock/unit only |
 | /customrole clear | Manage Roles:remove all mappings,leaving native roles,assignments and eligibility unchanged. | Local mock/unit only |
+| /customrole clearrequired | ManageRoles:remove eligibility gate,allowing otherwise eligible future self claims. | Local mock/unit only |
+| /customrole colorown | Confirmed own zero-permission created role primaryRGB color only. | Local mock/unit only |
 | /customrole created | Privately inspect your stored creation record,no native role changes. | Local mock/unit only |
 | /customrole createown | Create one unassigned zero-permission role for yourself,if manager enabled. | Local mock/unit only |
 | /customrole creation | ManageRoles:opt in/out of unassigned zero-permission member role creation. | Local mock/unit only |
 | /customrole creations | ManageRoles:private paged creation records,status and IDs only. | Local mock/unit only |
+| /customrole eligibility | Privately check your current storedgate membership,no role grants/safety/readinessclaim. | Local mock/unit only |
+| /customrole exportmappings | ManageRoles:privateJSON mappingnames/roleIDs/gate/policy,no ownership/memberhistory. | Local mock/unit only |
 | /customrole list | Show mapped names and eligibility role. | Local mock/unit only |
 | /customrole map | Manage Roles: map a name to an existing safe role. | Local mock/unit only |
 | /customrole reconcile | ManageRoles:verify observed uncertain creation,no native changes. | Local mock/unit only |
 | /customrole release | Remove one configured role from yourself. | Local mock/unit only |
 | /customrole releaseown | Remove your created role from yourself,no deletion. | Local mock/unit only |
+| /customrole renamemapping | ManageRoles:change only storedmapping alias,not nativerolename/access. | Local mock/unit only |
+| /customrole renameown | Confirmed own zero-permission created role name,not mapping/native other roles. | Local mock/unit only |
 | /customrole required | Manage Roles: set eligibility role or remove the gate. | Local mock/unit only |
+| /customrole resetconfig | ManageRoles:forget mappings/gate and stop creation,ownership/native roles/cases kept. | Local mock/unit only |
+| /customrole resetstyle | Confirmed own created role primary color reset to0;name/access retained. | Local mock/unit only |
 | /customrole unmap | Manage Roles: remove a mapping, leaving existing assignments. | Local mock/unit only |
+| /customrole unmaprole | ManageRoles:remove exact stored mapped role ID,no native assignments changed. | Local mock/unit only |
 | /fun 8ball | Get a playful random answer, not advice. | Local mock/unit only |
+| /fun cards | Draw1-10 distinct cards from a fresh52card deck,no betting/saved game. | Local mock/unit only |
 | /fun choose | Pick one of 2-20 choices separated by \|. | Local mock/unit only |
 | /fun coin | Flip a coin. | Local mock/unit only |
 | /fun dare | Get an optional, safe solo activity. | Local mock/unit only |
 | /fun dice | Roll up to ten dice. | Local mock/unit only |
 | /fun dicekeep | Roll bounded dice,keep highest or lowest results;no stakes or saved state. | Local mock/unit only |
+| /fun dicetarget | Roll dice and count values at or above an explicit target,no stakes. | Local mock/unit only |
 | /fun number | One uniform integer in an inclusive bounded range;not advice. | Local mock/unit only |
 | /fun rps | Play one round of rock, paper, scissors against Luna. | Local mock/unit only |
 | /fun rpsseries | Play2-10 preselected RPS rounds against Luna;private score,no stakes. | Local mock/unit only |
@@ -81,41 +124,66 @@
 | /fun shuffle | Privately randomize all 2-20 distinct choices,no assignments. | Local mock/unit only |
 | /fun teams | Privately split 2-20 distinct labels into balanced random groups,no invites. | Local mock/unit only |
 | /fun truth | Get an optional, low-pressure reflection prompt. | Local mock/unit only |
+| /fun wordscramble | Scramble your supplied ASCII word,answer in spoiler;no dictionary/guess tracking. | Local mock/unit only |
 | /about | Show Luna version and implementation status. | Local mock/unit only |
 | /config language | Set English, Hindi or Hinglish for this server. | Local mock/unit only |
 | /config view | View this server configuration. | Local mock/unit only |
 | /help | Privately browse installed paths by page,category or literal search. | Local mock/unit only |
 | /ping | Show Luna gateway latency. | Local mock/unit only |
 | /uptime | Show how long this process has been running. | Local mock/unit only |
+| /giveaway cancel | Confirmed stop stored activegiveaway,no native announcement/button edit. | Local mock/unit only |
+| /giveaway cancelall | Cancel all active giveaways in storage only;no native message edits or announcements. | Local mock/unit only |
 | /giveaway config | Show giveaway limits and policies. | Local mock/unit only |
 | /giveaway end | End and publish a stored draw, or retry publishing it. | Local mock/unit only |
+| /giveaway export | Private latest100 stored giveaway prize/schedule/binding records,no entrant/winner IDs. | Local mock/unit only |
+| /giveaway forgetentries | Confirmed erase ended/cancelled entrantIDs;future rerolls lose candidates. | Local mock/unit only |
+| /giveaway forgetfinishedentries | Erase entrant IDs for ended/cancelled giveaways;winner history/native messages kept. | Local mock/unit only |
+| /giveaway inspect | Private stored prize/state/entrycount,no entrantIDs/live readiness. | Local mock/unit only |
 | /giveaway list | List latest100 stored records,2 complete prizes/page,no live delivery claim. | Local mock/unit only |
 | /giveaway reroll | Draw again, excluding the immediately previous winners. | Local mock/unit only |
 | /giveaway start | Create a giveaway with checked eligibility. | Local mock/unit only |
 | /giveawayleave | Withdraw only your own entry from an active giveaway before its deadline. | Local mock/unit only |
 | /leaderboard activity | Only your retained90UTC-day counts,active days and longest run;not quality. | Local mock/unit only |
+| /leaderboard clearexclusions | Clear stored exclusion IDs;tracking/counts/preferences/replay guards stay as-is. | Local mock/unit only |
 | /leaderboard config | View tracking status and excluded IDs. | Local mock/unit only |
 | /leaderboard daily | Show only your retained daily message counts,ten UTC days per page. | Local mock/unit only |
 | /leaderboard disable | Manage Server: stop counting; keep stored counts. | Local mock/unit only |
 | /leaderboard enable | Manage Server: start counting future eligible messages. | Local mock/unit only |
 | /leaderboard eraseuser | Manage Server: erase one user retained counts, not their preference. | Local mock/unit only |
 | /leaderboard exclude | Manage Server: exclude/include a text channel or category. | Local mock/unit only |
+| /leaderboard exportconfig | Private stored tracking switch/excluded IDs only;no people,counts or privacy records. | Local mock/unit only |
+| /leaderboard exportmine | Private CSV of only your retained UTC daily counts;no message content. | Local mock/unit only |
 | /leaderboard optin | Allow future counts when this server has tracking enabled. | Local mock/unit only |
 | /leaderboard optout | Stop counting your future messages and erase your counts. | Local mock/unit only |
+| /leaderboard overview | Manage Server:aggregate retained contributors/messages/days,no identities. | Local mock/unit only |
 | /leaderboard position | Show only your retained message rank and count,UTC window. | Local mock/unit only |
 | /leaderboard privacy | Only your stored counting preference and server tracking switch;no changes. | Local mock/unit only |
 | /leaderboard removeexclude | Manage Server: remove one exact stored exclusion,including deleted channels. | Local mock/unit only |
+| /leaderboard resetall | Manage Server:erase all retained guild counts;tracking/preferences/replayguards kept. | Local mock/unit only |
 | /leaderboard resetmine | Delete only your retained message counts. | Local mock/unit only |
+| /leaderboard resetpolicy | Stop tracking and forget exclusions;retain counts/preferences/replay guards. | Local mock/unit only |
 | /leaderboard stats | Show your own retained message counts. | Local mock/unit only |
 | /leaderboard top | Show retained message ranks, ten per page. | Local mock/unit only |
+| /casehistory export | Private latest100case metadata/reasons JSON,total/truncated,no recovery/grant. | Local mock/unit only |
+| /casehistory inspect | Read one exact stored case identity/reason/status,not current native state. | Local mock/unit only |
+| /casehistory list | Page stored case metadata,ten per page,optional exact status filter. | Local mock/unit only |
 | /logging channel | Choose the server log channel. | Local mock/unit only |
+| /logging clearchannel | Stop logging and forget only destination;event opt-ins/history retained. | Local mock/unit only |
 | /logging config | Show case-log settings. | Local mock/unit only |
 | /logging disable | Disable delivery without deleting config. | Local mock/unit only |
 | /logging enable | Enable case logs after configuring a channel. | Local mock/unit only |
 | /logging event | Enable/disable one metadata event, no message content. | Local mock/unit only |
+| /logging export | Private stored logging policy JSON;no case or delivery history. | Local mock/unit only |
+| /logging import | Replace strict stored logging policy JSON,force disabled;review destination later. | Local mock/unit only |
+| /logging pauseevents | Confirmed clear all metadata-event opt-ins;case master/channel/replay receipts kept. | Local mock/unit only |
+| /logging preview | Private sample case-log payload only,no native delivery or readiness claim. | Local mock/unit only |
+| /logging reset | Confirmed stop logging and forget destination/event opt-ins,no native log deletion. | Local mock/unit only |
 | /logging test | Send one test log to the configured channel. | Local mock/unit only |
 | /moderation ban | ban: one member, checked and recorded. | Local mock/unit only |
+| /moderation clearwarning | CurrentModerateMembers/hierarchy:one target stored warning clearwarning. | Local mock/unit only |
 | /moderation clearwarns | clearwarns: one member, checked and recorded. | Local mock/unit only |
+| /moderation editwarning | CurrentModerateMembers/hierarchy:one target stored warning editwarning. | Local mock/unit only |
+| /moderation exportwarnings | CurrentModerateMembers/hierarchy:one target stored warning exportwarnings. | Local mock/unit only |
 | /moderation kick | kick: one member, checked and recorded. | Local mock/unit only |
 | /moderation purgeconfirm | Delete only your exact previewed IDs, expires in2 minutes. | Local mock/unit only |
 | /moderation purgepreview | Preview exact IDs among up to 10 recent messages, no deletion. | Local mock/unit only |
@@ -125,30 +193,51 @@
 | /moderation warn | warn: one member, checked and recorded. | Local mock/unit only |
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
 | /nickname | Confirmed one-member nickname update or explicit reset,no bulk changes. | Local mock/unit only |
+| /role color | CurrentManageRoles/hierarchy safeexistingrole color,no assignments/permissionchange. | Local mock/unit only |
+| /role mentionable | CurrentManageRoles/hierarchy safeexistingrole mentionable,no assignments/permissionchange. | Local mock/unit only |
+| /role rename | CurrentManageRoles/hierarchy safeexistingrole rename,no assignments/permissionchange. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode,0 disables,no bulk changes. | Local mock/unit only |
 | /music clear | Clear waiting tracks only;current track keeps playing. | Local mock/unit only |
+| /music deduplicate | Keep first waitingtrack perproviderID,currenttrack/requesterhistory not compared. | Local mock/unit only |
+| /music duplicate | Append one waiting track copy attributed to you;current playback unchanged. | Local mock/unit only |
 | /music move | Move one waiting track to exact final queue position;current playback untouched. | Local mock/unit only |
 | /music nowplaying | Show current track. | Local mock/unit only |
 | /music pause | Pause current track. | Local mock/unit only |
 | /music play | Queue first YouTube search result or exact11-character video ID. | Local mock/unit only |
 | /music queue | Show ten queued tracks per page;current track separate. | Local mock/unit only |
 | /music remove | Remove one queued position;never stops current track. | Local mock/unit only |
+| /music removeown | Remove only waiting tracks requested by you;current playback unchanged. | Local mock/unit only |
+| /music removerange | Remove inclusivewaitingpositionrange,currentplayback untouched. | Local mock/unit only |
 | /music resume | Resume current track. | Local mock/unit only |
+| /music reverse | Reverse waitingtrackorder only,currentplayback unchanged. | Local mock/unit only |
 | /music shuffle | Randomize waiting tracks only;current track unchanged. | Local mock/unit only |
 | /music skip | Stop current track once and advance waiting queue;uncertain failures freeze. | Local mock/unit only |
 | /music stay | Keep idle VC connection while this process/node are healthy;not uptime guarantee. | Local mock/unit only |
 | /music stop | Disconnect and clear this server session. | Local mock/unit only |
+| /music trim | Keep first N waiting tracks,discard later ones;current playback unchanged. | Local mock/unit only |
+| /permit blockchannel | Deny one command in this exact channel,no inheritance/Discord overwrite. | Local mock/unit only |
 | /permit blockrole | Block a role for one entire command. | Local mock/unit only |
 | /permit blockuser | Block a user for one entire command. | Local mock/unit only |
+| /permit channelrules | Private stored channel denies,ten perpage;not Discord permissions. | Local mock/unit only |
 | /permit clear | Remove all restrictions for one command. | Local mock/unit only |
+| /permit clearall | Confirmed remove all guild Luna denies,user/role/channel;native permissions unchanged. | Local mock/unit only |
+| /permit clearchannel | Remove all stored channel denies across commands;no Discord permission grants. | Local mock/unit only |
+| /permit clearcommand | Confirmed remove bothsubject/channel denies for one storedcommand,including removed ones. | Local mock/unit only |
+| /permit clearrole | Remove all stored role denies across commands;no Discord permission grants. | Local mock/unit only |
+| /permit clearuser | Remove all stored user denies across commands;no Discord permission grants. | Local mock/unit only |
+| /permit export | Private JSON of stored user/role/channel deny IDs,no permissions or native grants. | Local mock/unit only |
 | /permit list | Inspect stored deny rules,optional command/kind filters;no permission grants. | Local mock/unit only |
 | /permit remove | Remove one exact stored restriction,including departed/deleted subject IDs. | Local mock/unit only |
 | /permit status | Check your current stored command restriction only,not Discord permissions. | Local mock/unit only |
+| /permit unblockchannel | Remove exact stored channel deny,including deleted channels. | Local mock/unit only |
 | /permit unblockrole | Unblock a role for one entire command. | Local mock/unit only |
 | /permit unblockuser | Unblock a user for one entire command. | Local mock/unit only |
 | /reactionroles create | Publish one role toggle button. | Local mock/unit only |
 | /reactionroles disable | Disable a panel in storage; its old button becomes inactive. | Local mock/unit only |
 | /reactionroles disableactive | Confirm disabling active panels in storage only;pending/uncertain untouched. | Local mock/unit only |
+| /reactionroles disablechannel | Disable active panels for one stored channel ID;no native edits or role changes. | Local mock/unit only |
+| /reactionroles disablerole | Disable entire active panels containing one role ID;no native edits or role changes. | Local mock/unit only |
+| /reactionroles export | Private latest100 stored panel bindings/button mappings;no member or click receipts. | Local mock/unit only |
 | /reactionroles inspect | Privately inspect stored panel mappings,status and binding IDs only. | Local mock/unit only |
 | /reactionroles list | List ten complete panel records per page,newest100maximum. | Local mock/unit only |
 | /reactionroles multi | Publish 2-5 independent safe role toggle buttons. | Local mock/unit only |
@@ -157,35 +246,72 @@
 | /ticket claim | Assign the current open ticket to yourself. | Local mock/unit only |
 | /ticket close | Store transcript and make the owner read-only. | Local mock/unit only |
 | /ticket config | Show ticket configuration to server managers. | Local mock/unit only |
+| /ticket forgetalltranscripts | Confirmed erase allguild storedtranscripts,no native/exportedmessage deletion. | Local mock/unit only |
+| /ticket forgetbyid | Erase one stored ticket snapshot by ID,not native messages or ticket state. | Local mock/unit only |
+| /ticket forgetclosedtranscripts | Erase snapshots of closed tickets only;open/uncertain snapshots and native history kept. | Local mock/unit only |
 | /ticket forgettranscript | Erase stored snapshot for this ticket, not native messages. | Local mock/unit only |
+| /ticket forgetusertranscripts | Erase all stored snapshots for one owner ID here;no native messages or state changes. | Local mock/unit only |
 | /ticket open | Open one private support ticket. | Local mock/unit only |
 | /ticket panel | Publish a ticket-open button. | Local mock/unit only |
 | /ticket queue | Manage Server:inspect unresolved stored ticket IDs,not content or live access. | Local mock/unit only |
+| /ticket releaseclaims | Confirmed release allopen storedclaims,not access/ownership/nativechannels. | Local mock/unit only |
 | /ticket reopen | Restore the ticket owner write access. | Local mock/unit only |
+| /ticket resetsetup | Confirmed stop newticket opens/panels by forgettingsetup;existingtickets/nativechannels kept. | Local mock/unit only |
 | /ticket retention | Manage Server: set stored transcript maximum age 1-30 days. | Local mock/unit only |
 | /ticket setup | Set the category and role that can view new tickets. | Local mock/unit only |
 | /ticket status | Privately show your ten latest stored ticket states,no live access or transcript. | Local mock/unit only |
 | /ticket transcript | Export current ticket history privately. | Local mock/unit only |
 | /ticket unclaim | Release your own claim on this open ticket,without changing access. | Local mock/unit only |
 | /afk clear | Erase your status and reason here. | Local mock/unit only |
+| /afk clearall | Manage Server:erase all stored guild AFK reasons;no native message deletion. | Local mock/unit only |
+| /afk clearchannel | Manage Server:erase stored away reasons shared in one exact channel,no native deletes. | Local mock/unit only |
+| /afk clearuser | Manage Server:erase one exact user away reason/status,no native deletes. | Local mock/unit only |
+| /afk exportmine | Private JSON of only your stored away reason/channel/expiry,no notice IDs. | Local mock/unit only |
+| /afk move | Move own existing reason sharing to this current channel,without extending expiry. | Local mock/unit only |
+| /afk reason | Edit own existing public reason without extending expiry;confirm exact-channel sharing. | Local mock/unit only |
 | /afk set | Set status up to7days,clear on your next eligible server message. | Local mock/unit only |
 | /afk status | Privately view your status and disclosure channel. | Local mock/unit only |
 | /avatar | Show a public avatar link. | Local mock/unit only |
 | /banner | Fetch a public user profile banner link,no guild membership assumption. | Local mock/unit only |
 | /boostcount | Fetch current server boost count and premium tier. | Local mock/unit only |
+| /channel agerestrict | Mark one text channel age-restricted;changes audience visibility,no removal here. | Local mock/unit only |
+| /channel cleartopic | Confirmed one text-channel cleartopic;currentchannel ManageChannels/case checks. | Local mock/unit only |
+| /channel info | Inspect visible server channel ID/type/position;no content or member enumeration. | Local mock/unit only |
+| /channel list | List only channels you can currently view;no threads,topics or member counts. | Local mock/unit only |
+| /channel permissions | List your current effective channel permission flags;not other members. | Local mock/unit only |
+| /channel rename | Confirmed one text-channel rename;currentchannel ManageChannels/case checks. | Local mock/unit only |
+| /channel threadarchive | Set auto-archive default for newly created text-channel threads;existing threads untouched. | Local mock/unit only |
+| /channel threadslowmode | Set slowmode default for newly created text-channel threads;existing threads untouched. | Local mock/unit only |
+| /channel topic | Confirmed one text-channel topic;currentchannel ManageChannels/case checks. | Local mock/unit only |
+| /channel voicebitrate | Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness. | Local mock/unit only |
+| /channel voicelimit | Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness. | Local mock/unit only |
+| /channel voiceregionauto | Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness. | Local mock/unit only |
 | /emojiinfo | Read one current server custom emoji,no uploader or role enumeration. | Local mock/unit only |
 | /list emojis | List current server emojis,ten per page with optional literal name search. | Local mock/unit only |
 | /list roles | List current server roles,ten per page with optional literal name search. | Local mock/unit only |
 | /list stickers | List current server stickers,ten per page with optional literal name search. | Local mock/unit only |
 | /membercount | Fresh approximate server member/presence counts,no member enumeration. | Local mock/unit only |
 | /poll | Manage Server: publish a native Discord poll with2-10 answers. | Local mock/unit only |
+| /pollmanage end | End voting early on one bot-created poll after confirmation. | Local mock/unit only |
+| /pollmanage list | List the latest 20 stored poll receipts, not live voting states. | Local mock/unit only |
+| /pollmanage results | Read current answer counts, which may not be finalized. | Local mock/unit only |
 | /roleinfo | Read current role ID,color,position and permission flags. | Local mock/unit only |
 | /serverbanner | Fetch current server banner link,no member enumeration. | Local mock/unit only |
 | /servericon | Fetch current server icon link,no member enumeration. | Local mock/unit only |
 | /serverinfo | Fresh server name/ID and approximate count,no member enumeration. | Local mock/unit only |
 | /stats | Show build command counts and process memory usage. | Local mock/unit only |
 | /stickerinfo | Read current server sticker metadata,no uploader or file download. | Local mock/unit only |
+| /tools color | Convert six hex digits to RGB/decimal;does not change bot settings. | Local mock/unit only |
+| /tools isotimestamp | Convert explicit ISO seconds with Z/offset into Discordtimestamp,not schedule. | Local mock/unit only |
+| /tools localtimestamp | Convert explicit localdatetime/namedzone to Discordtimestamp,not a scheduledsend. | Local mock/unit only |
+| /tools permissions | Decode explicit raw permission bits;not effective member/channel permissions. | Local mock/unit only |
+| /tools rgb | Convert explicit RGB components to six-digit hex and decimal,no settings changed. | Local mock/unit only |
+| /tools snowflake | Decode supplied ID timestamp/bits;does not fetch or verify an object. | Local mock/unit only |
+| /tools timedifference | Signed elapsedseconds and absoluteday/hour/minute/second breakdown,no calendardays. | Local mock/unit only |
+| /tools timestamp | Format explicit Unix seconds for client-local Discord display;not a reminder. | Local mock/unit only |
+| /tools timezone | Display explicitUnixseconds in one namedzone,not inferredtime/location. | Local mock/unit only |
 | /userinfo | Show public user information. | Local mock/unit only |
+| /guildtag grants | ManageRoles:inspect stored grant metadata,no live identity/access or changes. | Local mock/unit only |
 | /guildtag refresh | Check your current primary-guild identity and own reward role. | Local mock/unit only |
 | /guildtag reset | Manage Roles: stop tag rewards, leaving assigned roles unchanged. | Local mock/unit only |
 | /guildtag setup | Manage Roles: configure one safe tag reward role. | Local mock/unit only |
@@ -197,13 +323,19 @@
 | /voice mute | mute: one current voice member. | Local mock/unit only |
 | /voice undeafen | undeafen: one current voice member. | Local mock/unit only |
 | /voice unmute | unmute: one current voice member. | Local mock/unit only |
+| /voicemaster bitrate | Set empty owned voice channel bitrate8-96kbps;private access unchanged. | Local mock/unit only |
 | /voicemaster close | Delete only your tracked empty private channel. | Local mock/unit only |
 | /voicemaster config | Show configured private channel category and limits. | Local mock/unit only |
+| /voicemaster exportconfig | ManageChannels:private stored category configuration only,not ownership/access backup. | Local mock/unit only |
+| /voicemaster inspect | Privately read your current tracked channel name/capacity/bitrate;no members. | Local mock/unit only |
 | /voicemaster limit | Set your channel capacity; access stays private. | Local mock/unit only |
 | /voicemaster lock | Empty tracked channel: restore owner-only view/connect access. | Local mock/unit only |
 | /voicemaster open | Create your own private standard voice channel. | Local mock/unit only |
 | /voicemaster reconcile | Recheck your recorded channel, safely repair stored ownership state. | Local mock/unit only |
+| /voicemaster records | ManageChannels:private stored ownership records only,not live state/access/memberlist. | Local mock/unit only |
+| /voicemaster regionauto | Return empty owned channel to automatic RTC region;access unchanged. | Local mock/unit only |
 | /voicemaster rename | Rename your own tracked private channel. | Local mock/unit only |
+| /voicemaster resetsetup | ManageChannels:forget creation category,existing ownership/access/channels kept. | Local mock/unit only |
 | /voicemaster setup | Manage Channels: set private voice creation category. | Local mock/unit only |
 | /voicemaster status | Privately inspect your stored voice ownership record,not live channel state. | Local mock/unit only |
 | /voicemaster unlock | Empty tracked channel: explicitly allow all server members view/connect. | Local mock/unit only |
@@ -213,12 +345,18 @@
 | /welcome config | Show current settings. | Local mock/unit only |
 | /welcome disable | Disable welcome messages. | Local mock/unit only |
 | /welcome enable | Enable welcome messages. | Local mock/unit only |
+| /welcome export | Private welcome/goodbye template/style JSON;no channel IDs or enable flags. | Local mock/unit only |
 | /welcome goodbye | Set goodbye template and enable or disable it. | Local mock/unit only |
+| /welcome image | Set HTTPS embed image for welcome/goodbye;omit URL to clear. | Local mock/unit only |
+| /welcome import | Replace template/style library from JSON,disable both sends,keep destination. | Local mock/unit only |
 | /welcome mentions | Choose whether welcome delivery may ping only the arriving member;goodbye never. | Local mock/unit only |
 | /welcome message | Set welcome template. | Local mock/unit only |
 | /welcome preview | Privately preview current welcome/goodbye template for yourself. | Local mock/unit only |
+| /welcome reset | Restore defaults,stop both message types,forget destination and all style/template settings. | Local mock/unit only |
+| /welcome resetstyle | Clear welcome/goodbye titles/images/thumbnails/shared color;templates kept. | Local mock/unit only |
 | /welcome resettemplate | Restore one localized default template,leaving delivery settings unchanged. | Local mock/unit only |
 | /welcome test | Send one welcome message for yourself. | Local mock/unit only |
+| /welcome thumbnail | Set HTTPS embed thumbnail for welcome/goodbye;omit URL to clear. | Local mock/unit only |
 | /welcome title | Set static welcome/goodbye title;omit text to restore Luna title. | Local mock/unit only |
 
 ## Zynrax reference inventory

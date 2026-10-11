@@ -185,6 +185,57 @@ export class MessageSchedules {
       );
     if (result.changes !== 1) throw new UserError('automationEditInvalid');
   }
+  shiftPending(id, guildId, minutes) {
+    if (!Number.isSafeInteger(minutes) || minutes === 0 || Math.abs(minutes) > 525600)
+      throw new UserError('automationShiftInvalid');
+    const row = this.get(id, guildId);
+    if (row?.status !== 'pending') throw new UserError('automationEditInvalid');
+    const dueAt = row.due_at + minutes * 60000;
+    this.reschedulePending(id, guildId, dueAt);
+    return dueAt;
+  }
+  clonePending(snapshot, { dueAt, interactionId }) {
+    return this.db.transaction(() => {
+      const row = this.get(snapshot?.id, snapshot?.guild_id);
+      if (
+        !row ||
+        row.status !== 'pending' ||
+        ['channel_id', 'body', 'due_at', 'repeat_ms', 'interaction_id'].some(
+          (k) => row[k] !== snapshot[k],
+        )
+      )
+        throw new UserError('automationEditInvalid');
+      return this.create({
+        guildId: row.guild_id,
+        channelId: row.channel_id,
+        body: row.body,
+        dueAt,
+        interactionId,
+      });
+    })();
+  }
+  scopedPending(guildId, channelId, action) {
+    schema.shape.channelId.parse(channelId);
+    if (!['cancel', 'stoprepeats', 'erasefinished'].includes(action))
+      throw new UserError('automationEditInvalid');
+    const sql =
+      action === 'cancel'
+        ? "UPDATE message_schedules SET status='cancelled' WHERE guild_id=? AND channel_id=? AND status='pending'"
+        : action === 'stoprepeats'
+          ? "UPDATE message_schedules SET repeat_ms=NULL WHERE guild_id=? AND channel_id=? AND status='pending' AND repeat_ms IS NOT NULL"
+          : "UPDATE message_schedules SET body='[erased]' WHERE guild_id=? AND channel_id=? AND status IN ('done','cancelled') AND body!='[erased]'";
+    return this.db.prepare(sql).run(guildId, channelId).changes;
+  }
+  exportRecords(guildId) {
+    return this.list(guildId).map((r) => ({
+      id: r.id,
+      channelId: r.channel_id,
+      body: r.body,
+      dueAt: r.due_at,
+      repeatMs: r.repeat_ms,
+      status: r.status,
+    }));
+  }
   editPending(id, guildId, body) {
     schema.shape.body.parse(body);
     const result = this.db
@@ -199,6 +250,25 @@ export class MessageSchedules {
       )
       .run(id, guildId);
     if (!result.changes) throw new UserError('automationForgetInvalid');
+  }
+  stopRepeats(guildId) {
+    return this.db
+      .prepare(
+        "UPDATE message_schedules SET repeat_ms=NULL WHERE guild_id=? AND status='pending' AND repeat_ms IS NOT NULL",
+      )
+      .run(guildId).changes;
+  }
+  forgetFinished(guildId) {
+    return this.db
+      .prepare(
+        "UPDATE message_schedules SET body='[erased]' WHERE guild_id=? AND status IN ('done','cancelled') AND body!='[erased]'",
+      )
+      .run(guildId).changes;
+  }
+  clearFinished(guildId) {
+    return this.db
+      .prepare("DELETE FROM message_schedules WHERE guild_id=? AND status IN ('done','cancelled')")
+      .run(guildId).changes;
   }
   recover() {
     this.db.prepare("UPDATE message_schedules SET status='uncertain' WHERE status='sending'").run();
@@ -230,10 +300,20 @@ export class AutomationRunner {
           if (guild?.id !== job.guild_id) throw new UserError('channelTypeInvalid');
           const channel = await validateOutputChannel(guild, job.channel_id),
             locale = this.context.guildConfig.get(job.guild_id).language;
+          // Recovery or another worker may invalidate this reservation during native lookup.
+          const current = this.context.messageSchedules.get(job.id, job.guild_id);
+          if (
+            !current ||
+            current.status !== 'sending' ||
+            ['guild_id', 'channel_id', 'body', 'due_at', 'repeat_ms', 'interaction_id'].some(
+              (key) => current[key] !== job[key],
+            )
+          )
+            throw new Error('Schedule reservation changed before delivery');
           const sent = await channel.send(
             lunaPayload({ content: job.body, allowedMentions: { parse: [] } }, { locale }),
           );
-          if (typeof sent?.id !== 'string' || !sent.id)
+          if (typeof sent?.id !== 'string' || !sent.id.trim())
             throw new Error('Missing accepted schedule message identity');
           success = true;
         } catch {

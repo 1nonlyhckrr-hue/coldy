@@ -27,7 +27,7 @@ export class Polls {
   }
   finish(id, status, messageId = null) {
     if (!['sent', 'uncertain'].includes(status)) throw new TypeError('Invalid poll state');
-    if (status === 'sent' && (typeof messageId !== 'string' || !messageId))
+    if (status === 'sent' && (typeof messageId !== 'string' || !messageId.trim()))
       throw new TypeError('Missing poll message identity');
     const result = this.db
       .prepare("UPDATE native_polls SET status=?,message_id=? WHERE id=? AND status='sending'")
@@ -111,11 +111,13 @@ export async function publishPoll(i, c, input) {
       ),
     );
   } catch {
-    c.polls.finish(id, 'uncertain');
+    try {
+      c.polls.finish(id, 'uncertain');
+    } catch {}
     throw new UserError('pollUncertain', { id });
   }
   try {
-    if (typeof message?.id !== 'string' || !message.id) {
+    if (typeof message?.id !== 'string' || !message.id.trim()) {
       c.polls.finish(id, 'uncertain');
       throw new Error('Missing poll message');
     }

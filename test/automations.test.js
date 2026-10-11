@@ -1239,3 +1239,286 @@ test('upcoming recurring slash passes explicit false/true without enabling or se
       }
     }
 });
+
+test('runner stops a recovered uncertain reservation after awaited channel lookup without native send or retry', async () => {
+  const x = setup();
+  try {
+    const id = x.store.create(x.input);
+    x.advance(60001);
+    x.guild.channels.fetch = async () => {
+      x.store.recover();
+      return x.channel;
+    };
+    await x.runner.tick();
+    await x.runner.tick();
+    assert.equal(x.sent.length, 0);
+    assert.equal(x.store.get(id, 'g').status, 'uncertain');
+  } finally {
+    x.db.close();
+  }
+});
+test('runner rejects changed reserved body/destination/due/repeat identity after native lookup', async () => {
+  for (const [field, value] of [
+    ['body', 'changed'],
+    ['channel_id', '100000000000000002'],
+    ['due_at', 1],
+    ['repeat_ms', 600000],
+    ['interaction_id', 'replacement'],
+  ]) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input);
+      x.advance(60001);
+      x.guild.channels.fetch = async () => {
+        x.db.prepare(`UPDATE message_schedules SET ${field}=? WHERE id=?`).run(value, id);
+        return x.channel;
+      };
+      await x.runner.tick();
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.store.get(id, 'g').status, 'uncertain');
+      assert.equal(x.store.get(id, 'g')[field], value);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('runner does not recreate deleted reservations or overwrite completed receipts after lookup', async () => {
+  for (const state of ['deleted', 'done']) {
+    const x = setup();
+    try {
+      const id = x.store.create(x.input);
+      x.advance(60001);
+      x.guild.channels.fetch = async () => {
+        if (state === 'deleted') x.db.prepare('DELETE FROM message_schedules WHERE id=?').run(id);
+        else x.store.finish(id, true);
+        return x.channel;
+      };
+      await x.runner.tick();
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.store.get(id, 'g')?.status, state === 'done' ? 'done' : undefined);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+
+test('scheduled whitespace-only native receipt is uncertain and recurring job cannot automatically repeat', async () => {
+  const x = setup();
+  let attempts = 0;
+  try {
+    const id = x.store.create({ ...x.input, repeatMs: 600000 });
+    x.advance(60001);
+    x.channel.send = async () => {
+      attempts++;
+      return { id: ' ' };
+    };
+    await x.runner.tick();
+    assert.equal(x.store.get(id, 'g').status, 'uncertain');
+    x.advance(600000);
+    await x.runner.tick();
+    assert.equal(attempts, 1);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('bulk stoprepeats preserves next send/body/destination and leaves sending/uncertain/finished/foreign untouched', () => {
+  const x = setup();
+  try {
+    const ids = [];
+    for (const status of ['pending', 'sending', 'uncertain', 'done', 'cancelled']) {
+      const id = x.store.create({ ...x.input, interactionId: status, repeatMs: 600000 });
+      x.db.prepare('UPDATE message_schedules SET status=? WHERE id=?').run(status, id);
+      ids.push(id);
+    }
+    const foreign = x.store.create({
+      ...x.input,
+      guildId: 'other',
+      interactionId: 'other',
+      repeatMs: 600000,
+    });
+    const before = x.store.get(ids[0], 'g');
+    assert.equal(x.store.stopRepeats('g'), 1);
+    assert.equal(x.store.stopRepeats('g'), 0);
+    assert.deepEqual(x.store.get(ids[0], 'g'), { ...before, repeat_ms: null });
+    for (const id of ids.slice(1)) assert.equal(x.store.get(id, 'g').repeat_ms, 600000);
+    assert.equal(x.store.get(foreign, 'other').repeat_ms, 600000);
+  } finally {
+    x.db.close();
+  }
+});
+test('bulk finished body erasure/record deletion exact states and guild,idempotent,active privacy preserved', () => {
+  const x = setup();
+  try {
+    for (const status of ['pending', 'sending', 'uncertain', 'done', 'cancelled']) {
+      const id = x.store.create({ ...x.input, interactionId: status });
+      x.db.prepare('UPDATE message_schedules SET status=? WHERE id=?').run(status, id);
+    }
+    const foreign = x.store.create({ ...x.input, guildId: 'other', interactionId: 'other' });
+    x.db.prepare("UPDATE message_schedules SET status='done' WHERE id=?").run(foreign);
+    assert.equal(x.store.forgetFinished('g'), 2);
+    assert.equal(x.store.forgetFinished('g'), 0);
+    assert.equal(x.store.list('g').filter((r) => r.body === '[erased]').length, 2);
+    assert.equal(x.store.get(foreign, 'other').body, x.input.body);
+    assert.equal(x.store.clearFinished('g'), 2);
+    assert.equal(x.store.clearFinished('g'), 0);
+    assert.deepEqual(
+      x.store
+        .list('g')
+        .map((r) => r.status)
+        .sort(),
+      ['pending', 'sending', 'uncertain'],
+    );
+    assert.equal(x.store.list('other').length, 1);
+  } finally {
+    x.db.close();
+  }
+});
+test('automation three bulk paths exactcurrentmanager/private3locale/explicitconfirmation no native send', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['stoprepeats', 'forgetfinished', 'clearfinished']) {
+      const x = setup();
+      try {
+        x.c.guildConfig.setLanguage('g', locale);
+        x.store.create({ ...x.input, repeatMs: 600000 });
+        let confirm = false,
+          reply;
+        const i = {
+          guild: x.guild,
+          guildId: 'g',
+          user: { id: 'actor' },
+          options: { getSubcommand: () => sub, getBoolean: () => confirm },
+          deferReply: async (p) => assert.equal(p.flags, 64),
+          editReply: async (p) => {
+            reply = p;
+          },
+        };
+        await assert.rejects(() => command.execute(i, x.c), /automationBulkConfirm/);
+        confirm = true;
+        await command.execute(i, x.c);
+        assert.deepEqual(reply.allowedMentions.parse, []);
+        assert.equal(x.sent.length, 0);
+        x.guild.members.fetch = async () => ({
+          id: 'actor',
+          guild: { id: 'g' },
+          permissions: { has: () => false },
+        });
+        await assert.rejects(() => command.execute(i, x.c), /userPermission/);
+      } finally {
+        x.db.close();
+      }
+    }
+});
+
+test('schedule signed nextsend shift bounds/status/guild preserves body/destination/repeats', () => {
+  const s = setup();
+  try {
+    const id = s.store.create({ ...s.input, repeatMs: 600000, dueAt: s.now() + 600000 });
+    const before = s.store.get(id, 'g');
+    assert.equal(s.store.shiftPending(id, 'g', 5), before.due_at + 300000);
+    assert.equal(s.store.shiftPending(id, 'g', -5), before.due_at);
+    assert.deepEqual(s.store.get(id, 'g'), before);
+    for (const m of [0, 1.5, NaN, 525601, -525601, -10])
+      assert.throws(() => s.store.shiftPending(id, 'g', m));
+    assert.throws(() => s.store.shiftPending(id, 'other', 1));
+    s.store.cancel(id, 'g');
+    assert.throws(() => s.store.shiftPending(id, 'g', 1));
+  } finally {
+    s.db.close();
+  }
+});
+test('schedule copy rechecks pending snapshot atomically,one-time only,unique interaction and scoped export', () => {
+  const s = setup();
+  try {
+    const id = s.store.create({ ...s.input, repeatMs: 600000 }),
+      snapshot = s.store.get(id, 'g');
+    const copy = s.store.clonePending(snapshot, { dueAt: s.now() + 120000, interactionId: 'copy' });
+    assert.equal(s.store.get(copy, 'g').repeat_ms, null);
+    assert.equal(s.store.get(copy, 'g').body, snapshot.body);
+    assert.deepEqual(s.store.get(id, 'g'), snapshot);
+    assert.throws(() =>
+      s.store.clonePending(snapshot, { dueAt: s.now() + 120000, interactionId: 'copy' }),
+    );
+    s.store.editPending(id, 'g', 'changed');
+    assert.throws(
+      () => s.store.clonePending(snapshot, { dueAt: s.now() + 120000, interactionId: 'new' }),
+      /automationEditInvalid/,
+    );
+    s.store.create({ ...s.input, guildId: 'foreign', body: 'PRIVATE', interactionId: 'foreign' });
+    const rows = s.store.exportRecords('g');
+    assert.equal(rows.length, 2);
+    assert(!JSON.stringify(rows).includes('PRIVATE'));
+    assert(!JSON.stringify(rows).includes('interactionId'));
+    s.advance(120000);
+    s.store.claim();
+    assert.throws(() =>
+      s.store.clonePending(s.store.get(id, 'g'), {
+        dueAt: s.now() + 60000,
+        interactionId: 'again',
+      }),
+    );
+  } finally {
+    s.db.close();
+  }
+});
+test('schedule shift/clone/export private3locale confirmation/freshpermission/snapshotrace and JSON bytes', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      s.c.guildConfig.setLanguage('g', locale);
+      const id = s.store.create({ ...s.input, dueAt: s.now() + 600000 });
+      let sub = 'export',
+        confirm = false,
+        reply;
+      const i = {
+        id: 'copy',
+        guildId: 'g',
+        user: { id: 'u' },
+        guild: s.guild,
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+        options: {
+          getSubcommand: () => sub,
+          getBoolean: () => confirm,
+          getInteger: (n) => (n === 'id' ? id : 5),
+          getString: () => new Date(s.now() + 120000).toISOString().replace('.000', ''),
+        },
+      };
+      // Use a whole-second explicit time accepted by strict parser.
+      i.options.getString = () =>
+        new Date(Math.floor((s.now() + 120000) / 1000) * 1000).toISOString().replace('.000', '');
+      await command.execute(i, s.c);
+      assert.deepEqual(
+        JSON.parse(reply.files[0].attachment.toString()),
+        s.store.exportRecords('g'),
+      );
+      sub = 'shift';
+      await assert.rejects(() => command.execute(i, s.c), /automationShiftConfirm/);
+      confirm = true;
+      await command.execute(i, s.c);
+      sub = 'clone';
+      await command.execute(i, s.c);
+      assert.equal(s.store.list('g').length, 2);
+      assert.equal(s.sent.length, 0);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      i.id = 'race';
+      s.guild.channels.fetch = async () => {
+        s.store.editPending(id, 'g', 'racechange');
+        return s.channel;
+      };
+      await assert.rejects(() => command.execute(i, s.c), /automationEditInvalid/);
+      assert.equal(s.store.list('g').length, 2);
+      s.guild.members.fetch = async () => ({
+        id: 'u',
+        guild: { id: 'g' },
+        permissions: { has: () => false },
+      });
+      sub = 'export';
+      await assert.rejects(() => command.execute(i, s.c), /userPermission/);
+    } finally {
+      s.db.close();
+    }
+  }
+});

@@ -23,3 +23,17 @@ SQLitev19: stored transcript snapshots expire after30days by default. `retention
 Privacy checks now bind exact recorded channel ID and overwrite principal type,as well as bitfields. Four new tests;224 full-project tests pass. Live provider privacy and visual transcript flow still unverified. No HTML transcript,guest access,user add/remove,channel-delete,or uncertain-state adoption is implemented by this change.
 
 `queue [page] [state] [unclaimed]`:optionalstoredstatecreating/open/closing/reopening/uncertain,unclaimed:true checksnullstoredclaimant only,beforepagination. False/defaultdoesnotfilterclaimant. Currentmanager/private3locales/no-ping,explicitfilterheader,no nativechannel/transcriptfetch or mutation. Unclaimed metadata isnotproofaccess/currentavailability;uncertainstaysblocked.4newtests,615localfullsuite/212pathsunchanged.
+
+## Stop new opens and erase stored snapshots
+
+`resetsetup confirm:true` forgets category/support-role setup only,blocking new open/panel requests until configured again. Existing ticket channels/access/stored support roles/panel records/retention unaffected. Existing open/close/reopen/export workflows retain their stored access checks. In-flight opens past their final config check may still finish. Native panels stay visible but open attempts get setup-required.
+
+`forgetalltranscripts confirm:true` erases every stored transcript snapshot belonging to this guild,not foreign ticket snapshots/ticket records/native messages/exported copies. Later close/export can save another snapshot. No persistent no-storage policy or backup secure-erase claim.
+
+`releaseclaims confirm:true` clears only open stored claimant fields. Closed/uncertain/creating/closing/reopening claims untouched. No access/ownership/channel changes;staff can claim again. All three require fresh exact ManageGuild and confirmation,private localized no-ping embeds,no native lookup/effect. Local scope/state/privacy/race/authority tests only,live/client visuals unverified.
+
+## Scoped private snapshot erasure
+
+`/ticket forgetbyid id confirm:true` erases only the stored transcript snapshot of one exact ticket ID in this server,without requiring its channel to exist. `forgetusertranscripts owner-id confirm:true` erases all stored snapshots for one exact stored owner ID here,including departed owners. `forgetclosedtranscripts confirm:true` erases snapshots of only closed tickets;open/uncertain snapshots stay.
+
+All three require fresh native Manage Server and explicit confirmation,private3locale/no-ping. They never fetch or expose content,change ticket state/claim/access,delete native messages or erase already-exported copies. Later authorized transcript/close operations can create snapshots again. Three tests scope/isolation/native-metadata retention/idempotence/resnapshot/ID validation/databaseabort/currentmanager/confirmation/localization. No live/client visual acceptance.

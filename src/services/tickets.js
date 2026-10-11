@@ -29,6 +29,46 @@ export class Tickets {
   config(guildId) {
     return this.db.prepare('SELECT * FROM ticket_config WHERE guild_id=?').get(guildId);
   }
+  resetSetup(guildId) {
+    return this.db.prepare('DELETE FROM ticket_config WHERE guild_id=?').run(guildId).changes;
+  }
+  forgetAllTranscripts(guildId) {
+    return this.db
+      .prepare(
+        'DELETE FROM ticket_transcripts WHERE ticket_id IN (SELECT id FROM tickets WHERE guild_id=?)',
+      )
+      .run(guildId).changes;
+  }
+  forgetById(guildId, id) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('ticketStoredIdInvalid');
+    return this.db.transaction(() => {
+      if (!this.get(id, guildId)) throw new UserError('ticketStoredIdInvalid');
+      return this.forgetTranscript(id, guildId);
+    })();
+  }
+  forgetUserTranscripts(guildId, ownerId) {
+    if (typeof ownerId !== 'string' || !/^\d{17,20}$/.test(ownerId))
+      throw new UserError('ticketStoredIdInvalid');
+    return this.db
+      .prepare(
+        'DELETE FROM ticket_transcripts WHERE ticket_id IN (SELECT id FROM tickets WHERE guild_id=? AND owner_id=?)',
+      )
+      .run(guildId, ownerId).changes;
+  }
+  forgetClosedTranscripts(guildId) {
+    return this.db
+      .prepare(
+        "DELETE FROM ticket_transcripts WHERE ticket_id IN (SELECT id FROM tickets WHERE guild_id=? AND status='closed')",
+      )
+      .run(guildId).changes;
+  }
+  releaseClaims(guildId) {
+    return this.db
+      .prepare(
+        "UPDATE tickets SET claimed_by=NULL WHERE guild_id=? AND status='open' AND claimed_by IS NOT NULL",
+      )
+      .run(guildId).changes;
+  }
   configure(guildId, categoryId, supportRoleId) {
     this.db
       .prepare(
@@ -92,7 +132,7 @@ export class Tickets {
       .get(channelId, guildId);
   }
   activate(id, channelId) {
-    if (typeof channelId !== 'string' || !channelId)
+    if (typeof channelId !== 'string' || !channelId.trim())
       throw new TypeError('Missing ticket channel identity');
     const result = this.db
       .prepare("UPDATE tickets SET channel_id=?,status='open' WHERE id=? AND status='creating'")
@@ -201,7 +241,7 @@ export class Tickets {
       .get(id, guildId);
   }
   panelSent(id, messageId) {
-    if (typeof messageId !== 'string' || !messageId)
+    if (typeof messageId !== 'string' || !messageId.trim())
       throw new TypeError('Missing ticket panel message identity');
     const result = this.db
       .prepare(

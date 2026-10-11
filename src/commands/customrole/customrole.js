@@ -1,11 +1,13 @@
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   MessageFlags,
 } from 'discord.js';
 import {
   customRoleEffect,
+  styleOwnRole,
   createOwnRole,
   ownRoleEffect,
   reconcileCreation,
@@ -131,6 +133,54 @@ const data = new SlashCommandBuilder()
         o.setName('page').setDescription('Page1-5,ten records each').setMinValue(1).setMaxValue(5),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('renameown')
+      .setDescription(
+        'Confirmed own zero-permission created role name,not mapping/native other roles.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('label')
+          .setDescription('Name1-32characters,no @')
+          .setMinLength(1)
+          .setMaxLength(32)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm native own-role cosmetic edit')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('colorown')
+      .setDescription('Confirmed own zero-permission created role primaryRGB color only.')
+      .addStringOption((o) =>
+        o
+          .setName('hex')
+          .setDescription('Six hex RGB digits')
+          .setMinLength(6)
+          .setMaxLength(6)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm native own-role cosmetic edit')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetstyle')
+      .setDescription('Confirmed own created role primary color reset to0;name/access retained.')
+      .addBooleanOption((o) =>
+        o.setName('confirm').setDescription('Confirm own-role color reset').setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('list').setDescription('Show mapped names and eligibility role.'))
   .addSubcommand((s) =>
     s
@@ -144,6 +194,62 @@ const data = new SlashCommandBuilder()
       .setDescription('Remove one configured role from yourself.')
       .addStringOption(name),
   );
+data
+  .addSubcommand((s) =>
+    s
+      .setName('renamemapping')
+      .setDescription('ManageRoles:change only storedmapping alias,not nativerolename/access.')
+      .addStringOption(name)
+      .addStringOption((o) =>
+        o
+          .setName('new-name')
+          .setDescription('Unique lowercasealias1-24,letters/digits/_/-')
+          .setMinLength(1)
+          .setMaxLength(24)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('exportmappings')
+      .setDescription(
+        'ManageRoles:privateJSON mappingnames/roleIDs/gate/policy,no ownership/memberhistory.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('eligibility')
+      .setDescription(
+        'Privately check your current storedgate membership,no role grants/safety/readinessclaim.',
+      ),
+  );
+for (const name of ['unmaprole', 'clearrequired', 'resetconfig'])
+  data.addSubcommand((s) => {
+    s.setName(name)
+      .setDescription(
+        name === 'unmaprole'
+          ? 'ManageRoles:remove exact stored mapped role ID,no native assignments changed.'
+          : name === 'clearrequired'
+            ? 'ManageRoles:remove eligibility gate,allowing otherwise eligible future self claims.'
+            : 'ManageRoles:forget mappings/gate and stop creation,ownership/native roles/cases kept.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm this stored self-role configuration change')
+          .setRequired(true),
+      );
+    if (name === 'unmaprole')
+      s.addStringOption((o) =>
+        o
+          .setName('role-id')
+          .setDescription('Exact stored mapped role ID,deleted roles allowed')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      );
+    return s;
+  });
 export default {
   category: 'customrole',
   data,
@@ -153,8 +259,61 @@ export default {
     const sub = i.options.getSubcommand(),
       locale = c.localization.locale(i.guildId),
       t = (key, params) => c.localization.t(i.guildId, key, params);
-    let text;
-    if (['map', 'unmap', 'required', 'clear', 'creation', 'creations'].includes(sub)) {
+    let text, files;
+    if (['unmaprole', 'clearrequired', 'resetconfig'].includes(sub)) {
+      await requireManager(i);
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('customClearConfirm');
+      if (sub === 'unmaprole')
+        text = t('customRoleIdUnmapped', {
+          count: c.customRoles.unmapRole(i.guildId, i.options.getString('role-id', true)),
+        });
+      else if (sub === 'clearrequired') {
+        c.customRoles.clearRequired(i.guildId);
+        text = t('customGateCleared');
+      } else text = t('customConfigReset', { count: c.customRoles.resetConfig(i.guildId) });
+    } else if (sub === 'renamemapping') {
+      await requireManager(i);
+      c.customRoles.renameMapping(
+        i.guildId,
+        i.options.getString('name', true),
+        i.options.getString('new-name', true),
+      );
+      text = t('customMappingRenamed');
+    } else if (sub === 'exportmappings') {
+      await requireManager(i);
+      const r = {
+        mappings: c.customRoles.list(i.guildId),
+        requiredRoleId: c.customRoles.required(i.guildId),
+        creationEnabled: c.customRoles.creationEnabled(i.guildId),
+      };
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(r, null, 2) + '\n', 'utf8'), {
+          name: 'luna-customrole-mappings.json',
+        }),
+      ];
+      text = t('customMappingsExported');
+    } else if (sub === 'eligibility') {
+      const gate = c.customRoles.required(i.guildId);
+      if (gate) {
+        const role = await i.guild.roles.fetch(gate, { force: true });
+        if (role?.id !== gate || role.guild?.id !== i.guildId)
+          throw new UserError('customRequiredMissing');
+      }
+      const member = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (
+        i.guild.id !== i.guildId ||
+        member?.id !== i.user.id ||
+        member.guild?.id !== i.guildId ||
+        member.user?.bot !== false
+      )
+        throw new UserError('customMemberMissing');
+      if (c.customRoles.required(i.guildId) !== gate) throw new UserError('customConfigChanged');
+      text = t('customEligibility', {
+        gate: gate ?? t('customNoGate'),
+        status: t(!gate || member.roles.cache.has(gate) ? 'enabled' : 'disabled'),
+        creation: t(c.customRoles.creationEnabled(i.guildId) ? 'enabled' : 'disabled'),
+      });
+    } else if (['map', 'unmap', 'required', 'clear', 'creation', 'creations'].includes(sub)) {
       let actor = await requireManager(i);
       if (sub === 'creations') {
         const page = i.options.getInteger('page') ?? 1;
@@ -224,6 +383,16 @@ export default {
         c.customRoles.setRequired(i.guildId, role?.id ?? null);
         text = t('customSaved');
       }
+    } else if (['renameown', 'colorown', 'resetstyle'].includes(sub)) {
+      const hex = sub === 'colorown' ? i.options.getString('hex', true) : null;
+      if (hex !== null && !/^[a-fA-F0-9]{6}$/.test(hex)) throw new UserError('customCreationInput');
+      const r = await styleOwnRole(i, c, {
+        confirm: i.options.getBoolean('confirm', true),
+        ...(sub === 'renameown'
+          ? { name: i.options.getString('label', true) }
+          : { color: hex === null ? 0 : parseInt(hex, 16) }),
+      });
+      text = t(r.changed ? 'customStyleSaved' : 'customAlready');
     } else if (sub === 'reconcile') {
       const result = await reconcileCreation(i, c, {
         ownerId: i.options.getUser('member', true).id,
@@ -274,6 +443,11 @@ export default {
         result.changed ? (sub === 'claim' ? 'customClaimed' : 'customReleased') : 'customAlready',
       );
     } else throw new UserError('unknownCommand');
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

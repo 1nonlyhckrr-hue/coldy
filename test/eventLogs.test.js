@@ -425,3 +425,168 @@ test('metadata send with accepted native identity completes reserved receipt onc
     s.db.close();
   }
 });
+
+test('metadata logger does not send a reservation recovered uncertain during native lookup', async () => {
+  const s = setup();
+  try {
+    const fetch = s.guild.channels.fetch;
+    s.guild.channels.fetch = async (...a) => {
+      s.c.eventLogs.recover();
+      return fetch(...a);
+    };
+    const h = createMetadataLogHandler(s.c, 'rolecreate');
+    await h({ guild: s.guild, id: 'role' });
+    await h({ guild: s.guild, id: 'role' });
+    assert.equal(s.sent.length, 0);
+    assert.equal(s.db.prepare('SELECT status FROM event_log_deliveries').get().status, 'uncertain');
+  } finally {
+    s.db.close();
+  }
+});
+test('metadata logger cannot send deleted or already finalized reserved receipt after native lookup', async () => {
+  for (const state of ['deleted', 'sent', 'unavailable']) {
+    const s = setup();
+    try {
+      const fetch = s.guild.channels.fetch;
+      s.guild.channels.fetch = async (...a) => {
+        if (state === 'deleted') s.db.prepare('DELETE FROM event_log_deliveries').run();
+        else s.db.prepare('UPDATE event_log_deliveries SET status=?').run(state);
+        return fetch(...a);
+      };
+      await createMetadataLogHandler(s.c, 'rolecreate')({ guild: s.guild, id: 'role' });
+      assert.equal(s.sent.length, 0);
+      assert.equal(
+        s.db.prepare('SELECT status FROM event_log_deliveries').get()?.status,
+        state === 'deleted' ? undefined : state,
+      );
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('metadata reservation check is exact key/guild/state and read-only', () => {
+  const s = setup();
+  try {
+    s.c.eventLogs.reserve('key', 'g', 100000);
+    const before = s.db.prepare('SELECT * FROM event_log_deliveries').all();
+    assert(s.c.eventLogs.reserved('key', 'g'));
+    assert(!s.c.eventLogs.reserved('key', 'other'));
+    assert(!s.c.eventLogs.reserved('missing', 'g'));
+    assert.deepEqual(s.db.prepare('SELECT * FROM event_log_deliveries').all(), before);
+    s.c.eventLogs.finish('key', 'sent');
+    assert(!s.c.eventLogs.reserved('key', 'g'));
+  } finally {
+    s.db.close();
+  }
+});
+
+test('logging pauseevents/reset scoped confirmed config mutations keep replay guards and native messages', async () => {
+  const { default: command } = await import('../src/commands/logging/logging.js');
+  const s = setup();
+  try {
+    const actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } };
+    s.guild.members.fetch = async () => actor;
+    s.c.guildConfig.patch('other', 'logging', {
+      enabled: true,
+      events: ['rolecreate'],
+      channelId: '100000000000000002',
+    });
+    s.c.eventLogs.reserve('guard', 'g');
+    let sub = 'pauseevents',
+      confirm = false;
+    const i = {
+      guild: s.guild,
+      guildId: 'g',
+      user: { id: 'u' },
+      deferReply: async () => {},
+      editReply: async () => {},
+      options: { getSubcommand: () => sub, getBoolean: () => confirm },
+    };
+    await assert.rejects(() => command.execute(i, s.c), /logResetConfirm/);
+    assert.equal(s.c.guildConfig.get('g').logging.events.length, 8);
+    confirm = true;
+    await command.execute(i, s.c);
+    assert.deepEqual(s.c.guildConfig.get('g').logging.events, []);
+    assert.equal(s.c.guildConfig.get('g').logging.enabled, true);
+    assert.equal(s.c.guildConfig.get('g').logging.channelId, '100000000000000001');
+    sub = 'reset';
+    await command.execute(i, s.c);
+    assert.deepEqual(s.c.guildConfig.get('g').logging, { enabled: false, events: [] });
+    assert.equal(s.c.guildConfig.get('other').logging.enabled, true);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM event_log_deliveries').get().n, 1);
+    assert.equal(s.sent.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('logging preview/pauseevents/reset private3locale exactcurrentauthority no native lookup/send', async () => {
+  const { default: command } = await import('../src/commands/logging/logging.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      s.c.guildConfig.setLanguage('g', locale);
+      const actor = { id: 'u', guild: { id: 'g' }, permissions: { has: () => true } };
+      s.guild.members.fetch = async () => actor;
+      s.guild.channels.fetch = async () => {
+        throw Error('must not touch native destination');
+      };
+      let sub = 'preview',
+        reply;
+      const i = {
+        guild: s.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        deferReply: async (p) => assert.equal(p.flags, 64),
+        editReply: async (p) => {
+          reply = p;
+        },
+        options: { getSubcommand: () => sub, getBoolean: () => true },
+      };
+      const before = s.c.guildConfig.get('g').logging;
+      await command.execute(i, s.c);
+      assert.deepEqual(s.c.guildConfig.get('g').logging, before);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(s.sent.length, 0);
+      actor.permissions.has = () => false;
+      for (sub of ['preview', 'pauseevents', 'reset'])
+        await assert.rejects(() => command.execute(i, s.c), /userPermission/);
+      assert.deepEqual(s.c.guildConfig.get('g').logging, before);
+      actor.permissions.has = () => true;
+      for (sub of ['pauseevents', 'reset']) await command.execute(i, s.c);
+      actor.id = 'wrong';
+      await assert.rejects(() => command.execute(i, s.c), /userPermission/);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('logging event opt-in removal during native validation prevents pending metadata send and retains unavailable receipt', async () => {
+  for (const reset of [false, true]) {
+    const s = setup();
+    try {
+      s.guild.channels.fetch = async () => {
+        if (reset) s.c.guildConfig.reset('g', 'logging');
+        else s.c.guildConfig.patch('g', 'logging', { events: [] });
+        return {
+          id: '100000000000000001',
+          guildId: 'g',
+          type: 0,
+          permissionsFor: () => ({ has: () => true }),
+          send: async (p) => s.sent.push(p),
+        };
+      };
+      await createMetadataLogHandler(
+        s.c,
+        'rolecreate',
+      )({ id: '100000000000000002', guild: s.guild });
+      assert.equal(s.sent.length, 0);
+      assert.equal(
+        s.db.prepare('SELECT status FROM event_log_deliveries').get().status,
+        'unavailable',
+      );
+      assert.equal(s.db.prepare('SELECT count(*) n FROM event_log_deliveries').get().n, 1);
+    } finally {
+      s.db.close();
+    }
+  }
+});

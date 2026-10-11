@@ -577,3 +577,182 @@ test('actual provider ended callback during queue resolution and uncertain joini
   assert.equal(joining.q.sessions.get('g').queue.length, 0);
   assert(!joining.calls.some((c) => c[0] === 'play'));
 });
+
+test('waiting reverse/deduplicate/range preservecurrent and firstprovidertrack with no player calls', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const session = s.q.sessions.get('g');
+  session.queue = [
+    ['a', '1'],
+    ['b', '2'],
+    ['a', '3'],
+    ['c', '4'],
+  ].map(([id, eventId]) => ({
+    item: { id, title: id, author: 'a' },
+    eventId,
+    requesterId: eventId,
+    encoded: id,
+  }));
+  const current = session.current,
+    callcount = s.calls.length;
+  await s.q.transformWaiting('g', 'deduplicate');
+  assert.deepEqual(
+    session.queue.map((t) => t.eventId),
+    ['1', '2', '4'],
+  );
+  await s.q.transformWaiting('g', 'reverse');
+  assert.deepEqual(
+    session.queue.map((t) => t.eventId),
+    ['4', '2', '1'],
+  );
+  await s.q.transformWaiting('g', 'removerange', { from: 1, to: 2 });
+  assert.deepEqual(
+    session.queue.map((t) => t.eventId),
+    ['1'],
+  );
+  assert.equal(session.current, current);
+  assert.equal(s.calls.length, callcount);
+});
+test('waiting transforms bounds/uncertainty/voicecallback/race block partial queuewrites', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const session = s.q.sessions.get('g'),
+    before = [...session.queue];
+  for (const [from, to] of [
+    [0, 1],
+    [1, 2],
+    [2, 1],
+    [1.5, 1],
+  ])
+    await assert.rejects(() => s.q.transformWaiting('g', 'removerange', { from, to }));
+  assert.deepEqual(session.queue, before);
+  await assert.rejects(() =>
+    s.q.transformWaiting('g', 'reverse', {
+      beforeEffect: async () => {
+        throw Error('voice changed');
+      },
+    }),
+  );
+  assert.deepEqual(session.queue, before);
+  await assert.rejects(
+    () =>
+      s.q.transformWaiting('g', 'reverse', {
+        beforeEffect: async () => {
+          session.status = 'uncertain';
+        },
+      }),
+    /musicUncertain/,
+  );
+  assert.deepEqual(session.queue, before);
+  await assert.rejects(() => s.q.transformWaiting('missing', 'reverse'), /musicNoSession/);
+});
+test('waiting transforms sameguild lock and changedqueue revision cannot rewrite newstate', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const session = s.q.sessions.get('g');
+  let release;
+  const gate = new Promise((r) => {
+    release = r;
+  });
+  const pending = s.q.transformWaiting('g', 'reverse', { beforeEffect: () => gate });
+  await assert.rejects(() => s.q.transformWaiting('g', 'deduplicate'), /musicBusy/);
+  session.queue = [];
+  release();
+  await assert.rejects(() => pending, /musicUncertain/);
+  assert.deepEqual(session.queue, []);
+});
+test('waitingtrim/duplicate/removeown exact current identity and copied requester/eventtoken with no playercalls', async () => {
+  const s = setup();
+  for (const u of ['a', 'b', 'a', 'b']) await s.q.enqueue('g', 'vc', 'sample', u);
+  const session = s.q.sessions.get('g'),
+    current = session.current,
+    before = s.calls.length,
+    source = session.queue[0];
+  await s.q.transformWaiting('g', 'duplicate', { from: 1, requesterId: 'c' });
+  assert.equal(session.queue.length, 4);
+  const copied = session.queue.at(-1);
+  assert.equal(copied.item, source.item);
+  assert.equal(copied.encoded, source.encoded);
+  assert.equal(copied.requesterId, 'c');
+  assert.notEqual(copied.eventId, source.eventId);
+  await s.q.transformWaiting('g', 'removeown', { requesterId: 'b' });
+  assert.deepEqual(
+    session.queue.map((t) => t.requesterId),
+    ['a', 'c'],
+  );
+  await s.q.transformWaiting('g', 'trim', { count: 1 });
+  assert.equal(session.queue.length, 1);
+  await s.q.transformWaiting('g', 'trim', { count: 0 });
+  assert.equal(session.queue.length, 0);
+  assert.equal(session.current, current);
+  assert.equal(s.calls.length, before);
+});
+test('newwaiting transforms bounds/cap/freshvoice failure/session revision reject without rewrite', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'a');
+  await s.q.enqueue('g', 'vc', 'sample', 'b');
+  const q = s.q.sessions.get('g').queue,
+    before = s.calls.length;
+  for (const [action, opts] of [
+    ['trim', { count: -1 }],
+    ['trim', { count: 2 }],
+    ['trim', { count: 1.5 }],
+    ['duplicate', { from: 0, requesterId: 'a' }],
+    ['duplicate', { from: 1 }],
+    ['removeown', {}],
+  ]) {
+    await assert.rejects(() => s.q.transformWaiting('g', action, opts), /musicQueuePosition/);
+    assert.equal(s.q.sessions.get('g').queue, q);
+  }
+  s.q.maxTracks = 2;
+  await assert.rejects(
+    () => s.q.transformWaiting('g', 'duplicate', { from: 1, requesterId: 'a' }),
+    /musicQueueFull/,
+  );
+  s.q.maxTracks = 50;
+  await assert.rejects(() =>
+    s.q.transformWaiting('g', 'trim', {
+      count: 0,
+      beforeEffect: async () => {
+        throw Error('voice lost');
+      },
+    }),
+  );
+  assert.equal(s.q.sessions.get('g').queue, q);
+  await assert.rejects(
+    () =>
+      s.q.transformWaiting('g', 'duplicate', {
+        from: 1,
+        requesterId: 'a',
+        beforeEffect: async () => {
+          q[0].eventId = 'changed';
+        },
+      }),
+    /musicUncertain/,
+  );
+  assert.equal(s.q.sessions.get('g').queue, q);
+  assert.equal(s.calls.length, before);
+});
+test('waiting copiedevent retains separate finish-token identity and trim scope cannot touch otherguild', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'a');
+  await s.q.enqueue('g', 'vc', 'sample', 'b');
+  await s.q.enqueue('other', 'other-vc', 'sample', 'other');
+  await s.q.transformWaiting('g', 'duplicate', { from: 1, requesterId: 'a' });
+  const session = s.q.sessions.get('g'),
+    copy = session.queue[1],
+    source = session.queue[0];
+  await s.q.ended('g', session.current.eventId, 'finished');
+  assert.equal(session.current, source);
+  await s.q.ended('g', source.eventId, 'finished');
+  assert.equal(session.current, copy);
+  const before = s.calls.length;
+  await s.q.ended('g', source.eventId, 'finished');
+  assert.equal(session.current, copy);
+  assert.equal(s.calls.length, before);
+  await s.q.transformWaiting('g', 'removeown', { requesterId: 'a' });
+  assert(s.q.sessions.get('other').current);
+  assert.equal(session.current, copy);
+});

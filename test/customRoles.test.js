@@ -815,7 +815,12 @@ test('created role claims reject missing/uncertain/unsafe/identity/gate/config r
   const { ownRoleEffect } = await import('../src/services/customRoles.js');
   for (const kind of ['uncertain', 'unsafe', 'bot', 'member', 'gate', 'policy', 'changed']) {
     const s = ownSetup();
-    if (kind === 'uncertain') s.c.customRoles.creationUncertain('g', ids.user);
+    if (kind === 'uncertain')
+      s.db
+        .prepare(
+          "UPDATE custom_created_roles SET status='uncertain' WHERE guild_id='g' AND owner_id=?",
+        )
+        .run(ids.user);
     if (kind === 'unsafe') s.role.permissions.bitfield = P.Administrator;
     if (kind === 'bot') s.bot.id = ids.gate;
     if (kind === 'member') s.member.guild.id = 'other';
@@ -823,7 +828,11 @@ test('created role claims reject missing/uncertain/unsafe/identity/gate/config r
     if (kind === 'policy') s.c.customRoles.setCreation('g', false);
     if (kind === 'changed')
       s.i.guild.roles.fetch = async () => {
-        s.c.customRoles.creationUncertain('g', ids.user);
+        s.db
+          .prepare(
+            "UPDATE custom_created_roles SET status='uncertain' WHERE guild_id='g' AND owner_id=?",
+          )
+          .run(ids.user);
         return s.role;
       };
     try {
@@ -947,7 +956,9 @@ test('created-role case reservation failure blocks effects;definitive native rej
 });
 function reconcileSetup() {
   const s = ownSetup();
-  s.c.customRoles.creationUncertain('g', ids.user);
+  s.db
+    .prepare("UPDATE custom_created_roles SET status='uncertain' WHERE guild_id='g' AND owner_id=?")
+    .run(ids.user);
   s.role.name = 'Self';
   s.role.colors = { primaryColor: 0 };
   return s;
@@ -1313,6 +1324,322 @@ test('creation reconciliation reads current manager and bot after observed-role 
       await assert.rejects(() => reconcileCreation(s.i, s.c, { ownerId: ids.user, confirm: true }));
       assert.equal(s.c.customRoles.created('g', ids.user).status, 'uncertain');
       assert.equal(s.calls.length, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+
+test('custom creation completion requires exact observed valid role receipt and cannot replace native identity', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new CustomRoles(db);
+    r.setCreation('g', true);
+    r.reserveCreation('g', ids.user, 'Self', 0, 'one');
+    for (const v of [null, '', 1, 'bad']) {
+      assert.throws(() => r.recordObserved('g', ids.user, v), /customRoleInvalid/);
+      assert.throws(() => r.recordCreated('g', ids.user, v), /customRoleInvalid/);
+    }
+    assert.throws(() => r.recordCreated('g', ids.user, ids.role), /not finalized/);
+    r.recordObserved('g', ids.user, ids.role);
+    assert.throws(() => r.recordCreated('g', ids.user, ids.gate), /not finalized/);
+    assert.equal(r.created('g', ids.user).role_id, ids.role);
+    r.recordCreated('g', ids.user, ids.role);
+    assert.throws(() => r.recordCreated('g', ids.user, ids.role), /not finalized/);
+    assert.equal(r.created('g', ids.user).status, 'created');
+  } finally {
+    db.close();
+  }
+});
+test('late custom creation uncertainty never rewrites created or reconciled receipts foreign guild or missing owner', () => {
+  const s = ownSetup();
+  try {
+    const r = s.c.customRoles,
+      before = r.created('g', ids.user);
+    assert.equal(r.creationUncertain('g', ids.user), false);
+    assert.equal(r.creationUncertain('foreign', ids.user), false);
+    assert.equal(r.creationUncertain('g', ids.owner), false);
+    assert.deepEqual(r.created('g', ids.user), before);
+    r.reserveCreation('g', ids.owner, 'Another', 0, 'two');
+    assert.equal(r.creationUncertain('g', ids.owner), true);
+    assert.equal(r.creationUncertain('g', ids.owner), false);
+    assert.throws(
+      () => r.reserveCreation('g', ids.owner, 'Repeat', 0, 'three'),
+      /customCreationExists/,
+    );
+    assert.equal(s.calls.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('guarded completed custom role receipt survives actualSQLite reopen and late failure without reassignment', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'luna-custom-receipt-')),
+    path = join(dir, 'db');
+  let db;
+  try {
+    db = openDatabase(path);
+    let r = new CustomRoles(db);
+    r.setCreation('g', true);
+    r.reserveCreation('g', ids.user, 'Self', 0, 'one');
+    r.recordObserved('g', ids.user, ids.role);
+    r.recordCreated('g', ids.user, ids.role);
+    const before = r.created('g', ids.user);
+    db.close();
+    db = openDatabase(path);
+    r = new CustomRoles(db);
+    r.recoverCreation();
+    assert.equal(r.creationUncertain('g', ids.user), false);
+    assert.deepEqual(r.created('g', ids.user), before);
+    assert.throws(() => r.recordObserved('g', ids.user, ids.gate));
+  } finally {
+    db?.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+function styleSetup() {
+  const s = ownSetup();
+  s.role.name = 'Self';
+  s.role.colors = { primaryColor: 0 };
+  s.role.edit = async (o) => {
+    s.calls.push(o);
+    if (o.name) s.role.name = o.name;
+    if (o.colors) s.role.colors = o.colors;
+    return s.role;
+  };
+  return s;
+}
+test('created role style edits are confirmed zero-permission/name/color only with observed native state and no assignments', async () => {
+  const { styleOwnRole } = await import('../src/services/customRoles.js');
+  const s = styleSetup();
+  try {
+    assert.equal((await styleOwnRole(s.i, s.c, { name: 'New', confirm: true })).changed, true);
+    assert.equal(s.c.customRoles.created('g', ids.user).name, 'New');
+    assert.equal(s.role.permissions.bitfield, 0n);
+    s.i.id = 'color';
+    await styleOwnRole(s.i, s.c, { color: 0x123456, confirm: true });
+    assert.deepEqual(s.calls[1].colors, { primaryColor: 0x123456 });
+    assert.equal(s.c.customRoles.created('g', ids.user).color, 0x123456);
+    s.i.id = 'reset';
+    await styleOwnRole(s.i, s.c, { color: 0, confirm: true });
+    assert.equal(s.role.name, 'New');
+    assert.equal((await styleOwnRole(s.i, s.c, { color: 0, confirm: true })).changed, false);
+    assert.equal(s.calls.length, 3);
+    assert(s.calls.every((o) => !('permissions' in o) && !('mentionable' in o)));
+    assert(
+      s.db
+        .prepare('SELECT status FROM moderation_cases')
+        .all()
+        .every((r) => r.status === 'completed'),
+    );
+  } finally {
+    s.db.close();
+  }
+});
+test('created role style input/identity/safety/gate/policy guards and uncertain outcomes stop effects and retries', async () => {
+  const { styleOwnRole } = await import('../src/services/customRoles.js');
+  for (const kind of [
+    'confirm',
+    'input',
+    'member',
+    'bot',
+    'permission',
+    'unsafe',
+    'gate',
+    'policy',
+    'network',
+    'observation',
+    'storage',
+  ]) {
+    const s = styleSetup();
+    try {
+      if (kind === 'member') s.member.id = 'wrong';
+      if (kind === 'bot') s.bot.id = 'wrong';
+      if (kind === 'permission') s.bot.permissions.has = () => false;
+      if (kind === 'unsafe') s.role.permissions.bitfield = 8n;
+      if (kind === 'gate') s.c.customRoles.setRequired('g', ids.gate);
+      if (kind === 'policy') s.c.customRoles.setCreation('g', false);
+      if (kind === 'network')
+        s.role.edit = async (o) => {
+          s.calls.push(o);
+          throw Error('network');
+        };
+      if (kind === 'observation')
+        s.role.edit = async (o) => {
+          s.calls.push(o);
+        };
+      if (kind === 'storage')
+        s.c.cases.finish = () => {
+          throw Error('db');
+        };
+      await assert.rejects(() =>
+        styleOwnRole(s.i, s.c, {
+          name: kind === 'input' ? '@everyone' : 'New',
+          confirm: kind !== 'confirm',
+        }),
+      );
+      const effect = ['network', 'observation', 'storage'].includes(kind);
+      assert.equal(s.calls.length, effect ? 1 : 0);
+      if (effect) {
+        assert.equal(s.c.customRoles.created('g', ids.user).status, 'uncertain');
+        s.i.id = 'retry';
+        await assert.rejects(() => styleOwnRole(s.i, s.c, { color: 0, confirm: true }));
+        assert.equal(s.calls.length, 1);
+      }
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('created role cosmetic three commands shared private3locale embeds and explicit confirmation', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = styleSetup();
+    try {
+      s.c.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+      let sub = 'renameown',
+        reply,
+        confirm = false;
+      s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      s.i.editReply = async (p) => {
+        reply = p;
+      };
+      s.i.options = {
+        getSubcommand: () => sub,
+        getString: (n) => (n === 'label' ? 'New' : '123456'),
+        getBoolean: () => confirm,
+      };
+      await assert.rejects(() => command.execute(s.i, s.c), /customStyleConfirm/);
+      confirm = true;
+      await command.execute(s.i, s.c);
+      sub = 'colorown';
+      s.i.id = 'color';
+      await command.execute(s.i, s.c);
+      sub = 'resetstyle';
+      s.i.id = 'reset';
+      await command.execute(s.i, s.c);
+      assert.equal(s.calls.length, 3);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(s.role.colors.primaryColor, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+
+test('unresolved own cosmetic case cannot bypass freeze via creation reconcile or claim/release', async () => {
+  const { styleOwnRole, reconcileCreation, ownRoleEffect } =
+    await import('../src/services/customRoles.js');
+  const s = styleSetup();
+  try {
+    s.role.edit = async (o) => {
+      s.calls.push(o);
+      s.role.name = o.name;
+      throw Error('accepted but unknown');
+    };
+    await assert.rejects(
+      () => styleOwnRole(s.i, s.c, { name: 'New', confirm: true }),
+      /customStyleUncertain/,
+    );
+    await assert.rejects(
+      () => reconcileCreation(s.i, s.c, { ownerId: ids.user, confirm: true }),
+      /customStyleUncertain/,
+    );
+    s.db.prepare("UPDATE custom_created_roles SET status='created' WHERE guild_id='g'").run();
+    for (const claim of [true, false])
+      await assert.rejects(() => ownRoleEffect(s.i, s.c, { claim }), /customOwnUncertain/);
+    assert.equal(s.calls.length, 1);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('custommappingrename unique/scoped preserves nativeID/timestamp/gate,oldalias unavailable', () => {
+  const s = setup();
+  try {
+    s.c.customRoles.setRequired('g', ids.gate);
+    s.c.customRoles.map('other', 'member', ids.role);
+    const created = s.db
+      .prepare("SELECT created_at FROM custom_role_mappings WHERE guild_id='g'")
+      .get().created_at;
+    assert.equal(s.c.customRoles.renameMapping('g', 'member', 'new-alias'), true);
+    assert.equal(s.c.customRoles.get('g', 'member'), undefined);
+    assert.equal(s.c.customRoles.get('g', 'new-alias').role_id, ids.role);
+    assert.equal(
+      s.db.prepare("SELECT created_at FROM custom_role_mappings WHERE guild_id='g'").get()
+        .created_at,
+      created,
+    );
+    assert(s.c.customRoles.get('other', 'member'));
+    assert.equal(s.c.customRoles.renameMapping('g', 'new-alias', 'new-alias'), false);
+    s.c.customRoles.map('g', 'existing', ids.owner);
+    assert.throws(
+      () => s.c.customRoles.renameMapping('g', 'new-alias', 'existing'),
+      /customMappingExists/,
+    );
+    assert.throws(() => s.c.customRoles.renameMapping('g', 'missing', 'x'), /customMappingMissing/);
+    assert.equal(s.c.customRoles.required('g'), ids.gate);
+    assert.equal(s.calls.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('customeligibility fresh self/gate checks no safety/grant claim and changedgate blocks', async () => {
+  const s = setup();
+  try {
+    s.member.user = { bot: false };
+    s.c.customRoles.setRequired('g', ids.gate);
+    let reply;
+    s.i.deferReply = async () => {};
+    s.i.editReply = async (p) => {
+      reply = p;
+    };
+    s.i.options = { getSubcommand: () => 'eligibility' };
+    await command.execute(s.i, s.c);
+    assert(reply.embeds[0].data.description.includes('Disabled'));
+    s.member.roles.cache.add(ids.gate);
+    await command.execute(s.i, s.c);
+    assert(reply.embeds[0].data.description.includes('Enabled'));
+    const fetch = s.i.guild.roles.fetch;
+    s.i.guild.roles.fetch = async (...a) => {
+      s.c.customRoles.setRequired('g', null);
+      return fetch(...a);
+    };
+    await assert.rejects(() => command.execute(s.i, s.c), /customConfigChanged/);
+    assert.equal(s.calls.length, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('custommappingrename/export/eligibility private3locale bytes/currentmanager nativeunchanged', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const s = setup();
+    try {
+      s.member.user = { bot: false };
+      s.c.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+      let sub = 'exportmappings',
+        reply;
+      s.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      s.i.editReply = async (p) => {
+        reply = p;
+      };
+      s.i.options = {
+        getSubcommand: () => sub,
+        getString: (n) => (n === 'name' ? 'member' : 'renamed'),
+      };
+      await command.execute(s.i, s.c);
+      const r = JSON.parse(reply.files[0].attachment.toString());
+      assert.deepEqual(r.mappings, s.c.customRoles.list('g'));
+      assert(!('owners' in r));
+      sub = 'renamemapping';
+      await command.execute(s.i, s.c);
+      assert(s.c.customRoles.get('g', 'renamed'));
+      sub = 'eligibility';
+      await command.execute(s.i, s.c);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert.equal(s.calls.length, 0);
+      s.member.permissions.has = () => false;
+      for (sub of ['exportmappings', 'renamemapping'])
+        await assert.rejects(() => command.execute(s.i, s.c), /roleActorPermission/);
     } finally {
       s.db.close();
     }

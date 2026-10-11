@@ -63,9 +63,68 @@ export class AutoMod {
       return updated;
     })();
   }
+  clearWords(guildId) {
+    return this.db.transaction(() => {
+      const count = this.get(guildId).words.length;
+      this.patch(guildId, { words: [] });
+      return count;
+    })();
+  }
+  resetPolicy(guildId) {
+    const defaults = schema.parse({});
+    this.db
+      .prepare(
+        'INSERT INTO automod_settings VALUES(?,?) ON CONFLICT(guild_id) DO UPDATE SET settings_json=excluded.settings_json',
+      )
+      .run(guildId, JSON.stringify(defaults));
+    for (const key of this.recent.keys())
+      if (key.startsWith(guildId + ':')) this.recent.delete(key);
+    return defaults;
+  }
+  importPolicy(guildId, text) {
+    let policy;
+    try {
+      if (typeof text !== 'string' || text.length > 4000) throw Error('bounds');
+      const value = JSON.parse(text);
+      if (value === null || Array.isArray(value) || typeof value !== 'object')
+        throw Error('object');
+      policy = schema.parse(value);
+      policy.enabled = false;
+      policy.words = policy.words.map((w) => normalizeTrigger(w));
+      if (
+        policy.words.some((w) => !w || w.length > 50 || /[\u0000-\u001f\u007f]/u.test(w)) ||
+        new Set(policy.words).size !== policy.words.length ||
+        new Set(policy.ignoredChannels).size !== policy.ignoredChannels.length ||
+        new Set(policy.exemptRoles).size !== policy.exemptRoles.length
+      )
+        throw Error('duplicate/invalid');
+    } catch {
+      throw new UserError('automodImportInvalid');
+    }
+    this.db
+      .prepare(
+        'INSERT INTO automod_settings VALUES(?,?) ON CONFLICT(guild_id) DO UPDATE SET settings_json=excluded.settings_json',
+      )
+      .run(guildId, JSON.stringify(policy));
+    for (const key of this.recent.keys())
+      if (key.startsWith(guildId + ':')) this.recent.delete(key);
+    return policy;
+  }
+  clearScope(guildId, kind) {
+    if (!['ignoredChannels', 'exemptRoles'].includes(kind))
+      throw new UserError('automodPolicyKindInvalid');
+    return this.db.transaction(() => {
+      const count = this.get(guildId)[kind].length;
+      this.patch(guildId, { [kind]: [] });
+      return count;
+    })();
+  }
   word(guildId, value, add) {
+    if (typeof add !== 'boolean') throw new TypeError('Invalid word mode');
+    if (typeof value !== 'string' || value.length > 50) throw new UserError('automodWordInvalid');
     const word = normalizeTrigger(value);
-    if (!word || word.length > 50) throw new UserError('automodWordInvalid');
+    if (!word || word.length > 50 || /[\u0000-\u001f\u007f]/u.test(word))
+      throw new UserError('automodWordInvalid');
     return this.db.transaction(() => {
       const s = this.get(guildId),
         words = new Set(s.words);
@@ -84,6 +143,7 @@ export class AutoMod {
     })();
   }
   exempt(guildId, roleId, add) {
+    if (typeof add !== 'boolean') throw new TypeError('Invalid exemption mode');
     return this.db.transaction(() => {
       const s = this.get(guildId),
         roles = new Set(s.exemptRoles);
@@ -116,10 +176,15 @@ export class AutoMod {
     )
       return 'caps';
     if (settings.rules.spam) {
-      const now = this.now(),
-        key = `${message.guild.id}:${message.author.id}`,
+      const now = this.now();
+      if (!Number.isSafeInteger(now) || now < 0) return null;
+      const key = `${message.guild.id}:${message.author.id}`,
         history = (this.recent.get(key) ?? []).filter(
-          (x) => now - x.at < settings.spamWindowSeconds * 1000,
+          (x) =>
+            Number.isSafeInteger(x.at) &&
+            x.at >= 0 &&
+            now >= x.at &&
+            now - x.at < settings.spamWindowSeconds * 1000,
         );
       if (!history.some((x) => x.id === message.id))
         history.push({ id: message.id, at: now, text: normalizeTrigger(text) });
@@ -135,11 +200,17 @@ export class AutoMod {
     return null;
   }
   reserve(message, rule, action) {
+    const now = this.now();
+    if (!Number.isSafeInteger(now) || now < 0) throw new TypeError('Invalid automod clock');
+    if (
+      !['words', 'invites', 'links', 'mentions', 'caps', 'spam'].includes(rule) ||
+      !['warn', 'delete', 'timeout'].includes(action)
+    )
+      throw new TypeError('Invalid automod reservation');
     return (
       this.db
         .prepare("INSERT OR IGNORE INTO automod_incidents VALUES(?,?,?,?,?,'reserved',?)")
-        .run(message.id, message.guild.id, message.author.id, rule, action, this.now()).changes ===
-      1
+        .run(message.id, message.guild.id, message.author.id, rule, action, now).changes === 1
     );
   }
   finish(messageId, status) {
@@ -150,12 +221,21 @@ export class AutoMod {
       .run(status, messageId);
     if (result.changes !== 1) throw new Error('AutoMod incident not reserved');
   }
-  incidents(guildId) {
+  stats(guildId) {
     return this.db
       .prepare(
-        'SELECT message_id,user_id,rule,action,status,created_at FROM automod_incidents WHERE guild_id=? ORDER BY created_at DESC LIMIT 20',
+        'SELECT status,action,rule,count(*) AS count FROM automod_incidents WHERE guild_id=? GROUP BY status,action,rule ORDER BY status,action,rule',
       )
       .all(guildId);
+  }
+  incidents(guildId, status = null) {
+    if (status !== null && !['reserved', 'completed', 'uncertain', 'failed'].includes(status))
+      throw new UserError('automodIncidentStatusInvalid');
+    return this.db
+      .prepare(
+        'SELECT message_id,user_id,rule,action,status,created_at FROM automod_incidents WHERE guild_id=? AND (? IS NULL OR status=?) ORDER BY created_at DESC,message_id DESC LIMIT 20',
+      )
+      .all(guildId, status, status);
   }
   unresolved(guildId, page = 1) {
     if (!Number.isInteger(page) || page < 1 || page > 10)
@@ -172,31 +252,37 @@ export class AutoMod {
       .run();
   }
   cleanup() {
-    this.db
-      .prepare('DELETE FROM automod_incidents WHERE created_at<?')
-      .run(this.now() - 30 * 86400000);
+    const now = this.now();
+    if (!Number.isSafeInteger(now) || now < 0) throw new TypeError('Invalid automod clock');
+    this.db.prepare('DELETE FROM automod_incidents WHERE created_at<?').run(now - 30 * 86400000);
     for (const [k, h] of this.recent)
-      if (!h.some((v) => this.now() - v.at < 30000)) this.recent.delete(k);
+      if (!h.some((v) => now >= v.at && now - v.at < 30000)) this.recent.delete(k);
   }
+}
+function outranks(bot, target) {
+  const comparison = bot.roles?.highest?.comparePositionTo(target.roles?.highest);
+  return Number.isSafeInteger(comparison) && comparison > 0;
+}
+function isRecentMessage(message) {
+  return (
+    Number.isFinite(message.createdTimestamp) &&
+    Math.abs(Date.now() - message.createdTimestamp) <= 300000
+  );
 }
 export function createAutoModHandler(c) {
   return async (message) => {
     if (
-      !c.config.messageEventsEnabled ||
+      c.config.messageEventsEnabled !== true ||
       !message.guild ||
       !message.author ||
-      message.author.bot ||
+      message.author.bot !== false ||
       message.webhookId ||
       message.system ||
       !message.content ||
       message.content.length > 4000
     )
       return false;
-    if (
-      !Number.isFinite(message.createdTimestamp) ||
-      Math.abs(Date.now() - message.createdTimestamp) > 300000
-    )
-      return false;
+    if (!isRecentMessage(message)) return false;
     let reserved = false;
     try {
       const settings = c.automod.get(message.guild.id);
@@ -205,7 +291,16 @@ export function createAutoModHandler(c) {
       if (!member || member.id !== message.author.id || member.guild?.id !== message.guild.id)
         return true;
       const current = c.automod.get(message.guild.id);
-      if (!current.enabled || current.ignoredChannels.includes(message.channel.id)) return false;
+      if (
+        c.config.messageEventsEnabled !== true ||
+        !isRecentMessage(message) ||
+        message.author?.bot !== false ||
+        message.system ||
+        message.webhookId ||
+        !current.enabled ||
+        current.ignoredChannels.includes(message.channel.id)
+      )
+        return false;
       if (JSON.stringify(current) !== JSON.stringify(settings)) return false;
       // Server managers/moderators and configured staff roles are always exempt.
       if (
@@ -242,20 +337,25 @@ export function createAutoModHandler(c) {
           target.id !== message.author.id ||
           target.guild?.id !== message.guild.id ||
           target.id === message.guild.ownerId ||
-          target.user?.bot ||
+          target.user?.bot !== false ||
           target.permissions.has(P.Administrator) ||
           target.permissions.has(P.ManageGuild) ||
           target.permissions.has(P.ManageMessages) ||
           target.permissions.has(P.ModerateMembers) ||
           settings.exemptRoles.some((r) => target.roles.cache.has(r)) ||
-          !target.moderatable ||
-          bot.roles.highest.comparePositionTo(target.roles.highest) <= 0
+          target.moderatable !== true ||
+          !outranks(bot, target)
         ) {
           c.automod.finish(message.id, 'failed');
           return true;
         }
         const latest = c.automod.get(message.guild.id);
         if (
+          c.config.messageEventsEnabled !== true ||
+          !isRecentMessage(message) ||
+          message.author?.bot !== false ||
+          message.system ||
+          message.webhookId ||
           !latest.enabled ||
           latest.ignoredChannels.includes(message.channel.id) ||
           latest.action !== 'timeout' ||
@@ -268,8 +368,13 @@ export function createAutoModHandler(c) {
           c.automod.finish(message.id, 'failed');
           return true;
         }
+        const existingUntil = target.communicationDisabledUntilTimestamp;
+        if (existingUntil !== null && (!Number.isSafeInteger(existingUntil) || existingUntil < 0)) {
+          c.automod.finish(message.id, 'failed');
+          return true;
+        }
         const until = Date.now() + settings.timeoutMinutes * 60000;
-        if (target.communicationDisabledUntilTimestamp >= until) {
+        if (existingUntil !== null && existingUntil >= until) {
           c.automod.finish(message.id, 'completed');
           return true;
         }
@@ -285,7 +390,14 @@ export function createAutoModHandler(c) {
           return true;
         }
         const latest = c.automod.get(message.guild.id);
-        if (JSON.stringify(latest) !== JSON.stringify(settings)) {
+        if (
+          c.config.messageEventsEnabled !== true ||
+          !isRecentMessage(message) ||
+          message.author?.bot !== false ||
+          message.system ||
+          message.webhookId ||
+          JSON.stringify(latest) !== JSON.stringify(settings)
+        ) {
           c.automod.finish(message.id, 'failed');
           return true;
         }

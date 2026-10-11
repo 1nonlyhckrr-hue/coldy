@@ -171,6 +171,12 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES(26,?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=27').get()) {
+      db.exec(
+        'CREATE TABLE command_channel_restrictions(guild_id TEXT NOT NULL,command_name TEXT NOT NULL,channel_id TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(guild_id,command_name,channel_id));',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES(27,?)').run(Date.now());
+    }
   })();
   return db;
 }

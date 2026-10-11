@@ -1,6 +1,19 @@
 import { spawn } from 'node:child_process';
 export class RestartPolicy {
   constructor({ now = Date.now, maxCrashes = 10, windowMs = 600000, stableMs = 300000 } = {}) {
+    if (
+      typeof now !== 'function' ||
+      !Number.isSafeInteger(maxCrashes) ||
+      maxCrashes < 1 ||
+      maxCrashes > 1000 ||
+      !Number.isSafeInteger(windowMs) ||
+      windowMs < 1 ||
+      windowMs > 86400000 ||
+      !Number.isSafeInteger(stableMs) ||
+      stableMs < 1 ||
+      stableMs > 86400000
+    )
+      throw new TypeError('Invalid restart policy');
     this.now = now;
     this.maxCrashes = maxCrashes;
     this.windowMs = windowMs;
@@ -10,6 +23,8 @@ export class RestartPolicy {
   }
   next(runtimeMs) {
     const now = this.now();
+    if (!Number.isSafeInteger(now) || !Number.isSafeInteger(runtimeMs) || runtimeMs < 0)
+      return null;
     if (runtimeMs >= this.stableMs) this.attempt = 0;
     this.crashes = this.crashes.filter((t) => now - t < this.windowMs);
     this.crashes.push(now);
@@ -32,25 +47,46 @@ export function runWatchdog({
     startedAt = 0;
   const start = () => {
     if (stopping) return;
-    startedAt = now();
+    try {
+      startedAt = now();
+    } catch {
+      startedAt = NaN;
+    }
+    if (!Number.isSafeInteger(startedAt)) {
+      report('Luna process clock unavailable. Operator review required.');
+      stopping = true;
+      exit(1);
+      return;
+    }
     let settled = false;
     const ended = () => {
       if (settled) return;
       settled = true;
       child = null;
       if (stopping) return;
-      const delay = policy.next(now() - startedAt);
-      if (delay === null) {
+      let delay;
+      try {
+        delay = policy.next(now() - startedAt);
+      } catch {
+        delay = null;
+      }
+      if (!Number.isSafeInteger(delay) || delay < 1 || delay > 60000) {
         report('Luna restart circuit opened after repeated failures. Operator review required.');
         stopping = true;
         exit(1);
         return;
       }
       report(`Luna process stopped. Restarting in ${delay} ms.`);
-      timer = setTimer(() => {
-        timer = null;
-        start();
-      }, delay);
+      try {
+        timer = setTimer(() => {
+          timer = null;
+          start();
+        }, delay);
+      } catch {
+        report('Luna restart timer unavailable. Operator review required.');
+        stopping = true;
+        exit(1);
+      }
     };
     try {
       child = spawnChild(process.execPath, [new URL('../index.js', import.meta.url).pathname], {
@@ -65,9 +101,26 @@ export function runWatchdog({
   };
   const stop = (signal) => {
     stopping = true;
-    if (timer) clearTimer(timer);
+    if (timer) {
+      try {
+        clearTimer(timer);
+      } catch {
+        report('Luna restart timer cancellation unavailable. Operator review required.');
+        exit(1);
+      }
+    }
     timer = null;
-    if (child) child.kill(signal ?? 'SIGTERM');
+    if (child) {
+      try {
+        if (child.kill(signal ?? 'SIGTERM') === false) {
+          report('Luna child shutdown signal was not accepted. Operator review required.');
+          exit(1);
+        }
+      } catch {
+        report('Luna child shutdown signal unavailable. Operator review required.');
+        exit(1);
+      }
+    }
   };
   start();
   return { stop, isStopped: () => stopping };

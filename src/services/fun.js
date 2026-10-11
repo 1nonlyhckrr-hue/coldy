@@ -136,3 +136,46 @@ export function playRpsSeries(text, rng = randomInt) {
     result: wins === losses ? 'draw' : wins > losses ? 'win' : 'lose',
   };
 }
+export function drawCards(count, rng = randomInt) {
+  if (!Number.isInteger(count) || count < 1 || count > 10) throw new UserError('funCardsInvalid');
+  const deck = ['clubs', 'diamonds', 'hearts', 'spades'].flatMap((suit) =>
+    ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'].map((rank) => ({
+      suit,
+      rank,
+    })),
+  );
+  const drawn = [];
+  for (let n = 0; n < count; n++) {
+    const at = rng(deck.length);
+    if (!Number.isInteger(at) || at < 0 || at >= deck.length)
+      throw new TypeError('Invalid random result');
+    drawn.push(deck.splice(at, 1)[0]);
+  }
+  return drawn;
+}
+export function scrambleWord(word, rng = randomInt) {
+  if (
+    typeof word !== 'string' ||
+    !/^[a-zA-Z]{3,20}$/.test(word) ||
+    new Set(word.toLowerCase()).size < 2
+  )
+    throw new UserError('funWordInvalid');
+  const chars = [...word.toLowerCase()];
+  for (let n = chars.length - 1; n > 0; n--) {
+    const at = rng(n + 1);
+    if (!Number.isInteger(at) || at < 0 || at > n) throw new TypeError('Invalid random result');
+    [chars[n], chars[at]] = [chars[at], chars[n]];
+  }
+  const original = word.toLowerCase();
+  if (chars.join('') === original) {
+    const at = chars.findIndex((c) => c !== chars[0]);
+    [chars[0], chars[at]] = [chars[at], chars[0]];
+  }
+  return { scrambled: chars.join(''), answer: original };
+}
+export function rollTarget(sides, count, target, rng = randomInt) {
+  if (!Number.isInteger(target) || target < 2 || target > sides)
+    throw new UserError('funTargetInvalid');
+  const r = rollDice(sides, count, rng);
+  return { ...r, target, successes: r.rolls.filter((v) => v >= target).length };
+}

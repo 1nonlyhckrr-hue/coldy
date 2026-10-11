@@ -54,6 +54,8 @@ export class CustomRoles {
     })();
   }
   recordObserved(guildId, ownerId, roleId) {
+    if (typeof roleId !== 'string' || !/^\d{17,20}$/.test(roleId))
+      throw new UserError('customRoleInvalid');
     const result = this.db
       .prepare(
         "UPDATE custom_created_roles SET role_id=? WHERE guild_id=? AND owner_id=? AND status='creating' AND role_id IS NULL",
@@ -62,17 +64,23 @@ export class CustomRoles {
     if (result.changes !== 1) throw new Error('Observed creation not recorded');
   }
   recordCreated(guildId, ownerId, roleId) {
+    if (typeof roleId !== 'string' || !/^\d{17,20}$/.test(roleId))
+      throw new UserError('customRoleInvalid');
     const result = this.db
       .prepare(
-        "UPDATE custom_created_roles SET role_id=?,status='created' WHERE guild_id=? AND owner_id=? AND status='creating'",
+        "UPDATE custom_created_roles SET role_id=?,status='created' WHERE guild_id=? AND owner_id=? AND status='creating' AND role_id=?",
       )
-      .run(roleId, guildId, ownerId);
+      .run(roleId, guildId, ownerId, roleId);
     if (result.changes !== 1) throw new Error('Creation record not finalized');
   }
   creationUncertain(guildId, ownerId) {
-    this.db
-      .prepare("UPDATE custom_created_roles SET status='uncertain' WHERE guild_id=? AND owner_id=?")
-      .run(guildId, ownerId);
+    return (
+      this.db
+        .prepare(
+          "UPDATE custom_created_roles SET status='uncertain' WHERE guild_id=? AND owner_id=? AND status='creating'",
+        )
+        .run(guildId, ownerId).changes === 1
+    );
   }
   recoverCreation() {
     this.db
@@ -125,6 +133,39 @@ export class CustomRoles {
           'INSERT INTO custom_role_mappings VALUES(?,?,?,?) ON CONFLICT(guild_id,name) DO UPDATE SET role_id=excluded.role_id,created_at=excluded.created_at',
         )
         .run(guildId, name, roleId, Date.now());
+    })();
+  }
+  renameMapping(guildId, name, newName) {
+    this.validateName(name);
+    this.validateName(newName);
+    return this.db.transaction(() => {
+      const row = this.get(guildId, name);
+      if (!row) throw new UserError('customMappingMissing');
+      if (name === newName) return false;
+      if (this.get(guildId, newName)) throw new UserError('customMappingExists');
+      const r = this.db
+        .prepare('UPDATE custom_role_mappings SET name=? WHERE guild_id=? AND name=? AND role_id=?')
+        .run(newName, guildId, name, row.role_id);
+      if (r.changes !== 1) throw new UserError('customConfigChanged');
+      return true;
+    })();
+  }
+  unmapRole(guildId, roleId) {
+    if (typeof roleId !== 'string' || !/^\d{17,20}$/.test(roleId))
+      throw new UserError('customRoleInvalid');
+    return this.db
+      .prepare('DELETE FROM custom_role_mappings WHERE guild_id=? AND role_id=?')
+      .run(guildId, roleId).changes;
+  }
+  clearRequired(guildId) {
+    return this.db.prepare('DELETE FROM custom_role_config WHERE guild_id=?').run(guildId).changes;
+  }
+  resetConfig(guildId) {
+    return this.db.transaction(() => {
+      const count = this.clearMappings(guildId);
+      this.clearRequired(guildId);
+      this.db.prepare('DELETE FROM custom_role_creation_config WHERE guild_id=?').run(guildId);
+      return count;
     })();
   }
   clearMappings(guildId) {
@@ -320,7 +361,7 @@ export async function ownRoleEffect(i, c, { claim }) {
     if (
       c.customRoles.db
         .prepare(
-          "SELECT id FROM moderation_cases WHERE guild_id=? AND target_id=? AND action IN ('customrole_own_claim','customrole_own_release') AND status IN ('pending','uncertain') LIMIT 1",
+          "SELECT id FROM moderation_cases WHERE guild_id=? AND target_id=? AND action IN ('customrole_own_claim','customrole_own_release','customrole_style') AND status IN ('pending','uncertain') LIMIT 1",
         )
         .get(i.guildId, i.user.id)
     )
@@ -414,6 +455,14 @@ export async function reconcileCreation(i, c, { ownerId, confirm }) {
     const row = c.customRoles.created(i.guildId, ownerId);
     if (!row || row.status !== 'uncertain' || !row.role_id)
       throw new UserError('customReconcileUnavailable');
+    if (
+      c.cases.db
+        .prepare(
+          "SELECT id FROM moderation_cases WHERE guild_id=? AND target_id=? AND action='customrole_style' AND status IN ('pending','uncertain') LIMIT 1",
+        )
+        .get(i.guildId, ownerId)
+    )
+      throw new UserError('customStyleUncertain');
     const role = await i.guild.roles.fetch(row.role_id, { force: true });
     const [actor, bot] = await Promise.all([
       i.guild.members.fetch({ user: i.user.id, force: true }),
@@ -455,6 +504,148 @@ export async function reconcileCreation(i, c, { ownerId, confirm }) {
       .run(i.guildId, ownerId, row.role_id, row.name, row.color);
     if (result.changes !== 1) throw new UserError('customConfigChanged');
     return { roleId: role.id };
+  } finally {
+    c.customRoles.active.delete(key);
+  }
+}
+
+// Cosmetic edits are restricted to the caller's observed zero-permission created role.
+export async function styleOwnRole(i, c, { name, color, confirm }) {
+  if (confirm !== true) throw new UserError('customStyleConfirm');
+  if (
+    (name !== undefined &&
+      (typeof name !== 'string' ||
+        name.trim() !== name ||
+        !name ||
+        name.length > 32 ||
+        /[\u0000-\u001f\u007f@]/u.test(name))) ||
+    (color !== undefined && (!Number.isInteger(color) || color < 0 || color > 0xffffff)) ||
+    (name === undefined && color === undefined)
+  )
+    throw new UserError('customCreationInput');
+  const key = `create:${i.guildId}:${i.user.id}`;
+  if (c.customRoles.active.has(key)) throw new UserError('roleActionBusy');
+  c.customRoles.active.add(key);
+  try {
+    const row = c.customRoles.created(i.guildId, i.user.id),
+      gate = c.customRoles.required(i.guildId);
+    if (!row || row.status !== 'created' || !row.role_id)
+      throw new UserError('customOwnUnavailable');
+    if (!c.customRoles.creationEnabled(i.guildId)) throw new UserError('customCreationDisabled');
+    if (
+      c.cases.db
+        .prepare(
+          "SELECT id FROM moderation_cases WHERE guild_id=? AND target_id=? AND action IN ('customrole_own_claim','customrole_own_release','customrole_style') AND status IN ('pending','uncertain') LIMIT 1",
+        )
+        .get(i.guildId, i.user.id)
+    )
+      throw new UserError('customOwnUncertain');
+    const role = await i.guild.roles.fetch(row.role_id, { force: true });
+    if (gate) {
+      const required = await i.guild.roles.fetch(gate, { force: true });
+      if (required?.id !== gate || required.guild?.id !== i.guildId)
+        throw new UserError('customRequiredMissing');
+    }
+    const [member, bot] = await Promise.all([
+      i.guild.members.fetch({ user: i.user.id, force: true }),
+      i.guild.members.fetchMe({ force: true }),
+    ]);
+    if (
+      i.guild.id !== i.guildId ||
+      member?.id !== i.user.id ||
+      member.guild?.id !== i.guildId ||
+      member.user?.bot !== false
+    )
+      throw new UserError('customMemberMissing');
+    if (
+      bot?.id !== i.client.user.id ||
+      bot.guild?.id !== i.guildId ||
+      !bot.permissions?.has(P.ManageRoles) ||
+      !i.appPermissions?.has(P.ManageRoles)
+    )
+      throw new UserError('roleBotPermission');
+    if (
+      !role ||
+      role.id !== row.role_id ||
+      role.guild?.id !== i.guildId ||
+      role.id === i.guildId ||
+      role.managed !== false ||
+      role.permissions?.bitfield !== 0n ||
+      role.hoist !== false ||
+      role.mentionable !== false ||
+      role.name !== row.name ||
+      role.colors?.primaryColor !== row.color ||
+      bot.roles.highest.comparePositionTo(role) <= 0
+    )
+      throw new UserError('customOwnUnsafe');
+    if (gate && !member.roles.cache.has(gate)) throw new UserError('customRequiredMissing');
+    const latest = c.customRoles.created(i.guildId, i.user.id);
+    if (
+      !latest ||
+      latest.status !== 'created' ||
+      latest.role_id !== row.role_id ||
+      latest.name !== row.name ||
+      latest.color !== row.color ||
+      !c.customRoles.creationEnabled(i.guildId) ||
+      c.customRoles.required(i.guildId) !== gate
+    )
+      throw new UserError('customConfigChanged');
+    const wantedName = name ?? row.name,
+      wantedColor = color ?? row.color;
+    if (wantedName === row.name && wantedColor === row.color) return { changed: false };
+    const id = c.cases.db.transaction(() => {
+      const id = c.cases.begin({
+        guildId: i.guildId,
+        targetId: member.id,
+        actorId: member.id,
+        action: 'customrole_style',
+        reason: 'Explicit own-role cosmetic update;zero permissions',
+        interactionId: i.id,
+      });
+      const r = c.customRoles.db
+        .prepare(
+          "UPDATE custom_created_roles SET status='uncertain',name=?,color=? WHERE guild_id=? AND owner_id=? AND status='created' AND role_id=? AND name=? AND color=?",
+        )
+        .run(wantedName, wantedColor, i.guildId, i.user.id, row.role_id, row.name, row.color);
+      if (r.changes !== 1) throw new UserError('customConfigChanged');
+      return id;
+    })();
+    try {
+      await role.edit({
+        ...(name !== undefined ? { name: wantedName } : {}),
+        ...(color !== undefined ? { colors: { primaryColor: wantedColor } } : {}),
+        reason: 'Luna explicit self cosmetic update',
+      });
+      const observed = await i.guild.roles.fetch(row.role_id, { force: true });
+      if (
+        observed?.id !== row.role_id ||
+        observed.guild?.id !== i.guildId ||
+        observed.name !== wantedName ||
+        observed.colors?.primaryColor !== wantedColor ||
+        observed.managed !== false ||
+        observed.permissions?.bitfield !== 0n ||
+        observed.hoist !== false ||
+        observed.mentionable !== false
+      )
+        throw Error('Own role edit not observed');
+      c.cases.db.transaction(() => {
+        c.cases.finish(id, 'completed');
+        const r = c.customRoles.db
+          .prepare(
+            "UPDATE custom_created_roles SET status='created' WHERE guild_id=? AND owner_id=? AND status='uncertain' AND role_id=? AND name=? AND color=?",
+          )
+          .run(i.guildId, i.user.id, row.role_id, wantedName, wantedColor);
+        if (r.changes !== 1) throw Error('Style not finalized');
+      })();
+    } catch {
+      try {
+        c.cases.finish(id, 'uncertain');
+      } catch {
+        /* Pending receipt also blocks retry. */
+      }
+      throw new UserError('customStyleUncertain');
+    }
+    return { changed: true, id };
   } finally {
     c.customRoles.active.delete(key);
   }

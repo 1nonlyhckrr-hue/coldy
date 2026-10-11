@@ -602,8 +602,8 @@ test('private voice recording and activation require native identity and exactly
     assert.throws(() => s.c.voiceMaster.activate(999, ids.channel), /not creating/);
     s.c.voiceMaster.created(id, ids.channel);
     s.c.voiceMaster.activate(id, ids.channel);
-    assert.throws(() => s.c.voiceMaster.created(id, 'other'), /not creating/);
-    assert.throws(() => s.c.voiceMaster.activate(id, 'other'), /not creating/);
+    assert.throws(() => s.c.voiceMaster.created(id, ids.category), /not creating/);
+    assert.throws(() => s.c.voiceMaster.activate(id, ids.category), /not creating/);
     assert.equal(s.c.voiceMaster.owned('g', ids.owner).channel_id, ids.channel);
   } finally {
     s.db.close();
@@ -772,4 +772,343 @@ test('VoiceMaster stored self status is private,localized and performs no native
         s.db.close();
       }
     }
+});
+
+test('VoiceMaster creation requires native snowflake and preserves first observed channel identity', () => {
+  const s = setup();
+  try {
+    const v = s.c.voiceMaster,
+      id = v.reserve('g', ids.owner, 'identity');
+    for (const bad of ['', null, 'not-native', '1', '1'.repeat(21)]) {
+      assert.throws(() => v.created(id, bad), /identity/);
+      assert.throws(() => v.activate(id, bad), /identity/);
+    }
+    v.created(id, ids.channel);
+    v.created(id, ids.channel);
+    assert.throws(() => v.created(id, ids.category), /not creating/);
+    assert.throws(() => v.activate(id, ids.category), /not creating/);
+    assert.equal(v.owned('g', ids.owner).channel_id, ids.channel);
+    assert.equal(v.owned('g', ids.owner).status, 'creating');
+    v.activate(id, ids.channel);
+    assert.equal(v.owned('g', ids.owner).status, 'active');
+  } finally {
+    s.db.close();
+  }
+});
+test('VoiceMaster late creation uncertainty cannot demote active or closed receipts and preserves recorded ID', () => {
+  const s = setup();
+  try {
+    const v = s.c.voiceMaster,
+      id = v.reserve('g', ids.owner, 'late');
+    v.created(id, ids.channel);
+    assert.equal(v.creationUncertain(id), 1);
+    assert.equal(v.creationUncertain(id), 0);
+    assert.equal(v.owned('g', ids.owner).channel_id, ids.channel);
+    v.db.prepare("UPDATE voice_master_channels SET status='active' WHERE id=?").run(id);
+    const before = v.owned('g', ids.owner);
+    assert.equal(v.creationUncertain(id), 0);
+    assert.deepEqual(v.owned('g', ids.owner), before);
+    v.status(id, 'closed');
+    assert.equal(v.creationUncertain(id), 0);
+    assert.equal(
+      v.db.prepare('SELECT status FROM voice_master_channels WHERE id=?').get(id).status,
+      'closed',
+    );
+  } finally {
+    s.db.close();
+  }
+});
+test('VoiceMaster open failing late after reservation was completed does not overwrite active receipt', async () => {
+  const s = setup();
+  try {
+    s.i.guild.channels.create = async () => {
+      s.c.voiceMaster.activate(1, ids.channel);
+      throw Error('late transport');
+    };
+    await assert.rejects(() => openPrivateVoice(s.i, s.c), /vmCreateUncertain/);
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).status, 'active');
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).channel_id, ids.channel);
+    assert.equal(s.c.voiceMaster.active.size, 0);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('VoiceMaster close failure does not overwrite a later completed or active receipt', async () => {
+  for (const state of ['closed', 'active']) {
+    const s = setup();
+    try {
+      await openPrivateVoice(s.i, s.c);
+      s.i.id = 'close-race';
+      s.channel.delete = async () => {
+        s.c.voiceMaster.db
+          .prepare('UPDATE voice_master_channels SET status=? WHERE id=1')
+          .run(state);
+        throw Error('late delete failure');
+      };
+      await assert.rejects(
+        () => editPrivateVoice(s.i, s.c, { action: 'close' }),
+        /vmEditUncertain/,
+      );
+      assert.equal(
+        s.db.prepare('SELECT status FROM voice_master_channels WHERE id=1').get().status,
+        state,
+      );
+      assert.equal(
+        s.db.prepare("SELECT status FROM moderation_cases WHERE action='voicemaster_close'").get()
+          .status,
+        'uncertain',
+      );
+      assert.equal(s.c.voiceMaster.active.size, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('VoiceMaster accepted close cannot promote a reservation recovered uncertain while deletion awaited', async () => {
+  const s = setup();
+  try {
+    await openPrivateVoice(s.i, s.c);
+    s.i.id = 'close-recover';
+    s.channel.delete = async () => s.c.voiceMaster.recover();
+    await assert.rejects(() => editPrivateVoice(s.i, s.c, { action: 'close' }), /vmEditUncertain/);
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).status, 'uncertain');
+    assert.equal(
+      s.db.prepare("SELECT status FROM moderation_cases WHERE action='voicemaster_close'").get()
+        .status,
+      'pending',
+    );
+  } finally {
+    s.db.close();
+  }
+});
+test('VoiceMaster close transition checks exact state and rejects missing/invalid rows without mutation', () => {
+  const s = setup();
+  try {
+    const v = s.c.voiceMaster,
+      id = v.reserve('g', ids.owner, 'close-state');
+    v.activate(id, ids.channel);
+    assert.throws(() => v.transition(id, 'deleting', 'closed'), /state changed/);
+    assert.throws(() => v.transition(id, 'creating', 'closed'), /Invalid/);
+    assert.throws(() => v.transition(999, 'active', 'deleting'), /state changed/);
+    assert.equal(v.owned('g', ids.owner).status, 'active');
+    v.transition(id, 'active', 'deleting');
+    v.transition(id, 'deleting', 'closed');
+    assert.throws(() => v.transition(id, 'deleting', 'uncertain'), /state changed/);
+    assert.equal(
+      v.db.prepare('SELECT status FROM voice_master_channels WHERE id=?').get(id).status,
+      'closed',
+    );
+  } finally {
+    s.db.close();
+  }
+});
+
+test('VoiceMaster access edit cannot claim completed when receipt was closed/deleted while native update awaited', async () => {
+  for (const state of ['closed', 'deleted']) {
+    const s = setup();
+    try {
+      await openPrivateVoice(s.i, s.c);
+      s.i.id = 'access-race';
+      s.channel.permissionOverwrites.set = async (rules) => {
+        s.channel.permissionOverwrites.cache = overwrites(rules);
+        if (state === 'closed') s.c.voiceMaster.status(1, 'closed');
+        else s.db.prepare('DELETE FROM voice_master_channels WHERE id=1').run();
+      };
+      await assert.rejects(
+        () => editPrivateVoice(s.i, s.c, { action: 'unlock', share: true }),
+        /vmEditUncertain/,
+      );
+      assert.equal(
+        s.db.prepare("SELECT status FROM moderation_cases WHERE action='voicemaster_unlock'").get()
+          .status,
+        'pending',
+      );
+      assert.equal(
+        s.db.prepare('SELECT status FROM voice_master_channels WHERE id=1').get()?.status,
+        state === 'closed' ? 'closed' : undefined,
+      );
+      assert.equal(s.c.voiceMaster.active.size, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('VoiceMaster access edit refuses replaced owner/channel/guild/access receipt rather than promoting it', async () => {
+  for (const [field, value] of [
+    ['owner_id', '100000000000000099'],
+    ['channel_id', '100000000000000099'],
+    ['guild_id', 'other'],
+    ['public_access', 1],
+  ]) {
+    const s = setup();
+    try {
+      await openPrivateVoice(s.i, s.c);
+      s.i.id = 'changed-access';
+      s.channel.permissionOverwrites.set = async (rules) => {
+        s.channel.permissionOverwrites.cache = overwrites(rules);
+        s.db.prepare(`UPDATE voice_master_channels SET ${field}=? WHERE id=1`).run(value);
+      };
+      await assert.rejects(
+        () => editPrivateVoice(s.i, s.c, { action: 'unlock', share: true }),
+        /vmEditUncertain/,
+      );
+      const row = s.db.prepare('SELECT * FROM voice_master_channels WHERE id=1').get();
+      assert.equal(row[field], value);
+      assert.equal(row.status, 'uncertain');
+      assert.equal(
+        s.db.prepare("SELECT status FROM moderation_cases WHERE action='voicemaster_unlock'").get()
+          .status,
+        'pending',
+      );
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('VoiceMaster access completion after final verification cannot overwrite already active newer receipt', async () => {
+  const s = setup();
+  try {
+    await openPrivateVoice(s.i, s.c);
+    s.i.id = 'late-verified';
+    s.channel.permissionOverwrites.set = async (rules) =>
+      (s.channel.permissionOverwrites.cache = overwrites(rules));
+    const fetch = s.i.guild.channels.fetch;
+    s.i.guild.channels.fetch = async (id) => {
+      const channel = await fetch(id);
+      if (
+        s.db.prepare('SELECT status FROM voice_master_channels WHERE id=1').get().status ===
+        'uncertain'
+      )
+        s.db
+          .prepare("UPDATE voice_master_channels SET status='active',public_access=1 WHERE id=1")
+          .run();
+      return channel;
+    };
+    await assert.rejects(
+      () => editPrivateVoice(s.i, s.c, { action: 'unlock', share: true }),
+      /vmEditUncertain/,
+    );
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).status, 'active');
+    assert.equal(s.c.voiceMaster.owned('g', ids.owner).public_access, 1);
+    assert.equal(
+      s.db.prepare("SELECT status FROM moderation_cases WHERE action='voicemaster_unlock'").get()
+        .status,
+      'pending',
+    );
+  } finally {
+    s.db.close();
+  }
+});
+
+test('owned empty voice bitrate/automatic region tracked native effect,current authority,private access unchanged', async () => {
+  for (const action of ['bitrate', 'regionauto']) {
+    const x = setup();
+    try {
+      const id = x.c.voiceMaster.reserve('g', ids.owner, 'create');
+      x.c.voiceMaster.activate(id, ids.channel);
+      x.channel.bitrate = 64000;
+      x.channel.rtcRegion = 'sydney';
+      x.channel.setBitrate = async (v) => {
+        x.calls.push(['bitrate', v]);
+        x.channel.bitrate = v;
+      };
+      x.channel.setRTCRegion = async (v) => {
+        x.calls.push(['region', v]);
+        x.channel.rtcRegion = v;
+      };
+      const before = x.channel.permissionOverwrites.cache;
+      await editPrivateVoice(x.i, x.c, { action, bitrate: 96000 });
+      assert.equal(x.c.voiceMaster.owned('g', ids.owner).status, 'active');
+      assert.equal(x.calls.length, 1);
+      assert.equal(x.channel.permissionOverwrites.cache, before);
+      assert.equal(
+        x.c.cases.db.prepare('SELECT status FROM moderation_cases').get().status,
+        'completed',
+      );
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('voice bitrate/region occupied or invalid/refused authority cannot cause native effect/case', async () => {
+  for (const kind of ['occupied', 'bitrate', 'permission', 'runtime']) {
+    const x = setup();
+    try {
+      const id = x.c.voiceMaster.reserve('g', ids.owner, 'create');
+      x.c.voiceMaster.activate(id, ids.channel);
+      x.channel.setBitrate = async () => x.calls.push(['bad']);
+      if (kind === 'occupied') x.channel.members.set('someone', {});
+      if (kind === 'permission') x.channel.permissionsFor = () => ({ has: () => false });
+      if (kind === 'runtime') x.c.config.voiceEventsEnabled = false;
+      await assert.rejects(() =>
+        editPrivateVoice(x.i, x.c, {
+          action: 'bitrate',
+          bitrate: kind === 'bitrate' ? 97000 : 8000,
+        }),
+      );
+      assert.equal(x.calls.length, 0);
+      assert.equal(x.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('voice settings accepted but unobserved or thrown native result freezes uncertain without retry', async () => {
+  for (const kind of ['throw', 'wrong']) {
+    const x = setup();
+    try {
+      const id = x.c.voiceMaster.reserve('g', ids.owner, 'create');
+      x.c.voiceMaster.activate(id, ids.channel);
+      let effects = 0;
+      x.channel.setBitrate = async () => {
+        effects++;
+        if (kind === 'throw') throw new Error('SECRET');
+      };
+      x.channel.bitrate = 64000;
+      await assert.rejects(
+        () => editPrivateVoice(x.i, x.c, { action: 'bitrate', bitrate: 96000 }),
+        /vmEditUncertain/,
+      );
+      assert.equal(x.c.voiceMaster.owned('g', ids.owner).status, 'uncertain');
+      assert.equal(x.db.prepare('SELECT status FROM moderation_cases').get().status, 'uncertain');
+      await assert.rejects(
+        () => editPrivateVoice({ ...x.i, id: 'retry' }, x.c, { action: 'bitrate', bitrate: 96000 }),
+        /vmNotActive/,
+      );
+      assert.equal(effects, 1);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('three voice feature slash paths private3locale/currentowned inspection and native controls serialize', async () => {
+  const d = command.data.toJSON();
+  for (const sub of ['bitrate', 'regionauto', 'inspect'])
+    assert(d.options.some((s) => s.name === sub));
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.c.localization = { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) };
+      const id = x.c.voiceMaster.reserve('g', ids.owner, 'create');
+      x.c.voiceMaster.activate(id, ids.channel);
+      x.channel.name = '**Mine**';
+      x.channel.userLimit = 1;
+      x.channel.bitrate = 64000;
+      let reply;
+      x.i.options = { getSubcommand: () => 'inspect', getInteger: () => null };
+      x.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      x.i.editReply = async (p) => {
+        reply = p;
+      };
+      await command.execute(x.i, x.c);
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      assert(reply.embeds[0].data.description.includes('64000'));
+      assert.equal(x.calls.length, 0);
+      x.owner.id = 'wrong';
+      await assert.rejects(() => command.execute(x.i, x.c), /vmChannelInvalid/);
+    } finally {
+      x.db.close();
+    }
+  }
 });

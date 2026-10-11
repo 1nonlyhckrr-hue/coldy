@@ -40,7 +40,10 @@ export class PurgePlans {
   }
   finish(id, status) {
     if (!['completed', 'uncertain'].includes(status)) throw new TypeError('Invalid purge state');
-    this.db.prepare('UPDATE purge_plans SET status=? WHERE id=?').run(status, id);
+    const result = this.db
+      .prepare("UPDATE purge_plans SET status=? WHERE id=? AND status='executing'")
+      .run(status, id);
+    if (result.changes !== 1) throw new Error('Purge plan not executing');
   }
   recover() {
     this.db.prepare("UPDATE purge_plans SET status='uncertain' WHERE status='executing'").run();
@@ -52,6 +55,10 @@ async function access(i, channelId) {
     i.guild.members.fetchMe({ force: true }),
     i.guild.channels.fetch(channelId, { force: true }),
   ]);
+  if (i.guild?.id !== i.guildId || actor?.id !== i.user.id || actor.guild?.id !== i.guildId)
+    throw new UserError('userPermission');
+  if (!i.client?.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
+    throw new UserError('purgeBotPermission');
   if (
     !channel ||
     channel.id !== channelId ||
@@ -61,7 +68,10 @@ async function access(i, channelId) {
     throw new UserError('purgeChannelInvalid');
   if (!channel.permissionsFor(actor)?.has([P.ViewChannel, P.ReadMessageHistory, P.ManageMessages]))
     throw new UserError('userPermission');
-  if (!channel.permissionsFor(bot)?.has([P.ViewChannel, P.ReadMessageHistory, P.ManageMessages]))
+  if (
+    !i.appPermissions?.has(P.ManageMessages) ||
+    !channel.permissionsFor(bot)?.has([P.ViewChannel, P.ReadMessageHistory, P.ManageMessages])
+  )
     throw new UserError('purgeBotPermission');
   return channel;
 }
@@ -109,6 +119,15 @@ export async function confirmPurge(i, c, { id, confirm }, now = Date.now()) {
       throw new UserError('purgeChanged');
   }
   const verified = await access(i, row.channel_id);
+  const current = c.purgePlans.get(row.id, i.guildId, i.user.id);
+  if (
+    !current ||
+    current.status !== 'preview' ||
+    ['guild_id', 'actor_id', 'channel_id', 'ids_json', 'created_at', 'interaction_id'].some(
+      (key) => current[key] !== row[key],
+    )
+  )
+    throw new UserError('purgeChanged');
   c.purgePlans.claim(row.id, now);
   let caseId;
   try {
@@ -125,10 +144,21 @@ export async function confirmPurge(i, c, { id, confirm }, now = Date.now()) {
     throw error;
   }
   try {
-    await verified.bulkDelete(ids, false);
+    const deleted = await verified.bulkDelete(ids, false);
+    if (
+      !deleted ||
+      (deleted.size !== ids.length && !(ids.length === 1 && deleted.size === 0)) ||
+      typeof deleted.has !== 'function' ||
+      (deleted.size !== 0 && ids.some((messageId) => !deleted.has(messageId)))
+    )
+      throw new Error('Missing exact purge deletion receipt');
   } catch {
-    c.purgePlans.finish(row.id, 'uncertain');
-    c.cases.finish(caseId, 'uncertain');
+    try {
+      c.purgePlans.finish(row.id, 'uncertain');
+    } catch {}
+    try {
+      c.cases.finish(caseId, 'uncertain');
+    } catch {}
     throw new UserError('purgeUncertain', { id: caseId });
   }
   try {

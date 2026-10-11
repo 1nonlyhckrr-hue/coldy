@@ -21,6 +21,7 @@ function setup() {
     calls = [];
   const member = (id, n) => ({
     id,
+    guild: { id: 'g' },
     user: { bot: false },
     permissions: { has: () => true },
     roles: {
@@ -43,7 +44,7 @@ function setup() {
     target = member(ids.target, 2);
   const channel = (id) => ({
     id,
-    client: { isReady: () => true },
+    client: { isReady: () => true, user: { id: ids.bot } },
     guildId: 'g',
     type: ChannelType.GuildVoice,
     permissionsFor: () => ({ has: () => true }),
@@ -54,7 +55,7 @@ function setup() {
     dest = channel(ids.dest);
   const i = {
     id: 'interaction1',
-    client: { isReady: () => true },
+    client: { isReady: () => true, user: { id: ids.bot } },
     guildId: 'g',
     user: { id: ids.actor },
     appPermissions: { has: () => true },
@@ -311,5 +312,278 @@ test('voice runtime disabled fails before any voice/member reads or effects', as
     assert.equal(s.calls.length, 0);
   } finally {
     s.db.close();
+  }
+});
+
+test('voice effects require exact returned guild/actor/bot/target identity before case or mutation', async () => {
+  for (const kind of ['guild', 'actor', 'actorGuild', 'bot', 'botGuild', 'client', 'targetGuild']) {
+    const s = setup();
+    try {
+      if (kind === 'guild') s.i.guild.id = 'other';
+      if (kind === 'actor') s.actor.id = ids.owner;
+      if (kind === 'actorGuild') s.actor.guild.id = 'other';
+      if (kind === 'bot') s.bot.id = ids.owner;
+      if (kind === 'botGuild') s.bot.guild.id = 'other';
+      if (kind === 'client') s.i.client.user.id = null;
+      if (kind === 'targetGuild') s.target.guild.id = 'other';
+      await assert.rejects(() => voiceAction(s.i, s.c, input('mute')));
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('voice source and destination lookups must return exact requested channel IDs', async () => {
+  for (const kind of ['source', 'destination']) {
+    const s = setup();
+    try {
+      if (kind === 'source') s.source.id = ids.owner;
+      else s.dest.id = ids.owner;
+      await assert.rejects(() => voiceAction(s.i, s.c, input('move')), /voiceChannelInvalid/);
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('voice final target refetch must preserve guild identity before effect even with matching channel and hierarchy', async () => {
+  const s = setup();
+  let targets = 0;
+  try {
+    s.i.guild.members.fetch = async ({ user }) =>
+      user === ids.actor
+        ? s.actor
+        : ++targets === 2
+          ? { ...s.target, guild: { id: 'other' } }
+          : s.target;
+    await assert.rejects(() => voiceAction(s.i, s.c, input('disconnect')), /voiceMoved/);
+    assert.equal(s.calls.length, 0);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('voice final actor and bot refresh reject authority lost during channel lookup', async () => {
+  for (const kind of ['actor', 'bot', 'actorGuild', 'botGuild']) {
+    const s = setup();
+    try {
+      const fetch = s.i.guild.channels.fetch;
+      s.i.guild.channels.fetch = async (id) => {
+        if (kind === 'actor') s.actor.permissions.has = () => false;
+        if (kind === 'bot') s.bot.permissions.has = () => false;
+        if (kind === 'actorGuild') s.actor.guild.id = 'other';
+        if (kind === 'botGuild') s.bot.guild.id = 'other';
+        return fetch(id);
+      };
+      await assert.rejects(() => voiceAction(s.i, s.c, input('move')));
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('voice final fresh actor hierarchy cannot borrow earlier higher role snapshot', async () => {
+  const s = setup();
+  let calls = 0;
+  try {
+    s.i.guild.members.fetch = async ({ user }) => {
+      if (user !== ids.actor) return s.target;
+      if (++calls === 1) return s.actor;
+      return { ...s.actor, roles: { highest: { comparePositionTo: () => -1 } } };
+    };
+    await assert.rejects(() => voiceAction(s.i, s.c, input('mute')));
+    assert.equal(s.calls.length, 0);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+  } finally {
+    s.db.close();
+  }
+});
+test('voice destination filling while final principals refresh prevents move without case', async () => {
+  const s = setup();
+  let calls = 0;
+  try {
+    s.dest.userLimit = 1;
+    s.i.guild.members.fetchMe = async () => {
+      if (++calls === 2) s.dest.members.set('human', {});
+      return s.bot;
+    };
+    await assert.rejects(() => voiceAction(s.i, s.c, input('move')), /voiceChannelFull/);
+    assert.equal(s.calls.length, 0);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('voice uncertain action cannot be repeated through a fresh interaction for same target/type', async () => {
+  const s = setup();
+  let attempts = 0;
+  try {
+    s.target.voice.setMute = async () => {
+      attempts++;
+      throw Error('network');
+    };
+    await assert.rejects(() => voiceAction(s.i, s.c, input('mute')), /voiceActionUncertain/);
+    s.i.id = 'fresh';
+    await assert.rejects(() => voiceAction(s.i, s.c, input('mute')), /voicePriorUncertain/);
+    assert.equal(attempts, 1);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 1);
+  } finally {
+    s.db.close();
+  }
+});
+test('voice unresolved prior gate is scoped by guild,target and exact action type', async () => {
+  for (const kind of ['same', 'guild', 'target', 'action']) {
+    const s = setup();
+    try {
+      const id = s.c.cases.begin({
+        guildId: kind === 'guild' ? 'other' : 'g',
+        targetId: kind === 'target' ? ids.owner : ids.target,
+        actorId: ids.actor,
+        action: kind === 'action' ? 'voice_deafen' : 'voice_mute',
+        reason: 'x',
+        interactionId: 'prior',
+      });
+      s.c.cases.finish(id, 'uncertain');
+      if (kind === 'same')
+        await assert.rejects(() => voiceAction(s.i, s.c, input('mute')), /voicePriorUncertain/);
+      else await voiceAction(s.i, s.c, input('mute'));
+      assert.equal(s.calls.length, kind === 'same' ? 0 : 1);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('voice pending cases block same type while failed/completed receipts permit new explicit request', async () => {
+  for (const status of ['pending', 'failed', 'completed']) {
+    const s = setup();
+    try {
+      const id = s.c.cases.begin({
+        guildId: 'g',
+        targetId: ids.target,
+        actorId: ids.actor,
+        action: 'voice_disconnect',
+        reason: 'x',
+        interactionId: 'prior',
+      });
+      if (status !== 'pending') s.c.cases.finish(id, status);
+      if (status === 'pending')
+        await assert.rejects(
+          () => voiceAction(s.i, s.c, input('disconnect')),
+          /voicePriorUncertain/,
+        );
+      else await voiceAction(s.i, s.c, input('disconnect'));
+      assert.equal(s.calls.length, status === 'pending' ? 0 : 1);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+
+test('voice move refuses unknown or invalid native capacity instead of assuming unlimited', async () => {
+  for (const limit of [undefined, null, NaN, Infinity, -1, 100, 1.5, '0']) {
+    const s = setup();
+    try {
+      s.dest.userLimit = limit;
+      await assert.rejects(() => voiceAction(s.i, s.c, input('move')), /voiceChannelInvalid/);
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('voice move final capacity validity check rejects malformed limit changed during authority refresh', async () => {
+  const s = setup();
+  let calls = 0;
+  try {
+    s.i.guild.members.fetchMe = async () => {
+      if (++calls === 2) s.dest.userLimit = undefined;
+      return s.bot;
+    };
+    await assert.rejects(() => voiceAction(s.i, s.c, input('move')), /voiceChannelInvalid/);
+    assert.equal(s.calls.length, 0);
+    assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('voice audit reasons reject control characters before any native lookup or case creation', async () => {
+  for (const reason of ['line\nbreak', 'a\u0000b', 'a\u001bb', 'a\u007fb', 'a\tb']) {
+    const s = setup();
+    let reads = 0;
+    try {
+      s.i.guild.members.fetch = async () => {
+        reads++;
+        throw Error('must not read');
+      };
+      await assert.rejects(
+        () => voiceAction(s.i, s.c, { ...input('mute'), reason }),
+        /modReasonBounds/,
+      );
+      assert.equal(reads, 0);
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('voice valid Unicode audit reason remains literal and trims only surrounding spaces', async () => {
+  const s = setup();
+  try {
+    const reason = '  कारण: "explicit" $5 `literal`  ';
+    await voiceAction(s.i, s.c, { ...input('mute'), reason });
+    assert.equal(s.db.prepare('SELECT reason FROM moderation_cases').get().reason, reason.trim());
+    assert(s.calls[0][2].endsWith(reason.trim()));
+  } finally {
+    s.db.close();
+  }
+});
+
+test('voice target must be positively human in initial and final lookup;unknown bot status fails closed', async () => {
+  for (const stage of ['initial', 'final'])
+    for (const value of [undefined, null, 'false', 0]) {
+      const s = setup();
+      let targets = 0;
+      try {
+        if (stage === 'initial') s.target.user.bot = value;
+        else
+          s.i.guild.members.fetch = async ({ user }) =>
+            user === ids.actor
+              ? s.actor
+              : ++targets === 2
+                ? { ...s.target, user: { bot: value } }
+                : s.target;
+        await assert.rejects(() => voiceAction(s.i, s.c, input('mute')), /voiceBotTarget/);
+        assert.equal(s.calls.length, 0);
+        assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+      } finally {
+        s.db.close();
+      }
+    }
+});
+test('voice malformed source channel identity fails before channel lookup without chasing target', async () => {
+  for (const id of ['bad', '1', '1'.repeat(21), 123]) {
+    const s = setup();
+    let channels = 0;
+    try {
+      s.target.voice.channelId = id;
+      s.i.guild.channels.fetch = async () => {
+        channels++;
+        throw Error('unexpected');
+      };
+      await assert.rejects(() => voiceAction(s.i, s.c, input('disconnect')), /voiceChannelInvalid/);
+      assert.equal(channels, 0);
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
   }
 });

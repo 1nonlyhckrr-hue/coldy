@@ -13,3 +13,17 @@ SQLite migration v9 creates command_restrictions. 320 current project tests pass
 Current checkpoint requires exact actor/member guild bindings,force exact selected role ID,and final actor permission refresh after target validation before restriction mutation. Enforcement rereads current restriction records after member fetch;added/removed restrictions during await are respected. Two new regression tests cover identities/final permission and restriction races. Local tests only.
 
 `remove` validates exact stored subject kind/ID without requiring native departed member/deleted role to exist. Confirmation mandatory,no native mutation;other records/guilds untouched,idempotent count0/1. Current exact manager check applies.373 local project tests;native acceptance pending.
+
+## Exact-channel denies
+
+`/permit blockchannel command channel-id` adds one exact-channel top-level deny after fresh manager/channel/access validation. `/permit unblockchannel command channel-id` removes only that stored rule,including a deleted channel without a native fetch. `/permit channelrules [command] [page]` shows stored channel rules,10/page. SQLite27 separate table,max100/guild,idempotent rules. No category/parent/thread inheritance:only exact interaction.channelId matches. No Discord overwrite/grant,member permissions remain required. Owner/help/permit recovery exemptions preserved. Existinguser/role deny rows unchanged and remain additive. `/permit status` includes channel denial;central dispatcher enforces it. Existing `/permit clear` still clears only user/role rules,not channels;use unblockchannel for channels. Native races/live acceptance unverified.
+
+## Full deny recovery and export
+
+`clearcommand command confirm:true` atomically removes both subject(user/role) and exactchannel denies for one stored command name,including no-longer-installed commands. Existing `clear` remains user/role-only for compatibility. `clearall confirm:true` atomically removes both deny tables for this guild,not other guilds. Both require fresh exact ManageGuild and explicit confirmation. Removing a Luna deny does not grant Discord permissions or bypass native/action-specific checks. Receipt/gate/other module config unchanged. Transaction rollback protects against partial clearing if either table fails.
+
+`export` private JSON includes current stored user/role subject IDs,channel IDs and command names. No timestamps/actorIDs/native permissions or live membership/access proof. Keep file private. Not import/backup restoration and no audience sharing. Existing help/permit and owner recovery exemptions stay. Private localized/no-ping shared replies and attachment bytes tested locally,not live client/visual acceptance.
+
+## Exact subject or destination recovery
+
+`/permit clearuser id confirm:true`, `clearrole id confirm:true`, `clearchannel id confirm:true` remove all stored denies for the exact user/role/channel ID across every stored command in this server,including previously removed commands. Departed/deleted resources may be cleaned without native lookup;no message or native permission mutation. Each path keeps other subject kinds,other IDs and other servers intact. Remaining user/role/channel denies can still block access;removing Luna denies never grants Discord permissions. Recovery/owner exemptions unchanged. Fresh native Manage Server,explicit confirmation,private3locale/no-ping. Three tests cover scope/isolation/remaining enforcement/idempotence/ID limits/database abort/current manager/commands. No live/client visual acceptance.

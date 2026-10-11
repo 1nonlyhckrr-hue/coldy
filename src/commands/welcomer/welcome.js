@@ -1,7 +1,10 @@
+import { exportWelcome, importWelcome, resetWelcome } from '../../services/welcomeLibrary.js';
+import { validateWelcomeAsset, welcomeStyle } from '../../services/welcomeAssets.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
   ChannelType,
@@ -118,6 +121,94 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('image')
+      .setDescription('Set HTTPS embed image for welcome/goodbye;omit URL to clear.')
+      .addStringOption((o) =>
+        o
+          .setName('kind')
+          .setDescription('Message kind')
+          .setRequired(true)
+          .addChoices({ name: 'welcome', value: 'welcome' }, { name: 'goodbye', value: 'goodbye' }),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('url')
+          .setDescription('Public HTTPS image URL;Discord fetches it,no private links')
+          .setMaxLength(1000),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('thumbnail')
+      .setDescription('Set HTTPS embed thumbnail for welcome/goodbye;omit URL to clear.')
+      .addStringOption((o) =>
+        o
+          .setName('kind')
+          .setDescription('Message kind')
+          .setRequired(true)
+          .addChoices({ name: 'welcome', value: 'welcome' }, { name: 'goodbye', value: 'goodbye' }),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('url')
+          .setDescription('Public HTTPS image URL;Discord fetches it,no private links')
+          .setMaxLength(1000),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetstyle')
+      .setDescription('Clear welcome/goodbye titles/images/thumbnails/shared color;templates kept.')
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm resetting both message styles')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('export')
+      .setDescription(
+        'Private welcome/goodbye template/style JSON;no channel IDs or enable flags.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('import')
+      .setDescription(
+        'Replace template/style library from JSON,disable both sends,keep destination.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('json')
+          .setDescription('Strict portable library object,4000characters max')
+          .setMinLength(2)
+          .setMaxLength(4000)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm replacing templates/styles and disabling delivery')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('reset')
+      .setDescription(
+        'Restore defaults,stop both message types,forget destination and all style/template settings.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm forgetting all welcome/goodbye settings')
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('enable').setDescription('Enable welcome messages.'))
   .addSubcommand((s) => s.setName('disable').setDescription('Disable welcome messages.'))
   .addSubcommand((s) => s.setName('config').setDescription('Show current settings.'))
@@ -156,7 +247,54 @@ export default {
     };
     const actor = await authorize();
     const sub = i.options.getSubcommand();
-    let text;
+    let text, files;
+    if (sub === 'export') {
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(
+            JSON.stringify(exportWelcome(c.guildConfig, i.guildId), null, 2) + '\n',
+            'utf8',
+          ),
+          { name: 'luna-welcome-library.json' },
+        ),
+      ];
+      text = t('welcomeLibraryExported');
+    }
+    if (sub === 'import') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('welcomeLibraryConfirm');
+      importWelcome(c.guildConfig, i.guildId, i.options.getString('json', true));
+      text = t('welcomeLibraryImported');
+    }
+    if (sub === 'reset') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('welcomeLibraryConfirm');
+      resetWelcome(c.guildConfig, i.guildId);
+      text = t('welcomeLibraryReset');
+    }
+    if (['image', 'thumbnail'].includes(sub)) {
+      const kind = i.options.getString('kind', true),
+        url = i.options.getString('url');
+      if (!['welcome', 'goodbye'].includes(kind)) throw new UserError('unknownCommand');
+      if (url !== null) validateWelcomeAsset(url);
+      const key = kind === 'welcome' ? sub : 'goodbye' + (sub === 'image' ? 'Image' : 'Thumbnail');
+      c.guildConfig.patch(i.guildId, 'welcome', { [key]: url === null ? undefined : url });
+      text = t('welcomeAssetSaved');
+    }
+    if (sub === 'resetstyle') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('welcomeStyleConfirm');
+      c.guildConfig.patch(i.guildId, 'welcome', {
+        title: undefined,
+        goodbyeTitle: undefined,
+        color: undefined,
+        image: undefined,
+        thumbnail: undefined,
+        goodbyeImage: undefined,
+        goodbyeThumbnail: undefined,
+      });
+      text = t('welcomeStyleReset');
+    }
     if (sub === 'channel') {
       const id = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, id);
@@ -285,8 +423,7 @@ export default {
           },
           {
             locale: latest.language,
-            color: latest.welcome.color,
-            title: kind === 'goodbye' ? latest.welcome.goodbyeTitle : latest.welcome.title,
+            ...welcomeStyle(latest.welcome, kind),
           },
         ),
       );
@@ -305,11 +442,16 @@ export default {
             content: renderGuildTemplate(latest.welcome, 'welcome', member, latest.language),
             allowedMentions: { parse: [], users: latest.welcome.mentionMember ? [i.user.id] : [] },
           },
-          { locale: latest.language, color: latest.welcome.color, title: latest.welcome.title },
+          { locale: latest.language, ...welcomeStyle(latest.welcome, 'welcome') },
         ),
       );
       text = t('welcomeTestSent');
     }
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };
