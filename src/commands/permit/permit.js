@@ -67,8 +67,25 @@ data
   .addSubcommand((s) =>
     s
       .setName('list')
-      .setDescription('Show configured restrictions, ten per page.')
-      .addIntegerOption((o) => o.setName('page').setDescription('Page').setMinValue(1)),
+      .setDescription(
+        'Inspect stored deny rules,optional command/kind filters;no permission grants.',
+      )
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('command')
+          .setDescription('Exact stored command name,including previously removed commands')
+          .setMinLength(1)
+          .setMaxLength(32),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('kind')
+          .setDescription('Only stored user or role deny rules')
+          .addChoices({ name: 'user', value: 'user' }, { name: 'role', value: 'role' }),
+      ),
   )
   .addSubcommand((s) =>
     s
@@ -109,7 +126,10 @@ export default {
       throw new UserError('userPermission');
     let text;
     if (sub === 'list') {
-      const rows = c.commandRestrictions.list(i.guildId),
+      const rows = c.commandRestrictions.filtered(i.guildId, {
+          commandName: i.options.getString?.('command') ?? null,
+          kind: i.options.getString?.('kind') ?? null,
+        }),
         pages = Math.max(1, Math.ceil(rows.length / 10)),
         page = i.options.getInteger('page') ?? 1;
       if (!Number.isInteger(page) || page < 1 || page > pages)

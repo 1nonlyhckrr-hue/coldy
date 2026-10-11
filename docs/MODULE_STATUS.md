@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-41 top-level slash commands,214 executable paths,637 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+41 top-level slash commands,214 executable paths,659 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -197,3 +197,19 @@ Ticket630local safety batch:uncertain receipts guard expected source state;creat
 Giveaway634local batch:existinglist2completeprizes/page1-50,newestfirstlatest100only explicitlylabeledstorednotliveeligibility/delivery. Strictpositiveexistingintegerpages,Markdownescaped/controlspacesdisplay,storedprizeunchanged,currentexactmanagerprivate/no-ping.4tests worstcase3locales/scopes/bounds/archivecap/no-disclosure.
 
 Autoresponder637batch:/disableall confirm:true atomiccurrentguildenabled->disabled only;templates/matching/cooldown/lastsend/historyretained,disabled/foreignunchanged.In-flightreservedresponsesmayfinish,neverautosendenableorchangesruntimeswitches.3newtestsguards/all3locales/SQLite-reopen.214localpaths.
+
+637/214PUBLICpublished28da64f48235c355affba628b2bc605a763e16ef exactNode22/24CIverified:https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38139456100 . Temp637releaseasset/tagcleaned,18criticalimmutablefilebytesmatched,nohistoryrewrite/deploy. Receiptupdatelocalafterpublication.
+
+Leaderboard640local safetybatch:top/pagecount/position/tieahead/stats nowboundendtotodayUTC aswellexactwindowstart. Futuredayrows ignoredwithoutdeletion,matching daily/activity. Importantallowed30sfuturetimestamps nearUTCmidnight onlycountonthatcalendar day.3testsscope/ties/pagecount/no-mutation/future-only/actualmidnightedge.214pathsunchanged,published637/214closed.
+
+Automation643batch:existing/upcoming optionalrecurringboolfilter,true repeatsonly,falseone-timeonly,unsetallpending. SQLfilterbeforepagination,strictboolonly,guild/pending scope,stable due/id ordering,no body/delivery/readinessclaims,no changes/sends.3tests all3locales/scopes/paging/bounds/no-mutation.214pathsunchanged.
+
+Permit646local:existinglistoptionalexactcommand+kindfiltersbeforepagination;storedremovedcommandsinspectable withoutnativeidentityfetch/permissiongrant/currentstateclaims. Strictstringcommandanduser/rolekind,currentmanagerprivateall3locales,no changes.3testsguild/type/scope/order/filteredpages/empty/bounds/no-mutation.214pathsunchanged,published637closed.
+
+Antinuke649 safetybatch:enablefresh exactmanager checkafterfinalasyncbot lookup beforeconfig. Alertdelivery rereadlatestenabled/destination/trust/owner+botexemptions afterdestinationlookup;revoked/changedpolicysuppresses no send,storesunavailable notpunishment/retry.Metadata preserved.3newtestsallraces/defaultalert-onlyunchanged.214paths/published637closed.
+
+ServerLogs652safety:case/test sentreceipt requiresexactstringnativeID,returnmessageId onlyafteracceptedidentity.Ambiguousmissing/empty/nonstringreturn is unavailable,onesendattempt,noretry.3testsaccepted/ambiguous/authorityrevocation metadata/no-pings. Sharedguildmock nowrealisticnativeID,no liveverification.214pathsunchanged,published637closed.
+
+Music655authorityracebatch:finalactorrefresh recheckcurrentactor/bot/channel/apppermissions andactorhuman,sessionchannel/botvoice/capacity beforeeffects. Guardcoversasyncfinalfetchrace,existingbotincurrentfullchannelnotfalselyrejected.3newtests allpermission/session/occupancychanges no effects.No nodeactivation/nativeaudioverification,214paths12musicdefaultoff.
+
+Music659queueinvalidationbatch:enqueueresolve/join/finalauthorityasyncboundariesmuststillmatchoriginalsessionandnonuncertain beforeappend/play. Providererrorevent/removed/replacedguildsession cannot silently restart uncertain queue.4newtestsactualendederrorcallback,joinfault,authorityfault,detached/replacedscopes noeffects.214paths12musicdefaultoff,nativeunverified.

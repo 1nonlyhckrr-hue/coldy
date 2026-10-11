@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All637 distinct automated tests pass locally; these are not live Discord integration tests. The618-test/212-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38137105993). 618/212 source publication and exact-head Node22/24CI are verified;New637-test/214-path local changes need their own publication and CI verification. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All659 distinct automated tests pass locally; these are not live Discord integration tests. The637-test/214-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38139456100). 637/214 source publication and exact-head Node22/24CI are verified;Later local changes need their own publication and CI verification. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -52,7 +52,7 @@ Pinned Prettier formats source/scripts/tests;`npm run format:check` verifies sty
 
 `npm run lint` uses pinned ESLint10.12.0;current Node minimum22.13+ keeps tooling compatible. CI includes lint with formatter/tests and inventory drift checks.
 
-Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint618/212 (f5c7c4fc9f3e1a45375795a6abfa12694f603e06),exact-headCI verified;this receipt update is local. Never commit tokens or private runtime data.
+Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint637/214 (28da64f48235c355affba628b2bc605a763e16ef),exact-headCI verified;this receipt update is local. Never commit tokens or private runtime data.
 
 Private source publication on October11,2026:506-test/182-path source checkpoint commit `0d2fff5d1356b56e06227adf7695b061ac79228b`. [Publisher verification](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125749267) passed;[current-head Node22/24 CI](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125897895) passed. Temporary transfer release/asset/tag deleted. No deployment or live Discord acceptance. This local publication receipt was added after the published checkpoint;later archive will include it.
 

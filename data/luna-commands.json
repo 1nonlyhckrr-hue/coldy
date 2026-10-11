@@ -674,7 +674,7 @@
   {
     "name": "automation upcoming",
     "category": "automations",
-    "syntax": "/automation upcoming [page]",
+    "syntax": "/automation upcoming [page] [recurring]",
     "description": "Privately inspect pending sends ordered by time;no content or sending.",
     "parameters": [
       {
@@ -683,6 +683,11 @@
         "type": 4,
         "min": 1,
         "max": 3
+      },
+      {
+        "name": "recurring",
+        "required": false,
+        "type": 5
       }
     ],
     "userPermissions": [
@@ -4027,14 +4032,37 @@
   {
     "name": "permit list",
     "category": "permit",
-    "syntax": "/permit list [page]",
-    "description": "Show configured restrictions, ten per page.",
+    "syntax": "/permit list [page] [command] [kind]",
+    "description": "Inspect stored deny rules,optional command/kind filters;no permission grants.",
     "parameters": [
       {
         "name": "page",
         "required": false,
         "type": 4,
-        "min": 1
+        "min": 1,
+        "max": 10
+      },
+      {
+        "name": "command",
+        "required": false,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 32
+      },
+      {
+        "name": "kind",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "user",
+            "value": "user"
+          },
+          {
+            "name": "role",
+            "value": "role"
+          }
+        ]
       }
     ],
     "userPermissions": [],

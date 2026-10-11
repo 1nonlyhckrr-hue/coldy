@@ -663,5 +663,6 @@
   "musicAction_move": "Waiting track requested final position pe move.Current playback unchanged.",
   "giveawayStoredNotice": "Sirf latest100 stored records;live delivery/eligibility status nahi.Prizes full,formatting escaped.",
   "responderConfirmRequired": "Saare guild triggers pause karne ki confirmation chahiye.",
-  "responderDisabledAll": "{count}currently enabled stored triggers pause;response/cooldown/history retained.In-flight responses finish ho sakte hain.Runtime switches unchanged."
+  "responderDisabledAll": "{count}currently enabled stored triggers pause;response/cooldown/history retained.In-flight responses finish ho sakte hain.Runtime switches unchanged.",
+  "automationQueueFilterInvalid": "Recurring filter true,false ya unset chahiye."
 }

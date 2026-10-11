@@ -386,3 +386,63 @@ test('queue move slash passes captured current-channel authority and private loc
     await assert.rejects(() => guard(), /voiceMoved/);
   }
 });
+
+test('music voice final actor refresh rechecks actor bot app permissions after async boundary before play', async () => {
+  for (const mode of ['actor', 'bot', 'app', 'actorbot']) {
+    const x = setup();
+    let calls = 0,
+      revoked = false;
+    x.channel.permissionsFor = (who) => ({
+      has: () =>
+        !revoked ||
+        (mode !== 'actor' && mode !== 'bot') ||
+        (mode === 'actor' ? who.id !== x.actor.id : who.id !== x.bot.id),
+    });
+    x.i.guild.members.fetch = async () => {
+      if (++calls === 2) {
+        revoked = true;
+        if (mode === 'app') x.i.appPermissions.has = () => false;
+        if (mode === 'actorbot') x.actor.user.bot = true;
+      }
+      return x.actor;
+    };
+    await assert.rejects(() => command.execute(x.i, x.c), /musicVoiceDenied/);
+    assert.equal(x.calls.length, 0);
+  }
+});
+test('music final actor refresh blocks newly foreign session or moved bot voice before enqueue or queue edit', async () => {
+  for (const mode of ['session', 'bot']) {
+    const x = setup();
+    let calls = 0;
+    x.i.guild.members.fetch = async () => {
+      if (++calls === 2) {
+        if (mode === 'session') x.c.music.snapshot = () => ({ channelId: 'other' });
+        else x.bot.voice.channelId = 'other';
+      }
+      return x.actor;
+    };
+    await assert.rejects(() => command.execute(x.i, x.c), /musicDifferentChannel/);
+    assert.equal(x.calls.length, 0);
+  }
+});
+test('music joining capacity is rechecked after final actor refresh and existing bot occupancy not falsely rejected', async () => {
+  for (const connected of [false, true]) {
+    const x = setup();
+    let calls = 0;
+    x.channel.userLimit = 1;
+    x.i.guild.members.fetch = async () => {
+      if (++calls === 2) {
+        x.i.guild.voiceStates.cache.set('occupied', { channelId: 'vc' });
+        if (connected) x.bot.voice.channelId = 'vc';
+      }
+      return x.actor;
+    };
+    if (connected) await requireMusicVoice(x.i, x.c, { joining: true });
+    else
+      await assert.rejects(
+        () => requireMusicVoice(x.i, x.c, { joining: true }),
+        /voiceChannelFull/,
+      );
+    assert.equal(x.calls.length, 0);
+  }
+});

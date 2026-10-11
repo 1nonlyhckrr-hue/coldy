@@ -1146,3 +1146,96 @@ test('queue read slash gates current exact manager before accessing storage and 
     x.db.close();
   }
 });
+
+test('upcoming recurrence filter applies before pagination with stable due/id order and guild/pending scope', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 24; n++)
+      x.store.create({
+        ...x.input,
+        interactionId: 'r' + n,
+        dueAt: x.now() + 60000 + (n % 3) * 1000,
+        ...(n % 2 ? { repeatMs: 600000 } : {}),
+      });
+    const foreign = x.store.create({
+      ...x.input,
+      guildId: 'foreign',
+      interactionId: 'foreign',
+      repeatMs: 600000,
+    });
+    const one = x.store.upcoming('g', 1, { recurring: false }),
+      two = x.store.upcoming('g', 2, { recurring: false });
+    assert.equal(one.length, 10);
+    assert.equal(two.length, 2);
+    assert(one.every((r) => r.repeat_ms === null));
+    assert.equal(new Set([...one, ...two].map((r) => r.id)).size, 12);
+    const repeats = x.store.upcoming('g', 1, { recurring: true });
+    assert(repeats.every((r) => r.repeat_ms === 600000 && r.id !== foreign));
+    for (let n = 1; n < repeats.length; n++)
+      assert(
+        repeats[n].due_at > repeats[n - 1].due_at ||
+          (repeats[n].due_at === repeats[n - 1].due_at && repeats[n].id > repeats[n - 1].id),
+      );
+    x.store.cancel(repeats[0].id, 'g');
+    assert(!x.store.upcoming('g', 1, { recurring: true }).some((r) => r.id === repeats[0].id));
+  } finally {
+    x.db.close();
+  }
+});
+test('upcoming recurrence strict boolean/unset filter does not mutate jobs or disclose bodies', () => {
+  const x = setup();
+  try {
+    x.store.create(x.input);
+    const before = x.store.list('g');
+    for (const v of ['true', 0, 1, {}, []])
+      assert.throws(
+        () => x.store.upcoming('g', 1, { recurring: v }),
+        /automationQueueFilterInvalid/,
+      );
+    assert.deepEqual(x.store.upcoming('g', 1), x.store.upcoming('g', 1, { recurring: null }));
+    assert.deepEqual(x.store.upcoming('g', 1, { recurring: true }), []);
+    assert(!Object.hasOwn(x.store.upcoming('g', 1, { recurring: false })[0], 'body'));
+    assert.deepEqual(x.store.list('g'), before);
+  } finally {
+    x.db.close();
+  }
+});
+test('upcoming recurring slash passes explicit false/true without enabling or sending and remains private in three locales', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const recurring of [false, true]) {
+      const x = setup();
+      try {
+        x.c.guildConfig.setLanguage('g', locale);
+        x.store.create(x.input);
+        x.store.create({ ...x.input, interactionId: 'repeat', repeatMs: 600000 });
+        const replies = [],
+          before = x.store.list('g');
+        let defer;
+        const i = {
+          guildId: 'g',
+          guild: x.guild,
+          user: { id: 'u' },
+          options: {
+            getSubcommand: () => 'upcoming',
+            getInteger: () => 1,
+            getBoolean: () => recurring,
+          },
+          deferReply: async (p) => {
+            defer = p;
+          },
+          editReply: async (p) => replies.push(p),
+        };
+        await command.execute(i, x.c);
+        assert.equal(defer.flags, 64);
+        const body = replies[0].embeds[0].data.description;
+        assert(body.includes(recurring ? '#2' : '#1'));
+        assert(!body.includes(recurring ? '#1' : '#2'));
+        assert(!body.includes(x.input.body));
+        assert.deepEqual(replies[0].allowedMentions.parse, []);
+        assert.equal(x.sent.length, 0);
+        assert.deepEqual(x.store.list('g'), before);
+      } finally {
+        x.db.close();
+      }
+    }
+});

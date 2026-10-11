@@ -101,6 +101,7 @@ export default {
         !bot.permissions?.has(P.ViewAuditLog)
       )
         throw new UserError('antinukeBotPermission');
+      await authorize();
       if (!c.config.auditEventsEnabled) throw new UserError('antinukeRuntimeDisabled');
       c.antinuke.patch(i.guildId, { enabled: true, channelId: channel.id });
       text = t('antinukeEnabled');

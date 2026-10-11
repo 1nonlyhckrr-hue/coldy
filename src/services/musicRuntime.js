@@ -142,6 +142,26 @@ export async function requireMusicVoice(i, c, { joining = false } = {}) {
     current.voice?.channelId !== channel.id
   )
     throw new UserError('voiceMoved');
+  if (
+    current.user?.bot ||
+    !channel.permissionsFor(current)?.has([P.ViewChannel, P.Connect]) ||
+    !channel.permissionsFor(bot)?.has([P.ViewChannel, P.Connect, P.Speak]) ||
+    !i.appPermissions?.has([P.Connect, P.Speak])
+  )
+    throw new UserError('musicVoiceDenied');
+  const finalSession = c.music.snapshot(i.guildId);
+  if (
+    (finalSession && finalSession.channelId !== channel.id) ||
+    (bot.voice?.channelId && bot.voice.channelId !== channel.id)
+  )
+    throw new UserError('musicDifferentChannel');
+  if (
+    joining &&
+    !bot.voice?.channelId &&
+    channel.userLimit > 0 &&
+    voiceOccupancy(i.guild, channel.id) >= channel.userLimit
+  )
+    throw new UserError('voiceChannelFull');
   requireVoiceReady(i, c);
   return { channel, actor: current };
 }

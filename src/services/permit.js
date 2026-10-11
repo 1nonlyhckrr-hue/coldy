@@ -24,6 +24,16 @@ export class CommandRestrictions {
           )
           .all(guildId);
   }
+  filtered(guildId, { commandName = null, kind = null } = {}) {
+    if (
+      commandName !== null &&
+      (typeof commandName !== 'string' || !/^[a-z0-9_-]{1,32}$/.test(commandName))
+    )
+      throw new UserError('permitCommandInvalid');
+    if (kind !== null && !['user', 'role'].includes(kind))
+      throw new UserError('permitSubjectInvalid');
+    return this.list(guildId, commandName).filter((r) => kind === null || r.subject_kind === kind);
+  }
   set(guildId, commandName, kind, id, blocked) {
     this.validate(commandName, kind, id);
     if (typeof blocked !== 'boolean') throw new TypeError('Invalid restriction state');

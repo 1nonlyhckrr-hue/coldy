@@ -832,3 +832,68 @@ test('activity tracks consecutive calendar days across month/year boundaries wit
     db.close();
   }
 });
+
+test('rank totals and tie positions exclude future UTC dates in every calendar window without mutating storage', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db),
+      q = db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)');
+    q.run('g', user, '2026-10-11', 5);
+    q.run('g', user, '2026-10-10', 2);
+    q.run('g', user, '2026-10-12', 9000);
+    q.run('g', '100000000000000003', '2026-10-12', 10000);
+    q.run('g', '100000000000000000', '2026-10-11', 5);
+    q.run('foreign', user, '2026-10-11', 8000);
+    for (const period of ['today', 'week', 'retained']) {
+      const top = r.top('g', period, 1, now);
+      assert.equal(top.pages, 1);
+      assert.equal(top.rows.length, 2);
+      assert(!top.rows.some((a) => a.user_id === '100000000000000003'));
+      const mine = top.rows.find((a) => a.user_id === user);
+      assert.equal(mine.total, period === 'today' ? 5 : 7);
+      assert.equal(r.position('g', user, period, now).total, mine.total);
+    }
+    assert.deepEqual(r.stats('g', user, now), { today: 5, week: 7, retained: 7 });
+    assert.equal(db.prepare('SELECT count(*) n FROM message_rank_daily').get().n, 6);
+  } finally {
+    db.close();
+  }
+});
+test('future-only rank records are not numbered and do not inflate page count or rank zero', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    for (let n = 0; n < 12; n++)
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+        'g',
+        String(100000000000000000n + BigInt(n)),
+        '2026-10-12',
+        99,
+      );
+    for (const period of ['today', 'week', 'retained']) {
+      assert.deepEqual(r.top('g', period, 1, now), { rows: [], pages: 1, page: 1 });
+      assert.deepEqual(r.position('g', user, period, now), { position: null, total: 0 });
+      assert.throws(() => r.top('g', period, 2, now));
+    }
+    assert.deepEqual(r.stats('g', user, now), { today: 0, week: 0, retained: 0 });
+  } finally {
+    db.close();
+  }
+});
+test('near-midnight legitimate thirty-second future event only contributes when its UTC day starts', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db),
+      anchor = Date.parse('2026-10-11T23:59:50Z');
+    r.enable('g', true);
+    assert.equal(r.record(message(100, { createdTimestamp: anchor + 20000 }), anchor), true);
+    assert.deepEqual(r.stats('g', user, anchor), { today: 0, week: 0, retained: 0 });
+    assert.deepEqual(r.top('g', 'today', 1, anchor).rows, []);
+    assert.equal(r.position('g', user, 'today', anchor).position, null);
+    assert.equal(r.stats('g', user, anchor + 20000).today, 1);
+    assert.equal(r.top('g', 'today', 1, anchor + 20000).rows[0].total, 1);
+    assert.equal(r.position('g', user, 'today', anchor + 20000).position, 1);
+  } finally {
+    db.close();
+  }
+});

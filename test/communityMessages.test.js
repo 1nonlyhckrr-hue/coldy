@@ -93,3 +93,66 @@ test('welcome/goodbye recheck event consent and destination after asynchronous n
     }
   }
 });
+
+test('server log sent receipt requires accepted native identity and never auto retries ambiguous result', async () => {
+  for (const result of [undefined, null, {}, { id: '' }, { id: 42 }]) {
+    const db = openDatabase(':memory:');
+    try {
+      const c = new GuildConfig(new GuildSettings(db)),
+        s = makeGuild();
+      c.patch('g', 'logging', { enabled: true, channelId: '100000000000000001' });
+      let sends = 0,
+        warns = 0;
+      s.channel.send = async () => {
+        sends++;
+        return result;
+      };
+      const r = await new ServerLogs(c, { warn: () => warns++ }).emit(s.guild, { kind: 'test' });
+      assert.deepEqual(r, { sent: false, reason: 'unavailable' });
+      assert.equal(sends, 1);
+      assert.equal(warns, 1);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('successful server log exposes exact native receipt only after send and preserves private metadata/no pings', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const c = new GuildConfig(new GuildSettings(db)),
+      s = makeGuild();
+    c.patch('g', 'logging', { enabled: true, channelId: '100000000000000001' });
+    let payload;
+    s.channel.send = async (p) => {
+      payload = p;
+      return { id: 'exact-native-message' };
+    };
+    assert.deepEqual(
+      await new ServerLogs(c, logger).emit(s.guild, {
+        kind: 'test',
+        reason: 'secret',
+        content: 'secret',
+      }),
+      { sent: true, messageId: 'exact-native-message' },
+    );
+    assert.deepEqual(payload.allowedMentions.parse, []);
+    assert(!JSON.stringify(payload).includes('secret'));
+  } finally {
+    db.close();
+  }
+});
+test('server log beforeSend revocation suppresses native effect and no accepted receipt is returned', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const c = new GuildConfig(new GuildSettings(db)),
+      s = makeGuild();
+    c.patch('g', 'logging', { enabled: true, channelId: '100000000000000001' });
+    const r = await new ServerLogs(c, logger).emit(s.guild, { kind: 'test' }, async () => {
+      throw Error('authority lost');
+    });
+    assert.deepEqual(r, { sent: false, reason: 'unavailable' });
+    assert.equal(s.sent.length, 0);
+  } finally {
+    db.close();
+  }
+});

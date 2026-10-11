@@ -176,6 +176,17 @@ export function createAntinukeHandler(c) {
         c.antinuke.finish(incident.id, 'unavailable');
         return;
       }
+      const latest = c.antinuke.get(guild.id);
+      if (
+        !latest.enabled ||
+        latest.channelId !== incident.channelId ||
+        latest.trustedUsers.includes(incident.actorId) ||
+        guild.ownerId === incident.actorId ||
+        guild.client.user.id === incident.actorId
+      ) {
+        c.antinuke.finish(incident.id, 'unavailable');
+        return;
+      }
       try {
         const sent = await channel.send(
           lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }),

@@ -167,7 +167,7 @@ function interaction(guild, sub, { name = 'fun', target = user, page = 1 } = {})
       user: { id: user },
       options: {
         getSubcommand: () => sub,
-        getString: () => name,
+        getString: (field) => (field === 'command' ? name : null),
         getUser: () => ({ id: target }),
         getRole: () => ({ id: role }),
         getInteger: () => page,
@@ -452,6 +452,100 @@ test('dispatcher permits nonmanager own status but blocks nonmanager management 
     }
     assert.equal(r.list('g').length, 0);
     assert.equal(permit.data.toJSON().default_member_permissions, undefined);
+  } finally {
+    db.close();
+  }
+});
+
+test('filtered permit denies preserve exact command/kind/guild scope including removed commands without mutation', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new CommandRestrictions(db);
+    r.set('g', 'fun', 'user', user, true);
+    r.set('g', 'fun', 'role', role, true);
+    r.set('g', 'old_command', 'user', owner, true);
+    r.set('foreign', 'fun', 'user', owner, true);
+    const before = r.list('g');
+    assert.equal(r.filtered('g', { commandName: 'fun' }).length, 2);
+    assert.deepEqual(r.filtered('g', { commandName: 'fun', kind: 'user' }), [before[1]]);
+    assert.equal(r.filtered('g', { kind: 'user' }).length, 2);
+    assert.equal(r.filtered('g', { commandName: 'old_command' })[0].subject_id, owner);
+    assert.deepEqual(r.filtered('g', { commandName: 'missing' }), []);
+    assert.deepEqual(r.filtered('empty'), []);
+    assert.deepEqual(r.list('g'), before);
+    for (const kind of ['bad', 0, false])
+      assert.throws(() => r.filtered('g', { kind }), /permitSubjectInvalid/);
+    for (const name of ['FUN', 'bad name', 0])
+      assert.throws(() => r.filtered('g', { commandName: name }), /permitCommandInvalid/);
+  } finally {
+    db.close();
+  }
+});
+test('filtered permit list filters before pagination current-manager private/localized no native lookup or mutation', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const { r, member, guild } = fixture(db);
+      for (let n = 0; n < 12; n++)
+        r.set('g', 'fun', 'user', String(100000000000000010n + BigInt(n)), true);
+      for (let n = 0; n < 10; n++)
+        r.set('g', 'ping', 'role', String(100000000000000010n + BigInt(n)), true);
+      const before = r.list('g'),
+        replies = [],
+        i = {
+          guildId: 'g',
+          guild,
+          user: { id: user },
+          options: {
+            getSubcommand: () => 'list',
+            getInteger: () => 2,
+            getString: (n) => (n === 'command' ? 'fun' : 'user'),
+          },
+          deferReply: async (p) => assert.equal(p.flags, 64),
+          editReply: async (p) => replies.push(p),
+        },
+        c = {
+          commandRestrictions: r,
+          commands: new Map(),
+          localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+        };
+      await permit.execute(i, c);
+      const body = replies[0].embeds[0].data.description;
+      assert.equal((body.match(/\/fun/g) || []).length, 2);
+      assert(!body.includes('/ping'));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.deepEqual(r.list('g'), before);
+      member.permissions.has = () => false;
+      await assert.rejects(() => permit.execute(i, c), /userPermission/);
+      assert.equal(replies.length, 1);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('filtered permit empty results use page one and never imply command/Discord permission grants', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const { r, guild } = fixture(db);
+    let page = 2;
+    const replies = [],
+      i = {
+        guildId: 'g',
+        guild,
+        user: { id: user },
+        options: { getSubcommand: () => 'list', getInteger: () => page, getString: () => null },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+      },
+      c = {
+        commandRestrictions: r,
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+      };
+    await assert.rejects(() => permit.execute(i, c), /permitPageInvalid/);
+    page = 1;
+    await permit.execute(i, c);
+    assert.equal(replies.length, 1);
+    assert.deepEqual(r.list('g'), []);
   } finally {
     db.close();
   }

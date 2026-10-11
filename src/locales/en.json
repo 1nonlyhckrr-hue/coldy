@@ -663,5 +663,6 @@
   "musicAction_move": "Waiting track moved to requested final position.Current playback unchanged.",
   "giveawayStoredNotice": "Latest100 stored records only;not live delivery/eligibility status.Prizes displayed fully,formatting escaped.",
   "responderConfirmRequired": "Confirm all guild triggers should be paused.",
-  "responderDisabledAll": "Paused{count}currently enabled stored triggers;response/cooldown/history retained.In-flight responses may finish.This does not change runtime switches."
+  "responderDisabledAll": "Paused{count}currently enabled stored triggers;response/cooldown/history retained.In-flight responses may finish.This does not change runtime switches.",
+  "automationQueueFilterInvalid": "Recurring filter must be true,false,or unset."
 }

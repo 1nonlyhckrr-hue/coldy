@@ -531,3 +531,139 @@ test('unresolved audit slash is exact current manager gated private localized an
     }
   }
 });
+
+test('enable audit monitor rechecks exact manager after final async bot lookup before configuration mutation', async () => {
+  for (const kind of ['permission', 'identity', 'guild', 'runtime']) {
+    const { db, r } = setup();
+    try {
+      r.patch('g', { enabled: false });
+      let allowed = true,
+        changed = false;
+      const g = {
+          ...guild,
+          members: {
+            fetch: async () => ({
+              id: changed && kind === 'identity' ? 'wrong' : ids.actor,
+              guild: { id: changed && kind === 'guild' ? 'other' : 'g' },
+              permissions: { has: () => allowed },
+            }),
+            fetchMe: async () => {
+              changed = true;
+              if (kind === 'permission') allowed = false;
+              if (kind === 'runtime') c.config.auditEventsEnabled = false;
+              return { id: ids.bot, guild: { id: 'g' }, permissions: { has: () => true } };
+            },
+          },
+          channels: {
+            fetch: async () => ({
+              id: ids.channel,
+              guildId: 'g',
+              type: 0,
+              permissionsFor: () => ({ has: () => true }),
+            }),
+          },
+        },
+        c = {
+          antinuke: r,
+          config: { auditEventsEnabled: true },
+          localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+        },
+        i = {
+          guildId: 'g',
+          guild: g,
+          user: { id: ids.actor },
+          options: { getSubcommand: () => 'enable', getChannel: () => ({ id: ids.channel }) },
+          deferReply: async () => {},
+          editReply: async () => {
+            throw Error('unexpected reply');
+          },
+        };
+      await assert.rejects(() => command.execute(i, c));
+      assert.equal(r.get('g').enabled, false);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('audit alert checks latest disabled destination/trust policy after lookup before send and preserves metadata without retry', async () => {
+  for (const change of [
+    { enabled: false },
+    { channelId: '100000000000000009' },
+    { trustedUsers: [ids.actor] },
+  ]) {
+    const { db, r } = setup();
+    let sends = 0;
+    try {
+      const g = {
+          ...guild,
+          members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+          channels: {
+            fetch: async () => {
+              r.patch('g', change);
+              return {
+                id: ids.channel,
+                guildId: 'g',
+                type: 0,
+                permissionsFor: () => ({ has: () => true }),
+                send: async () => {
+                  sends++;
+                  return { id: 'native' };
+                },
+              };
+            },
+          },
+        },
+        h = createAntinukeHandler({
+          antinuke: r,
+          localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+          logger: { warn() {} },
+        });
+      await h(entry(1), g);
+      await h(entry(2), g);
+      assert.equal(sends, 0);
+      assert.equal(r.incidents('g')[0].status, 'unavailable');
+      assert.equal(r.incidents('g')[0].actor_id, ids.actor);
+      await h(entry(2), g);
+      assert.equal(sends, 0);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('audit alert owner change during destination lookup suppresses scheduled alert without punishment or rewritten policy', async () => {
+  const { db, r } = setup();
+  let sends = 0;
+  try {
+    const before = r.get('g'),
+      g = {
+        ...guild,
+        members: { fetchMe: async () => ({ id: ids.bot, guild: { id: 'g' } }) },
+        channels: {
+          fetch: async () => {
+            g.ownerId = ids.actor;
+            return {
+              id: ids.channel,
+              guildId: 'g',
+              type: 0,
+              permissionsFor: () => ({ has: () => true }),
+              send: async () => {
+                sends++;
+              },
+            };
+          },
+        },
+      },
+      h = createAntinukeHandler({
+        antinuke: r,
+        localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+        logger: { warn() {} },
+      });
+    await h(entry(1), g);
+    await h(entry(2), g);
+    assert.equal(sends, 0);
+    assert.deepEqual(r.get('g'), before);
+    assert.equal(r.incidents('g')[0].status, 'unavailable');
+  } finally {
+    db.close();
+  }
+});

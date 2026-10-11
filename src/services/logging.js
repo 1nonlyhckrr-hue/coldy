@@ -23,10 +23,12 @@ export class ServerLogs {
         actorId: entry.actorId ?? '-',
         targetId: entry.targetId ?? '-',
       }).slice(0, 1900);
-      await channel.send(
+      const message = await channel.send(
         lunaPayload({ content, allowedMentions: { parse: [] } }, { locale: latest.language }),
       );
-      return { sent: true };
+      if (typeof message?.id !== 'string' || !message.id)
+        throw new Error('Missing accepted log message identity');
+      return { sent: true, messageId: message.id };
     } catch {
       this.logger.warn({ guildId: guild.id }, 'Server log delivery unavailable');
       return { sent: false, reason: 'unavailable' };

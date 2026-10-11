@@ -231,6 +231,11 @@ const data = new SlashCommandBuilder()
       .setDescription('Privately inspect pending sends ordered by time;no content or sending.')
       .addIntegerOption((o) =>
         o.setName('page').setDescription('Pending queue page1-3').setMinValue(1).setMaxValue(3),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('recurring')
+          .setDescription('True:repeat schedules only;false:one-time only;unset:all pending'),
       ),
   )
   .addSubcommand((s) =>
@@ -389,7 +394,9 @@ export default {
     }
     if (sub === 'upcoming') {
       const page = i.options.getInteger('page') ?? 1,
-        rows = c.messageSchedules.upcoming(i.guildId, page);
+        rows = c.messageSchedules.upcoming(i.guildId, page, {
+          recurring: i.options.getBoolean?.('recurring') ?? null,
+        });
       content =
         t('automationUpcoming', { page }) +
         '\n' +

@@ -141,7 +141,7 @@
 | /permit blockrole | Block a role for one entire command. | Local mock/unit only |
 | /permit blockuser | Block a user for one entire command. | Local mock/unit only |
 | /permit clear | Remove all restrictions for one command. | Local mock/unit only |
-| /permit list | Show configured restrictions, ten per page. | Local mock/unit only |
+| /permit list | Inspect stored deny rules,optional command/kind filters;no permission grants. | Local mock/unit only |
 | /permit remove | Remove one exact stored restriction,including departed/deleted subject IDs. | Local mock/unit only |
 | /permit status | Check your current stored command restriction only,not Discord permissions. | Local mock/unit only |
 | /permit unblockrole | Unblock a role for one entire command. | Local mock/unit only |

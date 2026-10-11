@@ -72,14 +72,21 @@ export class MessageSchedules {
       .prepare('SELECT * FROM message_schedules WHERE guild_id=? ORDER BY id DESC LIMIT 100')
       .all(guildId);
   }
-  upcoming(guildId, page = 1) {
+  upcoming(guildId, page = 1, { recurring = null } = {}) {
     if (!Number.isInteger(page) || page < 1 || page > 3)
       throw new UserError('automationQueuePageInvalid');
+    if (recurring !== null && typeof recurring !== 'boolean')
+      throw new UserError('automationQueueFilterInvalid');
     return this.db
       .prepare(
-        "SELECT id,channel_id,due_at,repeat_ms FROM message_schedules WHERE guild_id=? AND status='pending' ORDER BY due_at,id LIMIT 10 OFFSET ?",
+        "SELECT id,channel_id,due_at,repeat_ms FROM message_schedules WHERE guild_id=? AND status='pending' AND (? IS NULL OR (repeat_ms IS NOT NULL)=?) ORDER BY due_at,id LIMIT 10 OFFSET ?",
       )
-      .all(guildId, (page - 1) * 10);
+      .all(
+        guildId,
+        recurring === null ? null : Number(recurring),
+        recurring === null ? null : Number(recurring),
+        (page - 1) * 10,
+      );
   }
   overview(guildId) {
     return this.db

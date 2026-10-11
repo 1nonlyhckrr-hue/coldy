@@ -492,3 +492,88 @@ test('move awaiting authority cannot rewrite invalidated provider session after 
   );
   assert.deepEqual(session.queue, initial);
 });
+
+test('enqueue provider error while resolution awaits never appends stale track or restarts uncertain session', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const session = s.q.sessions.get('g'),
+    initial = [...session.queue],
+    calls = s.calls.length;
+  const resolve = s.q.adapter.resolve;
+  s.q.adapter.resolve = async (item) => {
+    session.status = 'uncertain';
+    return resolve(item);
+  };
+  await assert.rejects(() => s.q.enqueue('g', 'vc', 'sample', 'u'), /musicUncertain/);
+  assert.deepEqual(session.queue, initial);
+  assert.equal(s.calls.length, calls);
+  assert.equal(session.status, 'uncertain');
+});
+test('enqueue final authority await invalidation cannot append or play after joined session becomes uncertain', async () => {
+  const s = setup();
+  let guards = 0;
+  await assert.rejects(
+    () =>
+      s.q.enqueueItem('g', 'vc', s.q.catalog.get('sample'), 'u', {
+        beforeEffect: async () => {
+          if (++guards === 2) s.q.sessions.get('g').status = 'uncertain';
+        },
+      }),
+    /musicUncertain/,
+  );
+  assert.equal(guards, 2);
+  const session = s.q.sessions.get('g');
+  assert.equal(session.status, 'uncertain');
+  assert.equal(session.queue.length, 0);
+  assert.equal(session.current, null);
+  assert(!s.calls.some((c) => c[0] === 'play'));
+});
+test('enqueue resolution against removed or replaced session cannot mutate detached/replacement guild queue', async () => {
+  for (const replace of [false, true]) {
+    const s = setup();
+    await s.q.enqueue('g', 'vc', 'sample', 'u');
+    const old = s.q.sessions.get('g'),
+      resolve = s.q.adapter.resolve;
+    let newer;
+    s.q.adapter.resolve = async (item) => {
+      s.q.sessions.delete('g');
+      if (replace) {
+        newer = { ...old, queue: [], current: null };
+        s.q.sessions.set('g', newer);
+      }
+      return resolve(item);
+    };
+    const calls = s.calls.length;
+    await assert.rejects(() => s.q.enqueue('g', 'vc', 'sample', 'u'), /musicUncertain/);
+    assert.equal(old.queue.length, 0);
+    if (replace) {
+      assert.equal(newer.queue.length, 0);
+      assert.equal(s.q.sessions.get('g'), newer);
+    } else assert.equal(s.q.snapshot('g'), null);
+    assert.equal(s.calls.length, calls);
+  }
+});
+
+test('actual provider ended callback during queue resolution and uncertain joining handshake cannot resume playback', async () => {
+  const s = setup();
+  await s.q.enqueue('g', 'vc', 'sample', 'u');
+  const session = s.q.sessions.get('g'),
+    resolve = s.q.adapter.resolve,
+    calls = s.calls.length;
+  s.q.adapter.resolve = async (item) => {
+    await s.q.ended('g', session.current.eventId, 'error');
+    return resolve(item);
+  };
+  await assert.rejects(() => s.q.enqueue('g', 'vc', 'sample', 'u'), /musicUncertain/);
+  assert.equal(session.queue.length, 0);
+  assert.equal(session.status, 'uncertain');
+  assert.equal(s.calls.length, calls);
+  const joining = setup();
+  joining.adapter.join = async () => {
+    joining.q.sessions.get('g').status = 'uncertain';
+  };
+  await assert.rejects(() => joining.q.enqueue('g', 'vc', 'sample', 'u'), /musicUncertain/);
+  assert.equal(joining.q.sessions.get('g').status, 'uncertain');
+  assert.equal(joining.q.sessions.get('g').queue.length, 0);
+  assert(!joining.calls.some((c) => c[0] === 'play'));
+});

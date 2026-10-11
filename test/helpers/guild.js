@@ -6,7 +6,10 @@ export function makeGuild() {
     guildId: 'g',
     type: ChannelType.GuildText,
     permissionsFor: () => ({ has: () => true }),
-    send: async (v) => sent.push(v),
+    send: async (v) => {
+      sent.push(v);
+      return { id: 'native-message' };
+    },
   };
   const guild = {
     id: 'g',

@@ -76,9 +76,13 @@ export class MusicQueues {
           throw error;
         }
       }
+      if (this.sessions.get(guildId) !== s || s.status === 'uncertain')
+        throw new UserError('musicUncertain');
       if (s.status === 'joining') {
         try {
           await this.adapter.join(guildId, channelId);
+          if (this.sessions.get(guildId) !== s || s.status === 'uncertain')
+            throw new UserError('musicUncertain');
           s.status = 'ready';
         } catch {
           s.status = 'uncertain';
@@ -94,6 +98,8 @@ export class MusicQueues {
           throw error;
         }
       }
+      if (this.sessions.get(guildId) !== s || s.status === 'uncertain')
+        throw new UserError('musicUncertain');
       const track = {
         item: resolved.item ?? item,
         encoded: resolved.encoded,
