@@ -34,23 +34,41 @@ jobs:
         env:
           ARCHIVE_URL: ${{ inputs.download_url }}
           ARCHIVE_SHA: ${{ inputs.sha256 }}
+          ARCHIVE_READ_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PYCODE'
-          import os,re,pathlib,urllib.parse,urllib.request,hashlib,zipfile,stat,shutil
+          import os,re,pathlib,urllib.parse,urllib.request,hashlib,zipfile,stat,shutil,json
           url=os.environ['ARCHIVE_URL']; digest=os.environ['ARCHIVE_SHA']
           assert re.fullmatch('[0-9a-fA-F]{64}',digest),'Invalid digest'
           parsed=urllib.parse.urlparse(url)
           assert parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password,'HTTPS URL required'
-          # Public file hosts only;no intranet,loopback or arbitrary URL fetches.
+          # Exact private repository release assets only;no arbitrary URL fetches.
           assert parsed.hostname=='github.com' and parsed.path.startswith('/1nonlyhckrr-hue/coldy/releases/download/') and not parsed.query and not parsed.fragment,'Exact repository release-asset URL required'
           class SafeRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self,req,fp,code,msg,headers,newurl):
                   dest=urllib.parse.urlparse(newurl)
-                  assert dest.scheme=='https' and dest.hostname in {'github.com','release-assets.githubusercontent.com','objects.githubusercontent.com'},'Unsafe redirect'
-                  return super().redirect_request(req,fp,code,msg,headers,newurl)
+                  assert dest.scheme=='https' and dest.hostname in {'api.github.com','github.com','release-assets.githubusercontent.com','objects.githubusercontent.com'} and not dest.username and not dest.password,'Unsafe redirect'
+                  redirected=super().redirect_request(req,fp,code,msg,headers,newurl)
+                  if redirected:
+                      redirected.remove_header('Authorization')
+                  return redirected
           opener=urllib.request.build_opener(SafeRedirect())
+          suffix=parsed.path.removeprefix('/1nonlyhckrr-hue/coldy/releases/download/')
+          assert suffix.count('/')==1,'Release tag and asset name required'
+          tag,asset_name=map(urllib.parse.unquote,suffix.split('/'))
+          assert tag and asset_name and '/' not in tag and '/' not in asset_name,'Invalid asset identity'
+          api='https://api.github.com/repos/1nonlyhckrr-hue/coldy/releases'
+          token=os.environ['ARCHIVE_READ_TOKEN'];assert token,'Missing read token'
+          def api_request(endpoint,accept):
+              return urllib.request.Request(endpoint,headers={'Authorization':'Bearer '+token,'Accept':accept,'X-GitHub-Api-Version':'2022-11-28'})
+          with opener.open(api_request(api+'/tags/'+urllib.parse.quote(tag,safe=''),'application/vnd.github+json'),timeout=60) as response:
+              release=json.loads(response.read(1024*1024+1))
+          assets=[a for a in release.get('assets',[]) if a.get('name')==asset_name and a.get('browser_download_url')==url]
+          assert len(assets)==1,'Exact release asset not found'
+          asset=assets[0]
+          assert isinstance(asset.get('id'),int) and asset['id']>0 and 0<asset.get('size',0)<=10*1024*1024,'Invalid asset bounds'
           archive=pathlib.Path('/tmp/source.zip')
-          with opener.open(url,timeout=60) as response,archive.open('wb') as out:
+          with opener.open(api_request(api+'/assets/'+str(asset['id']),'application/octet-stream'),timeout=60) as response,archive.open('wb') as out:
               total=0
               while True:
                   chunk=response.read(65536)
