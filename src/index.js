@@ -1,3 +1,5 @@
+import { MusicQueues } from './services/musicQueue.js';
+import { YouTubeLavalinkAdapter } from './services/musicRuntime.js';
 import { VoiceReadiness } from './services/voiceReadiness.js';
 import { AfkStates, createAfkHandler } from './services/afk.js';
 import { Polls } from './services/polls.js';
@@ -63,6 +65,11 @@ const context = {
   cases: new ModerationCases(db),
   version: '0.1.0',
 };
+if (config.musicNode) {
+  const adapter = YouTubeLavalinkAdapter.create(client, config.musicNode, logger);
+  context.music = new MusicQueues(adapter, [], { logger });
+  adapter.onEnded = (...args) => context.music.ended(...args);
+}
 context.eventLogs = new EventLogDelivery(db);
 context.eventLogs.recover();
 context.eventLogs.cleanup();

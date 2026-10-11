@@ -610,3 +610,85 @@ test('removeexclude confirmation/ID/current authority rejects without clearing u
     db.close();
   }
 });
+
+test('daily retained series bounds ten UTC dates includes zero and isolates exact user guild', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    for (const [g, u, day, count] of [
+      ['g', user, '2026-10-11', 2],
+      ['g', user, '2026-10-02', 5],
+      ['g', user, '2026-10-01', 8],
+      ['foreign', user, '2026-10-11', 99],
+      ['g', 'other', '2026-10-11', 99],
+    ])
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(g, u, day, count);
+    const page = r.daily('g', user, 1, now);
+    assert.equal(page.length, 10);
+    assert.deepEqual(page[0], { day: '2026-10-11', count: 2 });
+    assert.deepEqual(page[9], { day: '2026-10-02', count: 5 });
+    assert.deepEqual(page[1], { day: '2026-10-10', count: 0 });
+    assert.equal(r.daily('g', user, 2, now)[0].count, 8);
+    assert.equal(r.daily('g', user, 9, now)[9].day, '2026-07-14');
+    for (const p of [0, 10, 1.5, NaN])
+      assert.throws(() => r.daily('g', user, p, now), /rankPageInvalid/);
+  } finally {
+    db.close();
+  }
+});
+test('daily counts are caller-only private localized storage reads and preserve optout and counts', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const ranks = new MessageRanks(db);
+      ranks.privacy('g', user, true);
+      const before = db.prepare('SELECT * FROM message_rank_privacy').all(),
+        replies = [];
+      let queried;
+      const c = {
+        messageRanks: {
+          daily: (g, u, p) => {
+            queried = [g, u, p];
+            return ranks.daily(g, u, p, now);
+          },
+        },
+        localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+      };
+      await command.execute(
+        {
+          guildId: 'g',
+          user: { id: user },
+          deferReply: async (p) => assert(p.flags),
+          editReply: async (p) => replies.push(p),
+          options: { getSubcommand: () => 'daily', getInteger: () => null },
+        },
+        c,
+      );
+      assert.deepEqual(queried, ['g', user, 1]);
+      assert(
+        replies[0].embeds[0].data.description.includes(translate(locale, 'rankDaily', { page: 1 })),
+      );
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert.deepEqual(db.prepare('SELECT * FROM message_rank_privacy').all(), before);
+      assert.equal(db.prepare('SELECT count(*) n FROM message_rank_daily').get().n, 0);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('daily retained series observes UTC midnight across month boundary and has fixed ninety-day window', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    const rows = Array.from({ length: 9 }, (_, p) =>
+      r.daily('g', user, p + 1, Date.parse('2027-01-01T00:00:01Z')),
+    ).flat();
+    assert.equal(rows.length, 90);
+    assert.equal(new Set(rows.map((r) => r.day)).size, 90);
+    assert.equal(rows[0].day, '2027-01-01');
+    assert.equal(rows[1].day, '2026-12-31');
+    assert.equal(rows.at(-1).day, '2026-10-04');
+  } finally {
+    db.close();
+  }
+});

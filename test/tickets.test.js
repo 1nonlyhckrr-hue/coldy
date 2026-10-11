@@ -743,3 +743,75 @@ test('ticket stored self status is private localized and cannot read others or t
     }
   }
 });
+
+test('ticket manager queue excludes closed and foreign records,bounds oldest-first and omits owner/content fields', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 12; n++) {
+      const id = x.tickets.reserve(ids.guild, 'owner' + n, ids.role, 'source' + n);
+      x.tickets.activate(id, 'channel' + n);
+    }
+    const closed = x.tickets.reserve(ids.guild, 'closed-owner', ids.role, 'closed');
+    x.tickets.activate(closed, 'closed-channel');
+    x.tickets.transition(closed, 'open', 'closed');
+    x.tickets.reserve('foreign', 'owner', ids.role, 'foreign');
+    const first = x.tickets.queue(ids.guild);
+    assert.equal(first.length, 10);
+    assert.equal(first[0].id, 1);
+    assert.equal(first[9].id, 10);
+    assert.equal(x.tickets.queue(ids.guild, 2).length, 2);
+    assert.deepEqual(Object.keys(first[0]).sort(), ['channel_id', 'claimed_by', 'id', 'status']);
+    for (const page of [0, 11, 1.5])
+      assert.throws(() => x.tickets.queue(ids.guild, page), /ticketQueuePageInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('ticket queue command privately localizes stored metadata with manager gate and no native channel/transcript lookup', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.owner.permissions.has = () => true;
+      x.c.guildConfig.setLanguage(ids.guild, locale);
+      const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'source');
+      x.tickets.activate(id, ids.channel);
+      x.guild.channels.fetch = async () => {
+        throw Error('no channels');
+      };
+      x.tickets.transcript = () => {
+        throw Error('no transcript');
+      };
+      x.i.options = { getSubcommand: () => 'queue', getInteger: () => null };
+      const before = x.tickets.get(id, ids.guild);
+      await command.execute(x.i, x.c);
+      assert(
+        x.replies[0].embeds[0].data.description.includes(
+          translate(locale, 'ticketQueueHeader', { page: 1 }),
+        ),
+      );
+      assert.deepEqual(x.replies[0].allowedMentions.parse, []);
+      assert.deepEqual(x.tickets.get(id, ids.guild), before);
+      assert.equal(x.sent.length, 0);
+      assert.equal(x.creates.length, 0);
+      x.owner.permissions.has = () => false;
+      await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('ticket queue refuses foreign current manager before storage read and empty pages retain honest caveat', async () => {
+  const x = setup();
+  try {
+    x.owner.permissions.has = () => true;
+    x.i.options = { getSubcommand: () => 'queue', getInteger: () => 10 };
+    await command.execute(x.i, x.c);
+    assert(x.replies[0].embeds[0].data.description.includes('No unresolved stored tickets'));
+    x.owner.guild.id = 'foreign';
+    x.tickets.queue = () => assert.fail('must not query');
+    await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+  } finally {
+    x.db.close();
+  }
+});

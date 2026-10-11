@@ -31,14 +31,14 @@ export class LavalinkAdapter {
     manager.on('close', () =>
       logger.warn({ kind: 'lavalink' }, 'Music provider connection closed'),
     );
-    return new LavalinkAdapter(manager);
+    return new this(manager);
   }
   node() {
     const node = [...this.manager.nodes.values()].find(
       (n) => n.state === Constants.State.CONNECTED,
     );
     if (!node) throw new UserError('musicProviderUnavailable');
-    requireDaveNode(node.info);
+    requireDaveNode(node.info, this.requiredSource ?? 'http');
     return node;
   }
   async resolve(item) {
@@ -57,7 +57,7 @@ export class LavalinkAdapter {
     const player = await this.manager.joinVoiceChannel({
       guildId,
       channelId,
-      shardId: 0,
+      shardId: this.manager.connector?.client?.guilds?.cache?.get(guildId)?.shardId ?? 0,
       deaf: true,
     });
     player.on('end', (event) => {

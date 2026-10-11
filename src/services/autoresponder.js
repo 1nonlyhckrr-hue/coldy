@@ -55,6 +55,21 @@ export class Autoresponders {
       .prepare('SELECT * FROM autoresponders WHERE guild_id=? AND trigger=?')
       .get(guildId, normalizeTrigger(trigger));
   }
+  rename(guildId, trigger, newTrigger) {
+    const target = normalizeTrigger(input.shape.trigger.parse(newTrigger));
+    if (!target || target.length > 100 || /[\u0000-\u001f\u007f]/u.test(target))
+      throw new UserError('responderInvalidTrigger');
+    return this.db.transaction(() => {
+      const row = this.find(guildId, trigger);
+      if (!row) throw new UserError('responderNotFound');
+      const exists = this.find(guildId, target);
+      if (exists && exists.id !== row.id) throw new UserError('responderExists');
+      const result = this.db
+        .prepare('UPDATE autoresponders SET trigger=? WHERE id=? AND guild_id=? AND trigger=?')
+        .run(target, row.id, guildId, row.trigger);
+      if (result.changes !== 1) throw new UserError('responderNotFound');
+    })();
+  }
   edit(guildId, trigger, response) {
     const valid = input.shape.response.parse(response);
     const result = this.db

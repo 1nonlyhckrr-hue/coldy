@@ -4,7 +4,7 @@ Professional multipurpose Discord bot project. Repository name: `coldy`. Node.js
 
 ## Honest status
 
-**This is not a finished 541-command bot.** 40 top-level slash commands provide 182 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music queue/adapter core is tested but not activated or counted as commands. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
+**This is not a finished 541-command bot.** 41 top-level slash commands provide 193 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music has7 experimental opt-in paths,off by default;live playback/DAVE node compatibility remain unverified. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
 
 The official Zynrax documentation yields 319 distinct documented command paths after shortcut deduplication. These are reference-only rows, not Luna implementations. The reference inventory is not advertised as the complete 541-command list. Aliases do not count as separate commands. Examples and parameter values do not count as new commands.
 
@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All506 distinct automated tests pass locally; these are not live Discord integration tests. The261-test source checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38085474691). Later local changes need their own verification. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All526 distinct automated tests pass locally; these are not live Discord integration tests. The261-test source checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38085474691). Later local changes need their own verification. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -52,4 +52,10 @@ Pinned Prettier formats source/scripts/tests;`npm run format:check` verifies sty
 
 `npm run lint` uses pinned ESLint10.12.0;current Node minimum22.13+ keeps tooling compatible. CI includes lint with formatter/tests and inventory drift checks.
 
-Repository visibility: PRIVATE as of October11,2026,at owner request. Current GitHub checkpoint is261 tests/133 paths;local build is506 tests/182 paths. Preserve private audience for further source handling. Earlier public visibility cannot retract downloaded copies.
+Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint506/182;local526/193 awaits publication. Never commit tokens or private runtime data.
+
+Private source publication on October11,2026:506-test/182-path source checkpoint commit `0d2fff5d1356b56e06227adf7695b061ac79228b`. [Publisher verification](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125749267) passed;[current-head Node22/24 CI](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125897895) passed. Temporary transfer release/asset/tag deleted. No deployment or live Discord acceptance. This local publication receipt was added after the published checkpoint;later archive will include it.
+
+## Railway / bhai ke liye deploy
+
+Follow [Railway quickstart](docs/RAILWAY_QUICKSTART.md):separate service,Dockerfile Node22,secret env variables,persistent writable `/app/var` volume,correct Luna/Cuties IDs,and one-time guild command registration. `npm start` is available. No token or real database is included. This is prepared/tested code,not proof of a live Railway deployment. Experimental Music stays off until a verifiable compatible node is configured.

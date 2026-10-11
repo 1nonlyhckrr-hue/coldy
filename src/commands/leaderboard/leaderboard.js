@@ -75,6 +75,14 @@ const data = new SlashCommandBuilder()
       .setDescription('Show only your retained message rank and count,UTC window.')
       .addStringOption(period),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('daily')
+      .setDescription('Show only your retained daily message counts,ten UTC days per page.')
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-9,newest first').setMinValue(1).setMaxValue(9),
+      ),
+  )
   .addSubcommand((s) => s.setName('stats').setDescription('Show your own retained message counts.'))
   .addSubcommand((s) =>
     s
@@ -180,6 +188,10 @@ export default {
         total: r.total,
         period: t('rankWindow_' + window),
       });
+    } else if (sub === 'daily') {
+      const page = i.options.getInteger('page') ?? 1;
+      const rows = c.messageRanks.daily(i.guildId, i.user.id, page);
+      text = t('rankDaily', { page }) + '\n' + rows.map((r) => `${r.day}: ${r.count}`).join('\n');
     } else if (sub === 'stats') {
       const counts = c.messageRanks.stats(i.guildId, i.user.id);
       text = t('rankStats', counts);

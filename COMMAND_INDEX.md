@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-40 top-level commands, 182 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+41 top-level commands, 193 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -45,6 +45,7 @@
 | /autoresponder edit | Edit the response for an existing trigger. | Local mock/unit only |
 | /autoresponder mode | Set literal exact/keyword matching,retaining response/cooldown/replay history. | Local mock/unit only |
 | /autoresponder preview | Privately preview stored response,no send or cooldown change. | Local mock/unit only |
+| /autoresponder rename | Change one stored trigger while preserving response and replay history. | Local mock/unit only |
 | /autoresponder toggle | Pause/resume one trigger,retaining response/cooldown/history. | Local mock/unit only |
 | /customrole claim | Assign one configured safe role to yourself. | Local mock/unit only |
 | /customrole claimown | Assign your verified zero-permission created role to yourself. | Local mock/unit only |
@@ -67,6 +68,7 @@
 | /fun dice | Roll up to ten dice. | Local mock/unit only |
 | /fun rps | Play one round of rock, paper, scissors against Luna. | Local mock/unit only |
 | /fun shuffle | Privately randomize all 2-20 distinct choices,no assignments. | Local mock/unit only |
+| /fun teams | Privately split 2-20 distinct labels into balanced random groups,no invites. | Local mock/unit only |
 | /fun truth | Get an optional, low-pressure reflection prompt. | Local mock/unit only |
 | /about | Show Luna version and implementation status. | Local mock/unit only |
 | /config language | Set English, Hindi or Hinglish for this server. | Local mock/unit only |
@@ -81,6 +83,7 @@
 | /giveaway start | Create a giveaway with checked eligibility. | Local mock/unit only |
 | /giveawayleave | Withdraw only your own entry from an active giveaway before its deadline. | Local mock/unit only |
 | /leaderboard config | View tracking status and excluded IDs. | Local mock/unit only |
+| /leaderboard daily | Show only your retained daily message counts,ten UTC days per page. | Local mock/unit only |
 | /leaderboard disable | Manage Server: stop counting; keep stored counts. | Local mock/unit only |
 | /leaderboard enable | Manage Server: start counting future eligible messages. | Local mock/unit only |
 | /leaderboard eraseuser | Manage Server: erase one user retained counts, not their preference. | Local mock/unit only |
@@ -110,6 +113,13 @@
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
 | /nickname | Confirmed one-member nickname update or explicit reset,no bulk changes. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode,0 disables,no bulk changes. | Local mock/unit only |
+| /music nowplaying | Show current track. | Local mock/unit only |
+| /music pause | Pause current track. | Local mock/unit only |
+| /music play | Queue first YouTube search result or exact11-character video ID. | Local mock/unit only |
+| /music queue | Show current in-memory queue;not persistent history. | Local mock/unit only |
+| /music resume | Resume current track. | Local mock/unit only |
+| /music stay | Keep idle VC connection while this process/node are healthy;not uptime guarantee. | Local mock/unit only |
+| /music stop | Disconnect and clear this server session. | Local mock/unit only |
 | /permit blockrole | Block a role for one entire command. | Local mock/unit only |
 | /permit blockuser | Block a user for one entire command. | Local mock/unit only |
 | /permit clear | Remove all restrictions for one command. | Local mock/unit only |
@@ -131,6 +141,7 @@
 | /ticket forgettranscript | Erase stored snapshot for this ticket, not native messages. | Local mock/unit only |
 | /ticket open | Open one private support ticket. | Local mock/unit only |
 | /ticket panel | Publish a ticket-open button. | Local mock/unit only |
+| /ticket queue | Manage Server:inspect unresolved stored ticket IDs,not content or live access. | Local mock/unit only |
 | /ticket reopen | Restore the ticket owner write access. | Local mock/unit only |
 | /ticket retention | Manage Server: set stored transcript maximum age 1-30 days. | Local mock/unit only |
 | /ticket setup | Set the category and role that can view new tickets. | Local mock/unit only |

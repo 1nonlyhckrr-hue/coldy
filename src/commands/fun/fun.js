@@ -13,6 +13,7 @@ import {
   parseChoices,
   playRps,
   shuffleChoices,
+  splitTeams,
 } from '../../services/fun.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
@@ -76,6 +77,29 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('teams')
+      .setDescription(
+        'Privately split 2-20 distinct labels into balanced random groups,no invites.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('labels')
+          .setDescription('Labels separated by |,not Discord member assignments')
+          .setMinLength(3)
+          .setMaxLength(1800)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('groups')
+          .setDescription('Group count2-5,no empty groups')
+          .setMinValue(2)
+          .setMaxValue(5)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('truth').setDescription('Get an optional, low-pressure reflection prompt.'),
   )
   .addSubcommand((s) => s.setName('dare').setDescription('Get an optional, safe solo activity.'))
@@ -123,6 +147,18 @@ export default {
         .join('\n');
       if (choices.length > 1700) throw new UserError('funShuffleTooLong');
       text = t('funShuffled', { choices });
+    } else if (sub === 'teams') {
+      const teams = splitTeams(
+        i.options.getString('labels', true),
+        i.options.getInteger('groups', true),
+      );
+      const lines = teams
+        .map((group, n) =>
+          t('funTeam', { number: n + 1, labels: group.map(escapeMarkdown).join(' | ') }),
+        )
+        .join('\n');
+      if (lines.length > 1700) throw new UserError('funShuffleTooLong');
+      text = t('funTeams', { teams: lines });
     } else if (sub === 'truth')
       text = t('funOptional', { prompt: t(`funTruth_${pick(TRUTH_PROMPTS)}`) });
     else if (sub === 'dare')

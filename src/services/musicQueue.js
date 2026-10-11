@@ -34,9 +34,12 @@ export class MusicQueues {
     };
   }
   async enqueue(guildId, channelId, catalogId, requesterId) {
+    const item = this.catalog.get(catalogId);
+    if (!item) throw new UserError('musicCatalogMissing');
+    return this.enqueueItem(guildId, channelId, item, requesterId);
+  }
+  async enqueueItem(guildId, channelId, item, requesterId) {
     return this.locked(guildId, async () => {
-      const item = this.catalog.get(catalogId);
-      if (!item) throw new UserError('musicCatalogMissing');
       let s = this.sessions.get(guildId);
       if (s && s.channelId !== channelId) throw new UserError('musicDifferentChannel');
       if (s?.status === 'uncertain') throw new UserError('musicUncertain');
@@ -74,7 +77,12 @@ export class MusicQueues {
           throw new UserError('musicUncertain');
         }
       }
-      const track = { item, encoded: resolved.encoded, requesterId, eventId: randomUUID() };
+      const track = {
+        item: resolved.item ?? item,
+        encoded: resolved.encoded,
+        requesterId,
+        eventId: randomUUID(),
+      };
       s.queue.push(track);
       if (!s.current) await this.advance(guildId, s);
       return this.snapshot(guildId);

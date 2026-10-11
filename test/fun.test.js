@@ -70,9 +70,9 @@ test('RPS computes all nine outcomes', () => {
     }
   assert.throws(() => playRps('gun'));
 });
-test('fun serializes eight real paths and bounded input options', () => {
+test('fun serializes nine real paths and bounded input options', () => {
   const d = fun.data.toJSON();
-  assert.equal(d.options.length, 8);
+  assert.equal(d.options.length, 9);
   assert.equal(d.contexts[0], 0);
   assert.equal(fun.cooldownMs, 5000);
   assert(d.options.every((o) => o.type === 1));
@@ -190,4 +190,54 @@ test('shuffle refuses expanded output that would truncate any choices', async ()
     /funShuffleTooLong/,
   );
   assert.equal(replied, false);
+});
+
+test('random label teams contain every unique input exactly once and differ in size by at most one', async () => {
+  const { splitTeams } = await import('../src/services/fun.js');
+  for (const size of [2, 3, 7, 20])
+    for (let groups = 2; groups <= Math.min(size, 5); groups++) {
+      const labels = Array.from({ length: size }, (_, n) => 'label' + n),
+        teams = splitTeams(labels.join('|'), groups, () => 0);
+      assert.equal(teams.length, groups);
+      assert.deepEqual(teams.flat().sort(), labels.sort());
+      assert.equal(new Set(teams.flat()).size, size);
+      assert(
+        Math.max(...teams.map((t) => t.length)) - Math.min(...teams.map((t) => t.length)) <= 1,
+      );
+      assert(teams.every((t) => t.length > 0));
+    }
+});
+test('random label teams reject empty groups duplicates malformed labels and bad RNG', async () => {
+  const { splitTeams } = await import('../src/services/fun.js');
+  for (const count of [1, 6, 3, 1.5, NaN]) assert.throws(() => splitTeams('a|b', count));
+  for (const labels of ['a|A', 'a||b', 'a|b\n']) assert.throws(() => splitTeams(labels, 2));
+  assert.throws(() => splitTeams('a|b', 2, () => 2));
+});
+test('teams replies are localized private escaped and no-ping without native assignments', async () => {
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const replies = [],
+      c = { localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) } };
+    await fun.execute(
+      {
+        guildId: 'g',
+        reply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => 'teams',
+          getString: () => '@everyone **A** | B | C',
+          getInteger: () => 2,
+        },
+      },
+      c,
+    );
+    const p = replies[0];
+    assert(p.flags);
+    assert.deepEqual(p.allowedMentions.parse, []);
+    assert(
+      p.embeds[0].data.description.includes(
+        translate(locale, 'funTeam', { number: 1, labels: '' }).split(':')[0],
+      ),
+    );
+    assert(p.embeds[0].data.description.includes('\\*\\*A\\*\\*'));
+    assert(p.embeds[0].data.description.includes('@everyone'));
+  }
 });

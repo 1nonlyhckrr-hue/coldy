@@ -113,6 +113,27 @@ const data = new SlashCommandBuilder()
   )
   .addSubcommand((s) =>
     s
+      .setName('rename')
+      .setDescription('Change one stored trigger while preserving response and replay history.')
+      .addStringOption((o) =>
+        o
+          .setName('trigger')
+          .setDescription('Existing literal trigger')
+          .setMinLength(1)
+          .setMaxLength(100)
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('new-trigger')
+          .setDescription('New literal trigger')
+          .setMinLength(1)
+          .setMaxLength(100)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('config')
       .setDescription('List trigger configuration.')
       .addIntegerOption((o) => o.setName('page').setDescription('Page number').setMinValue(1)),
@@ -134,7 +155,17 @@ export default {
       throw new UserError('userPermission');
     const sub = i.options.getSubcommand();
     if (
-      !['create', 'edit', 'delete', 'config', 'preview', 'toggle', 'cooldown', 'mode'].includes(sub)
+      ![
+        'create',
+        'edit',
+        'delete',
+        'config',
+        'preview',
+        'toggle',
+        'cooldown',
+        'mode',
+        'rename',
+      ].includes(sub)
     )
       throw new UserError('unknownCommand');
     let text;
@@ -147,6 +178,14 @@ export default {
         cooldownSeconds: i.options.getInteger('cooldown') ?? 60,
       });
       text = t('responderCreated', { id });
+    }
+    if (sub === 'rename') {
+      c.autoresponders.rename(
+        i.guildId,
+        i.options.getString('trigger', true),
+        i.options.getString('new-trigger', true),
+      );
+      text = t('responderRenamed');
     }
     if (sub === 'mode') {
       c.autoresponders.setMode(

@@ -75,3 +75,12 @@ export function shuffleChoices(text, rng = randomInt) {
   }
   return values;
 }
+
+export function splitTeams(text, count, rng = randomInt) {
+  const values = shuffleChoices(text, rng);
+  if (!Number.isInteger(count) || count < 2 || count > 5 || count > values.length)
+    throw new UserError('funTeamsInvalid');
+  const teams = Array.from({ length: count }, () => []);
+  values.forEach((v, n) => teams[n % count].push(v));
+  return teams;
+}

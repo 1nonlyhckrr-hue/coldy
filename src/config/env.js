@@ -1,3 +1,4 @@
+import { validateMusicNodeConfig } from '../services/musicRuntime.js';
 import { z } from 'zod';
 const snowflake = z.string().regex(/^\d{17,20}$/);
 const schema = z.object({
@@ -19,6 +20,10 @@ const schema = z.object({
   ENABLE_AUDIT_EVENTS: z.enum(['true', 'false']).default('false'),
   ENABLE_VOICE_EVENTS: z.enum(['true', 'false']).default('false'),
   ENABLE_MEMBER_EVENTS: z.enum(['true', 'false']).default('false'),
+  ENABLE_MUSIC: z.enum(['true', 'false']).default('false'),
+  MUSIC_RISK_ACCEPTED: z.enum(['true', 'false']).default('false'),
+  LAVALINK_URL: z.string().default(''),
+  LAVALINK_AUTH: z.string().default(''),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 export function loadConfig(env = process.env) {
@@ -29,7 +34,16 @@ export function loadConfig(env = process.env) {
     throw new Error(`Invalid configuration fields: ${fields.join(', ')}`);
   }
   const c = result.data;
+  const musicNode = validateMusicNodeConfig({
+    enabled: c.ENABLE_MUSIC === 'true',
+    riskAccepted: c.MUSIC_RISK_ACCEPTED === 'true',
+    url: c.LAVALINK_URL,
+    auth: c.LAVALINK_AUTH,
+  });
+  if (musicNode && c.ENABLE_VOICE_EVENTS !== 'true')
+    throw new Error('Music requires ENABLE_VOICE_EVENTS');
   return Object.freeze({
+    musicNode,
     token: c.DISCORD_TOKEN,
     clientId: c.DISCORD_CLIENT_ID,
     guildId: c.DISCORD_GUILD_ID,

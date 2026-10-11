@@ -697,3 +697,72 @@ test('accepted responder send missing identity becomes uncertain without replay'
     x.db.close();
   }
 });
+
+test('responder rename normalizes literal trigger while preserving exact row and replay guard', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db, () => 100000);
+    r.create('g', { trigger: 'hello', response: 'Body', mode: 'keyword', cooldownSeconds: 10 });
+    r.claim('g', 'msg', 'hello');
+    const before = r.find('g', 'hello');
+    r.rename('g', 'hello', ' NEW  Trigger ');
+    assert.equal(r.find('g', 'hello'), undefined);
+    assert.deepEqual(r.find('g', 'new trigger'), { ...before, trigger: 'new trigger' });
+    assert.equal(r.eligible('g', 'msg', 'new trigger'), false);
+    assert.equal(r.find('other', 'new trigger'), undefined);
+  } finally {
+    db.close();
+  }
+});
+test('responder rename refuses collisions invalid normalization and foreign records atomically', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new Autoresponders(db);
+    r.create('g', { trigger: 'hello', response: 'Body' });
+    r.create('g', { trigger: 'other', response: 'Other' });
+    const before = r.list('g');
+    for (const target of ['OTHER', '   ', 'a'.repeat(101), 'bad\u0000'])
+      assert.throws(() => r.rename('g', 'hello', target));
+    assert.throws(() => r.rename('foreign', 'hello', 'new'), /responderNotFound/);
+    assert.deepEqual(r.list('g'), before);
+    r.rename('g', 'hello', ' HELLO ');
+    assert.deepEqual(r.list('g'), before);
+  } finally {
+    db.close();
+  }
+});
+test('responder rename command is private localized exact-manager storage mutation only', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const db = openDatabase(':memory:');
+    try {
+      const r = new Autoresponders(db);
+      r.create('g', { trigger: 'old', response: 'Body' });
+      const replies = [],
+        actor = { id: 'a', guild: { id: 'g' }, permissions: { has: () => true } },
+        i = {
+          guild: { id: 'g', members: { fetch: async () => actor } },
+          guildId: 'g',
+          user: { id: 'a' },
+          reply: async (p) => replies.push(p),
+          options: {
+            getSubcommand: () => 'rename',
+            getString: (n) => (n === 'trigger' ? 'old' : 'new'),
+          },
+        },
+        c = {
+          autoresponders: r,
+          guildConfig: { get: () => ({ language: locale }) },
+          config: { messageEventsEnabled: false },
+        };
+      await command.execute(i, c);
+      assert.equal(replies[0].embeds[0].data.description, translate(locale, 'responderRenamed'));
+      assert.deepEqual(replies[0].allowedMentions.parse, []);
+      assert(r.find('g', 'new'));
+      actor.permissions.has = () => false;
+      await assert.rejects(() => command.execute(i, c), /userPermission/);
+    } finally {
+      db.close();
+    }
+  }
+});

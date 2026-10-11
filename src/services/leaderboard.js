@@ -162,6 +162,18 @@ export class MessageRanks {
         .get(guildId, userId, this.since(period, now)).total;
     return result;
   }
+  daily(guildId, userId, page = 1, now = Date.now()) {
+    if (!Number.isInteger(page) || page < 1 || page > 9) throw new UserError('rankPageInvalid');
+    const anchor = Date.parse(utcDay(now) + 'T00:00:00Z'),
+      days = Array.from({ length: 10 }, (_, n) => utcDay(anchor - ((page - 1) * 10 + n) * DAY));
+    const rows = this.db
+      .prepare(
+        'SELECT day,count FROM message_rank_daily WHERE guild_id=? AND user_id=? AND day>=? AND day<=? ORDER BY day DESC',
+      )
+      .all(guildId, userId, days.at(-1), days[0]);
+    const counts = new Map(rows.map((r) => [r.day, r.count]));
+    return days.map((day) => ({ day, count: counts.get(day) ?? 0 }));
+  }
   resetMine(guildId, userId) {
     return this.db
       .prepare('DELETE FROM message_rank_daily WHERE guild_id=? AND user_id=?')

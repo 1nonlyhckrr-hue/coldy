@@ -104,6 +104,20 @@ const data = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((s) =>
+    s
+      .setName('queue')
+      .setDescription(
+        'Manage Server:inspect unresolved stored ticket IDs,not content or live access.',
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('page')
+          .setDescription('Page1-10,oldest unresolved first')
+          .setMinValue(1)
+          .setMaxValue(10),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('config').setDescription('Show ticket configuration to server managers.'),
   );
 export default {
@@ -115,7 +129,7 @@ export default {
       locale = c.guildConfig.get(i.guildId).language,
       t = (key, p) => translate(locale, key, p);
     let content, files;
-    if (['setup', 'panel', 'config', 'retention'].includes(sub)) {
+    if (['setup', 'panel', 'config', 'retention', 'queue'].includes(sub)) {
       await requireTicketManager(i);
     }
     if (sub === 'setup') {
@@ -186,6 +200,23 @@ export default {
         confirm: i.options.getBoolean('confirm', true),
       });
       content = t('ticketTranscriptForgotten', { id: r.id, count: r.count });
+    }
+    if (sub === 'queue') {
+      const page = i.options.getInteger('page') ?? 1,
+        rows = c.tickets.queue(i.guildId, page);
+      content =
+        t('ticketQueueHeader', { page }) +
+        '\n' +
+        (rows
+          .map((r) =>
+            t('ticketQueueRow', {
+              id: r.id,
+              channel: r.channel_id ?? '-',
+              state: t('ticketOwnState_' + r.status),
+              claim: r.claimed_by ?? '-',
+            }),
+          )
+          .join('\n') || t('ticketQueueEmpty'));
     }
     if (sub === 'config') {
       const s = c.tickets.config(i.guildId);

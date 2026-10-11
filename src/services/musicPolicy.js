@@ -62,10 +62,10 @@ export function validateMusicCatalog(catalog) {
     };
   });
 }
-export function requireDaveNode(info) {
+export function requireDaveNode(info, source = 'http') {
   const version = info?.version;
   if (!version || version.major !== 4 || version.minor < 2 || version.preRelease)
     throw new UserError('musicNodeIncompatible');
-  if (!info.sourceManagers?.includes('http')) throw new UserError('musicHttpUnavailable');
+  if (!info.sourceManagers?.includes(source)) throw new UserError('musicHttpUnavailable');
   return true;
 }

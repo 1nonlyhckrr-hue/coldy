@@ -8,6 +8,7 @@ WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY --chown=node:node package*.json ./
 COPY --chown=node:node src ./src
+COPY --chown=node:node scripts ./scripts
 RUN mkdir -p /app/var && chown node:node /app/var
 USER node
 CMD ["node", "src/index.js"]

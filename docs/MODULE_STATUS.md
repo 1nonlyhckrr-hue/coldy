@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-40 top-level slash commands,182 executable paths,506 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+41 top-level slash commands,193 executable paths,526 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -15,7 +15,7 @@
 | Leaderboard | Opt-in retained message metrics, exclusions, stats/top/self-delete/personal opt-out/admin count erasure | Voice/invite tracking, rewards, rewards and richer data export controls |
 | Logging | Configured case/action logs and eight opt-in member/role/channel metadata events | Message/server/update event coverage, retention/privacy controls |
 | Moderation | Single-member warns/timeouts/kick/ban/unban, case logs, exact-ID preview/confirmed bounded purge,confirmed single-text-channel slowmode,confirmed single-member nickname update/reset | Broader confirmed moderation operations and reference parity |
-| Music | Prepared tested queue/direct-audio adapter core, protocol/source/provider research; no activation | No executable Music path yet; actual rights-cleared catalog and free node/source rights, queue/adapter/DAVE live validation,24/7 VC behavior |
+| Music |7 experimental opt-in public-node YouTube paths,off by default;local mocks | Verified stable4.2+DAVE free node,source/uptime risks,live voice/playback/reconnect/stay acceptance |
 | Permit | Additive persistent per-command user/role restrictions, recovery exemptions | Full channel/subcommand trust policy, reference-specific behavior |
 | ReactionRoles | Safe single/multi button panel create/list/disable, self add/remove | Reaction variants/exclusive groups/panel edit/reconciliation |
 | Ticket | Config/panel/open/claim/close/reopen/private TXT transcripts,stored-content retention/deletion | HTML/multiple categories/user access management/native delete/reconciliation |
@@ -128,3 +128,15 @@ SQLite26 stores role click action direction before native effect. New native cli
 `/automation reschedulezone id local timezone` moves one pending schedule to an explicitly supplied local instant in a named zone. Reuses DST ambiguity/gap rejection;invalid zone/time/bounds,missing/foreign/nonpending records refuse. Resolves zone once,not recurring wall-clock behavior. Text,destination,elapsed repeat,replay metadata and status unchanged. Exact current manager required,no destination lookup/send. Three locales and failure-preservation regressions included. 503 local tests pass,40 top-level/181 paths,SQLite26;native acceptance pending.
 
 `/automation destination id channel` moves one pending schedule to a forced validated output channel,then refreshes exact current manager authority. Stored snapshot compare-and-set refuses concurrent claim,cancel,text/time/interval changes. Text,time,elapsed repeat,status and replay metadata remain unchanged;no send now. Missing/nonpending/foreign/unavailable channel and midlookup permission loss refuse. Future delivery still rechecks access. 506 local tests pass,40 top-level/182 paths,SQLite26;native acceptance pending.
+
+506 private source published as `0d2fff5d1356b56e06227adf7695b061ac79228b`,after private-asset downloader fix `a63349cd40deec869585f6177b43df1d73b3bba0`. Publisher run38125749267 and current-head Node22/24 CI38125897895 green. Temporary release/asset/tag removed.18 commits,no history rewrite,no deploy. Publication receipt is a later local documentation addition,not part of that exact commit.
+
+`/leaderboard daily [page]` privately shows caller-only daily retained counts,ten UTC days per page1-9,newest first. Zero explicitly means no retained count,not proof of no messages. Fixed90-day window,no other-user rows,native lookup,count/preference mutation or tracking enablement. Three locales,guild/user isolation,month boundaries,zero fill and page bounds tested. 509 local tests pass,40 top-level/183 paths,SQLite26;native acceptance pending. GitHub remains verified506 checkpoint.
+
+`/fun teams labels groups` privately splits2-20 distinct user-supplied labels into2-5 balanced random groups. Every label included exactly once,no empty groups;size difference at most1. Labels are not native member assignments or invitations. Literal label validation,Markdown escaping,no mentions and output bounds retained. Three locales,deterministic RNG balance,invalid groups/labels/RNG tested.512 local tests pass,40 top-level/184 paths,SQLite26;native acceptance pending. GitHub remains506 checkpoint.
+
+`/autoresponder rename trigger new-trigger` renames one exact normalized stored trigger. Keeps row ID,response,mode,cooldown,enabled,last-send and replay receipts unchanged. Collisions,missing/foreign records,invalid/control/oversized normalized triggers reject atomically;equivalent normalized rename is harmless. Exact current manager,private three-locale no-ping result,no native send or runtime enablement.515 local tests pass,40 top-level/185 paths,SQLite26;native acceptance pending. GitHub remains506.
+
+`/ticket queue [page]` is Manage Server-only,private stored unresolved-ticket metadata:oldest-first ten per page1-10,excluding closed and foreign-guild records. IDs,state and claimant ID only,no owner details/transcript reads/native channel fetches or mutation. Explicitly not proof of live channel existence,access or occupancy. Forced exact current manager check,three locales,pagination,metadata projection and denial tested.518 local tests pass,40 top-level/186 paths,SQLite26;native acceptance pending. GitHub remains506/182.
+
+Music operator must explicitly configure ENABLE_MUSIC,MUSIC_RISK_ACCEPTED,LAVALINK_URL,LAVALINK_AUTH and ENABLE_VOICE_EVENTS. Public source terms/availability risk accepted by owner;no every-song or24/7 guarantee. First provider snapshot version cannot satisfy stable4.2+DAVE guard;do not bypass. Local526 tests pass,41top-level/193paths,not live verification.

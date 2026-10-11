@@ -71,6 +71,15 @@ export class Tickets {
       )
       .all(guildId, ownerId);
   }
+  queue(guildId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 10)
+      throw new UserError('ticketQueuePageInvalid');
+    return this.db
+      .prepare(
+        "SELECT id,channel_id,status,claimed_by FROM tickets WHERE guild_id=? AND status!='closed' ORDER BY id ASC LIMIT 10 OFFSET ?",
+      )
+      .all(guildId, (page - 1) * 10);
+  }
   byChannel(channelId, guildId) {
     return this.db
       .prepare('SELECT * FROM tickets WHERE channel_id=? AND guild_id=?')
