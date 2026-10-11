@@ -959,3 +959,120 @@ test('manager click reconciliation requires confirmation and emits private local
     }
   }
 });
+
+test('active panel bulk disable scopes guild and never rewrites pending uncertain terminal mappings', () => {
+  const x = setup();
+  try {
+    const ids = [];
+    for (const status of ['active', 'pending', 'uncertain', 'failed', 'disabled']) {
+      const id = x.context.rolePanels.reserve({
+        guildId: 'g',
+        channelId: '100000000000000001',
+        roleId: x.role.id,
+        label: 'One',
+        interactionId: status,
+      });
+      x.db.prepare('UPDATE role_panels SET status=? WHERE id=?').run(status, id);
+      ids.push(id);
+    }
+    const foreign = x.context.rolePanels.reserve({
+      guildId: 'other',
+      channelId: '100000000000000001',
+      roleId: x.role.id,
+      label: 'Foreign',
+      interactionId: 'foreign',
+    });
+    x.context.rolePanels.complete(foreign, 'foreign-message');
+    assert.equal(x.context.rolePanels.disableActive('g'), 1);
+    assert.equal(x.context.rolePanels.disableActive('g'), 0);
+    for (const [n, status] of ['disabled', 'pending', 'uncertain', 'failed', 'disabled'].entries())
+      assert.equal(x.context.rolePanels.get(ids[n], 'g').status, status);
+    assert.equal(x.context.rolePanels.get(foreign, 'other').status, 'active');
+    assert.equal(x.context.rolePanels.buttons(ids[0])[0].label, 'One');
+    assert.throws(() => x.context.rolePanels.disableActive(''));
+  } finally {
+    x.db.close();
+  }
+});
+test('panel listing paginates complete latest metadata with strict bounds and no mutation', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 25; n++)
+      x.context.rolePanels.reserve({
+        guildId: 'g',
+        channelId: '100000000000000001',
+        roleId: x.role.id,
+        label: 'Label',
+        interactionId: String(n),
+      });
+    assert.equal(x.context.rolePanels.list('g').length, 10);
+    assert.equal(x.context.rolePanels.list('g', 2).length, 10);
+    assert.equal(x.context.rolePanels.list('g', 3).length, 5);
+    assert.equal(x.context.rolePanels.list('g', 10).length, 0);
+    assert.equal(x.context.rolePanels.list('other').length, 0);
+    assert.equal(x.context.rolePanels.list('g')[0].id, 25);
+    for (const p of [0, 11, 1.5, '1'])
+      assert.throws(() => x.context.rolePanels.list('g', p), /rolePanelPageInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('bulk disable and complete list slash stay private localized/no-nativeeffects with current authority', async () => {
+  const { default: cmd } = await import('../src/commands/reactionroles/reactionroles.js');
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      const id = x.context.rolePanels.reserve({
+        guildId: 'g',
+        channelId: '100000000000000001',
+        roleId: x.role.id,
+        label: 'Label',
+        interactionId: 'stored',
+      });
+      x.context.rolePanels.complete(id, 'native');
+      let sub = 'list',
+        reply;
+      x.context.localization = { locale: () => locale };
+      x.i.deferReply = async (p) => assert.equal(p.flags, 64);
+      x.i.editReply = async (p) => {
+        reply = p;
+      };
+      x.i.options = { getSubcommand: () => sub, getInteger: () => null, getBoolean: () => true };
+      await cmd.execute(x.i, x.context);
+      assert(reply.embeds[0].data.description.includes(translate(locale, 'rolePanelState_active')));
+      assert.deepEqual(reply.allowedMentions.parse, []);
+      sub = 'disableactive';
+      await cmd.execute(x.i, x.context);
+      assert.equal(x.context.rolePanels.get(id, 'g').status, 'disabled');
+      assert.equal(x.roles.length, 0);
+      assert.equal(x.s.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('bulk disable rejects unconfirmed and wrong current actor without stored change', async () => {
+  const { default: cmd } = await import('../src/commands/reactionroles/reactionroles.js');
+  const x = setup();
+  try {
+    const id = x.context.rolePanels.reserve({
+      guildId: 'g',
+      channelId: '100000000000000001',
+      roleId: x.role.id,
+      label: 'Label',
+      interactionId: 'stored',
+    });
+    x.context.rolePanels.complete(id, 'native');
+    x.i.deferReply = async () => {};
+    x.i.editReply = async () => {};
+    x.i.options = { getSubcommand: () => 'disableactive', getBoolean: () => false };
+    await assert.rejects(() => cmd.execute(x.i, x.context), /rolePanelDisableActiveConfirm/);
+    assert.equal(x.context.rolePanels.get(id, 'g').status, 'active');
+    x.s.guild.members.fetch = async () => ({ ...x.actor, id: 'wrong' });
+    await assert.rejects(() => cmd.execute(x.i, x.context), /roleActorPermission/);
+    assert.equal(x.context.rolePanels.get(id, 'g').status, 'active');
+  } finally {
+    x.db.close();
+  }
+});

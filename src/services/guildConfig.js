@@ -39,6 +39,7 @@ export const guildConfigSchema = z
           .max(120)
           .regex(/^[^\u0000-\u001f\u007f@]+$/u)
           .optional(),
+        mentionMember: z.boolean().default(true),
         goodbyeTitle: z
           .string()
           .min(1)
@@ -58,6 +59,7 @@ export const guildConfigSchema = z
         message: 'Welcome {user} to {server}!',
         goodbyeEnabled: false,
         goodbyeMessage: 'Goodbye {username}.',
+        mentionMember: true,
       }),
   })
   .strict();

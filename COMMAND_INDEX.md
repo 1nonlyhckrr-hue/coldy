@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-41 top-level commands, 207 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+41 top-level commands, 212 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -92,6 +92,7 @@
 | /giveaway reroll | Draw again, excluding the immediately previous winners. | Local mock/unit only |
 | /giveaway start | Create a giveaway with checked eligibility. | Local mock/unit only |
 | /giveawayleave | Withdraw only your own entry from an active giveaway before its deadline. | Local mock/unit only |
+| /leaderboard activity | Only your retained90UTC-day counts,active days and longest run;not quality. | Local mock/unit only |
 | /leaderboard config | View tracking status and excluded IDs. | Local mock/unit only |
 | /leaderboard daily | Show only your retained daily message counts,ten UTC days per page. | Local mock/unit only |
 | /leaderboard disable | Manage Server: stop counting; keep stored counts. | Local mock/unit only |
@@ -101,6 +102,7 @@
 | /leaderboard optin | Allow future counts when this server has tracking enabled. | Local mock/unit only |
 | /leaderboard optout | Stop counting your future messages and erase your counts. | Local mock/unit only |
 | /leaderboard position | Show only your retained message rank and count,UTC window. | Local mock/unit only |
+| /leaderboard privacy | Only your stored counting preference and server tracking switch;no changes. | Local mock/unit only |
 | /leaderboard removeexclude | Manage Server: remove one exact stored exclusion,including deleted channels. | Local mock/unit only |
 | /leaderboard resetmine | Delete only your retained message counts. | Local mock/unit only |
 | /leaderboard stats | Show your own retained message counts. | Local mock/unit only |
@@ -144,8 +146,9 @@
 | /permit unblockuser | Unblock a user for one entire command. | Local mock/unit only |
 | /reactionroles create | Publish one role toggle button. | Local mock/unit only |
 | /reactionroles disable | Disable a panel in storage; its old button becomes inactive. | Local mock/unit only |
+| /reactionroles disableactive | Confirm disabling active panels in storage only;pending/uncertain untouched. | Local mock/unit only |
 | /reactionroles inspect | Privately inspect stored panel mappings,status and binding IDs only. | Local mock/unit only |
-| /reactionroles list | List the newest 20 panel records. | Local mock/unit only |
+| /reactionroles list | List ten complete panel records per page,newest100maximum. | Local mock/unit only |
 | /reactionroles multi | Publish 2-5 independent safe role toggle buttons. | Local mock/unit only |
 | /reactionroles receipts | Privately inspect ten unresolved stored role clicks for one member. | Local mock/unit only |
 | /reactionroles reconcileclick | Resolve a directed uncertain receipt only when observed role state matches intent. | Local mock/unit only |
@@ -203,11 +206,13 @@
 | /voicemaster status | Privately inspect your stored voice ownership record,not live channel state. | Local mock/unit only |
 | /voicemaster unlock | Empty tracked channel: explicitly allow all server members view/connect. | Local mock/unit only |
 | /welcome channel | Choose the destination. | Local mock/unit only |
+| /welcome clearchannel | Disable welcome/goodbye and remove stored destination;templates kept. | Local mock/unit only |
 | /welcome color | Set welcome/goodbye embed color,or reset to Luna default. | Local mock/unit only |
 | /welcome config | Show current settings. | Local mock/unit only |
 | /welcome disable | Disable welcome messages. | Local mock/unit only |
 | /welcome enable | Enable welcome messages. | Local mock/unit only |
 | /welcome goodbye | Set goodbye template and enable or disable it. | Local mock/unit only |
+| /welcome mentions | Choose whether welcome delivery may ping only the arriving member;goodbye never. | Local mock/unit only |
 | /welcome message | Set welcome template. | Local mock/unit only |
 | /welcome preview | Privately preview current welcome/goodbye template for yourself. | Local mock/unit only |
 | /welcome resettemplate | Restore one localized default template,leaving delivery settings unchanged. | Local mock/unit only |

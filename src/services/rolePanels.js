@@ -157,12 +157,20 @@ export class RolePanels {
   get(id, guildId) {
     return this.db.prepare('SELECT * FROM role_panels WHERE id=? AND guild_id=?').get(id, guildId);
   }
-  list(guildId) {
+  list(guildId, page = 1) {
+    if (!Number.isInteger(page) || page < 1 || page > 10)
+      throw new UserError('rolePanelPageInvalid');
     return this.db
       .prepare(
-        'SELECT id,channel_id,message_id,role_id,label,status FROM role_panels WHERE guild_id=? ORDER BY id DESC LIMIT 20',
+        'SELECT id,channel_id,message_id,role_id,label,status FROM role_panels WHERE guild_id=? ORDER BY id DESC LIMIT 10 OFFSET ?',
       )
-      .all(guildId);
+      .all(guildId, (page - 1) * 10);
+  }
+  disableActive(guildId) {
+    if (typeof guildId !== 'string' || !guildId) throw new TypeError('Invalid guild');
+    return this.db
+      .prepare("UPDATE role_panels SET status='disabled' WHERE guild_id=? AND status='active'")
+      .run(guildId).changes;
   }
   complete(id, messageId) {
     if (typeof messageId !== 'string' || !messageId)

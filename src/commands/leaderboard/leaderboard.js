@@ -83,6 +83,20 @@ const data = new SlashCommandBuilder()
         o.setName('page').setDescription('Page1-9,newest first').setMinValue(1).setMaxValue(9),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('activity')
+      .setDescription(
+        'Only your retained90UTC-day counts,active days and longest run;not quality.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('privacy')
+      .setDescription(
+        'Only your stored counting preference and server tracking switch;no changes.',
+      ),
+  )
   .addSubcommand((s) => s.setName('stats').setDescription('Show your own retained message counts.'))
   .addSubcommand((s) =>
     s
@@ -192,6 +206,17 @@ export default {
       const page = i.options.getInteger('page') ?? 1;
       const rows = c.messageRanks.daily(i.guildId, i.user.id, page);
       text = t('rankDaily', { page }) + '\n' + rows.map((r) => `${r.day}: ${r.count}`).join('\n');
+    } else if (sub === 'activity') {
+      const r = c.messageRanks.activity(i.guildId, i.user.id);
+      text = t('rankActivity', { ...r, peakDay: r.peakDay ?? t('rankNoPeak') });
+    } else if (sub === 'privacy') {
+      const cfg = c.messageRanks.config(i.guildId);
+      text = t('rankPrivacy', {
+        server: t(cfg.enabled ? 'enabled' : 'disabled'),
+        preference: t(
+          c.messageRanks.optedOut(i.guildId, i.user.id) ? 'rankPreferenceOut' : 'rankPreferenceIn',
+        ),
+      });
     } else if (sub === 'stats') {
       const counts = c.messageRanks.stats(i.guildId, i.user.id);
       text = t('rankStats', counts);

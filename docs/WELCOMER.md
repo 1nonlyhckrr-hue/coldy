@@ -1,0 +1,3 @@
+# Welcomer
+
+`mentions enabled` controls arriving-member ping only forwelcome deliveries andexplicitselftest. Defaulttrue preservesexistingbehavior,includinglegacystoredJSON;false suppressesallpingswithoutchangingcontent/enabled/channel. Role/everyone/otheruserpingsneverallowed;goodbye/previewneverping. `clearchannel confirm:true` disableswelcome/goodbye andclearsstoreddestination together,withoutnativechannel lookup(removingdeletedchannel supported);templates/customflags/title/color/mention policy kept. No message deletionorautomaticre-enable. Currentmanager/private3locales,6tests,602localfullsuite/211paths;nativepixelsnotverified.

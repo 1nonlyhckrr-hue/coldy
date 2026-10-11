@@ -115,6 +115,22 @@ const data = new SlashCommandBuilder()
           .setDescription('Page1-10,oldest unresolved first')
           .setMinValue(1)
           .setMaxValue(10),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('state')
+          .setDescription('One stored unresolved state,not native channel state')
+          .addChoices(
+            ...['creating', 'open', 'closing', 'reopening', 'uncertain'].map((value) => ({
+              name: value,
+              value,
+            })),
+          ),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('unclaimed')
+          .setDescription('Only rows with no stored claimant;no ownership/access change'),
       ),
   )
   .addSubcommand((s) =>
@@ -203,9 +219,16 @@ export default {
     }
     if (sub === 'queue') {
       const page = i.options.getInteger('page') ?? 1,
-        rows = c.tickets.queue(i.guildId, page);
+        state = i.options.getString('state'),
+        unclaimed = i.options.getBoolean('unclaimed') ?? false,
+        rows = c.tickets.queue(i.guildId, page, { state, unclaimed });
       content =
         t('ticketQueueHeader', { page }) +
+        '\n' +
+        t('ticketQueueFilters', {
+          state: state === null ? t('ticketQueueAllStates') : t('ticketOwnState_' + state),
+          unclaimed: t(unclaimed ? 'enabled' : 'disabled'),
+        }) +
         '\n' +
         (rows
           .map((r) =>

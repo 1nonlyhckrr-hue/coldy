@@ -97,6 +97,27 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('mentions')
+      .setDescription(
+        'Choose whether welcome delivery may ping only the arriving member;goodbye never.',
+      )
+      .addBooleanOption((o) =>
+        o.setName('enabled').setDescription('Allow only arriving-member mention').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clearchannel')
+      .setDescription('Disable welcome/goodbye and remove stored destination;templates kept.')
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping both and clearing destination')
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('enable').setDescription('Enable welcome messages.'))
   .addSubcommand((s) => s.setName('disable').setDescription('Disable welcome messages.'))
   .addSubcommand((s) => s.setName('config').setDescription('Show current settings.'))
@@ -183,6 +204,21 @@ export default {
       });
       text = t('welcomeColorSaved');
     }
+    if (sub === 'mentions') {
+      const enabled = i.options.getBoolean('enabled', true);
+      c.guildConfig.patch(i.guildId, 'welcome', { mentionMember: enabled });
+      text = t('welcomeMentionSaved', { status: status(enabled) });
+    }
+    if (sub === 'clearchannel') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('welcomeClearConfirm');
+      c.guildConfig.patch(i.guildId, 'welcome', {
+        enabled: false,
+        goodbyeEnabled: false,
+        channelId: undefined,
+      });
+      text = t('welcomeChannelCleared');
+    }
     if (sub === 'message') {
       c.guildConfig.patch(i.guildId, 'welcome', {
         message: i.options.getString('text', true),
@@ -227,12 +263,15 @@ export default {
     }
     if (sub === 'config') {
       const s = c.guildConfig.get(i.guildId).welcome;
-      text = t('welcomeConfig', {
-        welcome: status(s.enabled),
-        goodbye: status(s.goodbyeEnabled),
-        channel: s.channelId ?? t('notSet'),
-        events: status(c.config.memberEventsEnabled),
-      });
+      text =
+        t('welcomeConfig', {
+          welcome: status(s.enabled),
+          goodbye: status(s.goodbyeEnabled),
+          channel: s.channelId ?? t('notSet'),
+          events: status(c.config.memberEventsEnabled),
+        }) +
+        '\n' +
+        t('welcomeMentionConfig', { status: status(s.mentionMember) });
     }
     if (sub === 'preview') {
       const kind = i.options.getString('kind', true);
@@ -264,7 +303,7 @@ export default {
         lunaPayload(
           {
             content: renderGuildTemplate(latest.welcome, 'welcome', member, latest.language),
-            allowedMentions: { parse: [], users: [i.user.id] },
+            allowedMentions: { parse: [], users: latest.welcome.mentionMember ? [i.user.id] : [] },
           },
           { locale: latest.language, color: latest.welcome.color, title: latest.welcome.title },
         ),

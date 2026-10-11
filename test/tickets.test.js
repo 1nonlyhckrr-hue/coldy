@@ -782,7 +782,12 @@ test('ticket queue command privately localizes stored metadata with manager gate
       x.tickets.transcript = () => {
         throw Error('no transcript');
       };
-      x.i.options = { getSubcommand: () => 'queue', getInteger: () => null };
+      x.i.options = {
+        getSubcommand: () => 'queue',
+        getInteger: () => null,
+        getString: () => null,
+        getBoolean: () => null,
+      };
       const before = x.tickets.get(id, ids.guild);
       await command.execute(x.i, x.c);
       assert(
@@ -805,12 +810,110 @@ test('ticket queue refuses foreign current manager before storage read and empty
   const x = setup();
   try {
     x.owner.permissions.has = () => true;
-    x.i.options = { getSubcommand: () => 'queue', getInteger: () => 10 };
+    x.i.options = {
+      getSubcommand: () => 'queue',
+      getInteger: () => 10,
+      getString: () => null,
+      getBoolean: () => null,
+    };
     await command.execute(x.i, x.c);
     assert(x.replies[0].embeds[0].data.description.includes('No unresolved stored tickets'));
     x.owner.guild.id = 'foreign';
     x.tickets.queue = () => assert.fail('must not query');
     await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+  } finally {
+    x.db.close();
+  }
+});
+
+test('ticket queue filters stored state and claimant before pagination,guild isolated and side-effect free', () => {
+  const x = setup();
+  try {
+    for (let n = 0; n < 25; n++) {
+      const id = x.tickets.reserve(ids.guild, 'owner' + n, ids.role, 'source' + n);
+      x.db
+        .prepare('UPDATE tickets SET status=?,claimed_by=? WHERE id=?')
+        .run(n % 2 ? 'uncertain' : 'open', n % 3 ? 'staff' : null, id);
+    }
+    const before = x.db.prepare('SELECT * FROM tickets ORDER BY id').all();
+    const rows = x.tickets.queue(ids.guild, 1, { state: 'open', unclaimed: true });
+    assert.equal(rows.length, 5);
+    assert(rows.every((r) => r.status === 'open' && r.claimed_by === null));
+    assert.equal(x.tickets.queue('foreign', 1, { state: 'open' }).length, 0);
+    assert.deepEqual(x.db.prepare('SELECT * FROM tickets ORDER BY id').all(), before);
+    assert.equal(x.tickets.queue(ids.guild, 1, { state: 'uncertain' }).length, 10);
+    assert.equal(x.tickets.queue(ids.guild, 2, { state: 'uncertain' }).length, 2);
+    assert.equal(x.tickets.queue(ids.guild, 2, { state: 'open', unclaimed: true }).length, 0);
+  } finally {
+    x.db.close();
+  }
+});
+test('queue rejects unsupported states and nonboolean filters rather than silently changing interpretation', () => {
+  const x = setup();
+  try {
+    for (const filters of [
+      { state: 'closed' },
+      { state: 'all' },
+      { state: 0 },
+      { unclaimed: 1 },
+      { unclaimed: null },
+    ])
+      assert.throws(() => x.tickets.queue(ids.guild, 1, filters), /ticketQueueFilterInvalid/);
+  } finally {
+    x.db.close();
+  }
+});
+test('filtered queue slash displays selected policy privately in3locales without channel/transcript lookup', async () => {
+  const { translate } = await import('../src/services/localization.js');
+  for (const locale of ['en', 'hi', 'hinglish']) {
+    const x = setup();
+    try {
+      x.owner.permissions.has = () => true;
+      x.c.guildConfig.setLanguage(ids.guild, locale);
+      const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'one');
+      x.tickets.activate(id, ids.channel);
+      x.guild.channels.fetch = async () => assert.fail('no native lookup');
+      x.i.options = {
+        getSubcommand: () => 'queue',
+        getInteger: () => null,
+        getString: () => 'open',
+        getBoolean: () => true,
+      };
+      await command.execute(x.i, x.c);
+      const text = x.replies[0].embeds[0].data.description;
+      assert(text.includes(translate(locale, 'ticketOwnState_open')));
+      assert.deepEqual(x.replies[0].allowedMentions.parse, []);
+      assert.equal(x.tickets.get(id, ids.guild).claimed_by, null);
+      assert.equal(x.sent.length, 0);
+    } finally {
+      x.db.close();
+    }
+  }
+});
+test('filtered queue does not promote uncertain or claimed jobs as available and requires current manager', async () => {
+  const x = setup();
+  try {
+    x.owner.permissions.has = () => true;
+    const id = x.tickets.reserve(ids.guild, ids.owner, ids.role, 'one');
+    x.tickets.activate(id, ids.channel);
+    x.tickets.claim(id, 'staff');
+    x.i.options = {
+      getSubcommand: () => 'queue',
+      getInteger: () => 1,
+      getString: () => 'open',
+      getBoolean: () => true,
+    };
+    await command.execute(x.i, x.c);
+    assert(!x.replies[0].embeds[0].data.description.includes('#' + id));
+    x.owner.permissions.has = () => false;
+    let reads = 0;
+    x.tickets.queue = () => {
+      reads++;
+      return [];
+    };
+    await assert.rejects(() => command.execute(x.i, x.c), /userPermission/);
+    assert.equal(reads, 0);
+    assert.equal(x.tickets.get(id, ids.guild).claimed_by, 'staff');
   } finally {
     x.db.close();
   }

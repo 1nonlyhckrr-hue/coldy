@@ -39,7 +39,10 @@ export class ModerationCases {
   finish(id, status) {
     if (!['completed', 'failed', 'uncertain'].includes(status))
       throw new Error('Invalid case outcome');
-    this.db.prepare('UPDATE moderation_cases SET status=? WHERE id=?').run(status, id);
+    const r = this.db
+      .prepare("UPDATE moderation_cases SET status=? WHERE id=? AND status='pending'")
+      .run(status, id);
+    if (r.changes !== 1) throw new Error('Case not pending');
   }
   warn(record) {
     return this.db.transaction(() => {
@@ -79,10 +82,22 @@ export async function moderate(interaction, context, input) {
   if (!/^\d{17,20}$/.test(targetId ?? '')) throw new UserError('modIdInvalid');
   if (!interaction.inGuild()) throw new UserError('modGuildOnly');
   // Refresh caller and bot members to recheck current permissions and hierarchy.
-  const [actor, bot] = await Promise.all([
+  let [actor, bot] = await Promise.all([
     interaction.guild.members.fetch({ user: interaction.user.id, force: true }),
     interaction.guild.members.fetchMe({ force: true }),
   ]);
+  const verifyIdentity = () => {
+    if (
+      interaction.guild.id !== interaction.guildId ||
+      actor?.id !== interaction.user.id ||
+      actor.guild?.id !== interaction.guildId ||
+      !interaction.guild.client?.user?.id ||
+      bot?.id !== interaction.guild.client.user.id ||
+      bot.guild?.id !== interaction.guildId
+    )
+      throw new UserError('modIdentityInvalid');
+  };
+  verifyIdentity();
   if (!actor.permissions.has(actionPermissions[action])) throw new UserError('modActorPermission');
   const external = ['timeout', 'untimeout', 'kick', 'ban', 'unban'].includes(action);
   if (
@@ -105,6 +120,8 @@ export async function moderate(interaction, context, input) {
     } catch {
       throw new UserError('modTargetUnavailable');
     }
+    if (target?.id !== targetId || target.guild?.id !== interaction.guildId)
+      throw new UserError('modIdentityInvalid');
     enforceHierarchy(actor, bot, target, interaction.guild.ownerId);
     if (
       ['timeout', 'untimeout'].includes(action) &&
@@ -113,6 +130,21 @@ export async function moderate(interaction, context, input) {
       throw new UserError('modTimeoutProtected');
     input.target = target;
   }
+  [actor, bot] = await Promise.all([
+    interaction.guild.members.fetch({ user: interaction.user.id, force: true }),
+    interaction.guild.members.fetchMe({ force: true }),
+  ]);
+  verifyIdentity();
+  if (!actor.permissions.has(actionPermissions[action])) throw new UserError('modActorPermission');
+  if (
+    external &&
+    (!bot.permissions.has(actionPermissions[action]) ||
+      !interaction.appPermissions?.has(actionPermissions[action]))
+  )
+    throw new UserError('modBotPermission');
+  if (action !== 'unban') enforceHierarchy(actor, bot, input.target, interaction.guild.ownerId);
+  if (targetId === interaction.guild.ownerId || targetId === actor.id || targetId === bot.id)
+    throw new UserError('protectedTarget');
   const record = {
     guildId: interaction.guildId,
     targetId,

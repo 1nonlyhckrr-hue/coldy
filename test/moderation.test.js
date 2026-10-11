@@ -15,6 +15,7 @@ function setup() {
   const context = { cases: new ModerationCases(db) };
   const member = (id, n) => ({
     id,
+    guild: { id: 'guild' },
     user: { bot: false },
     permissions: { has: (permission) => permission !== P.Administrator },
     roles: { highest: { position: n, comparePositionTo: (other) => n - other.position } },
@@ -32,6 +33,8 @@ function setup() {
     inGuild: () => true,
     appPermissions: { has: () => true },
     guild: {
+      id: 'guild',
+      client: { user: { id: ids.bot } },
       ownerId: ids.owner,
       members: {
         fetch: async ({ user }) => (user === ids.actor ? actor : target),
@@ -252,6 +255,79 @@ test('Hindi moderation replies and default reasons follow guild locale', async (
     await command.execute(s.i, s.context);
     assert.match(edits[0].embeds[0].data.description, /केस/);
     assert.match(s.context.cases.warnings('guild', ids.target)[0].reason, /कारण/);
+  } finally {
+    s.db.close();
+  }
+});
+
+test('moderation verifies exact actor bot target guild before any warning record or external effect', async () => {
+  for (const change of [
+    (s) => (s.actor.id = ids.owner),
+    (s) => (s.actor.guild.id = 'foreign'),
+    (s) => (s.bot.id = ids.owner),
+    (s) => (s.bot.guild.id = 'foreign'),
+    (s) => (s.target.id = ids.owner),
+    (s) => (s.target.guild.id = 'foreign'),
+    (s) => (s.i.guild.id = 'foreign'),
+    (s) => (s.i.guild.client.user.id = 'foreign'),
+  ]) {
+    const s = setup();
+    try {
+      change(s);
+      await assert.rejects(
+        () => moderate(s.i, s.context, { action: 'warn', targetId: ids.target }),
+        /modIdentityInvalid/,
+      );
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('moderation rechecks actor permission identity bot permission and hierarchy after target lookup', async () => {
+  for (const change of [
+    (s) => (s.actor.permissions.has = () => false),
+    (s) => (s.actor.id = ids.owner),
+    (s) => (s.bot.permissions.has = () => false),
+    (s) => (s.actor.roles.highest.comparePositionTo = () => 0),
+  ]) {
+    const s = setup();
+    try {
+      const fetch = s.i.guild.members.fetch;
+      s.i.guild.members.fetch = async (args) => {
+        if (args.user === ids.target) change(s);
+        return fetch(args);
+      };
+      await assert.rejects(() =>
+        moderate(s.i, s.context, { action: 'kick', targetId: ids.target }),
+      );
+      assert.equal(s.calls.length, 0);
+      assert.equal(s.db.prepare('SELECT count(*) n FROM moderation_cases').get().n, 0);
+    } finally {
+      s.db.close();
+    }
+  }
+});
+test('case finish requires one pending reservation and terminal/missing states cannot rewrite', () => {
+  const s = setup();
+  try {
+    const id = s.context.cases.begin({
+      guildId: 'guild',
+      targetId: ids.target,
+      actorId: ids.actor,
+      action: 'kick',
+      reason: 'x',
+      interactionId: 'guard',
+    });
+    s.context.cases.finish(id, 'completed');
+    for (const status of ['completed', 'failed', 'uncertain'])
+      assert.throws(() => s.context.cases.finish(id, status));
+    assert.throws(() => s.context.cases.finish(999, 'failed'));
+    assert.equal(
+      s.db.prepare('SELECT status FROM moderation_cases WHERE id=?').get(id).status,
+      'completed',
+    );
   } finally {
     s.db.close();
   }

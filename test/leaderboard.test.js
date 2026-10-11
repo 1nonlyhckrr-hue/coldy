@@ -692,3 +692,143 @@ test('daily retained series observes UTC midnight across month boundary and has 
     db.close();
   }
 });
+
+test('own activity summarizes only retained UTC days with gaps longest run and earliest peak ties', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    for (const [day, count] of [
+      ['2026-07-13', 999],
+      ['2026-07-14', 2],
+      ['2026-10-06', 5],
+      ['2026-10-07', 5],
+      ['2026-10-08', 1],
+      ['2026-10-10', 3],
+      ['2026-10-11', 2],
+      ['2026-10-12', 999],
+    ])
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run('g', user, day, count);
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+      'other',
+      user,
+      '2026-10-09',
+      999,
+    );
+    db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,?)').run(
+      'g',
+      '100000000000000004',
+      '2026-10-09',
+      999,
+    );
+    assert.deepEqual(r.activity('g', user, now), {
+      total: 18,
+      activeDays: 6,
+      longest: 3,
+      peakCount: 5,
+      peakDay: '2026-10-06',
+    });
+    assert.deepEqual(r.activity('empty', user, now), {
+      total: 0,
+      activeDays: 0,
+      longest: 0,
+      peakCount: 0,
+      peakDay: null,
+    });
+  } finally {
+    db.close();
+  }
+});
+test('activity honors optout/reset deletion and never recreates erased or disabled tracking counts', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    r.enable('g', true);
+    r.record(message(), now);
+    assert.equal(r.activity('g', user, now).total, 1);
+    r.privacy('g', user, true);
+    assert.equal(r.activity('g', user, now).total, 0);
+    r.privacy('g', user, false);
+    assert.equal(r.activity('g', user, now).total, 0);
+    assert.equal(r.record(message(), now), false);
+    r.enable('g', false);
+    assert.equal(r.record(message(2), now), false);
+  } finally {
+    db.close();
+  }
+});
+test('activity and privacy slash output own data only privately in three locales without storage mutations', async () => {
+  for (const locale of ['en', 'hi', 'hinglish'])
+    for (const sub of ['activity', 'privacy']) {
+      const db = openDatabase(':memory:');
+      try {
+        const r = new MessageRanks(db);
+        r.enable('g', true);
+        r.record({ ...message(), createdTimestamp: Date.now() }, Date.now());
+        let reply;
+        const i = {
+          guildId: 'g',
+          user: { id: user },
+          options: { getSubcommand: () => sub },
+          deferReply: async (p) => assert.equal(p.flags, 64),
+          editReply: async (p) => {
+            reply = p;
+          },
+        };
+        const c = {
+          messageRanks: r,
+          localization: { locale: () => locale, t: (_g, k, p) => translate(locale, k, p) },
+        };
+        const before = r.config('g');
+        await command.execute(i, c);
+        assert.deepEqual(r.config('g'), before);
+        assert(!r.optedOut('g', user));
+        assert.deepEqual(reply.allowedMentions.parse, []);
+        assert(reply.embeds[0].data.description.length < 2000);
+        assert(reply.embeds[0].data.footer.text.includes('Luna'));
+        assert(!reply.embeds[0].data.description.includes(user));
+      } finally {
+        db.close();
+      }
+    }
+});
+test('privacy reports no optout as no personal consent proof with server switch and erasure unchanged', async () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    let reply;
+    const i = {
+      guildId: 'g',
+      user: { id: user },
+      options: { getSubcommand: () => 'privacy' },
+      deferReply: async () => {},
+      editReply: async (p) => {
+        reply = p;
+      },
+    };
+    const c = {
+      messageRanks: r,
+      localization: { locale: () => 'en', t: (_g, k, p) => translate('en', k, p) },
+    };
+    await command.execute(i, c);
+    assert(reply.embeds[0].data.description.includes('not opted out'));
+    assert(reply.embeds[0].data.description.includes(translate('en', 'disabled')));
+    r.privacy('g', user, true);
+    await command.execute(i, c);
+    assert(reply.embeds[0].data.description.includes('opted out'));
+    assert(r.optedOut('g', user));
+    assert.equal(r.config('g').enabled, false);
+  } finally {
+    db.close();
+  }
+});
+test('activity tracks consecutive calendar days across month/year boundaries without assuming elapsed local time', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const r = new MessageRanks(db);
+    for (const day of ['2026-12-30', '2026-12-31', '2027-01-01'])
+      db.prepare('INSERT INTO message_rank_daily VALUES(?,?,?,1)').run('g', user, day);
+    assert.equal(r.activity('g', user, Date.parse('2027-01-01T00:00:00Z')).longest, 3);
+  } finally {
+    db.close();
+  }
+});

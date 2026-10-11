@@ -1,0 +1,3 @@
+# Moderation
+
+Safetycheckpoint618:warn/warnings/clearwarns/native moderation verifyexactfreshactor/clientbot/targetguildidentities. Refreshactor/botagain aftertargetlookup and recheckcurrentpermissions/hierarchy beforecase or API effects. Casefinishsinglependingtransitiononly;terminal/missingreceiptcannotrewrite. Unknownnativeoutcome remainsno-retry.3testscovermultipleidentity/race/terminalpaths;618localfullsuite,212pathsunchanged. LiveDiscordacceptancepending.

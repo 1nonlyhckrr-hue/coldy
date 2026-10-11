@@ -71,14 +71,20 @@ export class Tickets {
       )
       .all(guildId, ownerId);
   }
-  queue(guildId, page = 1) {
+  queue(guildId, page = 1, { state = null, unclaimed = false } = {}) {
+    if (
+      state !== null &&
+      !['creating', 'open', 'closing', 'reopening', 'uncertain'].includes(state)
+    )
+      throw new UserError('ticketQueueFilterInvalid');
+    if (typeof unclaimed !== 'boolean') throw new UserError('ticketQueueFilterInvalid');
     if (!Number.isInteger(page) || page < 1 || page > 10)
       throw new UserError('ticketQueuePageInvalid');
     return this.db
       .prepare(
-        "SELECT id,channel_id,status,claimed_by FROM tickets WHERE guild_id=? AND status!='closed' ORDER BY id ASC LIMIT 10 OFFSET ?",
+        "SELECT id,channel_id,status,claimed_by FROM tickets WHERE guild_id=? AND status!='closed' AND (? IS NULL OR status=?) AND (?=0 OR claimed_by IS NULL) ORDER BY id ASC LIMIT 10 OFFSET ?",
       )
-      .all(guildId, (page - 1) * 10);
+      .all(guildId, state, state, unclaimed ? 1 : 0, (page - 1) * 10);
   }
   byChannel(channelId, guildId) {
     return this.db

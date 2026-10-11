@@ -19,7 +19,13 @@ export function createMemberMessageHandler(context, kind) {
       // Only the new member may be mentioned, never roles or everyone.
       await channel.send(
         lunaPayload(
-          { content, allowedMentions: { parse: [], users: kind === 'welcome' ? [member.id] : [] } },
+          {
+            content,
+            allowedMentions: {
+              parse: [],
+              users: kind === 'welcome' && current.mentionMember ? [member.id] : [],
+            },
+          },
           {
             locale: latest.language,
             color: current.color,

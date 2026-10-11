@@ -2410,7 +2410,7 @@
   {
     "name": "help",
     "category": "general",
-    "syntax": "/help [page] [category] [search]",
+    "syntax": "/help [page] [category] [search] [command]",
     "description": "Privately browse installed paths by page,category or literal search.",
     "parameters": [
       {
@@ -2428,6 +2428,13 @@
       },
       {
         "name": "search",
+        "required": false,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 80
+      },
+      {
+        "name": "command",
         "required": false,
         "type": 3,
         "minLength": 1,
@@ -2671,6 +2678,24 @@
     "source": "src/commands/giveaway/giveawayleave.js"
   },
   {
+    "name": "leaderboard activity",
+    "category": "leaderboard",
+    "syntax": "/leaderboard activity",
+    "description": "Only your retained90UTC-day counts,active days and longest run;not quality.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/leaderboard/leaderboard.js"
+  },
+  {
     "name": "leaderboard config",
     "category": "leaderboard",
     "syntax": "/leaderboard config",
@@ -2870,6 +2895,24 @@
         ]
       }
     ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/leaderboard/leaderboard.js"
+  },
+  {
+    "name": "leaderboard privacy",
+    "category": "leaderboard",
+    "syntax": "/leaderboard privacy",
+    "description": "Only your stored counting preference and server tracking switch;no changes.",
+    "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
     "defaultMemberPermissions": [],
@@ -4152,6 +4195,36 @@
     "source": "src/commands/reactionroles/reactionroles.js"
   },
   {
+    "name": "reactionroles disableactive",
+    "category": "reactionroles",
+    "syntax": "/reactionroles disableactive (confirm)",
+    "description": "Confirm disabling active panels in storage only;pending/uncertain untouched.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [
+      "ManageRoles"
+    ],
+    "botPermissions": [
+      "ManageRoles"
+    ],
+    "defaultMemberPermissions": [
+      "ManageRoles"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/reactionroles/reactionroles.js"
+  },
+  {
     "name": "reactionroles inspect",
     "category": "reactionroles",
     "syntax": "/reactionroles inspect (panel-id)",
@@ -4185,9 +4258,17 @@
   {
     "name": "reactionroles list",
     "category": "reactionroles",
-    "syntax": "/reactionroles list",
-    "description": "List the newest 20 panel records.",
-    "parameters": [],
+    "syntax": "/reactionroles list [page]",
+    "description": "List ten complete panel records per page,newest100maximum.",
+    "parameters": [
+      {
+        "name": "page",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 10
+      }
+    ],
     "userPermissions": [
       "ManageRoles"
     ],
@@ -4486,7 +4567,7 @@
   {
     "name": "ticket queue",
     "category": "ticket",
-    "syntax": "/ticket queue [page]",
+    "syntax": "/ticket queue [page] [state] [unclaimed]",
     "description": "Manage Server:inspect unresolved stored ticket IDs,not content or live access.",
     "parameters": [
       {
@@ -4495,6 +4576,38 @@
         "type": 4,
         "min": 1,
         "max": 10
+      },
+      {
+        "name": "state",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "creating",
+            "value": "creating"
+          },
+          {
+            "name": "open",
+            "value": "open"
+          },
+          {
+            "name": "closing",
+            "value": "closing"
+          },
+          {
+            "name": "reopening",
+            "value": "reopening"
+          },
+          {
+            "name": "uncertain",
+            "value": "uncertain"
+          }
+        ]
+      },
+      {
+        "name": "unclaimed",
+        "required": false,
+        "type": 5
       }
     ],
     "userPermissions": [],
@@ -5726,6 +5839,34 @@
     "source": "src/commands/welcomer/welcome.js"
   },
   {
+    "name": "welcome clearchannel",
+    "category": "welcomer",
+    "syntax": "/welcome clearchannel (confirm)",
+    "description": "Disable welcome/goodbye and remove stored destination;templates kept.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/welcomer/welcome.js"
+  },
+  {
     "name": "welcome color",
     "category": "welcomer",
     "syntax": "/welcome color [hex]",
@@ -5838,6 +5979,34 @@
         "type": 3,
         "minLength": 1,
         "maxLength": 1800
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/welcomer/welcome.js"
+  },
+  {
+    "name": "welcome mentions",
+    "category": "welcomer",
+    "syntax": "/welcome mentions (enabled)",
+    "description": "Choose whether welcome delivery may ping only the arriving member;goodbye never.",
+    "parameters": [
+      {
+        "name": "enabled",
+        "required": true,
+        "type": 5
       }
     ],
     "userPermissions": [

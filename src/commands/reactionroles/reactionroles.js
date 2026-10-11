@@ -110,7 +110,27 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   )
-  .addSubcommand((s) => s.setName('list').setDescription('List the newest 20 panel records.'))
+  .addSubcommand((s) =>
+    s
+      .setName('list')
+      .setDescription('List ten complete panel records per page,newest100maximum.')
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('disableactive')
+      .setDescription(
+        'Confirm disabling active panels in storage only;pending/uncertain untouched.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping active role-panel buttons here')
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) =>
     s
       .setName('disable')
@@ -205,13 +225,21 @@ export default {
       content = t('roleClickReconciled');
     }
     if (sub === 'list') {
-      const panels = c.rolePanels.list(i.guildId);
-      content = panels.length
-        ? panels
-            .map((p) => `#${p.id} | ${p.status} | role ${p.role_id} | channel ${p.channel_id}`)
-            .join('\n')
-            .slice(0, 1900)
-        : t('rolePanelEmpty');
+      const page = i.options.getInteger('page') ?? 1,
+        panels = c.rolePanels.list(i.guildId, page);
+      content =
+        t('rolePanelListHeader', { page }) +
+        '\n' +
+        (panels
+          .map(
+            (p) => `#${p.id} | ${t('rolePanelState_' + p.status)} | ${p.role_id} | ${p.channel_id}`,
+          )
+          .join('\n') || t('rolePanelEmpty'));
+    }
+    if (sub === 'disableactive') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('rolePanelDisableActiveConfirm');
+      content = t('rolePanelActiveDisabled', { n: c.rolePanels.disableActive(i.guildId) });
     }
     if (sub === 'disable') {
       const id = i.options.getInteger('panel-id', true);

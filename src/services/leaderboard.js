@@ -174,6 +174,36 @@ export class MessageRanks {
     const counts = new Map(rows.map((r) => [r.day, r.count]));
     return days.map((day) => ({ day, count: counts.get(day) ?? 0 }));
   }
+  activity(guildId, userId, now = Date.now()) {
+    const today = utcDay(now),
+      since = this.since('retained', now),
+      rows = this.db
+        .prepare(
+          'SELECT day,count FROM message_rank_daily WHERE guild_id=? AND user_id=? AND day>=? AND day<=? ORDER BY day',
+        )
+        .all(guildId, userId, since, today);
+    let total = 0,
+      activeDays = 0,
+      longest = 0,
+      streak = 0,
+      previous = null,
+      peakCount = 0,
+      peakDay = null;
+    for (const row of rows) {
+      if (row.count <= 0) continue;
+      total += row.count;
+      activeDays++;
+      const stamp = Date.parse(row.day + 'T00:00:00Z');
+      streak = previous !== null && stamp - previous === DAY ? streak + 1 : 1;
+      previous = stamp;
+      longest = Math.max(longest, streak);
+      if (row.count > peakCount) {
+        peakCount = row.count;
+        peakDay = row.day;
+      }
+    }
+    return { total, activeDays, longest, peakCount, peakDay };
+  }
   resetMine(guildId, userId) {
     return this.db
       .prepare('DELETE FROM message_rank_daily WHERE guild_id=? AND user_id=?')
