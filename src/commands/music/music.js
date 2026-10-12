@@ -10,16 +10,16 @@ import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('music')
-  .setDescription('Opt-in experimental public-node YouTube playback;source/uptime risks apply.')
+  .setDescription('Opt-in experimental public-node YouTube playback; source/uptime risks apply.')
   .setContexts(InteractionContextType.Guild);
 data.addSubcommand((s) =>
   s
     .setName('play')
-    .setDescription('Queue first YouTube search result or exact11-character video ID.')
+    .setDescription('Queue the first YouTube search result or an exact 11-character video ID.')
     .addStringOption((o) =>
       o
         .setName('query')
-        .setDescription('Search words or video ID;no URLs/playlists/live streams')
+        .setDescription('Search words or video ID; no URLs/playlists/live streams')
         .setRequired(true)
         .setMinLength(1)
         .setMaxLength(180),
@@ -29,26 +29,26 @@ for (const [name, description] of [
   ['pause', 'Pause current track.'],
   ['resume', 'Resume current track.'],
   ['stop', 'Disconnect and clear this server session.'],
-  ['skip', 'Stop current track once and advance waiting queue;uncertain failures freeze.'],
+  ['skip', 'Stop current track once and advance waiting queue; uncertain failures freeze.'],
   ['nowplaying', 'Show current track.'],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(description));
 data.addSubcommand((s) =>
   s
     .setName('queue')
-    .setDescription('Show ten queued tracks per page;current track separate.')
+    .setDescription('Show ten queued tracks per page; current track separate.')
     .addIntegerOption((o) =>
-      o.setName('page').setDescription('Queue page1-5').setMinValue(1).setMaxValue(5),
+      o.setName('page').setDescription('Queue page 1-5').setMinValue(1).setMaxValue(5),
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('remove')
-    .setDescription('Remove one queued position;never stops current track.')
+    .setDescription('Remove one queued position; never stops current track.')
     .addIntegerOption((o) =>
       o
         .setName('position')
-        .setDescription('Exact queue position1-50')
+        .setDescription('Exact queue position 1-50')
         .setMinValue(1)
         .setMaxValue(50)
         .setRequired(true),
@@ -58,12 +58,12 @@ data.addSubcommand((s) =>
   s
     .setName('move')
     .setDescription(
-      'Move one waiting track to exact final queue position;current playback untouched.',
+      'Move one waiting track to exact final queue position; current playback untouched.',
     )
     .addIntegerOption((o) =>
       o
         .setName('from')
-        .setDescription('Waiting queue source1-50')
+        .setDescription('Waiting queue source 1-50')
         .setMinValue(1)
         .setMaxValue(50)
         .setRequired(true),
@@ -71,22 +71,22 @@ data.addSubcommand((s) =>
     .addIntegerOption((o) =>
       o
         .setName('to')
-        .setDescription('Final queue destination1-50')
+        .setDescription('Final queue destination 1-50')
         .setMinValue(1)
         .setMaxValue(50)
         .setRequired(true),
     ),
 );
 for (const [name, description] of [
-  ['clear', 'Clear waiting tracks only;current track keeps playing.'],
-  ['shuffle', 'Randomize waiting tracks only;current track unchanged.'],
+  ['clear', 'Clear waiting tracks only; current track keeps playing.'],
+  ['shuffle', 'Randomize waiting tracks only; current track unchanged.'],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(description));
 data.addSubcommand((s) =>
   s
     .setName('stay')
     .setDescription(
-      'Keep idle VC connection while this process/node are healthy;not uptime guarantee.',
+      'Keep idle VC connection while this process/node are healthy; not uptime guarantee.',
     )
     .addBooleanOption((o) =>
       o.setName('enabled').setDescription('Keep connection after queue ends').setRequired(true),
@@ -96,17 +96,17 @@ for (const sub of ['reverse', 'deduplicate', 'removerange'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       sub === 'reverse'
-        ? 'Reverse waitingtrackorder only,currentplayback unchanged.'
+        ? 'Reverse waiting track order only, current playback unchanged.'
         : sub === 'deduplicate'
-          ? 'Keep first waitingtrack perproviderID,currenttrack/requesterhistory not compared.'
-          : 'Remove inclusivewaitingpositionrange,currentplayback untouched.',
+          ? 'Keep the first queued track per provider ID; current track and requester history are not compared.'
+          : 'Remove inclusive waiting position range, current playback untouched.',
     );
     if (sub === 'removerange')
       for (const n of ['from', 'to'])
         s.addIntegerOption((o) =>
           o
             .setName(n)
-            .setDescription('Inclusivewaitingposition1-50')
+            .setDescription('Inclusive waiting position 1-50')
             .setMinValue(1)
             .setMaxValue(50)
             .setRequired(true),
@@ -117,16 +117,16 @@ for (const name of ['trim', 'duplicate', 'removeown'])
   data.addSubcommand((s) => {
     s.setName(name).setDescription(
       name === 'trim'
-        ? 'Keep first N waiting tracks,discard later ones;current playback unchanged.'
+        ? 'Keep first N waiting tracks, discard later ones; current playback unchanged.'
         : name === 'duplicate'
-          ? 'Append one waiting track copy attributed to you;current playback unchanged.'
-          : 'Remove only waiting tracks requested by you;current playback unchanged.',
+          ? 'Append one waiting track copy attributed to you; current playback unchanged.'
+          : 'Remove only waiting tracks requested by you; current playback unchanged.',
     );
     if (name === 'trim')
       s.addIntegerOption((o) =>
         o
           .setName('count')
-          .setDescription('Keep0-50waiting tracks')
+          .setDescription('Keep 0-50 waiting tracks')
           .setMinValue(0)
           .setMaxValue(50)
           .setRequired(true),
@@ -135,7 +135,7 @@ for (const name of ['trim', 'duplicate', 'removeown'])
       s.addIntegerOption((o) =>
         o
           .setName('position')
-          .setDescription('Existing waiting position1-50')
+          .setDescription('Existing waiting position 1-50')
           .setMinValue(1)
           .setMaxValue(50)
           .setRequired(true),

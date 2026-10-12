@@ -5,7 +5,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('servericon')
-    .setDescription('Fetch current server icon link,no member enumeration.')
+    .setDescription('Fetch current server icon link, no member enumeration.')
     .setContexts(InteractionContextType.Guild),
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });

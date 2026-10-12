@@ -24,7 +24,7 @@ async function manager(i) {
 const data = new SlashCommandBuilder()
   .setName('media')
   .setDescription(
-    'Opt-in one text-channel attachment-only policy;deletion of fresh nonmedia messages.',
+    'Opt-in one text-channel attachment-only policy; deletion of fresh non media messages.',
   )
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild);
@@ -32,12 +32,12 @@ for (const sub of ['setup', 'remove', 'config', 'bypassadd', 'bypassremove', 'by
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
-        setup: 'Enable one normaltextchannel attachment-only policy;explicit confirm required.',
-        remove: 'Disable future attachment-only deletion;already submitted deletion may finish.',
-        config: 'Private saved media policy,bypasses count and runtime caveats.',
-        bypassadd: 'Exempt one confirmed current human member,max100saved bypasses.',
-        bypassremove: 'Remove one exact stored bypass member ID,including departed members.',
-        bypassshow: 'Private saved bypass IDs only,not native membership proof.',
+        setup: 'Enable one normal text channel attachment-only policy; explicit confirm required.',
+        remove: 'Disable future attachment-only deletion; already submitted deletion may finish.',
+        config: 'Private saved media policy, bypasses count and runtime caveats.',
+        bypassadd: 'Exempt one confirmed current human member, max 100 saved bypasses.',
+        bypassremove: 'Remove one exact stored bypass member ID, including departed members.',
+        bypassshow: 'Private saved bypass IDs only, not native membership proof.',
       }[sub],
     );
     if (sub === 'setup') {

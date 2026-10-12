@@ -13,7 +13,7 @@ import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('vmjoin')
   .setDescription(
-    'Opt-in existing lobby join-to-create private VoiceMaster channel;no automatic cleanup.',
+    'Opt-in existing lobby join-to-create private Voice Master channel; no automatic cleanup.',
   )
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageChannels | P.MoveMembers);
@@ -22,23 +22,23 @@ for (const sub of ['setup', 'off', 'config'])
     s.setName(sub).setDescription(
       {
         setup:
-          'Use existing normalvoice lobby;confirm future privatechannel creation and member move.',
-        off: 'Stop future join-to-create;existing ownedchannels/uncertain moves retained.',
-        config: 'Private saved lobby and actor IDs,not native state or automaticcleanup proof.',
+          'Use existing normal voice lobby; confirm future private channel creation and member move.',
+        off: 'Stop future join-to-create; existing owned channels/uncertain moves retained.',
+        config: 'Private saved lobby and actor IDs, not native state or automatic cleanup proof.',
       }[sub],
     );
     if (sub === 'setup') {
       s.addChannelOption((o) =>
         o
           .setName('channel')
-          .setDescription('Existing lobby,not managed or AFK channel')
+          .setDescription('Existing lobby, not managed or AFK channel')
           .setRequired(true)
           .addChannelTypes(ChannelType.GuildVoice),
       );
       s.addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm future humanjoins create privatechannel and move joiner')
+          .setDescription('Confirm future human joins create private channel and move joiner')
           .setRequired(true),
       );
     }

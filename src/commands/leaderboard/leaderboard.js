@@ -25,29 +25,29 @@ const data = new SlashCommandBuilder()
     s
       .setName('weeklymine')
       .setDescription(
-        'Only your90retained UTCdays in13 disjoint newest-first elapsed7-day buckets.',
+        'Only your 90 retained UTC days in 13 disjoint newest-first elapsed 7-day buckets.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('dailyoverview')
       .setDescription(
-        'Manage Server:ten retained UTCdaily contributor/count aggregates,no identities.',
+        'Manage Server: ten retained UTC daily contributor/count aggregates, no identities.',
       )
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-9,newest first').setMinValue(1).setMaxValue(9),
+        o.setName('page').setDescription('Page 1-9, newest first').setMinValue(1).setMaxValue(9),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('erasebefore')
       .setDescription(
-        'Manage Server:erase stored counts strictly before explicit UTCdate;guards kept.',
+        'Manage Server: erase stored counts strictly before explicit UTC date; guards kept.',
       )
       .addStringOption((o) =>
         o
           .setName('date')
-          .setDescription('Exact YYYY-MM-DD cutoff;cutoff day kept')
+          .setDescription('Exact YYYY-MM-DD cutoff; cutoff day kept')
           .setMinLength(10)
           .setMaxLength(10)
           .setRequired(true),
@@ -55,7 +55,7 @@ const data = new SlashCommandBuilder()
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm erasing all earlier guild count rows,not preferences/guards')
+          .setDescription('Confirm erasing all earlier guild count rows, not preferences/guards')
           .setRequired(true),
       ),
   )
@@ -88,7 +88,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('removeexclude')
       .setDescription(
-        'Manage Server: remove one exact stored exclusion,including deleted channels.',
+        'Manage Server: remove one exact stored exclusion, including deleted channels.',
       )
       .addStringOption((o) =>
         o
@@ -111,46 +111,48 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('position')
-      .setDescription('Show only your retained message rank and count,UTC window.')
+      .setDescription('Show only your retained message rank and count, UTC window.')
       .addStringOption(period),
   )
   .addSubcommand((s) =>
     s
       .setName('daily')
-      .setDescription('Show only your retained daily message counts,ten UTC days per page.')
+      .setDescription('Show only your retained daily message counts, ten UTC days per page.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-9,newest first').setMinValue(1).setMaxValue(9),
+        o.setName('page').setDescription('Page 1-9, newest first').setMinValue(1).setMaxValue(9),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('activity')
       .setDescription(
-        'Only your retained90UTC-day counts,active days and longest run;not quality.',
+        'Only your retained 90 UTC-day counts, active days and longest run; not quality.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('privacy')
       .setDescription(
-        'Only your stored counting preference and server tracking switch;no changes.',
+        'Only your stored counting preference and server tracking switch; no changes.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('exportmine')
-      .setDescription('Private CSV of only your retained UTC daily counts;no message content.'),
+      .setDescription('Private CSV of only your retained UTC daily counts; no message content.'),
   )
   .addSubcommand((s) =>
     s
       .setName('overview')
-      .setDescription('Manage Server:aggregate retained contributors/messages/days,no identities.'),
+      .setDescription(
+        'Manage Server: aggregate retained contributors/messages/days, no identities.',
+      ),
   )
   .addSubcommand((s) =>
     s
       .setName('resetall')
       .setDescription(
-        'Manage Server:erase all retained guild counts;tracking/preferences/replayguards kept.',
+        'Manage Server: erase all retained guild counts; tracking/preferences/replay guards kept.',
       )
       .addBooleanOption((o) =>
         o
@@ -163,14 +165,14 @@ const data = new SlashCommandBuilder()
     s
       .setName('exportconfig')
       .setDescription(
-        'Private stored tracking switch/excluded IDs only;no people,counts or privacy records.',
+        'Private stored tracking switch/excluded IDs only; no people, counts or privacy records.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('clearexclusions')
       .setDescription(
-        'Clear stored exclusion IDs;tracking/counts/preferences/replay guards stay as-is.',
+        'Clear stored exclusion IDs; tracking/counts/preferences/replay guards stay as-is.',
       )
       .addBooleanOption((o) =>
         o
@@ -183,7 +185,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('resetpolicy')
       .setDescription(
-        'Stop tracking and forget exclusions;retain counts/preferences/replay guards.',
+        'Stop tracking and forget exclusions; retain counts/preferences/replay guards.',
       )
       .addBooleanOption((o) =>
         o

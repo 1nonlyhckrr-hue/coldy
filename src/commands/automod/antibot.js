@@ -23,19 +23,19 @@ async function manager(i) {
 }
 const data = new SlashCommandBuilder()
   .setName('antibot')
-  .setDescription('Opt-in bot-message deletion in selected text channels;Emika/webhooks excluded.')
+  .setDescription('Opt-in bot-message deletion in selected text channels; Emika/webhooks excluded.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild);
 for (const sub of ['add', 'remove', 'config', 'reset', 'wladd', 'wlremove'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
-        add: 'Enable bot-message deletion in one text channel,max25;explicit confirm required.',
-        remove: 'Stop future bot-message deletion in one channel;submitted effects may finish.',
-        config: 'Private saved channel and bot whitelist IDs;not live deletion proof.',
-        reset: 'Clear channels and whitelist;existing receipts/messages untouched.',
-        wladd: 'Whitelist one current bot member,max100;Emika always exempt.',
-        wlremove: 'Remove one exact stored bot ID,including departed bots.',
+        add: 'Enable bot-message deletion in one text channel, max 25; explicit confirm required.',
+        remove: 'Stop future bot-message deletion in one channel; submitted effects may finish.',
+        config: 'Private saved channel and bot whitelist IDs; not live deletion proof.',
+        reset: 'Clear channels and whitelist; existing receipts/messages untouched.',
+        wladd: 'Whitelist one current bot member, max 100; Emika always exempt.',
+        wlremove: 'Remove one exact stored bot ID, including departed bots.',
       }[sub],
     );
     if (['add', 'remove'].includes(sub))
@@ -50,7 +50,7 @@ for (const sub of ['add', 'remove', 'config', 'reset', 'wladd', 'wlremove'])
       s.addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm future automatic deletion of nonwhitelisted bot messages')
+          .setDescription('Confirm future automatic deletion of non whitelisted bot messages')
           .setRequired(true),
       );
     if (sub === 'wladd')

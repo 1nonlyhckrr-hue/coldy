@@ -12,7 +12,7 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('list')
-  .setDescription('Current role,emoji and sticker metadata,no member enumeration.')
+  .setDescription('Current role, emoji and sticker metadata, no member enumeration.')
   .setContexts(InteractionContextType.Guild);
 for (const kind of ['roles', 'emojis', 'stickers'])
   data.addSubcommand((s) =>
@@ -25,7 +25,7 @@ for (const kind of ['roles', 'emojis', 'stickers'])
       .addStringOption((o) =>
         o
           .setName('search')
-          .setDescription('Literal case-insensitive name substring1-80characters')
+          .setDescription('Literal case-insensitive name substring 1-80 characters')
           .setMinLength(1)
           .setMaxLength(80),
       ),
@@ -49,7 +49,7 @@ data.addSubcommand((s) =>
   s
     .setName('inrole')
     .setDescription(
-      'Manager-only fresh members holding one confirmed role,ten/page,no presences/storage.',
+      'Manager-only fresh members holding one confirmed role, ten/page, no presences/storage.',
     )
     .addRoleOption((o) =>
       o.setName('role').setDescription('One current guild role').setRequired(true),
@@ -62,12 +62,12 @@ data.addSubcommand((s) =>
   s
     .setName('bans')
     .setDescription(
-      'Manager+BanMembers-only current bans,max100perfetch,no reasons;optional after-ID.',
+      'Manager+Ban Members-only current bans, max 100 per fetch, no reasons; optional after-ID.',
     )
     .addStringOption((o) =>
       o
         .setName('after')
-        .setDescription('Previous page last user ID;omit for first page')
+        .setDescription('Previous page last user ID; omit for first page')
         .setMinLength(17)
         .setMaxLength(20),
     ),

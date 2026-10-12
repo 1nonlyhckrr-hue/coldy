@@ -30,7 +30,7 @@ import { UserError } from '../../utils/errors.js';
 const data = new SlashCommandBuilder()
   .setName('matrix')
   .setDescription(
-    'Private exact bounded integer matrix helpers,no evaluation/storage/native effects.',
+    'Private exact bounded integer matrix helpers, no evaluation/storage/native effects.',
   )
   .setContexts(InteractionContextType.Guild);
 for (const sub of [
@@ -56,27 +56,30 @@ for (const sub of [
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
-        rowspace: 'Exact rational independent rowspace basis from reduced row echelon form.',
-        columnspace: 'Independent original integer column vectors,zero-based pivot columns.',
+        rowspace: 'Exact rational independent row space basis from reduced row echelon form.',
+        columnspace: 'Independent original integer column vectors, zero-based pivot columns.',
         solvegeneral:
-          'Rectangular1-4integer system:inconsistent/unique/infinite rational affine solution.',
-        subtract: 'Subtract equalshape1-4integer matrices;exact decimalstrings.',
-        cofactor: 'Signed minors of square1-4integer matrix;1by1cofactor is1,singular accepted.',
-        adjugate: 'Transpose cofactor matrix,not inverse;square1-4integers,singular accepted.',
-        trace: 'Exact trace of square1-4integer matrix;decimalstring output.',
+          'Rectangular 1-4 integer system: inconsistent/unique/infinite rational affine solution.',
+        subtract: 'Subtract equal shape 1-4 integer matrices; exact decimal strings.',
+        cofactor:
+          'Signed minors of square 1-4 integer matrix; 1 by 1 cofactor is 1, singular accepted.',
+        adjugate: 'Transpose cofactor matrix, not inverse; square 1-4 integers, singular accepted.',
+        trace: 'Exact trace of square 1-4 integer matrix; decimal string output.',
         rref: 'Exact rational reduced row echelon form with zero-based pivot columns.',
-        nullspace: 'Exact rational nullspace basis vectors;zero-based free columns,no tolerance.',
-        rank: 'Exact rational rank of1-4by1-4integer matrix,no floatingpoint tolerance.',
-        inverse: 'Exact rational inverse of square1-4integer matrix;singular rejected.',
-        solve: 'Solve square1-4integer system with one-column RHS;unique rational solution only.',
-        add: 'Add equalshape1-4integer matrices JSON;exact output decimalstrings.',
+        nullspace: 'Exact rational nullspace basis vectors; zero-based free columns, no tolerance.',
+        rank: 'Exact rational rank of 1-4 by 1-4 integer matrix, no floating point tolerance.',
+        inverse: 'Exact rational inverse of square 1-4 integer matrix; singular rejected.',
+        solve:
+          'Solve square 1-4 integer system with one-column RHS; unique rational solution only.',
+        add: 'Add equal shape 1-4 integer matrices JSON; exact output decimal strings.',
         scale:
-          'Multiply each matrix integer by explicit bounded scalar;exact output decimalstrings.',
-        power: 'Square integer matrix power0-10,0identity;exact output decimalstrings.',
+          'Multiply each matrix integer by explicit bounded scalar; exact output decimal strings.',
+        power: 'Square integer matrix power 0-10, 0 identity; exact output decimal strings.',
         transpose:
-          'Transpose1-4by1-4integer matrix JSON;exact integer outputs are decimal strings.',
-        multiply: 'Multiply compatible1-4by1-4integer matrices JSON;exact outputs decimal strings.',
-        determinant: 'Exact determinant of square1-4integer matrix JSON;result decimal string.',
+          'Transpose 1-4 by 1-4 integer matrix JSON; exact integer outputs are decimal strings.',
+        multiply:
+          'Multiply compatible 1-4 by 1-4 integer matrices JSON; exact outputs decimal strings.',
+        determinant: 'Exact determinant of square 1-4 integer matrix JSON; result decimal string.',
       }[sub],
     );
     for (const key of ['multiply', 'add', 'subtract'].includes(sub)
@@ -88,7 +91,7 @@ for (const sub of [
         o
           .setName(key)
           .setDescription(
-            'RectangularJSONarray ofarrays,integers -1000000to1000000,1-4rows/columns',
+            'Rectangular JSON array of arrays, integers -1000000 to 1000000, 1-4 rows/columns',
           )
           .setRequired(true)
           .setMinLength(5)
@@ -98,7 +101,9 @@ for (const sub of [
       s.addIntegerOption((o) =>
         o
           .setName(sub === 'scale' ? 'scalar' : 'exponent')
-          .setDescription(sub === 'scale' ? 'Integer -1000000to1000000' : 'Nonnegative integer0-10')
+          .setDescription(
+            sub === 'scale' ? 'Integer -1000000 to 1000000' : 'Non negative integer 0-10',
+          )
           .setRequired(true)
           .setMinValue(sub === 'scale' ? -1000000 : 0)
           .setMaxValue(sub === 'scale' ? 1000000 : 10),

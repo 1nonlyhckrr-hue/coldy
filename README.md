@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1296 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1302 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -73,3 +73,9 @@ Help supports exact category and literal case-insensitive search filters with ei
 Preview remains credential-free: `node scripts/register.js --global`. Apply the same validated command set globally with `node scripts/register.js --apply --global` (no DISCORD_GUILD_ID required). Existing `npm run register:guild` still registers to DISCORD_GUILD_ID.
 
 To migrate without duplicate guild overrides, register globally first, confirm success, then explicitly clear each intended guild with `node scripts/register.js --clear-guild <guild-id>`. Clearing immediately replaces only that guild command set with an empty array; it does not remove global commands. Never clear a guild after a failed global registration. Discord clients may take time to show global updates. These commands use the configured application ID/token; use Emika credentials only.
+
+### Public command directory
+
+`/help` posts a public Emika command directory. Everyone in the channel can browse the category menu and Home/Previous/Next buttons. It covers all586 installed paths across20categories, with eight complete command rows per page. Existing category/search/page/command options still work; parameter details keep bounded pagination. Navigation sessions expire after30minutes or a process restart, with at most500 active sessions. Controls browse information only, never execute the displayed command or grant permissions.
+
+The layout is locally previewed and mock-tested; Discord-side visual acceptance still needs a live guild check.

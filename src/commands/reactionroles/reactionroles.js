@@ -36,7 +36,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('channelrecords')
       .setDescription(
-        'Private latest100 complete bindings/mappings for stored channel ID, no click receipts.',
+        'Private latest 100 complete bindings/mappings for stored channel ID, no click receipts.',
       )
       .addStringOption((o) =>
         o
@@ -101,7 +101,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('inspect')
-      .setDescription('Privately inspect stored panel mappings,status and binding IDs only.')
+      .setDescription('Privately inspect stored panel mappings, status and binding IDs only.')
       .addIntegerOption((o) =>
         o.setName('panel-id').setDescription('Stored panel ID').setMinValue(1).setRequired(true),
       ),
@@ -134,21 +134,21 @@ const data = new SlashCommandBuilder()
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm observed-state reconciliation,no role effect or retry')
+          .setDescription('Confirm observed-state reconciliation, no role effect or retry')
           .setRequired(true),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('list')
-      .setDescription('List ten complete panel records per page,newest100maximum.')
+      .setDescription('List ten complete panel records per page, newest 100 maximum.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+        o.setName('page').setDescription('Page 1-10').setMinValue(1).setMaxValue(10),
       )
       .addStringOption((o) =>
         o
           .setName('state')
-          .setDescription('Only stored state,not live native message/role readiness')
+          .setDescription('Only stored state, not live native message/role readiness')
           .addChoices(
             ...['pending', 'active', 'disabled', 'uncertain'].map((value) => ({
               name: value,
@@ -161,7 +161,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('disableactive')
       .setDescription(
-        'Confirm disabling active panels in storage only;pending/uncertain untouched.',
+        'Confirm disabling active panels in storage only; pending/uncertain untouched.',
       )
       .addBooleanOption((o) =>
         o
@@ -174,19 +174,19 @@ const data = new SlashCommandBuilder()
     s
       .setName('export')
       .setDescription(
-        'Private latest100 stored panel bindings/button mappings;no member or click receipts.',
+        'Private latest 100 stored panel bindings/button mappings; no member or click receipts.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('disablechannel')
       .setDescription(
-        'Disable active panels for one stored channel ID;no native edits or role changes.',
+        'Disable active panels for one stored channel ID; no native edits or role changes.',
       )
       .addStringOption((o) =>
         o
           .setName('channel-id')
-          .setDescription('Exact stored channel ID,even if channel departed')
+          .setDescription('Exact stored channel ID, even if channel departed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),
@@ -202,12 +202,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('disablerole')
       .setDescription(
-        'Disable entire active panels containing one role ID;no native edits or role changes.',
+        'Disable entire active panels containing one role ID; no native edits or role changes.',
       )
       .addStringOption((o) =>
         o
           .setName('role-id')
-          .setDescription('Exact stored role ID,even if role departed')
+          .setDescription('Exact stored role ID, even if role departed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),
@@ -230,15 +230,15 @@ const data = new SlashCommandBuilder()
 for (const [name, desc] of [
   [
     'exportmetadata',
-    'Private latest100minimalpanelID/channel/state/timeJSON,total/truncation,no role/sourceIDs or labels.',
+    'Export up to 100 panel metadata records; total and truncation, no role/source IDs or labels.',
   ],
   [
     'exportclicks',
-    'Private latest100click state/action/timeJSON,total/truncation,no member/role/sourceIDs.',
+    'Private latest 100 click state/action/time JSON, total/truncation, no member/role/source IDs.',
   ],
   [
     'channelcounts',
-    'Private storedpanelcounts bychannelID/state,no member/role/sourceIDs or nativevalidation.',
+    'Private stored panel counts by channel ID/state, no member/role/source IDs or native validation.',
   ],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(desc));
@@ -246,12 +246,12 @@ data.addSubcommand((s) =>
   s
     .setName('inspectmetadata')
     .setDescription(
-      'ExactstoredpanelID minimalmetadataJSON/null,no role/member/message/sourceIDs/labels.',
+      'Exact stored panel ID minimal metadata JSON/null, no role/member/message/source IDs/labels.',
     )
     .addIntegerOption((o) =>
       o
         .setName('id')
-        .setDescription('ExactstoredpanelID')
+        .setDescription('Exact stored panel ID')
         .setRequired(true)
         .setMinValue(1)
         .setMaxValue(Number.MAX_SAFE_INTEGER),
@@ -261,12 +261,12 @@ data.addSubcommand((s) =>
   s
     .setName('channelmetadata')
     .setDescription(
-      'Latest100minimal panelmetadata for exactstoredchannelID,no roles/labels/native lookup.',
+      'Latest 100 minimal panel metadata for exact stored channel ID, no roles/labels/native lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('channel-id')
-        .setDescription('Exact17-20digit storedchannelID')
+        .setDescription('Exact 17-20 digit stored channel ID')
         .setRequired(true)
         .setMinLength(17)
         .setMaxLength(20),
@@ -276,7 +276,7 @@ data.addSubcommand((s) =>
   s
     .setName('exportunresolved')
     .setDescription(
-      'Latest100pending/uncertain minimal panelmetadata,no retry/repair/nativeexistence proof.',
+      'Latest 100 pending/uncertain minimal panel metadata, no retry/repair/native existence proof.',
     ),
 );
 export default {

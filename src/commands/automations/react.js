@@ -17,24 +17,24 @@ async function manager(i) {
 }
 const data = new SlashCommandBuilder()
   .setName('react')
-  .setDescription('Opt-in literal single-word auto-reaction rules,normal text channels only.')
+  .setDescription('Opt-in literal single-word auto-reaction rules, normal text channels only.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild);
 for (const sub of ['add', 'remove', 'list', 'reset'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
-        add: 'Set one singleword trigger with1-10distinct emojiJSONstrings,max10rules;futuremessagesonly.',
-        remove: 'Remove one literal singleword rule;existing reactions unchanged.',
-        list: 'Private saved trigger/emojiJSON,not native reactions proof.',
-        reset: 'Clear all auto-reaction rules only;existing reactions and receipts unchanged.',
+        add: 'Set a single-word trigger with 1-10 distinct emoji; up to 10 rules, future messages only.',
+        remove: 'Remove one literal single word rule; existing reactions unchanged.',
+        list: 'Private saved trigger/emoji JSON, not native reactions proof.',
+        reset: 'Clear all auto-reaction rules only; existing reactions and receipts unchanged.',
       }[sub],
     );
     if (['add', 'remove'].includes(sub))
       s.addStringOption((o) =>
         o
           .setName('trigger')
-          .setDescription('1-50letter/digit/underscore word,NFKClowercase match')
+          .setDescription('1-50 letter/digit/underscore word, NF KC lowercase match')
           .setRequired(true)
           .setMinLength(1)
           .setMaxLength(50),
@@ -43,7 +43,7 @@ for (const sub of ['add', 'remove', 'list', 'reset'])
       s.addStringOption((o) =>
         o
           .setName('emojis')
-          .setDescription('JSONarray1-10Unicodeemoji or currentguildemoji-ID strings')
+          .setDescription('JSON array 1-10 Unicode e moji or current guild e moji-ID strings')
           .setRequired(true)
           .setMinLength(3)
           .setMaxLength(1000),

@@ -11,7 +11,7 @@ export default {
   category: 'moderation',
   data: new SlashCommandBuilder()
     .setName('slowmode')
-    .setDescription('Confirmed single text-channel slowmode,0 disables,no bulk changes.')
+    .setDescription('Confirmed single text-channel slowmode, 0 disables, no bulk changes.')
     .setContexts(InteractionContextType.Guild)
     .setDefaultMemberPermissions(P.ManageChannels)
     .addChannelOption((o) =>
@@ -24,7 +24,7 @@ export default {
     .addIntegerOption((o) =>
       o
         .setName('seconds')
-        .setDescription('0 disables,maximum21600 seconds')
+        .setDescription('0 disables, maximum 21600 seconds')
         .setMinValue(0)
         .setMaxValue(21600)
         .setRequired(true),

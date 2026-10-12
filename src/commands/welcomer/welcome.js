@@ -54,7 +54,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('title')
-      .setDescription('Set static welcome/goodbye title;omit text to restore Emika title.')
+      .setDescription('Set static welcome/goodbye title; omit text to restore Emika title.')
       .addStringOption((o) =>
         o
           .setName('kind')
@@ -65,7 +65,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('text')
-          .setDescription('Static title1-120chars,no @ or line breaks;omit to reset')
+          .setDescription('Static title 1-120 chars, no @ or line breaks; omit to reset')
           .setMinLength(1)
           .setMaxLength(120),
       ),
@@ -73,11 +73,11 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('color')
-      .setDescription('Set welcome/goodbye embed color,or reset to Emika default.')
+      .setDescription('Set welcome/goodbye embed color, or reset to Emika default.')
       .addStringOption((o) =>
         o
           .setName('hex')
-          .setDescription('Six hex digits,example 9B87F5;omit to reset')
+          .setDescription('Six hex digits, example 9B87F5; omit to reset')
           .setMinLength(6)
           .setMaxLength(7),
       ),
@@ -85,7 +85,9 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('resettemplate')
-      .setDescription('Restore one localized default template,leaving delivery settings unchanged.')
+      .setDescription(
+        'Restore one localized default template, leaving delivery settings unchanged.',
+      )
       .addStringOption((o) =>
         o
           .setName('kind')
@@ -104,7 +106,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('mentions')
       .setDescription(
-        'Choose whether welcome delivery may ping only the arriving member;goodbye never.',
+        'Choose whether welcome delivery may ping only the arriving member; goodbye never.',
       )
       .addBooleanOption((o) =>
         o.setName('enabled').setDescription('Allow only arriving-member mention').setRequired(true),
@@ -113,7 +115,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('clearchannel')
-      .setDescription('Disable welcome/goodbye and remove stored destination;templates kept.')
+      .setDescription('Disable welcome/goodbye and remove stored destination; templates kept.')
       .addBooleanOption((o) =>
         o
           .setName('confirm')
@@ -124,7 +126,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('image')
-      .setDescription('Set HTTPS embed image for welcome/goodbye;omit URL to clear.')
+      .setDescription('Set HTTPS embed image for welcome/goodbye; omit URL to clear.')
       .addStringOption((o) =>
         o
           .setName('kind')
@@ -135,14 +137,14 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('url')
-          .setDescription('Public HTTPS image URL;Discord fetches it,no private links')
+          .setDescription('Public HTTPS image URL; Discord fetches it, no private links')
           .setMaxLength(1000),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('thumbnail')
-      .setDescription('Set HTTPS embed thumbnail for welcome/goodbye;omit URL to clear.')
+      .setDescription('Set HTTPS embed thumbnail for welcome/goodbye; omit URL to clear.')
       .addStringOption((o) =>
         o
           .setName('kind')
@@ -153,14 +155,16 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('url')
-          .setDescription('Public HTTPS image URL;Discord fetches it,no private links')
+          .setDescription('Public HTTPS image URL; Discord fetches it, no private links')
           .setMaxLength(1000),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('resetstyle')
-      .setDescription('Clear welcome/goodbye titles/images/thumbnails/shared color;templates kept.')
+      .setDescription(
+        'Clear welcome/goodbye titles/images/thumbnails/shared color; templates kept.',
+      )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
@@ -172,19 +176,19 @@ const data = new SlashCommandBuilder()
     s
       .setName('export')
       .setDescription(
-        'Private welcome/goodbye template/style JSON;no channel IDs or enable flags.',
+        'Private welcome/goodbye template/style JSON; no channel IDs or enable flags.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('import')
       .setDescription(
-        'Replace template/style library from JSON,disable both sends,keep destination.',
+        'Replace template/style library from JSON, disable both sends, keep destination.',
       )
       .addStringOption((o) =>
         o
           .setName('json')
-          .setDescription('Strict portable library object,4000characters max')
+          .setDescription('Strict portable library object, 4000 characters max')
           .setMinLength(2)
           .setMaxLength(4000)
           .setRequired(true),
@@ -200,7 +204,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('reset')
       .setDescription(
-        'Restore defaults,stop both message types,forget destination and all style/template settings.',
+        'Restore defaults, stop both message types, forget destination and all style/template settings.',
       )
       .addBooleanOption((o) =>
         o
@@ -228,7 +232,7 @@ const data = new SlashCommandBuilder()
 data.addSubcommand((s) =>
   s
     .setName('pauseboth')
-    .setDescription('Stop welcome and goodbye delivery;all templates/styles/channel/history kept.')
+    .setDescription('Stop welcome and goodbye delivery; all templates/styles/channel/history kept.')
     .addBooleanOption((o) =>
       o
         .setName('confirm')
@@ -240,14 +244,14 @@ data.addSubcommand((s) =>
   s
     .setName('exportconfig')
     .setDescription(
-      'Private complete stored welcome/goodbye config including destination,not runtime/history.',
+      'Private complete stored welcome/goodbye config including destination, not runtime/history.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('clearassets')
     .setDescription(
-      'Clear welcome or goodbye image/thumbnail only;title/color/template/delivery kept.',
+      'Clear welcome or goodbye image/thumbnail only; title/color/template/delivery kept.',
     )
     .addStringOption((o) =>
       o

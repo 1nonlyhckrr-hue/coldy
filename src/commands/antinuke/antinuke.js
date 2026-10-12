@@ -60,7 +60,7 @@ const data = new SlashCommandBuilder()
       .setName('unresolved')
       .setDescription('Privately inspect stored unresolved alert metadata;no retry or punishment.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Oldest-first page1-10').setMinValue(1).setMaxValue(10),
+        o.setName('page').setDescription('Oldest-first page 1-10').setMinValue(1).setMaxValue(10),
       ),
   )
   .addSubcommand((s) =>

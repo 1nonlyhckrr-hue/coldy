@@ -1089,5 +1089,18 @@
   "bulkTimeoutUnavailable": "Current actor,bot ya member permission/state unavailable hai.",
   "bulkTimeoutConfirm": "Preview ke sab exact deadlines clear karne ki confirmation dein.",
   "bulkTimeoutBlocked": "Preview expired,changed,busy,used ya uncertain hai.Partial clears possible;cases check karein.Blind retry nahi.",
-  "bulkTimeoutStatus": "Exact bounded timeout data attached hai.Sirf displayed1-10members,sab nahi.Deadline drift par clear blocked.Changes atomic nahi;partial/uncertain effects possible."
+  "bulkTimeoutStatus": "Exact bounded timeout data attached hai.Sirf displayed1-10members,sab nahi.Deadline drift par clear blocked.Changes atomic nahi;partial/uncertain effects possible.",
+  "helpNavTitle": "Emika | Command Directory",
+  "helpNavIntro": "Neeche category chuno, phir Previous aur Next se saare commands dekho. Ye directory public hai; channel me sab browse kar sakte hain. Controls 30 minutes tak ya bot restart hone tak active hain.",
+  "helpNavCategory": "Category chuno",
+  "helpNavAll": "Saari categories",
+  "helpNavHome": "Home",
+  "helpNavPrev": "Previous",
+  "helpNavNext": "Next",
+  "helpNavScope": "Category / search",
+  "helpNavPage": "Page",
+  "helpNavCount": "Entries",
+  "helpNavCommands": "Commands",
+  "helpNavDetails": "Parameters aur choices",
+  "helpExpired": "Directory expire ho gayi. Nayi directory ke liye /help chalao."
 }

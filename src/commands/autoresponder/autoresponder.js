@@ -31,21 +31,21 @@ const data = new SlashCommandBuilder()
     s
       .setName('deliveryoverview')
       .setDescription(
-        'Private stored receipt counts per rule/state,not current delivery or recovery.',
+        'Private stored receipt counts per rule/state, not current delivery or recovery.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('exportreceipts')
       .setDescription(
-        'Private latest100 receipt metadata JSON,total/truncation,no message IDs or text.',
+        'Private latest 100 receipt metadata JSON, total/truncation, no message IDs or text.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('disablemode')
       .setDescription(
-        'Pause enabled exact or keyword rules;in-flight sends may finish,history kept.',
+        'Pause enabled exact or keyword rules; in-flight sends may finish, history kept.',
       )
       .addStringOption((o) =>
         o
@@ -98,13 +98,13 @@ const data = new SlashCommandBuilder()
     s
       .setName('mode')
       .setDescription(
-        'Set literal exact/keyword matching,retaining response/cooldown/replay history.',
+        'Set literal exact/keyword matching, retaining response/cooldown/replay history.',
       )
       .addStringOption(trigger)
       .addStringOption((o) =>
         o
           .setName('mode')
-          .setDescription('Literal matching only,no regex')
+          .setDescription('Literal matching only, no regex')
           .addChoices(
             { name: 'Exact message', value: 'exact' },
             { name: 'Keyword phrase', value: 'keyword' },
@@ -116,7 +116,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('cooldown')
       .setDescription(
-        'Change one stored trigger cooldown10-3600s;last-send/replay history retained.',
+        'Change one stored trigger cooldown 10-3600 s; last-send/replay history retained.',
       )
       .addStringOption(trigger)
       .addIntegerOption((o) =>
@@ -131,7 +131,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('toggle')
-      .setDescription('Pause/resume one trigger,retaining response/cooldown/history.')
+      .setDescription('Pause/resume one trigger, retaining response/cooldown/history.')
       .addStringOption(trigger)
       .addBooleanOption((o) =>
         o
@@ -144,7 +144,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('disableall')
       .setDescription(
-        'Pause all stored guild triggers;in-flight responses may finish,history retained.',
+        'Pause all stored guild triggers; in-flight responses may finish, history retained.',
       )
       .addBooleanOption((o) =>
         o
@@ -156,7 +156,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('preview')
-      .setDescription('Privately preview stored response,no send or cooldown change.')
+      .setDescription('Privately preview stored response, no send or cooldown change.')
       .addStringOption(trigger),
   )
   .addSubcommand((s) =>
@@ -184,7 +184,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('clone')
       .setDescription(
-        'Copy response/mode/cooldown into a new paused rule;no send or replay history copy.',
+        'Copy response/mode/cooldown into a new paused rule; no send or replay history copy.',
       )
       .addStringOption((o) =>
         o
@@ -207,7 +207,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('info')
       .setDescription(
-        'Privately inspect one stored trigger settings and response;no native delivery.',
+        'Privately inspect one stored trigger settings and response; no native delivery.',
       )
       .addStringOption((o) =>
         o
@@ -222,7 +222,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('deleteall')
       .setDescription(
-        'Delete all guild response rules;retained replay receipts kept,no message deletion.',
+        'Delete all guild response rules; retained replay receipts kept, no message deletion.',
       )
       .addBooleanOption((o) =>
         o
@@ -234,16 +234,16 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('export')
-      .setDescription('Private JSON of guild rule text/settings,no receipts or automatic enable.'),
+      .setDescription('Private JSON of guild rule text/settings, no receipts or automatic enable.'),
   )
   .addSubcommand((s) =>
     s
       .setName('import')
-      .setDescription('Atomically add1-10 unique rules from JSON,all paused;no automatic send.')
+      .setDescription('Atomically add 1-10 unique rules from JSON, all paused; no automatic send.')
       .addStringOption((o) =>
         o
           .setName('json')
-          .setDescription('Array of trigger,response,mode,cooldownSeconds;4000characters max')
+          .setDescription('Array of trigger, response, mode, cooldown Seconds; 4000 characters max')
           .setMinLength(2)
           .setMaxLength(4000)
           .setRequired(true),
@@ -258,11 +258,11 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('dryrun')
-      .setDescription('Private literal-match diagnostic,no content storage/send/cooldown change.')
+      .setDescription('Private literal-match diagnostic, no content storage/send/cooldown change.')
       .addStringOption((o) =>
         o
           .setName('text')
-          .setDescription('Example message,not stored or sent')
+          .setDescription('Example message, not stored or sent')
           .setMinLength(1)
           .setMaxLength(1800)
           .setRequired(true),
@@ -272,12 +272,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('replace')
       .setDescription(
-        'Replace1-10 existing rule settings atomically;pause them,retain IDs/replay/cooldowns.',
+        'Replace 1-10 existing rule settings atomically; pause them, retain IDs/replay/cooldowns.',
       )
       .addStringOption((o) =>
         o
           .setName('json')
-          .setDescription('Strict rule array,4000chars;every trigger must exist here')
+          .setDescription('Strict rule array, 4000 chars; every trigger must exist here')
           .setMaxLength(4000)
           .setMinLength(2)
           .setRequired(true),
@@ -293,7 +293,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('deletepaused')
       .setDescription(
-        'Delete paused rule text/settings only;retain enabled rules and all replay receipts.',
+        'Delete paused rule text/settings only; retain enabled rules and all replay receipts.',
       )
       .addBooleanOption((o) =>
         o
@@ -305,11 +305,11 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('cooldownall')
-      .setDescription('Set all stored rule cooldowns;last-send/replay/enable states kept.')
+      .setDescription('Set all stored rule cooldowns; last-send/replay/enable states kept.')
       .addIntegerOption((o) =>
         o
           .setName('seconds')
-          .setDescription('10-3600seconds from each retained last-send time')
+          .setDescription('10-3600 seconds from each retained last-send time')
           .setMinValue(10)
           .setMaxValue(3600)
           .setRequired(true),
@@ -324,19 +324,19 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('stats')
-      .setDescription('Private stored rule/receipt counts only;not live delivery or readiness.'),
+      .setDescription('Private stored rule/receipt counts only; not live delivery or readiness.'),
   )
   .addSubcommand((s) =>
     s
       .setName('config')
-      .setDescription('List stored trigger configuration,optionally filtered by enabled state.')
+      .setDescription('List stored trigger configuration, optionally filtered by enabled state.')
       .addIntegerOption((o) =>
         o.setName('page').setDescription('Page number').setMinValue(1).setMaxValue(5),
       )
       .addBooleanOption((o) =>
         o
           .setName('enabled')
-          .setDescription('Filter stored triggers before pagination;omit for all'),
+          .setDescription('Filter stored triggers before pagination; omit for all'),
       ),
   );
 export default {

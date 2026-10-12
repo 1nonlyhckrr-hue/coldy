@@ -25,19 +25,19 @@ for (const sub of ['info', 'permissions'])
       .setName(sub)
       .setDescription(
         sub === 'info'
-          ? 'Inspect visible server channel ID/type/position;no content or member enumeration.'
-          : 'List your current effective channel permission flags;not other members.',
+          ? 'Inspect visible server channel ID/type/position; no content or member enumeration.'
+          : 'List your current effective channel permission flags; not other members.',
       )
       .addChannelOption((o) =>
         o
           .setName('channel')
-          .setDescription('Supported non-thread server channel;default current')
+          .setDescription('Supported non-thread server channel; default current')
           .addChannelTypes(...CHANNEL_TYPES.keys()),
       )
       .addIntegerOption((o) =>
         o
           .setName('page')
-          .setDescription('Permission page1-10;info only accepts1')
+          .setDescription('Permission page 1-10; info only accepts 1')
           .setMinValue(1)
           .setMaxValue(10),
       ),
@@ -45,14 +45,16 @@ for (const sub of ['info', 'permissions'])
 data.addSubcommand((s) =>
   s
     .setName('list')
-    .setDescription('List only channels you can currently view;no threads,topics or member counts.')
+    .setDescription(
+      'List only channels you can currently view; no threads, topics or member counts.',
+    )
     .addIntegerOption((o) =>
-      o.setName('page').setDescription('Page1-100,ten channels').setMinValue(1).setMaxValue(100),
+      o.setName('page').setDescription('Page 1-100, ten channels').setMinValue(1).setMaxValue(100),
     )
     .addStringOption((o) =>
       o
         .setName('search')
-        .setDescription('Literal name substring1-80characters')
+        .setDescription('Literal name substring 1-80 characters')
         .setMinLength(1)
         .setMaxLength(80),
     ),
@@ -66,7 +68,7 @@ for (const action of ['rename', 'topic', 'cleartopic'])
       .addChannelOption((o) =>
         o
           .setName('channel')
-          .setDescription('One normal text channel,not threads/forums')
+          .setDescription('One normal text channel, not threads/forums')
           .addChannelTypes(ChannelType.GuildText)
           .setRequired(true),
       )
@@ -82,8 +84,8 @@ for (const action of ['rename', 'topic', 'cleartopic'])
           .setName('text')
           .setDescription(
             action === 'rename'
-              ? 'Lowercase letters,digits,_ or -,1-100characters'
-              : 'Topic1-1024characters,no @ or controls;public channel metadata',
+              ? 'Lowercase letters, digits, _ or -, 1-100 characters'
+              : 'Topic 1-1024 characters, no @ or controls; public channel metadata',
           )
           .setMinLength(1)
           .setMaxLength(action === 'rename' ? 100 : 1024)
@@ -95,19 +97,19 @@ for (const action of ['voicelimit', 'voicebitrate', 'voiceregionauto'])
   data.addSubcommand((s) => {
     s.setName(action)
       .setDescription(
-        'Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness.',
+        'Confirmed empty normal voice channel setting, current Manage Channels+gateway readiness.',
       )
       .addChannelOption((o) =>
         o
           .setName('channel')
-          .setDescription('One empty normalvoicechannel')
+          .setDescription('One empty normal voice channel')
           .addChannelTypes(ChannelType.GuildVoice)
           .setRequired(true),
       )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm native emptyvoicechannel change')
+          .setDescription('Confirm native empty voice channel change')
           .setRequired(true),
       );
     if (action !== 'voiceregionauto')
@@ -116,8 +118,8 @@ for (const action of ['voicelimit', 'voicebitrate', 'voiceregionauto'])
           .setName('value')
           .setDescription(
             action === 'voicelimit'
-              ? 'Userlimit0-99;0unlimited'
-              : 'Bitrate8-96kbps,no boost requirement',
+              ? 'User limit 0-99; 0 unlimited'
+              : 'Bitrate 8-96 kbps, no boost requirement',
           )
           .setMinValue(action === 'voicelimit' ? 0 : 8)
           .setMaxValue(action === 'voicelimit' ? 99 : 96)
@@ -130,10 +132,10 @@ for (const action of ['threadarchive', 'threadslowmode', 'agerestrict'])
     s.setName(action)
       .setDescription(
         action === 'agerestrict'
-          ? 'Mark one text channel age-restricted;changes audience visibility,no removal here.'
+          ? 'Mark one text channel age-restricted; changes audience visibility, no removal here.'
           : action === 'threadarchive'
-            ? 'Set auto-archive default for newly created text-channel threads;existing threads untouched.'
-            : 'Set slowmode default for newly created text-channel threads;existing threads untouched.',
+            ? 'Set auto-archive default for newly created text-channel threads; existing threads untouched.'
+            : 'Set slowmode default for newly created text-channel threads; existing threads untouched.',
       )
       .addChannelOption((o) =>
         o
@@ -160,7 +162,7 @@ for (const action of ['threadarchive', 'threadslowmode', 'agerestrict'])
       s.addIntegerOption((o) =>
         o
           .setName('value')
-          .setDescription('Slowmode seconds0-21600 for new threads')
+          .setDescription('Slowmode seconds 0-21600 for new threads')
           .setMinValue(0)
           .setMaxValue(21600)
           .setRequired(true),

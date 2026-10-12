@@ -11,7 +11,7 @@ import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('role')
   .setDescription(
-    'Confirmed safe role metadata,zero-permission creation and single-human assignment.',
+    'Confirmed safe role metadata, zero-permission creation and single-human assignment.',
   )
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageRoles);
@@ -26,7 +26,7 @@ for (const sub of ['rename', 'color', 'mentionable'])
       .addRoleOption((o) =>
         o
           .setName('role')
-          .setDescription('Existing nonprivileged unmanagedrole below actor/bot')
+          .setDescription('Existing non privileged un managed role below actor/bot')
           .setRequired(true),
       )
       .addBooleanOption((o) =>
@@ -48,8 +48,8 @@ for (const sub of ['rename', 'color', 'mentionable'])
           .setName(sub === 'color' ? 'hex' : 'name')
           .setDescription(
             sub === 'color'
-              ? 'Six hex primaryRGB digits'
-              : 'Name1-32characters,no @/controls/edgewhitespace',
+              ? 'Six hex primary RGB digits'
+              : 'Name 1-32 characters, no @/controls/edge whitespace',
           )
           .setMinLength(sub === 'color' ? 6 : 1)
           .setMaxLength(sub === 'color' ? 6 : 32)
@@ -61,14 +61,14 @@ for (const sub of ['add', 'remove', 'create'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       sub === 'create'
-        ? 'Confirmed unassigned zero-permission role create,no member assignment.'
+        ? 'Confirmed unassigned zero-permission role create, no member assignment.'
         : 'Confirmed onehuman safe role ' + sub + ',no managed/panel/autorole/selfcreated roles.',
     );
     if (sub === 'create')
       s.addStringOption((o) =>
         o
           .setName('name')
-          .setDescription('1-32characters,no @/controls/edgewhitespace')
+          .setDescription('1-32 characters, no @/controls/edge whitespace')
           .setRequired(true)
           .setMinLength(1)
           .setMaxLength(32),
@@ -81,7 +81,7 @@ for (const sub of ['add', 'remove', 'create'])
           .setRequired(true),
       );
       s.addRoleOption((o) =>
-        o.setName('role').setDescription('Safe nonmanaged role below actor/bot').setRequired(true),
+        o.setName('role').setDescription('Safe non managed role below actor/bot').setRequired(true),
       );
     }
     s.addBooleanOption((o) =>

@@ -28,18 +28,20 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('status')
-      .setDescription('Privately inspect only your stored tag-grant state;no live identity claim.'),
+      .setDescription(
+        'Privately inspect only your stored tag-grant state; no live identity claim.',
+      ),
   )
   .addSubcommand((s) =>
     s
       .setName('grants')
       .setDescription(
-        'ManageRoles:inspect stored grant metadata,no live identity/access or changes.',
+        'Manage Roles: inspect stored grant metadata, no live identity/access or changes.',
       )
       .addIntegerOption((o) =>
         o
           .setName('page')
-          .setDescription('Stored IDs ascending10/page1-1000')
+          .setDescription('Stored IDs ascending 10/page 1-1000')
           .setMinValue(1)
           .setMaxValue(1000),
       )
@@ -61,45 +63,45 @@ data.addSubcommand((s) =>
   s
     .setName('summary')
     .setDescription(
-      'ManageRoles:private stored grant counts bystate,no identities/native access claims.',
+      'Manage Roles: private stored grant counts by state, no identities/native access claims.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportconfig')
-    .setDescription('ManageRoles:private stored reward role ID/null JSON,no live validation.'),
+    .setDescription('Manage Roles: private stored reward role ID/null JSON, no live validation.'),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportmine')
     .setDescription(
-      'Private JSON of only your stored role grant/state,null if absent,no live identity claim.',
+      'Private JSON of only your stored role grant/state, null if absent, no live identity claim.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportgrants')
     .setDescription(
-      'ManageRoles:private first100 stored userID/roleID/stateJSON,total/truncation,no liveclaims.',
+      'Manage Roles: private first 100 stored user ID/role ID/state JSON, total/truncation, no live claims.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('rolecounts')
     .setDescription(
-      'ManageRoles:stored grant counts byroleID/state,no memberIDs or nativevalidation.',
+      'Manage Roles: stored grant counts by role ID/state, no member IDs or native validation.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('inspectuser')
     .setDescription(
-      'ManageRoles:exact stored user grant role/state ornull,no lookup,refresh or changes.',
+      'Manage Roles: exact stored user grant role/state or null, no lookup, refresh or changes.',
     )
     .addStringOption((o) =>
       o
         .setName('user-id')
-        .setDescription('Stored userID,17-20digits;no live memberlookup')
+        .setDescription('Stored user ID, 17-20 digits; no live member lookup')
         .setRequired(true)
         .setMinLength(17)
         .setMaxLength(20),

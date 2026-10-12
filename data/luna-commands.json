@@ -607,7 +607,7 @@
     "name": "automation cancelpending",
     "category": "automations",
     "syntax": "/automation cancelpending (confirm)",
-    "description": "Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched.",
+    "description": "Confirm cancellation of all pending guild schedules; in-flight/uncertain untouched.",
     "parameters": [
       {
         "name": "confirm",
@@ -635,7 +635,7 @@
     "name": "automation channelrecords",
     "category": "automations",
     "syntax": "/automation channelrecords (channel-id)",
-    "description": "Private latest100 stored schedule metadata for exactchannelID,no native validity claim.",
+    "description": "Private latest 100 stored schedule metadata for exact channel ID, no native validity claim.",
     "parameters": [
       {
         "name": "channel-id",
@@ -665,7 +665,7 @@
     "name": "automation clearfinished",
     "category": "automations",
     "syntax": "/automation clearfinished (confirm)",
-    "description": "Delete done/cancelled schedule records;active/uncertain/native messages kept.",
+    "description": "Delete done/cancelled schedule records; active/uncertain/native messages kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -693,7 +693,7 @@
     "name": "automation clone",
     "category": "automations",
     "syntax": "/automation clone (id) (at) (confirm)",
-    "description": "Confirmed copy of pending body/destination into new one-time future send,no repeats.",
+    "description": "Confirmed copy of pending body/destination into new one-time future send, no repeats.",
     "parameters": [
       {
         "name": "id",
@@ -851,7 +851,7 @@
     "name": "automation destination",
     "category": "automations",
     "syntax": "/automation destination (id) (channel)",
-    "description": "Move one pending message schedule to a validated channel;does not send now.",
+    "description": "Move one pending message schedule to a validated channel; does not send now.",
     "parameters": [
       {
         "name": "id",
@@ -885,7 +885,7 @@
     "name": "automation edit",
     "category": "automations",
     "syntax": "/automation edit (id) (text)",
-    "description": "Replace text of a pending schedule only;time/destination unchanged.",
+    "description": "Replace text of a pending schedule only; time/destination unchanged.",
     "parameters": [
       {
         "name": "id",
@@ -921,7 +921,7 @@
     "name": "automation export",
     "category": "automations",
     "syntax": "/automation export",
-    "description": "Private JSON of latest100stored schedules including body/destination;not backup/replay.",
+    "description": "Private JSON of latest 100 stored schedules including body/destination; not backup/replay.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -943,7 +943,7 @@
     "name": "automation exportmetadata",
     "category": "automations",
     "syntax": "/automation exportmetadata",
-    "description": "Private latest100 schedule metadata JSON,total/truncation,no message text/source IDs.",
+    "description": "Private latest 100 schedule metadata JSON, total/truncation, no message text/source IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -965,7 +965,7 @@
     "name": "automation forget",
     "category": "automations",
     "syntax": "/automation forget (id) (confirm)",
-    "description": "Erase stored text of a completed/cancelled schedule,not Discord messages.",
+    "description": "Erase stored text of a completed/cancelled schedule, not Discord messages.",
     "parameters": [
       {
         "name": "id",
@@ -999,7 +999,7 @@
     "name": "automation forgetfinished",
     "category": "automations",
     "syntax": "/automation forgetfinished (confirm)",
-    "description": "Erase bodies of done/cancelled schedules;metadata kept,no native message change.",
+    "description": "Erase bodies of done/cancelled schedules; metadata kept, no native message change.",
     "parameters": [
       {
         "name": "confirm",
@@ -1027,7 +1027,7 @@
     "name": "automation inspect",
     "category": "automations",
     "syntax": "/automation inspect (id)",
-    "description": "Privately review one stored schedule,text and metadata;no native effects.",
+    "description": "Privately review one stored schedule, text and metadata; no native effects.",
     "parameters": [
       {
         "name": "id",
@@ -1085,7 +1085,7 @@
     "name": "automation overview",
     "category": "automations",
     "syntax": "/automation overview",
-    "description": "Privately count stored schedule states;not delivery receipts or live readiness.",
+    "description": "Privately count stored schedule states; not delivery receipts or live readiness.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -1107,7 +1107,7 @@
     "name": "automation repeat",
     "category": "automations",
     "syntax": "/automation repeat (id) (confirm) [minutes]",
-    "description": "Change pending elapsed repeat;omit minutes to make next send one-time.",
+    "description": "Change pending elapsed repeat; omit minutes to make next send one-time.",
     "parameters": [
       {
         "name": "id",
@@ -1148,7 +1148,7 @@
     "name": "automation reschedule",
     "category": "automations",
     "syntax": "/automation reschedule (id) (at)",
-    "description": "Move pending next send to explicit offset time;repeat stays elapsed interval.",
+    "description": "Move pending next send to explicit offset time; repeat stays elapsed interval.",
     "parameters": [
       {
         "name": "id",
@@ -1226,7 +1226,7 @@
     "name": "automation shift",
     "category": "automations",
     "syntax": "/automation shift (id) (minutes) (confirm)",
-    "description": "Confirmed pending nextsend offset +/- minutes;repeat interval/body/channel kept.",
+    "description": "Confirmed pending next send offset +/- minutes; repeat interval/body/channel kept.",
     "parameters": [
       {
         "name": "id",
@@ -1267,7 +1267,7 @@
     "name": "automation stoprepeats",
     "category": "automations",
     "syntax": "/automation stoprepeats (confirm)",
-    "description": "Make all pending repeats one-time;next due/body/channel preserved,sending untouched.",
+    "description": "Make all pending repeats one-time; next due/body/channel preserved, sending untouched.",
     "parameters": [
       {
         "name": "confirm",
@@ -1295,7 +1295,7 @@
     "name": "automation upcoming",
     "category": "automations",
     "syntax": "/automation upcoming [page] [recurring]",
-    "description": "Privately inspect pending sends ordered by time;no content or sending.",
+    "description": "Privately inspect pending sends ordered by time; no content or sending.",
     "parameters": [
       {
         "name": "page",
@@ -1330,7 +1330,7 @@
     "name": "autorole add",
     "category": "automations",
     "syntax": "/autorole add (kind) (role)",
-    "description": "Configure safe role for future human/bot joins,max10perkind;requires member events.",
+    "description": "Configure safe role for future human/bot joins, max 10 per kind; requires member events.",
     "parameters": [
       {
         "name": "kind",
@@ -1372,7 +1372,7 @@
     "name": "autorole config",
     "category": "automations",
     "syntax": "/autorole config",
-    "description": "Private saved human/bot role policies;not native grants or current member proof.",
+    "description": "Private saved human/bot role policies; not native grants or current member proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -1393,7 +1393,7 @@
     "name": "autorole remove",
     "category": "automations",
     "syntax": "/autorole remove (kind) (role-id)",
-    "description": "Remove exact saved role policy;does not remove existing member roles.",
+    "description": "Remove exact saved role policy; does not remove existing member roles.",
     "parameters": [
       {
         "name": "kind",
@@ -1437,7 +1437,7 @@
     "name": "autorole reset",
     "category": "automations",
     "syntax": "/autorole reset (kind)",
-    "description": "Clear human/bot/all policies only;existing member roles and receipts unchanged.",
+    "description": "Clear human/bot/all policies only; existing member roles and receipts unchanged.",
     "parameters": [
       {
         "name": "kind",
@@ -1478,7 +1478,7 @@
     "name": "event config",
     "category": "automations",
     "syntax": "/event config",
-    "description": "Private stored policy/receiptstates,not proof complete server isolation.",
+    "description": "Private stored policy/receipt states, not proof complete server isolation.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -1496,7 +1496,7 @@
     "name": "event disable",
     "category": "automations",
     "syntax": "/event disable (confirm)",
-    "description": "Confirm exactsnapshot ownedrestore only;thirdparty drift/uncertainty blocks overwrite.",
+    "description": "Confirm exact snapshot owned restore only; third party drift/uncertainty blocks overwrite.",
     "parameters": [
       {
         "name": "confirm",
@@ -1520,7 +1520,7 @@
     "name": "event enable",
     "category": "automations",
     "syntax": "/event enable (confirm)",
-    "description": "Confirm selected everyoneView denies;eventcategory unchanged;partial effects possible.",
+    "description": "Confirm selected everyone View denies; event category unchanged; partial effects possible.",
     "parameters": [
       {
         "name": "confirm",
@@ -1544,7 +1544,7 @@
     "name": "event reset",
     "category": "automations",
     "syntax": "/event reset (confirm)",
-    "description": "Forget inactive fullyrestored policy only;never delete category/channels.",
+    "description": "Forget inactive fully restored policy only; never delete category/channels.",
     "parameters": [
       {
         "name": "confirm",
@@ -1568,7 +1568,7 @@
     "name": "event setup",
     "category": "automations",
     "syntax": "/event setup (confirm) (category) (channels)",
-    "description": "Select alreadyvisible eventcategory+1-10outside textchannelIDs JSON,min100members;no creation.",
+    "description": "Select a visible event category and 1-10 outside text channels; at least 100 members, no creation.",
     "parameters": [
       {
         "name": "confirm",
@@ -1603,7 +1603,7 @@
     "name": "react add",
     "category": "automations",
     "syntax": "/react add (trigger) (emojis)",
-    "description": "Set one singleword trigger with1-10distinct emojiJSONstrings,max10rules;futuremessagesonly.",
+    "description": "Set a single-word trigger with 1-10 distinct emoji; up to 10 rules, future messages only.",
     "parameters": [
       {
         "name": "trigger",
@@ -1638,7 +1638,7 @@
     "name": "react list",
     "category": "automations",
     "syntax": "/react list",
-    "description": "Private saved trigger/emojiJSON,not native reactions proof.",
+    "description": "Private saved trigger/emoji JSON, not native reactions proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -1658,7 +1658,7 @@
     "name": "react remove",
     "category": "automations",
     "syntax": "/react remove (trigger)",
-    "description": "Remove one literal singleword rule;existing reactions unchanged.",
+    "description": "Remove one literal single word rule; existing reactions unchanged.",
     "parameters": [
       {
         "name": "trigger",
@@ -1686,7 +1686,7 @@
     "name": "react reset",
     "category": "automations",
     "syntax": "/react reset",
-    "description": "Clear all auto-reaction rules only;existing reactions and receipts unchanged.",
+    "description": "Clear all auto-reaction rules only; existing reactions and receipts unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -1706,7 +1706,7 @@
     "name": "schedulecleanup cancel",
     "category": "automations",
     "syntax": "/schedulecleanup cancel (channel-id) (confirm)",
-    "description": "Cancel pending schedules in one stored destination;unknown/in-flight left alone.",
+    "description": "Cancel pending schedules in one stored destination; unknown/in-flight left alone.",
     "parameters": [
       {
         "name": "channel-id",
@@ -1741,7 +1741,7 @@
     "name": "schedulecleanup erasefinished",
     "category": "automations",
     "syntax": "/schedulecleanup erasefinished (channel-id) (confirm)",
-    "description": "Erase done/cancelled text in one stored destination;pending/unknown/in-flight kept.",
+    "description": "Erase done/cancelled text in one stored destination; pending/unknown/in-flight kept.",
     "parameters": [
       {
         "name": "channel-id",
@@ -1776,7 +1776,7 @@
     "name": "schedulecleanup stoprepeats",
     "category": "automations",
     "syntax": "/schedulecleanup stoprepeats (channel-id) (confirm)",
-    "description": "Make pending repeats in one stored destination one-time;next sends still happen.",
+    "description": "Make pending repeats in one stored destination one-time; next sends still happen.",
     "parameters": [
       {
         "name": "channel-id",
@@ -1811,7 +1811,7 @@
     "name": "antibot add",
     "category": "automod",
     "syntax": "/antibot add (channel) (confirm)",
-    "description": "Enable bot-message deletion in one text channel,max25;explicit confirm required.",
+    "description": "Enable bot-message deletion in one text channel, max 25; explicit confirm required.",
     "parameters": [
       {
         "name": "channel",
@@ -1842,7 +1842,7 @@
     "name": "antibot config",
     "category": "automod",
     "syntax": "/antibot config",
-    "description": "Private saved channel and bot whitelist IDs;not live deletion proof.",
+    "description": "Private saved channel and bot whitelist IDs; not live deletion proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -1862,7 +1862,7 @@
     "name": "antibot remove",
     "category": "automod",
     "syntax": "/antibot remove (channel)",
-    "description": "Stop future bot-message deletion in one channel;submitted effects may finish.",
+    "description": "Stop future bot-message deletion in one channel; submitted effects may finish.",
     "parameters": [
       {
         "name": "channel",
@@ -1888,7 +1888,7 @@
     "name": "antibot reset",
     "category": "automod",
     "syntax": "/antibot reset",
-    "description": "Clear channels and whitelist;existing receipts/messages untouched.",
+    "description": "Clear channels and whitelist; existing receipts/messages untouched.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -1908,7 +1908,7 @@
     "name": "antibot wladd",
     "category": "automod",
     "syntax": "/antibot wladd (user)",
-    "description": "Whitelist one current bot member,max100;Emika always exempt.",
+    "description": "Whitelist one current bot member, max 100; Emika always exempt.",
     "parameters": [
       {
         "name": "user",
@@ -1934,7 +1934,7 @@
     "name": "antibot wlremove",
     "category": "automod",
     "syntax": "/antibot wlremove (user-id)",
-    "description": "Remove one exact stored bot ID,including departed bots.",
+    "description": "Remove one exact stored bot ID, including departed bots.",
     "parameters": [
       {
         "name": "user-id",
@@ -1962,7 +1962,7 @@
     "name": "automod clearexempt",
     "category": "automod",
     "syntax": "/automod clearexempt (confirm)",
-    "description": "Clear role exemptions;if enabled,future messages by these roles may be moderated.",
+    "description": "Clear role exemptions; if enabled, future messages by these roles may be moderated.",
     "parameters": [
       {
         "name": "confirm",
@@ -1990,7 +1990,7 @@
     "name": "automod clearignored",
     "category": "automod",
     "syntax": "/automod clearignored (confirm)",
-    "description": "Clear ignored channels;if enabled,future messages there may be moderated.",
+    "description": "Clear ignored channels; if enabled, future messages there may be moderated.",
     "parameters": [
       {
         "name": "confirm",
@@ -2018,7 +2018,7 @@
     "name": "automod clearwords",
     "category": "automod",
     "syntax": "/automod clearwords (confirm)",
-    "description": "Confirmed remove all storedliteralblockedwords;other rules/settings kept.",
+    "description": "Confirmed remove all stored literal blocked words; other rules/settings kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -2090,7 +2090,7 @@
     "name": "automod disablerules",
     "category": "automod",
     "syntax": "/automod disablerules (confirm)",
-    "description": "Disable allsix moderationrules,keep enabledswitch/action/exclusions/words/history.",
+    "description": "Disable all six moderation rules, keep enabled switch/action/exclusions/words/history.",
     "parameters": [
       {
         "name": "confirm",
@@ -2198,7 +2198,7 @@
     "name": "automod exportpolicy",
     "category": "automod",
     "syntax": "/automod exportpolicy",
-    "description": "Private JSON of stored rules/literal words/exemptIDs,not incident/message history.",
+    "description": "Private JSON of stored rules/literal words/exempt IDs, not incident/message history.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -2253,7 +2253,7 @@
     "name": "automod importpolicy",
     "category": "automod",
     "syntax": "/automod importpolicy (json) (confirm)",
-    "description": "Replace strict policy JSON,force disabled,clear own spam memory;no native effects.",
+    "description": "Replace strict policy JSON, force disabled, clear own spam memory; no native effects.",
     "parameters": [
       {
         "name": "json",
@@ -2288,7 +2288,7 @@
     "name": "automod incidents",
     "category": "automod",
     "syntax": "/automod incidents [status]",
-    "description": "Show 20 recent stored outcomes,optionally filtered,no message content.",
+    "description": "Show 20 recent stored outcomes, optionally filtered, no message content.",
     "parameters": [
       {
         "name": "status",
@@ -2334,7 +2334,7 @@
     "name": "automod removepolicy",
     "category": "automod",
     "syntax": "/automod removepolicy (kind) (subject-id) (confirm)",
-    "description": "Remove one stored ignored channel/exempt role ID,including deleted subjects.",
+    "description": "Remove one stored ignored channel/exempt role ID, including deleted subjects.",
     "parameters": [
       {
         "name": "kind",
@@ -2384,7 +2384,7 @@
     "name": "automod resetpolicy",
     "category": "automod",
     "syntax": "/automod resetpolicy (confirm)",
-    "description": "Confirmed disabled/defaultpolicy reset,words/exemptions cleared;incidents/cases kept.",
+    "description": "Confirmed disabled/default policy reset, words/exemptions cleared; incidents/cases kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -2412,7 +2412,7 @@
     "name": "automod resetthresholds",
     "category": "automod",
     "syntax": "/automod resetthresholds (confirm)",
-    "description": "Reset caps/mentions/spam limits to defaults,keep switches/action/exclusions/words/history.",
+    "description": "Reset caps/mentions/spam limits to defaults, keep switches/action/exclusions/words/history.",
     "parameters": [
       {
         "name": "confirm",
@@ -2499,7 +2499,7 @@
     "name": "automod spamthresholds",
     "category": "automod",
     "syntax": "/automod spamthresholds [messages] [repeats] [seconds]",
-    "description": "Tune bounded spam counts/window;does not enable moderation.",
+    "description": "Tune bounded spam counts/window; does not enable moderation.",
     "parameters": [
       {
         "name": "messages",
@@ -2543,7 +2543,7 @@
     "name": "automod stats",
     "category": "automod",
     "syntax": "/automod stats",
-    "description": "Private aggregate stored incident outcomes;no content,IDs or retries.",
+    "description": "Private aggregate stored incident outcomes; no content, IDs or retries.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -2565,7 +2565,7 @@
     "name": "automod testtext",
     "category": "automod",
     "syntax": "/automod testtext (text)",
-    "description": "Private dry-run of literal/caps/link rules,no punishment or spam tracking.",
+    "description": "Private dry-run of literal/caps/link rules, no punishment or spam tracking.",
     "parameters": [
       {
         "name": "text",
@@ -2595,7 +2595,7 @@
     "name": "automod thresholds",
     "category": "automod",
     "syntax": "/automod thresholds [mentions] [caps-percent] [caps-letters]",
-    "description": "Tune mention/caps thresholds;does not enable rules or moderation.",
+    "description": "Tune mention/caps thresholds; does not enable rules or moderation.",
     "parameters": [
       {
         "name": "mentions",
@@ -2639,7 +2639,7 @@
     "name": "automod timeoutminutes",
     "category": "automod",
     "syntax": "/automod timeoutminutes (minutes)",
-    "description": "Set automatic timeout duration1-60 minutes;does not enable rules.",
+    "description": "Set automatic timeout duration 1-60 minutes; does not enable rules.",
     "parameters": [
       {
         "name": "minutes",
@@ -2669,7 +2669,7 @@
     "name": "automod unresolved",
     "category": "automod",
     "syntax": "/automod unresolved [page]",
-    "description": "Privately inspect unresolved stored incident metadata;never retries actions.",
+    "description": "Privately inspect unresolved stored incident metadata; never retries actions.",
     "parameters": [
       {
         "name": "page",
@@ -2789,7 +2789,7 @@
     "name": "media bypassadd",
     "category": "automod",
     "syntax": "/media bypassadd (user)",
-    "description": "Exempt one confirmed current human member,max100saved bypasses.",
+    "description": "Exempt one confirmed current human member, max 100 saved bypasses.",
     "parameters": [
       {
         "name": "user",
@@ -2815,7 +2815,7 @@
     "name": "media bypassremove",
     "category": "automod",
     "syntax": "/media bypassremove (user-id)",
-    "description": "Remove one exact stored bypass member ID,including departed members.",
+    "description": "Remove one exact stored bypass member ID, including departed members.",
     "parameters": [
       {
         "name": "user-id",
@@ -2843,7 +2843,7 @@
     "name": "media bypassshow",
     "category": "automod",
     "syntax": "/media bypassshow",
-    "description": "Private saved bypass IDs only,not native membership proof.",
+    "description": "Private saved bypass IDs only, not native membership proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -2863,7 +2863,7 @@
     "name": "media config",
     "category": "automod",
     "syntax": "/media config",
-    "description": "Private saved media policy,bypasses count and runtime caveats.",
+    "description": "Private saved media policy, bypasses count and runtime caveats.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -2883,7 +2883,7 @@
     "name": "media remove",
     "category": "automod",
     "syntax": "/media remove",
-    "description": "Disable future attachment-only deletion;already submitted deletion may finish.",
+    "description": "Disable future attachment-only deletion; already submitted deletion may finish.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -2903,7 +2903,7 @@
     "name": "media setup",
     "category": "automod",
     "syntax": "/media setup (channel) (confirm)",
-    "description": "Enable one normaltextchannel attachment-only policy;explicit confirm required.",
+    "description": "Enable one normal text channel attachment-only policy; explicit confirm required.",
     "parameters": [
       {
         "name": "channel",
@@ -2934,7 +2934,7 @@
     "name": "mentionguard off",
     "category": "automod",
     "syntax": "/mentionguard off",
-    "description": "Disable protected-member mention timeouts;existing timeout unchanged.",
+    "description": "Disable protected-member mention timeouts; existing timeout unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -2952,7 +2952,7 @@
     "name": "mentionguard set",
     "category": "automod",
     "syntax": "/mentionguard set (target) (duration)",
-    "description": "Enable fourth direct-mention-message timeout in10minutes;explicit1s-28d duration.",
+    "description": "Enable fourth direct-mention-message timeout in 10 minutes; explicit 1 s-28 d duration.",
     "parameters": [
       {
         "name": "target",
@@ -2983,7 +2983,7 @@
     "name": "mentionguard status",
     "category": "automod",
     "syntax": "/mentionguard status",
-    "description": "Private saved policy and last result;not native timeout proof.",
+    "description": "Private saved policy and last result; not native timeout proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -3001,7 +3001,7 @@
     "name": "autoresponder clone",
     "category": "autoresponder",
     "syntax": "/autoresponder clone (trigger) (new-trigger)",
-    "description": "Copy response/mode/cooldown into a new paused rule;no send or replay history copy.",
+    "description": "Copy response/mode/cooldown into a new paused rule; no send or replay history copy.",
     "parameters": [
       {
         "name": "trigger",
@@ -3038,7 +3038,7 @@
     "name": "autoresponder config",
     "category": "autoresponder",
     "syntax": "/autoresponder config [page] [enabled]",
-    "description": "List stored trigger configuration,optionally filtered by enabled state.",
+    "description": "List stored trigger configuration, optionally filtered by enabled state.",
     "parameters": [
       {
         "name": "page",
@@ -3073,7 +3073,7 @@
     "name": "autoresponder cooldown",
     "category": "autoresponder",
     "syntax": "/autoresponder cooldown (trigger) (seconds)",
-    "description": "Change one stored trigger cooldown10-3600s;last-send/replay history retained.",
+    "description": "Change one stored trigger cooldown 10-3600 s; last-send/replay history retained.",
     "parameters": [
       {
         "name": "trigger",
@@ -3110,7 +3110,7 @@
     "name": "autoresponder cooldownall",
     "category": "autoresponder",
     "syntax": "/autoresponder cooldownall (seconds) (confirm)",
-    "description": "Set all stored rule cooldowns;last-send/replay/enable states kept.",
+    "description": "Set all stored rule cooldowns; last-send/replay/enable states kept.",
     "parameters": [
       {
         "name": "seconds",
@@ -3234,7 +3234,7 @@
     "name": "autoresponder deleteall",
     "category": "autoresponder",
     "syntax": "/autoresponder deleteall (confirm)",
-    "description": "Delete all guild response rules;retained replay receipts kept,no message deletion.",
+    "description": "Delete all guild response rules; retained replay receipts kept, no message deletion.",
     "parameters": [
       {
         "name": "confirm",
@@ -3262,7 +3262,7 @@
     "name": "autoresponder deletepaused",
     "category": "autoresponder",
     "syntax": "/autoresponder deletepaused (confirm)",
-    "description": "Delete paused rule text/settings only;retain enabled rules and all replay receipts.",
+    "description": "Delete paused rule text/settings only; retain enabled rules and all replay receipts.",
     "parameters": [
       {
         "name": "confirm",
@@ -3290,7 +3290,7 @@
     "name": "autoresponder deliveryoverview",
     "category": "autoresponder",
     "syntax": "/autoresponder deliveryoverview",
-    "description": "Private stored receipt counts per rule/state,not current delivery or recovery.",
+    "description": "Private stored receipt counts per rule/state, not current delivery or recovery.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -3312,7 +3312,7 @@
     "name": "autoresponder disableall",
     "category": "autoresponder",
     "syntax": "/autoresponder disableall (confirm)",
-    "description": "Pause all stored guild triggers;in-flight responses may finish,history retained.",
+    "description": "Pause all stored guild triggers; in-flight responses may finish, history retained.",
     "parameters": [
       {
         "name": "confirm",
@@ -3340,7 +3340,7 @@
     "name": "autoresponder disablemode",
     "category": "autoresponder",
     "syntax": "/autoresponder disablemode (mode) (confirm)",
-    "description": "Pause enabled exact or keyword rules;in-flight sends may finish,history kept.",
+    "description": "Pause enabled exact or keyword rules; in-flight sends may finish, history kept.",
     "parameters": [
       {
         "name": "mode",
@@ -3383,7 +3383,7 @@
     "name": "autoresponder dryrun",
     "category": "autoresponder",
     "syntax": "/autoresponder dryrun (text)",
-    "description": "Private literal-match diagnostic,no content storage/send/cooldown change.",
+    "description": "Private literal-match diagnostic, no content storage/send/cooldown change.",
     "parameters": [
       {
         "name": "text",
@@ -3450,7 +3450,7 @@
     "name": "autoresponder export",
     "category": "autoresponder",
     "syntax": "/autoresponder export",
-    "description": "Private JSON of guild rule text/settings,no receipts or automatic enable.",
+    "description": "Private JSON of guild rule text/settings, no receipts or automatic enable.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -3472,7 +3472,7 @@
     "name": "autoresponder exportreceipts",
     "category": "autoresponder",
     "syntax": "/autoresponder exportreceipts",
-    "description": "Private latest100 receipt metadata JSON,total/truncation,no message IDs or text.",
+    "description": "Private latest 100 receipt metadata JSON, total/truncation, no message IDs or text.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -3494,7 +3494,7 @@
     "name": "autoresponder import",
     "category": "autoresponder",
     "syntax": "/autoresponder import (json) (confirm)",
-    "description": "Atomically add1-10 unique rules from JSON,all paused;no automatic send.",
+    "description": "Atomically add 1-10 unique rules from JSON, all paused; no automatic send.",
     "parameters": [
       {
         "name": "json",
@@ -3529,7 +3529,7 @@
     "name": "autoresponder info",
     "category": "autoresponder",
     "syntax": "/autoresponder info (trigger)",
-    "description": "Privately inspect one stored trigger settings and response;no native delivery.",
+    "description": "Privately inspect one stored trigger settings and response; no native delivery.",
     "parameters": [
       {
         "name": "trigger",
@@ -3559,7 +3559,7 @@
     "name": "autoresponder mode",
     "category": "autoresponder",
     "syntax": "/autoresponder mode (trigger) (mode)",
-    "description": "Set literal exact/keyword matching,retaining response/cooldown/replay history.",
+    "description": "Set literal exact/keyword matching, retaining response/cooldown/replay history.",
     "parameters": [
       {
         "name": "trigger",
@@ -3604,7 +3604,7 @@
     "name": "autoresponder preview",
     "category": "autoresponder",
     "syntax": "/autoresponder preview (trigger)",
-    "description": "Privately preview stored response,no send or cooldown change.",
+    "description": "Privately preview stored response, no send or cooldown change.",
     "parameters": [
       {
         "name": "trigger",
@@ -3671,7 +3671,7 @@
     "name": "autoresponder replace",
     "category": "autoresponder",
     "syntax": "/autoresponder replace (json) (confirm)",
-    "description": "Replace1-10 existing rule settings atomically;pause them,retain IDs/replay/cooldowns.",
+    "description": "Replace 1-10 existing rule settings atomically; pause them, retain IDs/replay/cooldowns.",
     "parameters": [
       {
         "name": "json",
@@ -3706,7 +3706,7 @@
     "name": "autoresponder stats",
     "category": "autoresponder",
     "syntax": "/autoresponder stats",
-    "description": "Private stored rule/receipt counts only;not live delivery or readiness.",
+    "description": "Private stored rule/receipt counts only; not live delivery or readiness.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -3728,7 +3728,7 @@
     "name": "autoresponder toggle",
     "category": "autoresponder",
     "syntax": "/autoresponder toggle (trigger) (enabled)",
-    "description": "Pause/resume one trigger,retaining response/cooldown/history.",
+    "description": "Pause/resume one trigger, retaining response/cooldown/history.",
     "parameters": [
       {
         "name": "trigger",
@@ -3807,7 +3807,7 @@
     "name": "customrole clear",
     "category": "customrole",
     "syntax": "/customrole clear (confirm)",
-    "description": "Manage Roles:remove all mappings,leaving native roles,assignments and eligibility unchanged.",
+    "description": "Manage Roles: remove all mappings, leaving native roles, assignments and eligibility unchanged.",
     "parameters": [
       {
         "name": "confirm",
@@ -3831,7 +3831,7 @@
     "name": "customrole clearrequired",
     "category": "customrole",
     "syntax": "/customrole clearrequired (confirm)",
-    "description": "ManageRoles:remove eligibility gate,allowing otherwise eligible future self claims.",
+    "description": "Manage Roles: remove eligibility gate, allowing otherwise eligible future self claims.",
     "parameters": [
       {
         "name": "confirm",
@@ -3855,7 +3855,7 @@
     "name": "customrole colorown",
     "category": "customrole",
     "syntax": "/customrole colorown (hex) (confirm)",
-    "description": "Confirmed own zero-permission created role primaryRGB color only.",
+    "description": "Confirmed own zero-permission created role primary RGB color only.",
     "parameters": [
       {
         "name": "hex",
@@ -3886,7 +3886,7 @@
     "name": "customrole created",
     "category": "customrole",
     "syntax": "/customrole created",
-    "description": "Privately inspect your stored creation record,no native role changes.",
+    "description": "Privately inspect your stored creation record, no native role changes.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -3904,7 +3904,7 @@
     "name": "customrole createown",
     "category": "customrole",
     "syntax": "/customrole createown (label) [hex]",
-    "description": "Create one unassigned zero-permission role for yourself,if manager enabled.",
+    "description": "Create one unassigned zero-permission role for yourself, if manager enabled.",
     "parameters": [
       {
         "name": "label",
@@ -3937,7 +3937,7 @@
     "name": "customrole creation",
     "category": "customrole",
     "syntax": "/customrole creation (enabled) (confirm)",
-    "description": "ManageRoles:opt in/out of unassigned zero-permission member role creation.",
+    "description": "Manage Roles: opt in/out of unassigned zero-permission member role creation.",
     "parameters": [
       {
         "name": "enabled",
@@ -3966,7 +3966,7 @@
     "name": "customrole creations",
     "category": "customrole",
     "syntax": "/customrole creations [page]",
-    "description": "ManageRoles:private paged creation records,status and IDs only.",
+    "description": "Manage Roles: private paged creation records, status and IDs only.",
     "parameters": [
       {
         "name": "page",
@@ -3992,7 +3992,7 @@
     "name": "customrole eligibility",
     "category": "customrole",
     "syntax": "/customrole eligibility",
-    "description": "Privately check your current storedgate membership,no role grants/safety/readinessclaim.",
+    "description": "Privately check your current stored gate membership, no role grants/safety/readiness claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -4010,7 +4010,7 @@
     "name": "customrole exportmappings",
     "category": "customrole",
     "syntax": "/customrole exportmappings",
-    "description": "ManageRoles:privateJSON mappingnames/roleIDs/gate/policy,no ownership/memberhistory.",
+    "description": "Manage Roles: private JSON mapping names/role IDs/gate/policy, no ownership/member history.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -4077,7 +4077,7 @@
     "name": "customrole reconcile",
     "category": "customrole",
     "syntax": "/customrole reconcile (member) (confirm)",
-    "description": "ManageRoles:verify observed uncertain creation,no native changes.",
+    "description": "Manage Roles: verify observed uncertain creation, no native changes.",
     "parameters": [
       {
         "name": "member",
@@ -4132,7 +4132,7 @@
     "name": "customrole releaseown",
     "category": "customrole",
     "syntax": "/customrole releaseown",
-    "description": "Remove your created role from yourself,no deletion.",
+    "description": "Remove your created role from yourself, no deletion.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -4150,7 +4150,7 @@
     "name": "customrole renamemapping",
     "category": "customrole",
     "syntax": "/customrole renamemapping (name) (new-name)",
-    "description": "ManageRoles:change only storedmapping alias,not nativerolename/access.",
+    "description": "Manage Roles: change only stored mapping alias, not native role name/access.",
     "parameters": [
       {
         "name": "name",
@@ -4183,7 +4183,7 @@
     "name": "customrole renameown",
     "category": "customrole",
     "syntax": "/customrole renameown (label) (confirm)",
-    "description": "Confirmed own zero-permission created role name,not mapping/native other roles.",
+    "description": "Confirmed own zero-permission created role name, not mapping/native other roles.",
     "parameters": [
       {
         "name": "label",
@@ -4238,7 +4238,7 @@
     "name": "customrole resetconfig",
     "category": "customrole",
     "syntax": "/customrole resetconfig (confirm)",
-    "description": "ManageRoles:forget mappings/gate and stop creation,ownership/native roles/cases kept.",
+    "description": "Manage Roles: forget mappings/gate and stop creation, ownership/native roles/cases kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -4262,7 +4262,7 @@
     "name": "customrole resetstyle",
     "category": "customrole",
     "syntax": "/customrole resetstyle (confirm)",
-    "description": "Confirmed own created role primary color reset to0;name/access retained.",
+    "description": "Confirmed own created role primary color reset to 0; name/access retained.",
     "parameters": [
       {
         "name": "confirm",
@@ -4312,7 +4312,7 @@
     "name": "customrole unmaprole",
     "category": "customrole",
     "syntax": "/customrole unmaprole (confirm) (role-id)",
-    "description": "ManageRoles:remove exact stored mapped role ID,no native assignments changed.",
+    "description": "Manage Roles: remove exact stored mapped role ID, no native assignments changed.",
     "parameters": [
       {
         "name": "confirm",
@@ -4423,7 +4423,7 @@
     "name": "fun bingo",
     "category": "fun",
     "syntax": "/fun bingo",
-    "description": "Private fresh75ball5x5BINGOcard,freeNcenter,no called numbers/prizes/saved game.",
+    "description": "Private fresh 75 ball 5 x 5 BINGO card, free N center, no called numbers/prizes/saved game.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -4441,7 +4441,7 @@
     "name": "fun bracket",
     "category": "fun",
     "syntax": "/fun bracket (labels)",
-    "description": "Private randomized first-round single-elimination bracket2-16labels,no winners or assignments.",
+    "description": "Private randomized first-round single-elimination bracket 2-16 labels, no winners or assignments.",
     "parameters": [
       {
         "name": "labels",
@@ -4467,7 +4467,7 @@
     "name": "fun cards",
     "category": "fun",
     "syntax": "/fun cards [count]",
-    "description": "Draw1-10 distinct cards from a fresh52card deck,no betting/saved game.",
+    "description": "Draw 1-10 distinct cards from a fresh 52 card deck, no betting/saved game.",
     "parameters": [
       {
         "name": "count",
@@ -4555,7 +4555,7 @@
     "name": "fun dealhands",
     "category": "fun",
     "syntax": "/fun dealhands (players) (cards)",
-    "description": "Private2-5 numbered hands,1-5cards each,unique standarddeck,no bets/secret delivery.",
+    "description": "Private 2-5 numbered hands, 1-5 cards each, unique standard deck, no bets/secret delivery.",
     "parameters": [
       {
         "name": "players",
@@ -4621,7 +4621,7 @@
     "name": "fun dicehistogram",
     "category": "fun",
     "syntax": "/fun dicehistogram (count) (sides)",
-    "description": "Private1-100 independent dice rolls summarized by face,count/total,no stored state.",
+    "description": "Private 1-100 independent dice rolls summarized by face, count/total, no stored state.",
     "parameters": [
       {
         "name": "count",
@@ -4654,7 +4654,7 @@
     "name": "fun dicekeep",
     "category": "fun",
     "syntax": "/fun dicekeep (count) (keep) (mode) [sides]",
-    "description": "Roll bounded dice,keep highest or lowest results;no stakes or saved state.",
+    "description": "Roll bounded dice, keep highest or lowest results; no stakes or saved state.",
     "parameters": [
       {
         "name": "count",
@@ -4709,7 +4709,7 @@
     "name": "fun dicetarget",
     "category": "fun",
     "syntax": "/fun dicetarget (target) [count] [sides]",
-    "description": "Roll dice and count values at or above an explicit target,no stakes.",
+    "description": "Roll dice and count values at or above an explicit target, no stakes.",
     "parameters": [
       {
         "name": "target",
@@ -4749,7 +4749,7 @@
     "name": "fun dominoes",
     "category": "fun",
     "syntax": "/fun dominoes (count)",
-    "description": "Private draw1-7unique double-six domino tiles from fresh28tile set,no bets/saved game.",
+    "description": "Private draw 1-7 unique double-six domino tiles from fresh 28 tile set, no bets/saved game.",
     "parameters": [
       {
         "name": "count",
@@ -4775,7 +4775,7 @@
     "name": "fun exchange",
     "category": "fun",
     "syntax": "/fun exchange (labels)",
-    "description": "Private one-cycle label exchange;no self match,no messages or secret delivery.",
+    "description": "Private one-cycle label exchange; no self match, no messages or secret delivery.",
     "parameters": [
       {
         "name": "labels",
@@ -4801,7 +4801,7 @@
     "name": "fun number",
     "category": "fun",
     "syntax": "/fun number (minimum) (maximum)",
-    "description": "One uniform integer in an inclusive bounded range;not advice.",
+    "description": "One uniform integer in an inclusive bounded range; not advice.",
     "parameters": [
       {
         "name": "minimum",
@@ -4834,7 +4834,7 @@
     "name": "fun pairs",
     "category": "fun",
     "syntax": "/fun pairs (labels)",
-    "description": "Private random pairings of2-20 labels,odd label gets bye;no member assignment.",
+    "description": "Private random pairings of 2-20 labels, odd label gets bye; no member assignment.",
     "parameters": [
       {
         "name": "labels",
@@ -4860,7 +4860,7 @@
     "name": "fun roundrobin",
     "category": "fun",
     "syntax": "/fun roundrobin (labels)",
-    "description": "Private complete pair schedule for2-10 labels,no dates/member assignments.",
+    "description": "Private complete pair schedule for 2-10 labels, no dates/member assignments.",
     "parameters": [
       {
         "name": "labels",
@@ -4924,7 +4924,7 @@
     "name": "fun rpsseries",
     "category": "fun",
     "syntax": "/fun rpsseries (moves)",
-    "description": "Play2-10 preselected RPS rounds against Emika;private score,no stakes.",
+    "description": "Play 2-10 preselected RPS rounds against Emika; private score, no stakes.",
     "parameters": [
       {
         "name": "moves",
@@ -4950,7 +4950,7 @@
     "name": "fun sample",
     "category": "fun",
     "syntax": "/fun sample (choices) (count)",
-    "description": "Pick1-20 distinct waiting labels without replacement;no assignments.",
+    "description": "Pick 1-20 distinct waiting labels without replacement; no assignments.",
     "parameters": [
       {
         "name": "choices",
@@ -4983,7 +4983,7 @@
     "name": "fun shuffle",
     "category": "fun",
     "syntax": "/fun shuffle (choices)",
-    "description": "Privately randomize all 2-20 distinct choices,no assignments.",
+    "description": "Privately randomize all 2-20 distinct choices, no assignments.",
     "parameters": [
       {
         "name": "choices",
@@ -5009,7 +5009,7 @@
     "name": "fun teams",
     "category": "fun",
     "syntax": "/fun teams (labels) (groups)",
-    "description": "Privately split 2-20 distinct labels into balanced random groups,no invites.",
+    "description": "Privately split 2-20 distinct labels into balanced random groups, no invites.",
     "parameters": [
       {
         "name": "labels",
@@ -5060,7 +5060,7 @@
     "name": "fun weightedchoice",
     "category": "fun",
     "syntax": "/fun weightedchoice (choices) (weights)",
-    "description": "Private weighted draw from explicit labels/positive integer weights,not advice.",
+    "description": "Private weighted draw from explicit labels/positive integer weights, not advice.",
     "parameters": [
       {
         "name": "choices",
@@ -5093,7 +5093,7 @@
     "name": "fun wordscramble",
     "category": "fun",
     "syntax": "/fun wordscramble (word)",
-    "description": "Scramble your supplied ASCII word,answer in spoiler;no dictionary/guess tracking.",
+    "description": "Scramble your supplied ASCII word, answer in spoiler; no dictionary/guess tracking.",
     "parameters": [
       {
         "name": "word",
@@ -5137,7 +5137,7 @@
     "name": "config export",
     "category": "general",
     "syntax": "/config export",
-    "description": "Private stored language/welcome/logging JSON,includes templates/channel IDs,no token/runtime.",
+    "description": "Private stored language/welcome/logging JSON, includes templates/channel IDs, no token/runtime.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5201,7 +5201,7 @@
     "name": "config pause",
     "category": "general",
     "syntax": "/config pause (confirm)",
-    "description": "Stop welcome/goodbye/logging delivery;keep destination/templates/options/language.",
+    "description": "Stop welcome/goodbye/logging delivery; keep destination/templates/options/language.",
     "parameters": [
       {
         "name": "confirm",
@@ -5229,7 +5229,7 @@
     "name": "config resetdelivery",
     "category": "general",
     "syntax": "/config resetdelivery (confirm)",
-    "description": "Stop and forget welcome/goodbye/logging settings;keep language/other modules/history.",
+    "description": "Stop and forget welcome/goodbye/logging settings; keep language/other modules/history.",
     "parameters": [
       {
         "name": "confirm",
@@ -5279,7 +5279,7 @@
     "name": "help",
     "category": "general",
     "syntax": "/help [page] [category] [search] [command]",
-    "description": "Privately browse installed paths by page,category or literal search.",
+    "description": "Public interactive command directory with categories, pages and details.",
     "parameters": [
       {
         "name": "page",
@@ -5361,7 +5361,7 @@
     "name": "giveaway cancel",
     "category": "giveaway",
     "syntax": "/giveaway cancel (id) (confirm)",
-    "description": "Confirmed stop stored activegiveaway,no native announcement/button edit.",
+    "description": "Confirmed stop stored active giveaway, no native announcement/button edit.",
     "parameters": [
       {
         "name": "id",
@@ -5395,7 +5395,7 @@
     "name": "giveaway cancelall",
     "category": "giveaway",
     "syntax": "/giveaway cancelall (confirm)",
-    "description": "Cancel all active giveaways in storage only;no native message edits or announcements.",
+    "description": "Cancel all active giveaways in storage only; no native message edits or announcements.",
     "parameters": [
       {
         "name": "confirm",
@@ -5423,7 +5423,7 @@
     "name": "giveaway cancelchannel",
     "category": "giveaway",
     "syntax": "/giveaway cancelchannel (channel-id) (confirm)",
-    "description": "Confirmedcancel onlyactivegiveaways in exactstoredchannel,no native announcements/deletes.",
+    "description": "Confirmed cancel only active giveaways in exact stored channel, no native announcements/deletes.",
     "parameters": [
       {
         "name": "channel-id",
@@ -5458,7 +5458,7 @@
     "name": "giveaway channelcounts",
     "category": "giveaway",
     "syntax": "/giveaway channelcounts",
-    "description": "Private stored giveaway counts bychannelID/state,no entries/memberIDs/currentactivityproof.",
+    "description": "Private stored giveaway counts by channel ID/state, no entries/member IDs/current activity proof.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5480,7 +5480,7 @@
     "name": "giveaway channelmetadata",
     "category": "giveaway",
     "syntax": "/giveaway channelmetadata (channel-id)",
-    "description": "Latest100minimalgiveawaymetadata for exactstoredchannelID,no prize/member/native lookup.",
+    "description": "Latest 100 minimal giveaway metadata for exact stored channel ID, no prize/member/native lookup.",
     "parameters": [
       {
         "name": "channel-id",
@@ -5510,7 +5510,7 @@
     "name": "giveaway channelrecords",
     "category": "giveaway",
     "syntax": "/giveaway channelrecords (channel-id)",
-    "description": "Private latest100metadata for exactstoredchannelID,total/truncated,no entrant IDs.",
+    "description": "Private latest 100 metadata for exact stored channel ID, total/truncated, no entrant IDs.",
     "parameters": [
       {
         "name": "channel-id",
@@ -5591,7 +5591,7 @@
     "name": "giveaway entrycounts",
     "category": "giveaway",
     "syntax": "/giveaway entrycounts",
-    "description": "Private retained entrycounts forlatest100 giveawayID/stateJSON,total/truncation,no memberIDs.",
+    "description": "Export entry counts for up to 100 stored giveaways; total and truncation, no member IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5613,7 +5613,7 @@
     "name": "giveaway export",
     "category": "giveaway",
     "syntax": "/giveaway export",
-    "description": "Private latest100 stored giveaway prize/schedule/binding records,no entrant/winner IDs.",
+    "description": "Private latest 100 stored giveaway prize/schedule/binding records, no entrant/winner IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5635,7 +5635,7 @@
     "name": "giveaway exportmetadata",
     "category": "giveaway",
     "syntax": "/giveaway exportmetadata",
-    "description": "Private latest100 minimalID/channel/state/due/count/drawversion/timeJSON,no prize/sourceIDs.",
+    "description": "Private latest 100 minimal ID/channel/state/due/count/draw version/time JSON, no prize/source IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5657,7 +5657,7 @@
     "name": "giveaway exportunresolved",
     "category": "giveaway",
     "syntax": "/giveaway exportunresolved",
-    "description": "Latest100pending/ending/uncertain minimalgiveawaymetadata,no draw/retry/native outcomeproof.",
+    "description": "Latest 100 pending/ending/uncertain minimal giveaway metadata, no draw/retry/native outcome proof.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5679,7 +5679,7 @@
     "name": "giveaway forgetentries",
     "category": "giveaway",
     "syntax": "/giveaway forgetentries (id) (confirm)",
-    "description": "Confirmed erase ended/cancelled entrantIDs;future rerolls lose candidates.",
+    "description": "Confirmed erase ended/cancelled entrant IDs; future rerolls lose candidates.",
     "parameters": [
       {
         "name": "id",
@@ -5713,7 +5713,7 @@
     "name": "giveaway forgetfinishedentries",
     "category": "giveaway",
     "syntax": "/giveaway forgetfinishedentries (confirm)",
-    "description": "Erase entrant IDs for ended/cancelled giveaways;winner history/native messages kept.",
+    "description": "Erase entrant IDs for ended/cancelled giveaways; winner history/native messages kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -5741,7 +5741,7 @@
     "name": "giveaway inspect",
     "category": "giveaway",
     "syntax": "/giveaway inspect (id)",
-    "description": "Private stored prize/state/entrycount,no entrantIDs/live readiness.",
+    "description": "Private stored prize/state/entry count, no entrant IDs/live readiness.",
     "parameters": [
       {
         "name": "id",
@@ -5770,7 +5770,7 @@
     "name": "giveaway inspectmetadata",
     "category": "giveaway",
     "syntax": "/giveaway inspectmetadata (id)",
-    "description": "ExactstoredgiveawayID minimalmetadataJSON/null,no prize/winner/member/sourceIDs/nativeproof.",
+    "description": "Exact stored giveaway ID minimal metadata JSON/null, no prize/winner/member/source IDs/native proof.",
     "parameters": [
       {
         "name": "id",
@@ -5800,7 +5800,7 @@
     "name": "giveaway list",
     "category": "giveaway",
     "syntax": "/giveaway list [page]",
-    "description": "List latest100 stored records,2 complete prizes/page,no live delivery claim.",
+    "description": "List latest 100 stored records, 2 complete prizes/page, no live delivery claim.",
     "parameters": [
       {
         "name": "page",
@@ -5913,7 +5913,7 @@
     "name": "giveaway summary",
     "category": "giveaway",
     "syntax": "/giveaway summary",
-    "description": "Private storedgiveawaystate/retained-entry counts,no entrant/winner identities.",
+    "description": "Private stored giveaway state/retained-entry counts, no entrant/winner identities.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5960,7 +5960,7 @@
     "name": "inviteinfo",
     "category": "leaderboard",
     "syntax": "/inviteinfo",
-    "description": "Private current native metadata for your own active invites;no join attribution or tracking.",
+    "description": "Private current native metadata for your own active invites; no join attribution or tracking.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -5978,7 +5978,7 @@
     "name": "leaderboard activity",
     "category": "leaderboard",
     "syntax": "/leaderboard activity",
-    "description": "Only your retained90UTC-day counts,active days and longest run;not quality.",
+    "description": "Only your retained 90 UTC-day counts, active days and longest run; not quality.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -5996,7 +5996,7 @@
     "name": "leaderboard clearexclusions",
     "category": "leaderboard",
     "syntax": "/leaderboard clearexclusions (confirm)",
-    "description": "Clear stored exclusion IDs;tracking/counts/preferences/replay guards stay as-is.",
+    "description": "Clear stored exclusion IDs; tracking/counts/preferences/replay guards stay as-is.",
     "parameters": [
       {
         "name": "confirm",
@@ -6038,7 +6038,7 @@
     "name": "leaderboard daily",
     "category": "leaderboard",
     "syntax": "/leaderboard daily [page]",
-    "description": "Show only your retained daily message counts,ten UTC days per page.",
+    "description": "Show only your retained daily message counts, ten UTC days per page.",
     "parameters": [
       {
         "name": "page",
@@ -6064,7 +6064,7 @@
     "name": "leaderboard dailyoverview",
     "category": "leaderboard",
     "syntax": "/leaderboard dailyoverview [page]",
-    "description": "Manage Server:ten retained UTCdaily contributor/count aggregates,no identities.",
+    "description": "Manage Server: ten retained UTC daily contributor/count aggregates, no identities.",
     "parameters": [
       {
         "name": "page",
@@ -6126,7 +6126,7 @@
     "name": "leaderboard erasebefore",
     "category": "leaderboard",
     "syntax": "/leaderboard erasebefore (date) (confirm)",
-    "description": "Manage Server:erase stored counts strictly before explicit UTCdate;guards kept.",
+    "description": "Manage Server: erase stored counts strictly before explicit UTC date; guards kept.",
     "parameters": [
       {
         "name": "date",
@@ -6215,7 +6215,7 @@
     "name": "leaderboard exportconfig",
     "category": "leaderboard",
     "syntax": "/leaderboard exportconfig",
-    "description": "Private stored tracking switch/excluded IDs only;no people,counts or privacy records.",
+    "description": "Private stored tracking switch/excluded IDs only; no people, counts or privacy records.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6233,7 +6233,7 @@
     "name": "leaderboard exportmine",
     "category": "leaderboard",
     "syntax": "/leaderboard exportmine",
-    "description": "Private CSV of only your retained UTC daily counts;no message content.",
+    "description": "Private CSV of only your retained UTC daily counts; no message content.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6287,7 +6287,7 @@
     "name": "leaderboard overview",
     "category": "leaderboard",
     "syntax": "/leaderboard overview",
-    "description": "Manage Server:aggregate retained contributors/messages/days,no identities.",
+    "description": "Manage Server: aggregate retained contributors/messages/days, no identities.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6305,7 +6305,7 @@
     "name": "leaderboard position",
     "category": "leaderboard",
     "syntax": "/leaderboard position [period]",
-    "description": "Show only your retained message rank and count,UTC window.",
+    "description": "Show only your retained message rank and count, UTC window.",
     "parameters": [
       {
         "name": "period",
@@ -6343,7 +6343,7 @@
     "name": "leaderboard privacy",
     "category": "leaderboard",
     "syntax": "/leaderboard privacy",
-    "description": "Only your stored counting preference and server tracking switch;no changes.",
+    "description": "Only your stored counting preference and server tracking switch; no changes.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6361,7 +6361,7 @@
     "name": "leaderboard removeexclude",
     "category": "leaderboard",
     "syntax": "/leaderboard removeexclude (channel-id) (confirm)",
-    "description": "Manage Server: remove one exact stored exclusion,including deleted channels.",
+    "description": "Manage Server: remove one exact stored exclusion, including deleted channels.",
     "parameters": [
       {
         "name": "channel-id",
@@ -6392,7 +6392,7 @@
     "name": "leaderboard resetall",
     "category": "leaderboard",
     "syntax": "/leaderboard resetall (confirm)",
-    "description": "Manage Server:erase all retained guild counts;tracking/preferences/replayguards kept.",
+    "description": "Manage Server: erase all retained guild counts; tracking/preferences/replay guards kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -6434,7 +6434,7 @@
     "name": "leaderboard resetpolicy",
     "category": "leaderboard",
     "syntax": "/leaderboard resetpolicy (confirm)",
-    "description": "Stop tracking and forget exclusions;retain counts/preferences/replay guards.",
+    "description": "Stop tracking and forget exclusions; retain counts/preferences/replay guards.",
     "parameters": [
       {
         "name": "confirm",
@@ -6521,7 +6521,7 @@
     "name": "leaderboard weeklymine",
     "category": "leaderboard",
     "syntax": "/leaderboard weeklymine",
-    "description": "Only your90retained UTCdays in13 disjoint newest-first elapsed7-day buckets.",
+    "description": "Only your 90 retained UTC days in 13 disjoint newest-first elapsed 7-day buckets.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6539,7 +6539,7 @@
     "name": "rankreward claim",
     "category": "leaderboard",
     "syntax": "/rankreward claim (role) (confirm)",
-    "description": "Your explicit one-shot rolegrant;no automaticclaim/regrant/revocation.",
+    "description": "Your explicit one-shot role grant; no automatic claim/regrant/revocation.",
     "parameters": [
       {
         "name": "role",
@@ -6568,7 +6568,7 @@
     "name": "rankreward config",
     "category": "leaderboard",
     "syntax": "/rankreward config",
-    "description": "Private stored milestone rules,not count or role-access guarantee.",
+    "description": "Private stored milestone rules, not count or role-access guarantee.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6586,7 +6586,7 @@
     "name": "rankreward eligible",
     "category": "leaderboard",
     "syntax": "/rankreward eligible",
-    "description": "Only your retained90day eligibility;tracking/privacy checks,no grant.",
+    "description": "Only your retained 90 day eligibility; tracking/privacy checks, no grant.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6604,7 +6604,7 @@
     "name": "rankreward remove",
     "category": "leaderboard",
     "syntax": "/rankreward remove (role) (confirm)",
-    "description": "Owner confirm:remove rule only;never remove granted roles or erase receipts.",
+    "description": "Owner confirm: remove rule only; never remove granted roles or erase receipts.",
     "parameters": [
       {
         "name": "role",
@@ -6633,7 +6633,7 @@
     "name": "rankreward set",
     "category": "leaderboard",
     "syntax": "/rankreward set (role) (confirm) (kind) (threshold)",
-    "description": "Owner confirm:zero-permission existingrole;retained90day messages or sampledvoice minutes.",
+    "description": "Owner confirm: zero-permission existing role; retained 90 day messages or sampled voice minutes.",
     "parameters": [
       {
         "name": "role",
@@ -6702,7 +6702,7 @@
     "name": "voicelb disable",
     "category": "leaderboard",
     "syntax": "/voicelb disable",
-    "description": "Manage Server:stop sampling and discard unfinished intervals;counts retained.",
+    "description": "Manage Server: stop sampling and discard unfinished intervals; counts retained.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6720,7 +6720,7 @@
     "name": "voicelb enable",
     "category": "leaderboard",
     "syntax": "/voicelb enable",
-    "description": "Manage Server:start future voicejoin sampling;no credit for alreadyconnected sessions.",
+    "description": "Manage Server: start future voice join sampling; no credit for already connected sessions.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6738,7 +6738,7 @@
     "name": "voicelb optin",
     "category": "leaderboard",
     "syntax": "/voicelb optin",
-    "description": "Allow future join samples if server tracking enabled;no existing-call backfill.",
+    "description": "Allow future join samples if server tracking enabled; no existing-call backfill.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6774,7 +6774,7 @@
     "name": "voicelb resetmine",
     "category": "leaderboard",
     "syntax": "/voicelb resetmine",
-    "description": "Erase only your voice counts and active sample;privacy preference kept.",
+    "description": "Erase only your voice counts and active sample; privacy preference kept.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6792,7 +6792,7 @@
     "name": "voicelb stats",
     "category": "leaderboard",
     "syntax": "/voicelb stats",
-    "description": "Only your settled sampled voice milliseconds today/week/90retainedUTCdays.",
+    "description": "Only your settled sampled voice milliseconds today/week/90 retained UTC days.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -6810,7 +6810,7 @@
     "name": "voicelb top",
     "category": "leaderboard",
     "syntax": "/voicelb top [period] [page]",
-    "description": "Private ten sampled voice ranks/page;not full call duration or speaking activity.",
+    "description": "Private ten sampled voice ranks/page; not full call duration or speaking activity.",
     "parameters": [
       {
         "name": "period",
@@ -6855,7 +6855,7 @@
     "name": "casehistory actioncounts",
     "category": "logging",
     "syntax": "/casehistory actioncounts",
-    "description": "Storedcase counts by action/state,no identities/reasons/currentnative state claims.",
+    "description": "Stored case counts by action/state, no identities/reasons/current native state claims.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -6914,7 +6914,7 @@
     "name": "casehistory export",
     "category": "logging",
     "syntax": "/casehistory export",
-    "description": "Private latest100case metadata/reasons JSON,total/truncated,no recovery/grant.",
+    "description": "Private latest 100 case metadata/reasons JSON, total/truncated, no recovery/grant.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -6936,7 +6936,7 @@
     "name": "casehistory exportmetadata",
     "category": "logging",
     "syntax": "/casehistory exportmetadata",
-    "description": "Latest100minimal storedcaseID/action/state/timeJSON,total/truncated,no reasons/actor/targetIDs.",
+    "description": "Export up to 100 case metadata records; total and truncation, no reasons or actor/target IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -6958,7 +6958,7 @@
     "name": "casehistory exportunresolved",
     "category": "logging",
     "syntax": "/casehistory exportunresolved",
-    "description": "Latest100pending/uncertain caseID/action/state/timeJSON,no recovery/retry/nativeproof.",
+    "description": "Latest 100 pending/uncertain case ID/action/state/time JSON, no recovery/retry/native proof.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -6980,7 +6980,7 @@
     "name": "casehistory inspect",
     "category": "logging",
     "syntax": "/casehistory inspect (id)",
-    "description": "Read one exact stored case identity/reason/status,not current native state.",
+    "description": "Read one exact stored case identity/reason/status, not current native state.",
     "parameters": [
       {
         "name": "id",
@@ -7009,7 +7009,7 @@
     "name": "casehistory list",
     "category": "logging",
     "syntax": "/casehistory list [page] [state]",
-    "description": "Page stored case metadata,ten per page,optional exact status filter.",
+    "description": "Page stored case metadata, ten per page, optional exact status filter.",
     "parameters": [
       {
         "name": "page",
@@ -7062,7 +7062,7 @@
     "name": "casehistory summary",
     "category": "logging",
     "syntax": "/casehistory summary",
-    "description": "Private allstoredcase counts bystatus,no identities/reasons or native claims.",
+    "description": "Private all stored case counts by status, no identities/reasons or native claims.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -7149,7 +7149,7 @@
     "name": "logging clearchannel",
     "category": "logging",
     "syntax": "/logging clearchannel (confirm)",
-    "description": "Stop logging and forget only destination;event opt-ins/history retained.",
+    "description": "Stop logging and forget only destination; event opt-ins/history retained.",
     "parameters": [
       {
         "name": "confirm",
@@ -7199,7 +7199,7 @@
     "name": "logging deliverysummary",
     "category": "logging",
     "syntax": "/logging deliverysummary",
-    "description": "Private stored metadata-event receipt counts by state,no native verification.",
+    "description": "Private stored metadata-event receipt counts by state, no native verification.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -7332,7 +7332,7 @@
     "name": "logging export",
     "category": "logging",
     "syntax": "/logging export",
-    "description": "Private stored logging policy JSON;no case or delivery history.",
+    "description": "Private stored logging policy JSON; no case or delivery history.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -7354,7 +7354,7 @@
     "name": "logging exportreceipts",
     "category": "logging",
     "syntax": "/logging exportreceipts",
-    "description": "Private latest100 metadata-event state/timeJSON,total/truncation,no source IDs.",
+    "description": "Private latest 100 metadata-event state/time JSON, total/truncation, no source IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -7376,7 +7376,7 @@
     "name": "logging import",
     "category": "logging",
     "syntax": "/logging import (json) (confirm)",
-    "description": "Replace strict stored logging policy JSON,force disabled;review destination later.",
+    "description": "Replace strict stored logging policy JSON, force disabled; review destination later.",
     "parameters": [
       {
         "name": "json",
@@ -7411,7 +7411,7 @@
     "name": "logging pauseevents",
     "category": "logging",
     "syntax": "/logging pauseevents (confirm)",
-    "description": "Confirmed clear all metadata-event opt-ins;case master/channel/replay receipts kept.",
+    "description": "Confirmed clear all metadata-event opt-ins; case master/channel/replay receipts kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -7486,7 +7486,7 @@
     "name": "logging preview",
     "category": "logging",
     "syntax": "/logging preview",
-    "description": "Private sample case-log payload only,no native delivery or readiness claim.",
+    "description": "Private sample case-log payload only, no native delivery or readiness claim.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -7508,7 +7508,7 @@
     "name": "logging reset",
     "category": "logging",
     "syntax": "/logging reset (confirm)",
-    "description": "Confirmed stop logging and forget destination/event opt-ins,no native log deletion.",
+    "description": "Confirmed stop logging and forget destination/event opt-ins, no native log deletion.",
     "parameters": [
       {
         "name": "confirm",
@@ -7536,7 +7536,7 @@
     "name": "logging statereceipts",
     "category": "logging",
     "syntax": "/logging statereceipts (state)",
-    "description": "Latest100stored receipts in explicitstate,state/timeJSON,total/truncated,no sourceIDs.",
+    "description": "Latest 100 stored receipts in explicit state, state/time JSON, total/truncated, no source IDs.",
     "parameters": [
       {
         "name": "state",
@@ -7604,7 +7604,7 @@
     "name": "logging unresolvedreceipts",
     "category": "logging",
     "syntax": "/logging unresolvedreceipts",
-    "description": "Latest100reserved/uncertain/unavailable storedreceipts,no retry or native outcome proof.",
+    "description": "Latest 100 reserved/uncertain/unavailable stored receipts, no retry or native outcome proof.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -7626,7 +7626,7 @@
     "name": "logging windowreceipts",
     "category": "logging",
     "syntax": "/logging windowreceipts (start) (end)",
-    "description": "Latest100storedreceipts in inclusive explicitUnixmillisecondwindow,no relative dates/sourceIDs.",
+    "description": "Read up to 100 stored receipts in a Unix millisecond window; no relative dates or source IDs.",
     "parameters": [
       {
         "name": "start",
@@ -7663,7 +7663,7 @@
     "name": "bulktimeout confirm",
     "category": "moderation",
     "syntax": "/bulktimeout confirm (plan-id) (confirm)",
-    "description": "Your exact unexpired preview;freshpermission/deadline guards,partial/uncertain stops,no retry.",
+    "description": "Your exact unexpired preview; fresh permission/deadline guards, partial/uncertain stops, no retry.",
     "parameters": [
       {
         "name": "plan-id",
@@ -7695,7 +7695,7 @@
     "name": "bulktimeout preview",
     "category": "moderation",
     "syntax": "/bulktimeout preview (members)",
-    "description": "Explicit1-10memberIDstrings JSON;private exactdeadline preview valid120s,no effects.",
+    "description": "Explicit 1-10 member ID strings JSON; private exact deadline preview valid 120 s, no effects.",
     "parameters": [
       {
         "name": "members",
@@ -7722,7 +7722,7 @@
     "name": "jail apply",
     "category": "moderation",
     "syntax": "/jail apply (confirm) (member) (duration) [reason]",
-    "description": "Confirmed1s-28d native timeout;roles unchanged,no existing timeout overwritten.",
+    "description": "Confirmed 1 s-28 d native timeout; roles unchanged, no existing timeout overwritten.",
     "parameters": [
       {
         "name": "confirm",
@@ -7765,7 +7765,7 @@
     "name": "jail config",
     "category": "moderation",
     "syntax": "/jail config",
-    "description": "Private stored referencechannel policy,not isolation proof.",
+    "description": "Private stored reference channel policy, not isolation proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -7785,7 +7785,7 @@
     "name": "jail list",
     "category": "moderation",
     "syntax": "/jail list",
-    "description": "Up to25active/uncertain jail metadata;expired native timeouts settle locally.",
+    "description": "Up to 25 active/uncertain jail metadata; expired native timeouts settle locally.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -7805,7 +7805,7 @@
     "name": "jail release",
     "category": "moderation",
     "syntax": "/jail release (confirm) (member) [reason]",
-    "description": "Confirmed clear exact owned current timeout only;drift/uncertain blocks.",
+    "description": "Confirmed clear exact owned current timeout only; drift/uncertain blocks.",
     "parameters": [
       {
         "name": "confirm",
@@ -7842,7 +7842,7 @@
     "name": "jail reset",
     "category": "moderation",
     "syntax": "/jail reset (confirm)",
-    "description": "Owner:forget policy only when no live or uncertain jail records.",
+    "description": "Owner: forget policy only when no live or uncertain jail records.",
     "parameters": [
       {
         "name": "confirm",
@@ -7868,7 +7868,7 @@
     "name": "jail setup",
     "category": "moderation",
     "syntax": "/jail setup (confirm) (channel)",
-    "description": "Owner:record existing normaltext jail referencechannel,no permission or role edits.",
+    "description": "Owner: record existing normal text jail reference channel, no permission or role edits.",
     "parameters": [
       {
         "name": "confirm",
@@ -8114,7 +8114,7 @@
     "name": "moderation purgeconfirm",
     "category": "moderation",
     "syntax": "/moderation purgeconfirm (plan-id) (confirm)",
-    "description": "Delete only your exact previewed IDs, expires in2 minutes.",
+    "description": "Delete only your exact previewed IDs, expires in 2 minutes.",
     "parameters": [
       {
         "name": "plan-id",
@@ -8362,7 +8362,7 @@
     "name": "nickname",
     "category": "moderation",
     "syntax": "/nickname (member) (confirm) [text]",
-    "description": "Confirmed one-member nickname update or explicit reset,no bulk changes.",
+    "description": "Confirmed one-member nickname update or explicit reset, no bulk changes.",
     "parameters": [
       {
         "name": "member",
@@ -8478,7 +8478,7 @@
     "name": "role create",
     "category": "moderation",
     "syntax": "/role create (name) (confirm)",
-    "description": "Confirmed unassigned zero-permission role create,no member assignment.",
+    "description": "Confirmed unassigned zero-permission role create, no member assignment.",
     "parameters": [
       {
         "name": "name",
@@ -8629,7 +8629,7 @@
     "name": "slowmode",
     "category": "moderation",
     "syntax": "/slowmode (channel) (seconds) (confirm)",
-    "description": "Confirmed single text-channel slowmode,0 disables,no bulk changes.",
+    "description": "Confirmed single text-channel slowmode, 0 disables, no bulk changes.",
     "parameters": [
       {
         "name": "channel",
@@ -8667,7 +8667,7 @@
     "name": "music clear",
     "category": "music",
     "syntax": "/music clear",
-    "description": "Clear waiting tracks only;current track keeps playing.",
+    "description": "Clear waiting tracks only; current track keeps playing.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8685,7 +8685,7 @@
     "name": "music deduplicate",
     "category": "music",
     "syntax": "/music deduplicate",
-    "description": "Keep first waitingtrack perproviderID,currenttrack/requesterhistory not compared.",
+    "description": "Keep the first queued track per provider ID; current track and requester history are not compared.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8703,7 +8703,7 @@
     "name": "music duplicate",
     "category": "music",
     "syntax": "/music duplicate (position)",
-    "description": "Append one waiting track copy attributed to you;current playback unchanged.",
+    "description": "Append one waiting track copy attributed to you; current playback unchanged.",
     "parameters": [
       {
         "name": "position",
@@ -8729,7 +8729,7 @@
     "name": "music move",
     "category": "music",
     "syntax": "/music move (from) (to)",
-    "description": "Move one waiting track to exact final queue position;current playback untouched.",
+    "description": "Move one waiting track to exact final queue position; current playback untouched.",
     "parameters": [
       {
         "name": "from",
@@ -8798,7 +8798,7 @@
     "name": "music play",
     "category": "music",
     "syntax": "/music play (query)",
-    "description": "Queue first YouTube search result or exact11-character video ID.",
+    "description": "Queue the first YouTube search result or an exact 11-character video ID.",
     "parameters": [
       {
         "name": "query",
@@ -8824,7 +8824,7 @@
     "name": "music queue",
     "category": "music",
     "syntax": "/music queue [page]",
-    "description": "Show ten queued tracks per page;current track separate.",
+    "description": "Show ten queued tracks per page; current track separate.",
     "parameters": [
       {
         "name": "page",
@@ -8850,7 +8850,7 @@
     "name": "music remove",
     "category": "music",
     "syntax": "/music remove (position)",
-    "description": "Remove one queued position;never stops current track.",
+    "description": "Remove one queued position; never stops current track.",
     "parameters": [
       {
         "name": "position",
@@ -8876,7 +8876,7 @@
     "name": "music removeown",
     "category": "music",
     "syntax": "/music removeown",
-    "description": "Remove only waiting tracks requested by you;current playback unchanged.",
+    "description": "Remove only waiting tracks requested by you; current playback unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8894,7 +8894,7 @@
     "name": "music removerange",
     "category": "music",
     "syntax": "/music removerange (from) (to)",
-    "description": "Remove inclusivewaitingpositionrange,currentplayback untouched.",
+    "description": "Remove inclusive waiting position range, current playback untouched.",
     "parameters": [
       {
         "name": "from",
@@ -8945,7 +8945,7 @@
     "name": "music reverse",
     "category": "music",
     "syntax": "/music reverse",
-    "description": "Reverse waitingtrackorder only,currentplayback unchanged.",
+    "description": "Reverse waiting track order only, current playback unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8963,7 +8963,7 @@
     "name": "music shuffle",
     "category": "music",
     "syntax": "/music shuffle",
-    "description": "Randomize waiting tracks only;current track unchanged.",
+    "description": "Randomize waiting tracks only; current track unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8981,7 +8981,7 @@
     "name": "music skip",
     "category": "music",
     "syntax": "/music skip",
-    "description": "Stop current track once and advance waiting queue;uncertain failures freeze.",
+    "description": "Stop current track once and advance waiting queue; uncertain failures freeze.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8999,7 +8999,7 @@
     "name": "music stay",
     "category": "music",
     "syntax": "/music stay (enabled)",
-    "description": "Keep idle VC connection while this process/node are healthy;not uptime guarantee.",
+    "description": "Keep idle VC connection while this process/node are healthy; not uptime guarantee.",
     "parameters": [
       {
         "name": "enabled",
@@ -9041,7 +9041,7 @@
     "name": "music trim",
     "category": "music",
     "syntax": "/music trim (count)",
-    "description": "Keep first N waiting tracks,discard later ones;current playback unchanged.",
+    "description": "Keep first N waiting tracks, discard later ones; current playback unchanged.",
     "parameters": [
       {
         "name": "count",
@@ -9067,7 +9067,7 @@
     "name": "permit blockchannel",
     "category": "permit",
     "syntax": "/permit blockchannel (command) (channel-id)",
-    "description": "Deny one command in this exact channel,no inheritance/Discord overwrite.",
+    "description": "Deny one command in this exact channel, no inheritance/Discord overwrite.",
     "parameters": [
       {
         "name": "command",
@@ -9162,7 +9162,7 @@
     "name": "permit channelrules",
     "category": "permit",
     "syntax": "/permit channelrules [page] [command]",
-    "description": "Private stored channel denies,ten perpage;not Discord permissions.",
+    "description": "Private stored channel denies, ten per page; not Discord permissions.",
     "parameters": [
       {
         "name": "page",
@@ -9221,7 +9221,7 @@
     "name": "permit clearall",
     "category": "permit",
     "syntax": "/permit clearall (confirm)",
-    "description": "Confirmed remove all guild Emika denies,user/role/channel;native permissions unchanged.",
+    "description": "Confirmed remove all guild Emika denies, user/role/channel; native permissions unchanged.",
     "parameters": [
       {
         "name": "confirm",
@@ -9276,7 +9276,7 @@
     "name": "permit clearcommand",
     "category": "permit",
     "syntax": "/permit clearcommand (command) (confirm)",
-    "description": "Confirmed remove bothsubject/channel denies for one storedcommand,including removed ones.",
+    "description": "Confirmed remove both subject/channel denies for one stored command, including removed ones.",
     "parameters": [
       {
         "name": "command",
@@ -9307,7 +9307,7 @@
     "name": "permit clearobsolete",
     "category": "permit",
     "syntax": "/permit clearobsolete (confirm)",
-    "description": "Erase denies for registry-absent commands,may affect them if reinstalled later.",
+    "description": "Erase denies for registry-absent commands, may affect them if reinstalled later.",
     "parameters": [
       {
         "name": "confirm",
@@ -9393,7 +9393,7 @@
     "name": "permit commandcounts",
     "category": "permit",
     "syntax": "/permit commandcounts",
-    "description": "Private stored deny counts percommand,no subject IDs or effectivepermission claim.",
+    "description": "Private stored deny counts per command, no subject IDs or effective permission claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -9411,7 +9411,7 @@
     "name": "permit export",
     "category": "permit",
     "syntax": "/permit export",
-    "description": "Private JSON of stored user/role/channel deny IDs,no permissions or native grants.",
+    "description": "Private JSON of stored user/role/channel deny IDs, no permissions or native grants.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -9429,7 +9429,7 @@
     "name": "permit exportcommand",
     "category": "permit",
     "syntax": "/permit exportcommand (command)",
-    "description": "Private all stored subject/channel denies for exactcommandname,including absentcommands.",
+    "description": "Private all stored subject/channel denies for exact command name, including absent commands.",
     "parameters": [
       {
         "name": "command",
@@ -9455,7 +9455,7 @@
     "name": "permit list",
     "category": "permit",
     "syntax": "/permit list [page] [command] [kind]",
-    "description": "Inspect stored deny rules,optional command/kind filters;no permission grants.",
+    "description": "Inspect stored deny rules, optional command/kind filters; no permission grants.",
     "parameters": [
       {
         "name": "page",
@@ -9503,7 +9503,7 @@
     "name": "permit obsolete",
     "category": "permit",
     "syntax": "/permit obsolete",
-    "description": "Private JSON denies for commands absent from current registry;no deletion/resource claims.",
+    "description": "Private JSON denies for commands absent from current registry; no deletion/resource claims.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -9521,7 +9521,7 @@
     "name": "permit remove",
     "category": "permit",
     "syntax": "/permit remove (command) (kind) (subject-id) (confirm)",
-    "description": "Remove one exact stored restriction,including departed/deleted subject IDs.",
+    "description": "Remove one exact stored restriction, including departed/deleted subject IDs.",
     "parameters": [
       {
         "name": "command",
@@ -9574,7 +9574,7 @@
     "name": "permit searchid",
     "category": "permit",
     "syntax": "/permit searchid (id)",
-    "description": "Private exact stored ID lookup across user/role/channel denies,no native lookup.",
+    "description": "Private exact stored ID lookup across user/role/channel denies, no native lookup.",
     "parameters": [
       {
         "name": "id",
@@ -9600,7 +9600,7 @@
     "name": "permit status",
     "category": "permit",
     "syntax": "/permit status (command)",
-    "description": "Check your current stored command restriction only,not Discord permissions.",
+    "description": "Check your current stored command restriction only, not Discord permissions.",
     "parameters": [
       {
         "name": "command",
@@ -9626,7 +9626,7 @@
     "name": "permit summary",
     "category": "permit",
     "syntax": "/permit summary",
-    "description": "Private stored deny counts bykind/command,no native permissions or IDs.",
+    "description": "Private stored deny counts by kind/command, no native permissions or IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -9644,7 +9644,7 @@
     "name": "permit unblockchannel",
     "category": "permit",
     "syntax": "/permit unblockchannel (command) (channel-id)",
-    "description": "Remove exact stored channel deny,including deleted channels.",
+    "description": "Remove exact stored channel deny, including deleted channels.",
     "parameters": [
       {
         "name": "command",
@@ -9739,7 +9739,7 @@
     "name": "reactionroles channelcounts",
     "category": "reactionroles",
     "syntax": "/reactionroles channelcounts",
-    "description": "Private storedpanelcounts bychannelID/state,no member/role/sourceIDs or nativevalidation.",
+    "description": "Private stored panel counts by channel ID/state, no member/role/source IDs or native validation.",
     "parameters": [],
     "userPermissions": [
       "ManageRoles"
@@ -9763,7 +9763,7 @@
     "name": "reactionroles channelmetadata",
     "category": "reactionroles",
     "syntax": "/reactionroles channelmetadata (channel-id)",
-    "description": "Latest100minimal panelmetadata for exactstoredchannelID,no roles/labels/native lookup.",
+    "description": "Latest 100 minimal panel metadata for exact stored channel ID, no roles/labels/native lookup.",
     "parameters": [
       {
         "name": "channel-id",
@@ -9795,7 +9795,7 @@
     "name": "reactionroles channelrecords",
     "category": "reactionroles",
     "syntax": "/reactionroles channelrecords (channel-id)",
-    "description": "Private latest100 complete bindings/mappings for stored channel ID, no click receipts.",
+    "description": "Private latest 100 complete bindings/mappings for stored channel ID, no click receipts.",
     "parameters": [
       {
         "name": "channel-id",
@@ -9924,7 +9924,7 @@
     "name": "reactionroles disableactive",
     "category": "reactionroles",
     "syntax": "/reactionroles disableactive (confirm)",
-    "description": "Confirm disabling active panels in storage only;pending/uncertain untouched.",
+    "description": "Confirm disabling active panels in storage only; pending/uncertain untouched.",
     "parameters": [
       {
         "name": "confirm",
@@ -9954,7 +9954,7 @@
     "name": "reactionroles disablechannel",
     "category": "reactionroles",
     "syntax": "/reactionroles disablechannel (channel-id) (confirm)",
-    "description": "Disable active panels for one stored channel ID;no native edits or role changes.",
+    "description": "Disable active panels for one stored channel ID; no native edits or role changes.",
     "parameters": [
       {
         "name": "channel-id",
@@ -9991,7 +9991,7 @@
     "name": "reactionroles disablerole",
     "category": "reactionroles",
     "syntax": "/reactionroles disablerole (role-id) (confirm)",
-    "description": "Disable entire active panels containing one role ID;no native edits or role changes.",
+    "description": "Disable entire active panels containing one role ID; no native edits or role changes.",
     "parameters": [
       {
         "name": "role-id",
@@ -10028,7 +10028,7 @@
     "name": "reactionroles export",
     "category": "reactionroles",
     "syntax": "/reactionroles export",
-    "description": "Private latest100 stored panel bindings/button mappings;no member or click receipts.",
+    "description": "Private latest 100 stored panel bindings/button mappings; no member or click receipts.",
     "parameters": [],
     "userPermissions": [
       "ManageRoles"
@@ -10052,7 +10052,7 @@
     "name": "reactionroles exportclicks",
     "category": "reactionroles",
     "syntax": "/reactionroles exportclicks",
-    "description": "Private latest100click state/action/timeJSON,total/truncation,no member/role/sourceIDs.",
+    "description": "Private latest 100 click state/action/time JSON, total/truncation, no member/role/source IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageRoles"
@@ -10076,7 +10076,7 @@
     "name": "reactionroles exportmetadata",
     "category": "reactionroles",
     "syntax": "/reactionroles exportmetadata",
-    "description": "Private latest100minimalpanelID/channel/state/timeJSON,total/truncation,no role/sourceIDs or labels.",
+    "description": "Export up to 100 panel metadata records; total and truncation, no role/source IDs or labels.",
     "parameters": [],
     "userPermissions": [
       "ManageRoles"
@@ -10100,7 +10100,7 @@
     "name": "reactionroles exportunresolved",
     "category": "reactionroles",
     "syntax": "/reactionroles exportunresolved",
-    "description": "Latest100pending/uncertain minimal panelmetadata,no retry/repair/nativeexistence proof.",
+    "description": "Latest 100 pending/uncertain minimal panel metadata, no retry/repair/native existence proof.",
     "parameters": [],
     "userPermissions": [
       "ManageRoles"
@@ -10124,7 +10124,7 @@
     "name": "reactionroles inspect",
     "category": "reactionroles",
     "syntax": "/reactionroles inspect (panel-id)",
-    "description": "Privately inspect stored panel mappings,status and binding IDs only.",
+    "description": "Privately inspect stored panel mappings, status and binding IDs only.",
     "parameters": [
       {
         "name": "panel-id",
@@ -10155,7 +10155,7 @@
     "name": "reactionroles inspectmetadata",
     "category": "reactionroles",
     "syntax": "/reactionroles inspectmetadata (id)",
-    "description": "ExactstoredpanelID minimalmetadataJSON/null,no role/member/message/sourceIDs/labels.",
+    "description": "Exact stored panel ID minimal metadata JSON/null, no role/member/message/source IDs/labels.",
     "parameters": [
       {
         "name": "id",
@@ -10187,7 +10187,7 @@
     "name": "reactionroles list",
     "category": "reactionroles",
     "syntax": "/reactionroles list [page] [state]",
-    "description": "List ten complete panel records per page,newest100maximum.",
+    "description": "List ten complete panel records per page, newest 100 maximum.",
     "parameters": [
       {
         "name": "page",
@@ -10441,7 +10441,7 @@
     "name": "ticket claimsummary",
     "category": "ticket",
     "syntax": "/ticket claimsummary",
-    "description": "Manage Server:stored ticket state/claimed-flag counts only,no staff/ownerIDs.",
+    "description": "Manage Server: stored ticket state/claimed-flag counts only, no staff/owner IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10495,7 +10495,7 @@
     "name": "ticket exportconfig",
     "category": "ticket",
     "syntax": "/ticket exportconfig",
-    "description": "ManageServer:private stored category/supportrole/retention JSON,no live validation.",
+    "description": "Manage Server: private stored category/support role/retention JSON, no live validation.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10513,7 +10513,7 @@
     "name": "ticket exportmine",
     "category": "ticket",
     "syntax": "/ticket exportmine",
-    "description": "Private latest100onlyyour ticket metadata,total/truncated,no staff/source/transcript content.",
+    "description": "Private latest 100 only your ticket metadata, total/truncated, no staff/source/transcript content.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10531,7 +10531,7 @@
     "name": "ticket exportrecords",
     "category": "ticket",
     "syntax": "/ticket exportrecords",
-    "description": "Manage Server:latest100 stored ticketmetadataJSON,total/truncation,no owner/staff/sourceIDs.",
+    "description": "Manage Server: latest 100 stored ticket metadata JSON, total/truncation, no owner/staff/source IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10549,7 +10549,7 @@
     "name": "ticket forgetalltranscripts",
     "category": "ticket",
     "syntax": "/ticket forgetalltranscripts (confirm)",
-    "description": "Confirmed erase allguild storedtranscripts,no native/exportedmessage deletion.",
+    "description": "Confirmed erase all guild stored transcripts, no native/exported message deletion.",
     "parameters": [
       {
         "name": "confirm",
@@ -10573,7 +10573,7 @@
     "name": "ticket forgetbyid",
     "category": "ticket",
     "syntax": "/ticket forgetbyid (confirm) (id)",
-    "description": "Erase one stored ticket snapshot by ID,not native messages or ticket state.",
+    "description": "Erase one stored ticket snapshot by ID, not native messages or ticket state.",
     "parameters": [
       {
         "name": "confirm",
@@ -10603,7 +10603,7 @@
     "name": "ticket forgetclosedtranscripts",
     "category": "ticket",
     "syntax": "/ticket forgetclosedtranscripts (confirm)",
-    "description": "Erase snapshots of closed tickets only;open/uncertain snapshots and native history kept.",
+    "description": "Erase snapshots of closed tickets only; open/uncertain snapshots and native history kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -10651,7 +10651,7 @@
     "name": "ticket forgetusertranscripts",
     "category": "ticket",
     "syntax": "/ticket forgetusertranscripts (confirm) (owner-id)",
-    "description": "Erase all stored snapshots for one owner ID here;no native messages or state changes.",
+    "description": "Erase all stored snapshots for one owner ID here; no native messages or state changes.",
     "parameters": [
       {
         "name": "confirm",
@@ -10724,7 +10724,7 @@
     "name": "ticket queue",
     "category": "ticket",
     "syntax": "/ticket queue [page] [state] [unclaimed]",
-    "description": "Manage Server:inspect unresolved stored ticket IDs,not content or live access.",
+    "description": "Manage Server: inspect unresolved stored ticket IDs, not content or live access.",
     "parameters": [
       {
         "name": "page",
@@ -10782,7 +10782,7 @@
     "name": "ticket releaseclaims",
     "category": "ticket",
     "syntax": "/ticket releaseclaims (confirm)",
-    "description": "Confirmed release allopen storedclaims,not access/ownership/nativechannels.",
+    "description": "Confirmed release all open stored claims, not access/ownership/native channels.",
     "parameters": [
       {
         "name": "confirm",
@@ -10824,7 +10824,7 @@
     "name": "ticket resetsetup",
     "category": "ticket",
     "syntax": "/ticket resetsetup (confirm)",
-    "description": "Confirmed stop newticket opens/panels by forgettingsetup;existingtickets/nativechannels kept.",
+    "description": "Confirmed stop new ticket opens/panels by forgetting setup; existing tickets/native channels kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -10908,7 +10908,7 @@
     "name": "ticket status",
     "category": "ticket",
     "syntax": "/ticket status",
-    "description": "Privately show your ten latest stored ticket states,no live access or transcript.",
+    "description": "Privately show your ten latest stored ticket states, no live access or transcript.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10926,7 +10926,7 @@
     "name": "ticket summary",
     "category": "ticket",
     "syntax": "/ticket summary",
-    "description": "ManageServer:private stored ticket states/snapshotcount,no identities/content.",
+    "description": "Manage Server: private stored ticket states/snapshot count, no identities/content.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10962,7 +10962,7 @@
     "name": "ticket transcriptmetadata",
     "category": "ticket",
     "syntax": "/ticket transcriptmetadata",
-    "description": "Manage Server:latest100 snapshot ticketID/count/truncated/time,no messagebody/memberIDs.",
+    "description": "Manage Server: latest 100 snapshot ticket ID/count/truncated/time, no message body/member IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10980,7 +10980,7 @@
     "name": "ticket unclaim",
     "category": "ticket",
     "syntax": "/ticket unclaim",
-    "description": "Release your own claim on this open ticket,without changing access.",
+    "description": "Release your own claim on this open ticket, without changing access.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10998,7 +10998,7 @@
     "name": "afk agebands",
     "category": "utility",
     "syntax": "/afk agebands",
-    "description": "ManageServer:unexpired storedstatus agebands fromasOfclock,no userIDs/reasons/currentawayclaim.",
+    "description": "Manage Server: count unexpired stored statuses by age; no reasons, user IDs or live status claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -11016,7 +11016,7 @@
     "name": "afk channelcounts",
     "category": "utility",
     "syntax": "/afk channelcounts",
-    "description": "Manage Server: private unexpired stored AFK counts perchannelID, no user IDs/reasons.",
+    "description": "Manage Server: count unexpired stored AFK statuses per channel; no user IDs or reasons.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -11034,7 +11034,7 @@
     "name": "afk channelmetadata",
     "category": "utility",
     "syntax": "/afk channelmetadata (channel-id)",
-    "description": "ManageServer:latest100unexpired statusmetadata forstoredchannelID,no reasons/userIDs/native lookup.",
+    "description": "Manage Server: read up to 100 stored statuses for a channel; no reasons, user IDs or live lookup.",
     "parameters": [
       {
         "name": "channel-id",
@@ -11078,7 +11078,7 @@
     "name": "afk clearall",
     "category": "utility",
     "syntax": "/afk clearall (confirm)",
-    "description": "Manage Server:erase all stored guild AFK reasons;no native message deletion.",
+    "description": "Manage Server: erase all stored guild AFK reasons; no native message deletion.",
     "parameters": [
       {
         "name": "confirm",
@@ -11102,7 +11102,7 @@
     "name": "afk clearchannel",
     "category": "utility",
     "syntax": "/afk clearchannel (id) (confirm)",
-    "description": "Manage Server:erase stored away reasons shared in one exact channel,no native deletes.",
+    "description": "Manage Server: erase stored away reasons shared in one exact channel, no native deletes.",
     "parameters": [
       {
         "name": "id",
@@ -11133,7 +11133,7 @@
     "name": "afk clearuser",
     "category": "utility",
     "syntax": "/afk clearuser (id) (confirm)",
-    "description": "Manage Server:erase one exact user away reason/status,no native deletes.",
+    "description": "Manage Server: erase one exact user away reason/status, no native deletes.",
     "parameters": [
       {
         "name": "id",
@@ -11164,7 +11164,7 @@
     "name": "afk exportmine",
     "category": "utility",
     "syntax": "/afk exportmine",
-    "description": "Private JSON of only your stored away reason/channel/expiry,no notice IDs.",
+    "description": "Private JSON of only your stored away reason/channel/expiry, no notice IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -11182,7 +11182,7 @@
     "name": "afk exportnotices",
     "category": "utility",
     "syntax": "/afk exportnotices",
-    "description": "Manage Server: private latest100 notice channel/time JSON,no message/member IDs.",
+    "description": "Manage Server: private latest 100 notice channel/time JSON, no message/member IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -11200,7 +11200,7 @@
     "name": "afk exportstatuses",
     "category": "utility",
     "syntax": "/afk exportstatuses",
-    "description": "ManageServer:latest100unexpired status channel/time/expiryJSON,no reasons/userIDs,total/truncated.",
+    "description": "Manage Server: export up to 100 unexpired status records; includes total, no reasons or user IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -11218,7 +11218,7 @@
     "name": "afk move",
     "category": "utility",
     "syntax": "/afk move (share)",
-    "description": "Move own existing reason sharing to this current channel,without extending expiry.",
+    "description": "Move own existing reason sharing to this current channel, without extending expiry.",
     "parameters": [
       {
         "name": "share",
@@ -11242,7 +11242,7 @@
     "name": "afk reason",
     "category": "utility",
     "syntax": "/afk reason (reason) (share)",
-    "description": "Edit own existing public reason without extending expiry;confirm exact-channel sharing.",
+    "description": "Edit own existing public reason without extending expiry; confirm exact-channel sharing.",
     "parameters": [
       {
         "name": "reason",
@@ -11273,7 +11273,7 @@
     "name": "afk set",
     "category": "utility",
     "syntax": "/afk set (reason) (share)",
-    "description": "Set status up to7days,clear on your next eligible server message.",
+    "description": "Set status up to 7 days, clear on your next eligible server message.",
     "parameters": [
       {
         "name": "reason",
@@ -11364,7 +11364,7 @@
     "name": "banner",
     "category": "utility",
     "syntax": "/banner [user]",
-    "description": "Fetch a public user profile banner link,no guild membership assumption.",
+    "description": "Fetch a public user profile banner link, no guild membership assumption.",
     "parameters": [
       {
         "name": "user",
@@ -11406,7 +11406,7 @@
     "name": "channel agerestrict",
     "category": "utility",
     "syntax": "/channel agerestrict (channel) (confirm)",
-    "description": "Mark one text channel age-restricted;changes audience visibility,no removal here.",
+    "description": "Mark one text channel age-restricted; changes audience visibility, no removal here.",
     "parameters": [
       {
         "name": "channel",
@@ -11464,7 +11464,7 @@
     "name": "channel info",
     "category": "utility",
     "syntax": "/channel info [channel] [page]",
-    "description": "Inspect visible server channel ID/type/position;no content or member enumeration.",
+    "description": "Inspect visible server channel ID/type/position; no content or member enumeration.",
     "parameters": [
       {
         "name": "channel",
@@ -11495,7 +11495,7 @@
     "name": "channel list",
     "category": "utility",
     "syntax": "/channel list [page] [search]",
-    "description": "List only channels you can currently view;no threads,topics or member counts.",
+    "description": "List only channels you can currently view; no threads, topics or member counts.",
     "parameters": [
       {
         "name": "page",
@@ -11528,7 +11528,7 @@
     "name": "channel permissions",
     "category": "utility",
     "syntax": "/channel permissions [channel] [page]",
-    "description": "List your current effective channel permission flags;not other members.",
+    "description": "List your current effective channel permission flags; not other members.",
     "parameters": [
       {
         "name": "channel",
@@ -11595,7 +11595,7 @@
     "name": "channel threadarchive",
     "category": "utility",
     "syntax": "/channel threadarchive (channel) (confirm) (value)",
-    "description": "Set auto-archive default for newly created text-channel threads;existing threads untouched.",
+    "description": "Set auto-archive default for newly created text-channel threads; existing threads untouched.",
     "parameters": [
       {
         "name": "channel",
@@ -11647,7 +11647,7 @@
     "name": "channel threadslowmode",
     "category": "utility",
     "syntax": "/channel threadslowmode (channel) (confirm) (value)",
-    "description": "Set slowmode default for newly created text-channel threads;existing threads untouched.",
+    "description": "Set slowmode default for newly created text-channel threads; existing threads untouched.",
     "parameters": [
       {
         "name": "channel",
@@ -11719,7 +11719,7 @@
     "name": "channel voicebitrate",
     "category": "utility",
     "syntax": "/channel voicebitrate (channel) (confirm) (value)",
-    "description": "Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness.",
+    "description": "Confirmed empty normal voice channel setting, current Manage Channels+gateway readiness.",
     "parameters": [
       {
         "name": "channel",
@@ -11755,7 +11755,7 @@
     "name": "channel voicelimit",
     "category": "utility",
     "syntax": "/channel voicelimit (channel) (confirm) (value)",
-    "description": "Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness.",
+    "description": "Confirmed empty normal voice channel setting, current Manage Channels+gateway readiness.",
     "parameters": [
       {
         "name": "channel",
@@ -11791,7 +11791,7 @@
     "name": "channel voiceregionauto",
     "category": "utility",
     "syntax": "/channel voiceregionauto (channel) (confirm)",
-    "description": "Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness.",
+    "description": "Confirmed empty normal voice channel setting, current Manage Channels+gateway readiness.",
     "parameters": [
       {
         "name": "channel",
@@ -11820,7 +11820,7 @@
     "name": "emojiinfo",
     "category": "utility",
     "syntax": "/emojiinfo (emoji-id)",
-    "description": "Read one current server custom emoji,no uploader or role enumeration.",
+    "description": "Read one current server custom emoji, no uploader or role enumeration.",
     "parameters": [
       {
         "name": "emoji-id",
@@ -11846,7 +11846,7 @@
     "name": "enlarge",
     "category": "utility",
     "syntax": "/enlarge (emoji-id)",
-    "description": "Private high-resolution current guild custom emoji image;no foreign emoji/Unicode rendering.",
+    "description": "Private high-resolution current guild custom emoji image; no foreign emoji/Unicode rendering.",
     "parameters": [
       {
         "name": "emoji-id",
@@ -11898,7 +11898,7 @@
     "name": "list bans",
     "category": "utility",
     "syntax": "/list bans [after]",
-    "description": "Manager+BanMembers-only current bans,max100perfetch,no reasons;optional after-ID.",
+    "description": "Manager+Ban Members-only current bans, max 100 per fetch, no reasons; optional after-ID.",
     "parameters": [
       {
         "name": "after",
@@ -12009,7 +12009,7 @@
     "name": "list inrole",
     "category": "utility",
     "syntax": "/list inrole (role) [page]",
-    "description": "Manager-only fresh members holding one confirmed role,ten/page,no presences/storage.",
+    "description": "Manager-only fresh members holding one confirmed role, ten/page, no presences/storage.",
     "parameters": [
       {
         "name": "role",
@@ -12106,7 +12106,7 @@
     "name": "matrix add",
     "category": "utility",
     "syntax": "/matrix add (left) (right)",
-    "description": "Add equalshape1-4integer matrices JSON;exact output decimalstrings.",
+    "description": "Add equal shape 1-4 integer matrices JSON; exact output decimal strings.",
     "parameters": [
       {
         "name": "left",
@@ -12139,7 +12139,7 @@
     "name": "matrix adjugate",
     "category": "utility",
     "syntax": "/matrix adjugate (matrix)",
-    "description": "Transpose cofactor matrix,not inverse;square1-4integers,singular accepted.",
+    "description": "Transpose cofactor matrix, not inverse; square 1-4 integers, singular accepted.",
     "parameters": [
       {
         "name": "matrix",
@@ -12165,7 +12165,7 @@
     "name": "matrix cofactor",
     "category": "utility",
     "syntax": "/matrix cofactor (matrix)",
-    "description": "Signed minors of square1-4integer matrix;1by1cofactor is1,singular accepted.",
+    "description": "Signed minors of square 1-4 integer matrix; 1 by 1 cofactor is 1, singular accepted.",
     "parameters": [
       {
         "name": "matrix",
@@ -12191,7 +12191,7 @@
     "name": "matrix columnspace",
     "category": "utility",
     "syntax": "/matrix columnspace (matrix)",
-    "description": "Independent original integer column vectors,zero-based pivot columns.",
+    "description": "Independent original integer column vectors, zero-based pivot columns.",
     "parameters": [
       {
         "name": "matrix",
@@ -12217,7 +12217,7 @@
     "name": "matrix determinant",
     "category": "utility",
     "syntax": "/matrix determinant (matrix)",
-    "description": "Exact determinant of square1-4integer matrix JSON;result decimal string.",
+    "description": "Exact determinant of square 1-4 integer matrix JSON; result decimal string.",
     "parameters": [
       {
         "name": "matrix",
@@ -12243,7 +12243,7 @@
     "name": "matrix inverse",
     "category": "utility",
     "syntax": "/matrix inverse (matrix)",
-    "description": "Exact rational inverse of square1-4integer matrix;singular rejected.",
+    "description": "Exact rational inverse of square 1-4 integer matrix; singular rejected.",
     "parameters": [
       {
         "name": "matrix",
@@ -12269,7 +12269,7 @@
     "name": "matrix multiply",
     "category": "utility",
     "syntax": "/matrix multiply (left) (right)",
-    "description": "Multiply compatible1-4by1-4integer matrices JSON;exact outputs decimal strings.",
+    "description": "Multiply compatible 1-4 by 1-4 integer matrices JSON; exact outputs decimal strings.",
     "parameters": [
       {
         "name": "left",
@@ -12302,7 +12302,7 @@
     "name": "matrix nullspace",
     "category": "utility",
     "syntax": "/matrix nullspace (matrix)",
-    "description": "Exact rational nullspace basis vectors;zero-based free columns,no tolerance.",
+    "description": "Exact rational nullspace basis vectors; zero-based free columns, no tolerance.",
     "parameters": [
       {
         "name": "matrix",
@@ -12328,7 +12328,7 @@
     "name": "matrix power",
     "category": "utility",
     "syntax": "/matrix power (matrix) (exponent)",
-    "description": "Square integer matrix power0-10,0identity;exact output decimalstrings.",
+    "description": "Square integer matrix power 0-10, 0 identity; exact output decimal strings.",
     "parameters": [
       {
         "name": "matrix",
@@ -12361,7 +12361,7 @@
     "name": "matrix rank",
     "category": "utility",
     "syntax": "/matrix rank (matrix)",
-    "description": "Exact rational rank of1-4by1-4integer matrix,no floatingpoint tolerance.",
+    "description": "Exact rational rank of 1-4 by 1-4 integer matrix, no floating point tolerance.",
     "parameters": [
       {
         "name": "matrix",
@@ -12387,7 +12387,7 @@
     "name": "matrix rowspace",
     "category": "utility",
     "syntax": "/matrix rowspace (matrix)",
-    "description": "Exact rational independent rowspace basis from reduced row echelon form.",
+    "description": "Exact rational independent row space basis from reduced row echelon form.",
     "parameters": [
       {
         "name": "matrix",
@@ -12439,7 +12439,7 @@
     "name": "matrix scale",
     "category": "utility",
     "syntax": "/matrix scale (matrix) (scalar)",
-    "description": "Multiply each matrix integer by explicit bounded scalar;exact output decimalstrings.",
+    "description": "Multiply each matrix integer by explicit bounded scalar; exact output decimal strings.",
     "parameters": [
       {
         "name": "matrix",
@@ -12472,7 +12472,7 @@
     "name": "matrix solve",
     "category": "utility",
     "syntax": "/matrix solve (matrix) (right)",
-    "description": "Solve square1-4integer system with one-column RHS;unique rational solution only.",
+    "description": "Solve square 1-4 integer system with one-column RHS; unique rational solution only.",
     "parameters": [
       {
         "name": "matrix",
@@ -12505,7 +12505,7 @@
     "name": "matrix solvegeneral",
     "category": "utility",
     "syntax": "/matrix solvegeneral (matrix) (right)",
-    "description": "Rectangular1-4integer system:inconsistent/unique/infinite rational affine solution.",
+    "description": "Rectangular 1-4 integer system: inconsistent/unique/infinite rational affine solution.",
     "parameters": [
       {
         "name": "matrix",
@@ -12538,7 +12538,7 @@
     "name": "matrix subtract",
     "category": "utility",
     "syntax": "/matrix subtract (left) (right)",
-    "description": "Subtract equalshape1-4integer matrices;exact decimalstrings.",
+    "description": "Subtract equal shape 1-4 integer matrices; exact decimal strings.",
     "parameters": [
       {
         "name": "left",
@@ -12571,7 +12571,7 @@
     "name": "matrix trace",
     "category": "utility",
     "syntax": "/matrix trace (matrix)",
-    "description": "Exact trace of square1-4integer matrix;decimalstring output.",
+    "description": "Exact trace of square 1-4 integer matrix; decimal string output.",
     "parameters": [
       {
         "name": "matrix",
@@ -12597,7 +12597,7 @@
     "name": "matrix transpose",
     "category": "utility",
     "syntax": "/matrix transpose (matrix)",
-    "description": "Transpose1-4by1-4integer matrix JSON;exact integer outputs are decimal strings.",
+    "description": "Transpose 1-4 by 1-4 integer matrix JSON; exact integer outputs are decimal strings.",
     "parameters": [
       {
         "name": "matrix",
@@ -12623,7 +12623,7 @@
     "name": "membercount",
     "category": "utility",
     "syntax": "/membercount",
-    "description": "Fresh approximate server member/presence counts,no member enumeration.",
+    "description": "Fresh approximate server member/presence counts, no member enumeration.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -12641,7 +12641,7 @@
     "name": "poll",
     "category": "utility",
     "syntax": "/poll (channel) (question) (answer-1) (answer-2) [answer-3] [answer-4] [answer-5] [answer-6] [answer-7] [answer-8] [answer-9] [answer-10] [hours] [multiple]",
-    "description": "Manage Server: publish a native Discord poll with2-10 answers.",
+    "description": "Manage Server: publish a native Discord poll with 2-10 answers.",
     "parameters": [
       {
         "name": "channel",
@@ -12756,7 +12756,7 @@
     "name": "pollmanage channelcounts",
     "category": "utility",
     "syntax": "/pollmanage channelcounts",
-    "description": "Stored poll sendreceiptcounts bychannelID/state,no votingcounts or native lookup.",
+    "description": "Stored poll send receipt counts by channel ID/state, no voting counts or native lookup.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -12778,7 +12778,7 @@
     "name": "pollmanage channelmetadata",
     "category": "utility",
     "syntax": "/pollmanage channelmetadata (channel-id)",
-    "description": "Latest100minimal stored pollreceiptmetadata for exactchannelID,no sourceIDs/votinglookup.",
+    "description": "Latest 100 minimal stored poll receipt metadata for exact channel ID, no source IDs/voting lookup.",
     "parameters": [
       {
         "name": "channel-id",
@@ -12808,7 +12808,7 @@
     "name": "pollmanage channelreceipts",
     "category": "utility",
     "syntax": "/pollmanage channelreceipts (channel-id)",
-    "description": "Private latest100storedsendreceipts for exactchannelID,no native channel/voting lookup.",
+    "description": "Private latest 100 stored send receipts for exact channel ID, no native channel/voting lookup.",
     "parameters": [
       {
         "name": "channel-id",
@@ -12872,7 +12872,7 @@
     "name": "pollmanage export",
     "category": "utility",
     "syntax": "/pollmanage export",
-    "description": "Private latest100storedreceipt bindings/timestamps JSON,total/truncated,no actors/voters.",
+    "description": "Private latest 100 stored receipt bindings/timestamps JSON, total/truncated, no actors/voters.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -12894,7 +12894,7 @@
     "name": "pollmanage exportmetadata",
     "category": "utility",
     "syntax": "/pollmanage exportmetadata",
-    "description": "Latest100minimal storedreceiptID/channel/state/timeJSON,total/truncation,no sourceIDs.",
+    "description": "Latest 100 minimal stored receipt ID/channel/state/time JSON, total/truncation, no source IDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -12916,7 +12916,7 @@
     "name": "pollmanage exportunresolved",
     "category": "utility",
     "syntax": "/pollmanage exportunresolved",
-    "description": "Latest100sending/uncertain minimal pollreceiptmetadata,no nativelookup/retry/repair.",
+    "description": "Latest 100 sending/uncertain minimal poll receipt metadata, no native lookup/retry/repair.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -12938,7 +12938,7 @@
     "name": "pollmanage inspectreceipt",
     "category": "utility",
     "syntax": "/pollmanage inspectreceipt (id)",
-    "description": "ExactstoredreceiptID minimalmetadataJSON/null,no nativepoll/message lookup or voterIDs.",
+    "description": "Exact stored receipt ID minimal metadata JSON/null, no native poll/message lookup or voter IDs.",
     "parameters": [
       {
         "name": "id",
@@ -13019,7 +13019,7 @@
     "name": "pollmanage statemetadata",
     "category": "utility",
     "syntax": "/pollmanage statemetadata (state)",
-    "description": "Latest100minimal stored pollreceiptmetadata in exactstate,no native outcomeproof.",
+    "description": "Latest 100 minimal stored poll receipt metadata in exact state, no native outcome proof.",
     "parameters": [
       {
         "name": "state",
@@ -13061,7 +13061,7 @@
     "name": "pollmanage summary",
     "category": "utility",
     "syntax": "/pollmanage summary",
-    "description": "Private stored send-receipt counts bystate,not voting counts/active polls.",
+    "description": "Private stored send-receipt counts by state, not voting counts/active polls.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -13083,7 +13083,7 @@
     "name": "roleinfo",
     "category": "utility",
     "syntax": "/roleinfo (role)",
-    "description": "Read current role ID,color,position and permission flags.",
+    "description": "Read current role ID, color, position and permission flags.",
     "parameters": [
       {
         "name": "role",
@@ -13107,7 +13107,7 @@
     "name": "serverbanner",
     "category": "utility",
     "syntax": "/serverbanner",
-    "description": "Fetch current server banner link,no member enumeration.",
+    "description": "Fetch current server banner link, no member enumeration.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -13125,7 +13125,7 @@
     "name": "servericon",
     "category": "utility",
     "syntax": "/servericon",
-    "description": "Fetch current server icon link,no member enumeration.",
+    "description": "Fetch current server icon link, no member enumeration.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -13143,7 +13143,7 @@
     "name": "serverinfo",
     "category": "utility",
     "syntax": "/serverinfo",
-    "description": "Fresh server name/ID and approximate count,no member enumeration.",
+    "description": "Fresh server name/ID and approximate count, no member enumeration.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -13179,7 +13179,7 @@
     "name": "stickerinfo",
     "category": "utility",
     "syntax": "/stickerinfo (sticker-id)",
-    "description": "Read current server sticker metadata,no uploader or file download.",
+    "description": "Read current server sticker metadata, no uploader or file download.",
     "parameters": [
       {
         "name": "sticker-id",
@@ -13205,7 +13205,7 @@
     "name": "text csvdecode",
     "category": "utility",
     "syntax": "/text csvdecode (text)",
-    "description": "Strict single CSV record to JSON array,1-50fields;quoted newlines kept,no formula execution.",
+    "description": "Strict single CSV record to JSON array, 1-50 fields; quoted newlines kept, no formula execution.",
     "parameters": [
       {
         "name": "text",
@@ -13231,7 +13231,7 @@
     "name": "text csvencode",
     "category": "utility",
     "syntax": "/text csvencode (text)",
-    "description": "JSON array of1-50strings to quoted single CSV record;not spreadsheet formula sanitization.",
+    "description": "JSON array of 1-50 strings to quoted single CSV record; not spreadsheet formula sanitization.",
     "parameters": [
       {
         "name": "text",
@@ -13257,7 +13257,7 @@
     "name": "text findlines",
     "category": "utility",
     "syntax": "/text findlines (text) (find)",
-    "description": "Exactcase-sensitive literal matching lines/1basednumbers JSON,max100lines;no regex.",
+    "description": "Exact case-sensitive literal matching lines/1 based numbers JSON, max 100 lines; no regex.",
     "parameters": [
       {
         "name": "text",
@@ -13290,7 +13290,7 @@
     "name": "text hexdecode",
     "category": "utility",
     "syntax": "/text hexdecode (text)",
-    "description": "Evenlength strict hex to validUTF8TXT,no NUL/replacementdecoding/execution.",
+    "description": "Even length strict hex to valid UTF-8 TXT, no NUL/replacement decoding/execution.",
     "parameters": [
       {
         "name": "text",
@@ -13316,7 +13316,7 @@
     "name": "text hexencode",
     "category": "utility",
     "syntax": "/text hexencode (text)",
-    "description": "LiteralUTF8 text to lowercase hexadecimalTXT,no encryption or execution.",
+    "description": "Literal UTF-8 text to lowercase hexadecimal TXT, no encryption or execution.",
     "parameters": [
       {
         "name": "text",
@@ -13342,7 +13342,7 @@
     "name": "text htmldecode",
     "category": "utility",
     "syntax": "/text htmldecode (text)",
-    "description": "Decode amp/lt/gt/quot/#39 once;other entities unchanged,no parsing or execution.",
+    "description": "Decode amp/lt/gt/quot/#39 once; other entities unchanged, no parsing or execution.",
     "parameters": [
       {
         "name": "text",
@@ -13368,7 +13368,7 @@
     "name": "text htmlencode",
     "category": "utility",
     "syntax": "/text htmlencode (text)",
-    "description": "Encode five HTML entities in literal text;not a sanitizer or HTML parser.",
+    "description": "Encode five HTML entities in literal text; not a sanitizer or HTML parser.",
     "parameters": [
       {
         "name": "text",
@@ -13394,7 +13394,7 @@
     "name": "text indent",
     "category": "utility",
     "syntax": "/text indent (text) (spaces)",
-    "description": "Prefix1-16ASCIIspaces to everyline,blanklines included,CRLF/CRtoLF,max100lines.",
+    "description": "Prefix 1-16 ASCII spaces to every line, blank lines included, CRLF/CR to LF, max 100 lines.",
     "parameters": [
       {
         "name": "text",
@@ -13427,7 +13427,7 @@
     "name": "text join",
     "category": "utility",
     "syntax": "/text join (text) [separator]",
-    "description": "JSONarray0-100literalstrings tojoinedTXT,empties preserved,no evaluation.",
+    "description": "JSON array 0-100 literal strings to joined TXT, empties preserved, no evaluation.",
     "parameters": [
       {
         "name": "text",
@@ -13459,7 +13459,7 @@
     "name": "text jsonarraytypes",
     "category": "utility",
     "syntax": "/text jsonarraytypes (text)",
-    "description": "JSONarray top-level typecounts/lengthJSON,no numericstatistics or schema validation.",
+    "description": "JSON array top-level type counts/length JSON, no numeric statistics or schema validation.",
     "parameters": [
       {
         "name": "text",
@@ -13485,7 +13485,7 @@
     "name": "text jsonkeys",
     "category": "utility",
     "syntax": "/text jsonkeys (text)",
-    "description": "JSONobject own top-levelkeys in parserorder JSON,no recursion,duplicatekeys lastwins.",
+    "description": "JSON object own top-level keys in parser order JSON, no recursion, duplicate keys last wins.",
     "parameters": [
       {
         "name": "text",
@@ -13511,7 +13511,7 @@
     "name": "text jsonpointer",
     "category": "utility",
     "syntax": "/text jsonpointer (text) [pointer]",
-    "description": "Select exact own JSONvalue byRFC6901pointer;no inheritedproperties,parsernumbersemantics.",
+    "description": "Select exact own JSON value by RFC 6901 pointer; no inherited properties, parser number semantics.",
     "parameters": [
       {
         "name": "text",
@@ -13543,7 +13543,7 @@
     "name": "text jsonquote",
     "category": "utility",
     "syntax": "/text jsonquote (text)",
-    "description": "Literal text to one quoted JSON string;keeps Unicode,no parsing,execution or HTML safety.",
+    "description": "Literal text to one quoted JSON string; keeps Unicode, no parsing, execution or HTML safety.",
     "parameters": [
       {
         "name": "text",
@@ -13569,7 +13569,7 @@
     "name": "text jsonunquote",
     "category": "utility",
     "syntax": "/text jsonunquote (text)",
-    "description": "Decode exactlyone JSONstring to literalUTF8TXT,no NUL/unpairedsurrogates or execution.",
+    "description": "Decode exactly one JSON string to literal UTF-8 TXT, no NUL/unpaired surrogates or execution.",
     "parameters": [
       {
         "name": "text",
@@ -13595,7 +13595,7 @@
     "name": "text lineendings",
     "category": "utility",
     "syntax": "/text lineendings (text) (style)",
-    "description": "Convert allCRLF/CR/LF linebreaks toLF orCRLF TXT,no trimming/trailingline addition.",
+    "description": "Convert all CRLF/CR/LF line breaks to LF or CRLF TXT, no trimming/trailing line addition.",
     "parameters": [
       {
         "name": "text",
@@ -13636,7 +13636,7 @@
     "name": "text numberlines",
     "category": "utility",
     "syntax": "/text numberlines (text)",
-    "description": "Number1-100 exact lines,normalizeCRLF/CR toLF;blanklines preserved,no trimming.",
+    "description": "Number 1-100 exact lines, normalize CRLF/CR to LF; blank lines preserved, no trimming.",
     "parameters": [
       {
         "name": "text",
@@ -13662,7 +13662,7 @@
     "name": "text outdent",
     "category": "utility",
     "syntax": "/text outdent (text) (spaces)",
-    "description": "Removeup to1-16leadingASCIIspaces perline,no tabs/otherwhitespace,CRLF/CRtoLF.",
+    "description": "Remove up to 1-16 leading ASCII spaces per line, no tabs/other whitespace, CRLF/CR to LF.",
     "parameters": [
       {
         "name": "text",
@@ -13695,7 +13695,7 @@
     "name": "text querydecode",
     "category": "utility",
     "syntax": "/text querydecode (text)",
-    "description": "Strict rawformquery to key/valuepairs JSON,+isspace,repeats kept,no leading? or fragment.",
+    "description": "Strict raw form query to key/value pairs JSON, + is space, repeats kept, no leading? or fragment.",
     "parameters": [
       {
         "name": "text",
@@ -13721,7 +13721,7 @@
     "name": "text queryencode",
     "category": "utility",
     "syntax": "/text queryencode (text)",
-    "description": "JSON1-50string key/valuepairs to formquery,+forspace,repeats kept,no URLfetch.",
+    "description": "JSON 1-50 string key/value pairs to form query, + for space, repeats kept, no URL fetch.",
     "parameters": [
       {
         "name": "text",
@@ -13747,7 +13747,7 @@
     "name": "text replace",
     "category": "utility",
     "syntax": "/text replace (text) (find) [replacement]",
-    "description": "Replace all case-sensitive non-overlapping literal matches,JSONcount/text;no regex.",
+    "description": "Replace all case-sensitive non-overlapping literal matches, JSON count/text; no regex.",
     "parameters": [
       {
         "name": "text",
@@ -13786,7 +13786,7 @@
     "name": "text reverselines",
     "category": "utility",
     "syntax": "/text reverselines (text)",
-    "description": "Reverse exact1-100linesTXT,blanklines preserved,CRLF/CRtoLF,no character reversal.",
+    "description": "Reverse exact 1-100 lines TXT, blank lines preserved, CRLF/CR to LF, no character reversal.",
     "parameters": [
       {
         "name": "text",
@@ -13812,7 +13812,7 @@
     "name": "text slice",
     "category": "utility",
     "syntax": "/text slice (text) (start) (count)",
-    "description": "Exact1based Unicode codepoint slice TXT;not graphemes,may split combining sequences.",
+    "description": "Exact 1 based Unicode code point slice TXT; not graphemes, may split combining sequences.",
     "parameters": [
       {
         "name": "text",
@@ -13852,7 +13852,7 @@
     "name": "text split",
     "category": "utility",
     "syntax": "/text split (text) (separator)",
-    "description": "Literalcase-sensitive non-overlapping split to JSONstrings,emptyparts kept,no regex.",
+    "description": "Literal case-sensitive non-overlapping split to JSON strings, empty parts kept, no regex.",
     "parameters": [
       {
         "name": "text",
@@ -13885,7 +13885,7 @@
     "name": "text urlparts",
     "category": "utility",
     "syntax": "/text urlparts (text)",
-    "description": "Parse absoluteHTTP(S) URL into normalizedpartsJSON;no credentials,fetch or safetycheck.",
+    "description": "Parse absolute HTTP(S) URL into normalized parts JSON; no credentials, fetch or safety check.",
     "parameters": [
       {
         "name": "text",
@@ -13911,7 +13911,7 @@
     "name": "tools base64decode",
     "category": "utility",
     "syntax": "/tools base64decode (text)",
-    "description": "Private canonical padded standard Base64 to valid UTF-8 TXT,no evaluation.",
+    "description": "Private canonical padded standard Base64 to valid UTF-8 TXT, no evaluation.",
     "parameters": [
       {
         "name": "text",
@@ -13937,7 +13937,7 @@
     "name": "tools base64encode",
     "category": "utility",
     "syntax": "/tools base64encode (text)",
-    "description": "Private exact UTF-8 text to standard Base64 TXT,not encryption/no evaluation.",
+    "description": "Private exact UTF-8 text to standard Base64 TXT, not encryption/no evaluation.",
     "parameters": [
       {
         "name": "text",
@@ -13963,7 +13963,7 @@
     "name": "tools baseconvert",
     "category": "utility",
     "syntax": "/tools baseconvert (number) (from) (to)",
-    "description": "Private unsigned64bit integer base2/8/10/16 conversion,no prefixes/signs.",
+    "description": "Private unsigned 64 bit integer base 2/8/10/16 conversion, no prefixes/signs.",
     "parameters": [
       {
         "name": "number",
@@ -14035,7 +14035,7 @@
     "name": "tools color",
     "category": "utility",
     "syntax": "/tools color (hex)",
-    "description": "Convert six hex digits to RGB/decimal;does not change bot settings.",
+    "description": "Convert six hex digits to RGB/decimal; does not change bot settings.",
     "parameters": [
       {
         "name": "hex",
@@ -14061,7 +14061,7 @@
     "name": "tools comparelines",
     "category": "utility",
     "syntax": "/tools comparelines (left) (right)",
-    "description": "Private exact-line sets JSON:onlyleft/onlyright/common,no full diff or evaluation.",
+    "description": "Private exact-line sets JSON: only left/only right/common, no full diff or evaluation.",
     "parameters": [
       {
         "name": "left",
@@ -14094,7 +14094,7 @@
     "name": "tools duration",
     "category": "utility",
     "syntax": "/tools duration (duration)",
-    "description": "Parse explicit elapsed duration into seconds;no reminder/calendar arithmetic.",
+    "description": "Parse explicit elapsed duration into seconds; no reminder/calendar arithmetic.",
     "parameters": [
       {
         "name": "duration",
@@ -14146,7 +14146,7 @@
     "name": "tools gcdlcm",
     "category": "utility",
     "syntax": "/tools gcdlcm (a) (b)",
-    "description": "Private exact GCD/LCM of two positive integers,no settings changed.",
+    "description": "Private exact GCD/LCM of two positive integers, no settings changed.",
     "parameters": [
       {
         "name": "a",
@@ -14179,7 +14179,7 @@
     "name": "tools integerstats",
     "category": "utility",
     "syntax": "/tools integerstats (values)",
-    "description": "Private count/sum/min/max/mean/median of2-20 explicit integers,no storage.",
+    "description": "Private count/sum/min/max/mean/median of 2-20 explicit integers, no storage.",
     "parameters": [
       {
         "name": "values",
@@ -14205,7 +14205,7 @@
     "name": "tools isotimestamp",
     "category": "utility",
     "syntax": "/tools isotimestamp (iso) [style]",
-    "description": "Convert explicit ISO seconds with Z/offset into Discordtimestamp,not schedule.",
+    "description": "Convert explicit ISO seconds with Z/offset into Discord timestamp, not schedule.",
     "parameters": [
       {
         "name": "iso",
@@ -14274,7 +14274,7 @@
     "name": "tools jsonformat",
     "category": "utility",
     "syntax": "/tools jsonformat (json)",
-    "description": "Private prettyJSON TXT,keepsnumber spelling/key order/duplicates;no execution/storage.",
+    "description": "Private pretty JSON TXT, keeps number spelling/key order/duplicates; no execution/storage.",
     "parameters": [
       {
         "name": "json",
@@ -14300,7 +14300,7 @@
     "name": "tools localtimestamp",
     "category": "utility",
     "syntax": "/tools localtimestamp (local) (timezone) [style]",
-    "description": "Convert explicit localdatetime/namedzone to Discordtimestamp,not a scheduledsend.",
+    "description": "Convert explicit local date time/named zone to Discord timestamp, not a scheduled send.",
     "parameters": [
       {
         "name": "local",
@@ -14375,7 +14375,7 @@
     "name": "tools normalize",
     "category": "utility",
     "syntax": "/tools normalize (text) (form)",
-    "description": "Private explicit Unicode normalization TXT;compatibilityforms may change meaning.",
+    "description": "Private explicit Unicode normalization TXT; compatibility forms may change meaning.",
     "parameters": [
       {
         "name": "text",
@@ -14424,7 +14424,7 @@
     "name": "tools permissions",
     "category": "utility",
     "syntax": "/tools permissions (bits)",
-    "description": "Decode explicit raw permission bits;not effective member/channel permissions.",
+    "description": "Decode explicit raw permission bits; not effective member/channel permissions.",
     "parameters": [
       {
         "name": "bits",
@@ -14450,7 +14450,7 @@
     "name": "tools rgb",
     "category": "utility",
     "syntax": "/tools rgb (red) (green) (blue)",
-    "description": "Convert explicit RGB components to six-digit hex and decimal,no settings changed.",
+    "description": "Convert explicit RGB components to six-digit hex and decimal, no settings changed.",
     "parameters": [
       {
         "name": "red",
@@ -14490,7 +14490,7 @@
     "name": "tools sha256",
     "category": "utility",
     "syntax": "/tools sha256 (text)",
-    "description": "SHA256 of explicit exactUTF8text,no URL/file fetch/password storage.",
+    "description": "SHA256 of explicit exact UTF-8 text, no URL/file fetch/password storage.",
     "parameters": [
       {
         "name": "text",
@@ -14516,7 +14516,7 @@
     "name": "tools snowflake",
     "category": "utility",
     "syntax": "/tools snowflake (id)",
-    "description": "Decode supplied ID timestamp/bits;does not fetch or verify an object.",
+    "description": "Decode supplied ID timestamp/bits; does not fetch or verify an object.",
     "parameters": [
       {
         "name": "id",
@@ -14542,7 +14542,7 @@
     "name": "tools sortlines",
     "category": "utility",
     "syntax": "/tools sortlines (text) (direction)",
-    "description": "Private exact-line UTF-16 sort TXT,no trimming or locale collation.",
+    "description": "Private exact-line UTF-16 sort TXT, no trimming or locale collation.",
     "parameters": [
       {
         "name": "text",
@@ -14583,7 +14583,7 @@
     "name": "tools textstats",
     "category": "utility",
     "syntax": "/tools textstats (text)",
-    "description": "Count explicit text UTF16/codepoints/graphemes/UTF8bytes/lines privately.",
+    "description": "Count explicit text UTF-16/code points/graphemes/UTF-8 bytes/lines privately.",
     "parameters": [
       {
         "name": "text",
@@ -14609,7 +14609,7 @@
     "name": "tools timedifference",
     "category": "utility",
     "syntax": "/tools timedifference (start) (end)",
-    "description": "Signed elapsedseconds and absoluteday/hour/minute/second breakdown,no calendardays.",
+    "description": "Signed elapsed seconds and absolute day/hour/minute/second breakdown, no calendar days.",
     "parameters": [
       {
         "name": "start",
@@ -14642,7 +14642,7 @@
     "name": "tools timestamp",
     "category": "utility",
     "syntax": "/tools timestamp (seconds) [style]",
-    "description": "Format explicit Unix seconds for client-local Discord display;not a reminder.",
+    "description": "Format explicit Unix seconds for client-local Discord display; not a reminder.",
     "parameters": [
       {
         "name": "seconds",
@@ -14711,7 +14711,7 @@
     "name": "tools timezone",
     "category": "utility",
     "syntax": "/tools timezone (seconds) (timezone)",
-    "description": "Display explicitUnixseconds in one namedzone,not inferredtime/location.",
+    "description": "Display explicit Unix seconds in one named zone, not inferred time/location.",
     "parameters": [
       {
         "name": "seconds",
@@ -14743,7 +14743,7 @@
     "name": "tools uniquelines",
     "category": "utility",
     "syntax": "/tools uniquelines (text)",
-    "description": "Private exact-line deduplication TXT,first occurrence order kept,no trimming.",
+    "description": "Private exact-line deduplication TXT, first occurrence order kept, no trimming.",
     "parameters": [
       {
         "name": "text",
@@ -14769,7 +14769,7 @@
     "name": "tools urlcomponent",
     "category": "utility",
     "syntax": "/tools urlcomponent (text) (direction)",
-    "description": "Private URI component encoding/decoding TXT,not a URL fetch or form parser.",
+    "description": "Private URI component encoding/decoding TXT, not a URL fetch or form parser.",
     "parameters": [
       {
         "name": "text",
@@ -14834,7 +14834,7 @@
     "name": "vector cross",
     "category": "utility",
     "syntax": "/vector cross (left) (right)",
-    "description": "Exact ordered right-hand3Dcross product of integer vectors JSON;decimalstrings.",
+    "description": "Exact ordered right-hand 3D cross product of integer vectors JSON; decimal strings.",
     "parameters": [
       {
         "name": "left",
@@ -14867,7 +14867,7 @@
     "name": "vector distancesquared",
     "category": "utility",
     "syntax": "/vector distancesquared (left) (right)",
-    "description": "Exact squared Euclidean distance of equal-length1-4integer vectors;not square root.",
+    "description": "Exact squared Euclidean distance of equal-length 1-4 integer vectors; not square root.",
     "parameters": [
       {
         "name": "left",
@@ -14900,7 +14900,7 @@
     "name": "vector dot",
     "category": "utility",
     "syntax": "/vector dot (left) (right)",
-    "description": "Exact dot product of equal-length1-4integer vectors JSON;decimalstring output.",
+    "description": "Exact dot product of equal-length 1-4 integer vectors JSON; decimal string output.",
     "parameters": [
       {
         "name": "left",
@@ -14933,7 +14933,7 @@
     "name": "vector normsquared",
     "category": "utility",
     "syntax": "/vector normsquared (vector)",
-    "description": "Exact squared Euclidean norm of1-4integer vector JSON;not square root/normalization.",
+    "description": "Exact squared Euclidean norm of 1-4 integer vector JSON; not square root/normalization.",
     "parameters": [
       {
         "name": "vector",
@@ -14959,7 +14959,7 @@
     "name": "vector project",
     "category": "utility",
     "syntax": "/vector project (left) (right)",
-    "description": "Exact rational projection of left onto nonzero right vector;no unit normalization.",
+    "description": "Exact rational projection of left onto nonzero right vector; no unit normalization.",
     "parameters": [
       {
         "name": "left",
@@ -15025,7 +15025,7 @@
     "name": "guildtag exportconfig",
     "category": "vanityroles",
     "syntax": "/guildtag exportconfig",
-    "description": "ManageRoles:private stored reward role ID/null JSON,no live validation.",
+    "description": "Manage Roles: private stored reward role ID/null JSON, no live validation.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15043,7 +15043,7 @@
     "name": "guildtag exportgrants",
     "category": "vanityroles",
     "syntax": "/guildtag exportgrants",
-    "description": "ManageRoles:private first100 stored userID/roleID/stateJSON,total/truncation,no liveclaims.",
+    "description": "Manage Roles: private first 100 stored user ID/role ID/state JSON, total/truncation, no live claims.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15061,7 +15061,7 @@
     "name": "guildtag exportmine",
     "category": "vanityroles",
     "syntax": "/guildtag exportmine",
-    "description": "Private JSON of only your stored role grant/state,null if absent,no live identity claim.",
+    "description": "Private JSON of only your stored role grant/state, null if absent, no live identity claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15079,7 +15079,7 @@
     "name": "guildtag grants",
     "category": "vanityroles",
     "syntax": "/guildtag grants [page] [state]",
-    "description": "ManageRoles:inspect stored grant metadata,no live identity/access or changes.",
+    "description": "Manage Roles: inspect stored grant metadata, no live identity/access or changes.",
     "parameters": [
       {
         "name": "page",
@@ -15124,7 +15124,7 @@
     "name": "guildtag inspectuser",
     "category": "vanityroles",
     "syntax": "/guildtag inspectuser (user-id)",
-    "description": "ManageRoles:exact stored user grant role/state ornull,no lookup,refresh or changes.",
+    "description": "Manage Roles: exact stored user grant role/state or null, no lookup, refresh or changes.",
     "parameters": [
       {
         "name": "user-id",
@@ -15186,7 +15186,7 @@
     "name": "guildtag rolecounts",
     "category": "vanityroles",
     "syntax": "/guildtag rolecounts",
-    "description": "ManageRoles:stored grant counts byroleID/state,no memberIDs or nativevalidation.",
+    "description": "Manage Roles: stored grant counts by role ID/state, no member IDs or native validation.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15246,7 +15246,7 @@
     "name": "guildtag status",
     "category": "vanityroles",
     "syntax": "/guildtag status",
-    "description": "Privately inspect only your stored tag-grant state;no live identity claim.",
+    "description": "Privately inspect only your stored tag-grant state; no live identity claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15264,7 +15264,7 @@
     "name": "guildtag summary",
     "category": "vanityroles",
     "syntax": "/guildtag summary",
-    "description": "ManageRoles:private stored grant counts bystate,no identities/native access claims.",
+    "description": "Manage Roles: private stored grant counts by state, no identities/native access claims.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15282,7 +15282,7 @@
     "name": "vcrole add",
     "category": "voice",
     "syntax": "/vcrole add (role)",
-    "description": "Configure one safe role for future human voice joins;existing memberships untouched.",
+    "description": "Configure one safe role for future human voice joins; existing memberships untouched.",
     "parameters": [
       {
         "name": "role",
@@ -15309,7 +15309,7 @@
     "name": "vcrole remove",
     "category": "voice",
     "syntax": "/vcrole remove",
-    "description": "Disable future grants;existing Emika-owned grants retain future-disconnect cleanup.",
+    "description": "Disable future grants; existing Emika-owned grants retain future-disconnect cleanup.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15330,7 +15330,7 @@
     "name": "vcrole show",
     "category": "voice",
     "syntax": "/vcrole show",
-    "description": "Private saved policy and retained grant counts,not native voice/membership proof.",
+    "description": "Private saved policy and retained grant counts, not native voice/membership proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15560,7 +15560,7 @@
     "name": "vmjoin config",
     "category": "voicemaster",
     "syntax": "/vmjoin config",
-    "description": "Private saved lobby and actor IDs,not native state or automaticcleanup proof.",
+    "description": "Private saved lobby and actor IDs, not native state or automatic cleanup proof.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15581,7 +15581,7 @@
     "name": "vmjoin off",
     "category": "voicemaster",
     "syntax": "/vmjoin off",
-    "description": "Stop future join-to-create;existing ownedchannels/uncertain moves retained.",
+    "description": "Stop future join-to-create; existing owned channels/uncertain moves retained.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15602,7 +15602,7 @@
     "name": "vmjoin setup",
     "category": "voicemaster",
     "syntax": "/vmjoin setup (channel) (confirm)",
-    "description": "Use existing normalvoice lobby;confirm future privatechannel creation and member move.",
+    "description": "Use existing normal voice lobby; confirm future private channel creation and member move.",
     "parameters": [
       {
         "name": "channel",
@@ -15634,7 +15634,7 @@
     "name": "voicemaster bitrate",
     "category": "voicemaster",
     "syntax": "/voicemaster bitrate (kbps)",
-    "description": "Set empty owned voice channel bitrate8-96kbps;private access unchanged.",
+    "description": "Set empty owned voice channel bitrate 8-96 kbps; private access unchanged.",
     "parameters": [
       {
         "name": "kbps",
@@ -15660,7 +15660,7 @@
     "name": "voicemaster buttons",
     "category": "voicemaster",
     "syntax": "/voicemaster buttons",
-    "description": "Private owner one-use10min controls:emptychannel lock,shareeveryone/unlock,deleteclose.",
+    "description": "Private owner one-use 10 min controls: empty channel lock, share everyone/unlock, delete close.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15678,7 +15678,7 @@
     "name": "voicemaster channelrecords",
     "category": "voicemaster",
     "syntax": "/voicemaster channelrecords (channel-id)",
-    "description": "ManageChannels:latest100stored records forchannelIDJSON,total/truncated,no native lookup.",
+    "description": "Manage Channels: latest 100 stored records for channel IDJSON, total/truncated, no native lookup.",
     "parameters": [
       {
         "name": "channel-id",
@@ -15740,7 +15740,7 @@
     "name": "voicemaster exportconfig",
     "category": "voicemaster",
     "syntax": "/voicemaster exportconfig",
-    "description": "ManageChannels:private stored category configuration only,not ownership/access backup.",
+    "description": "Manage Channels: private stored category configuration only, not ownership/access backup.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15758,7 +15758,7 @@
     "name": "voicemaster exportmine",
     "category": "voicemaster",
     "syntax": "/voicemaster exportmine",
-    "description": "Private latest100onlyyour storedchannel metadata,no nativeaccess/currentmembership claim.",
+    "description": "Private latest 100 only your stored channel metadata, no native access/current membership claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15776,7 +15776,7 @@
     "name": "voicemaster exportrecords",
     "category": "voicemaster",
     "syntax": "/voicemaster exportrecords",
-    "description": "ManageChannels:private latest100channelstate metadata,no owner/source IDs,total/truncated.",
+    "description": "Manage Channels: private latest 100 channel state metadata, no owner/source IDs, total/truncated.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15794,7 +15794,7 @@
     "name": "voicemaster exportrecovery",
     "category": "voicemaster",
     "syntax": "/voicemaster exportrecovery",
-    "description": "ManageChannels:latest100creating/deleting/uncertain metadataJSON;not recovery,retry or repair.",
+    "description": "Manage Channels: read up to 100 unresolved channel records; no recovery, retry or repair.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15812,7 +15812,7 @@
     "name": "voicemaster inspect",
     "category": "voicemaster",
     "syntax": "/voicemaster inspect",
-    "description": "Privately read your current tracked channel name/capacity/bitrate;no members.",
+    "description": "Privately read your current tracked channel name/capacity/bitrate; no members.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -15830,7 +15830,7 @@
     "name": "voicemaster inspectrecord",
     "category": "voicemaster",
     "syntax": "/voicemaster inspectrecord (id)",
-    "description": "ManageChannels:exact stored recordID metadataJSON/null,no owner/sourceIDs or channel lookup.",
+    "description": "Manage Channels: exact stored record ID metadata JSON/null, no owner/source IDs or channel lookup.",
     "parameters": [
       {
         "name": "id",
@@ -15942,7 +15942,7 @@
     "name": "voicemaster records",
     "category": "voicemaster",
     "syntax": "/voicemaster records [page] [state]",
-    "description": "ManageChannels:private stored ownership records only,not live state/access/memberlist.",
+    "description": "Manage Channels: private stored ownership records only, not live state/access/member list.",
     "parameters": [
       {
         "name": "page",
@@ -15995,7 +15995,7 @@
     "name": "voicemaster regionauto",
     "category": "voicemaster",
     "syntax": "/voicemaster regionauto",
-    "description": "Return empty owned channel to automatic RTC region;access unchanged.",
+    "description": "Return empty owned channel to automatic RTC region; access unchanged.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -16039,7 +16039,7 @@
     "name": "voicemaster resetsetup",
     "category": "voicemaster",
     "syntax": "/voicemaster resetsetup (confirm)",
-    "description": "ManageChannels:forget creation category,existing ownership/access/channels kept.",
+    "description": "Manage Channels: forget creation category, existing ownership/access/channels kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -16087,7 +16087,7 @@
     "name": "voicemaster status",
     "category": "voicemaster",
     "syntax": "/voicemaster status",
-    "description": "Privately inspect your stored voice ownership record,not live channel state.",
+    "description": "Privately inspect your stored voice ownership record, not live channel state.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -16105,7 +16105,7 @@
     "name": "voicemaster summary",
     "category": "voicemaster",
     "syntax": "/voicemaster summary",
-    "description": "ManageChannels:private storedstate/publicflag counts,no owners/nativeaccess claim.",
+    "description": "Manage Channels: private stored state/public flag counts, no owners/native access claim.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -16175,7 +16175,7 @@
     "name": "welcome clearassets",
     "category": "welcomer",
     "syntax": "/welcome clearassets (kind) (confirm)",
-    "description": "Clear welcome or goodbye image/thumbnail only;title/color/template/delivery kept.",
+    "description": "Clear welcome or goodbye image/thumbnail only; title/color/template/delivery kept.",
     "parameters": [
       {
         "name": "kind",
@@ -16218,7 +16218,7 @@
     "name": "welcome clearchannel",
     "category": "welcomer",
     "syntax": "/welcome clearchannel (confirm)",
-    "description": "Disable welcome/goodbye and remove stored destination;templates kept.",
+    "description": "Disable welcome/goodbye and remove stored destination; templates kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -16246,7 +16246,7 @@
     "name": "welcome color",
     "category": "welcomer",
     "syntax": "/welcome color [hex]",
-    "description": "Set welcome/goodbye embed color,or reset to Emika default.",
+    "description": "Set welcome/goodbye embed color, or reset to Emika default.",
     "parameters": [
       {
         "name": "hex",
@@ -16342,7 +16342,7 @@
     "name": "welcome export",
     "category": "welcomer",
     "syntax": "/welcome export",
-    "description": "Private welcome/goodbye template/style JSON;no channel IDs or enable flags.",
+    "description": "Private welcome/goodbye template/style JSON; no channel IDs or enable flags.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -16364,7 +16364,7 @@
     "name": "welcome exportconfig",
     "category": "welcomer",
     "syntax": "/welcome exportconfig",
-    "description": "Private complete stored welcome/goodbye config including destination,not runtime/history.",
+    "description": "Private complete stored welcome/goodbye config including destination, not runtime/history.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -16421,7 +16421,7 @@
     "name": "welcome image",
     "category": "welcomer",
     "syntax": "/welcome image (kind) [url]",
-    "description": "Set HTTPS embed image for welcome/goodbye;omit URL to clear.",
+    "description": "Set HTTPS embed image for welcome/goodbye; omit URL to clear.",
     "parameters": [
       {
         "name": "kind",
@@ -16465,7 +16465,7 @@
     "name": "welcome import",
     "category": "welcomer",
     "syntax": "/welcome import (json) (confirm)",
-    "description": "Replace template/style library from JSON,disable both sends,keep destination.",
+    "description": "Replace template/style library from JSON, disable both sends, keep destination.",
     "parameters": [
       {
         "name": "json",
@@ -16500,7 +16500,7 @@
     "name": "welcome mentions",
     "category": "welcomer",
     "syntax": "/welcome mentions (enabled)",
-    "description": "Choose whether welcome delivery may ping only the arriving member;goodbye never.",
+    "description": "Choose whether welcome delivery may ping only the arriving member; goodbye never.",
     "parameters": [
       {
         "name": "enabled",
@@ -16558,7 +16558,7 @@
     "name": "welcome pauseboth",
     "category": "welcomer",
     "syntax": "/welcome pauseboth (confirm)",
-    "description": "Stop welcome and goodbye delivery;all templates/styles/channel/history kept.",
+    "description": "Stop welcome and goodbye delivery; all templates/styles/channel/history kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -16624,7 +16624,7 @@
     "name": "welcome reset",
     "category": "welcomer",
     "syntax": "/welcome reset (confirm)",
-    "description": "Restore defaults,stop both message types,forget destination and all style/template settings.",
+    "description": "Restore defaults, stop both message types, forget destination and all style/template settings.",
     "parameters": [
       {
         "name": "confirm",
@@ -16652,7 +16652,7 @@
     "name": "welcome resetstyle",
     "category": "welcomer",
     "syntax": "/welcome resetstyle (confirm)",
-    "description": "Clear welcome/goodbye titles/images/thumbnails/shared color;templates kept.",
+    "description": "Clear welcome/goodbye titles/images/thumbnails/shared color; templates kept.",
     "parameters": [
       {
         "name": "confirm",
@@ -16680,7 +16680,7 @@
     "name": "welcome resettemplate",
     "category": "welcomer",
     "syntax": "/welcome resettemplate (kind) (confirm)",
-    "description": "Restore one localized default template,leaving delivery settings unchanged.",
+    "description": "Restore one localized default template, leaving delivery settings unchanged.",
     "parameters": [
       {
         "name": "kind",
@@ -16745,7 +16745,7 @@
     "name": "welcome thumbnail",
     "category": "welcomer",
     "syntax": "/welcome thumbnail (kind) [url]",
-    "description": "Set HTTPS embed thumbnail for welcome/goodbye;omit URL to clear.",
+    "description": "Set HTTPS embed thumbnail for welcome/goodbye; omit URL to clear.",
     "parameters": [
       {
         "name": "kind",
@@ -16789,7 +16789,7 @@
     "name": "welcome title",
     "category": "welcomer",
     "syntax": "/welcome title (kind) [text]",
-    "description": "Set static welcome/goodbye title;omit text to restore Emika title.",
+    "description": "Set static welcome/goodbye title; omit text to restore Emika title.",
     "parameters": [
       {
         "name": "kind",

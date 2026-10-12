@@ -8,7 +8,7 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('schedulecleanup')
-  .setDescription('Scoped stored schedule cleanup,no native message deletion.')
+  .setDescription('Scoped stored schedule cleanup, no native message deletion.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild);
 for (const action of ['cancel', 'stoprepeats', 'erasefinished'])
@@ -17,15 +17,15 @@ for (const action of ['cancel', 'stoprepeats', 'erasefinished'])
       .setName(action)
       .setDescription(
         action === 'cancel'
-          ? 'Cancel pending schedules in one stored destination;unknown/in-flight left alone.'
+          ? 'Cancel pending schedules in one stored destination; unknown/in-flight left alone.'
           : action === 'stoprepeats'
-            ? 'Make pending repeats in one stored destination one-time;next sends still happen.'
-            : 'Erase done/cancelled text in one stored destination;pending/unknown/in-flight kept.',
+            ? 'Make pending repeats in one stored destination one-time; next sends still happen.'
+            : 'Erase done/cancelled text in one stored destination; pending/unknown/in-flight kept.',
       )
       .addStringOption((o) =>
         o
           .setName('channel-id')
-          .setDescription('Exact stored destination ID,departed channels allowed')
+          .setDescription('Exact stored destination ID, departed channels allowed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),

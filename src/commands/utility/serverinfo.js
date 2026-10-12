@@ -10,7 +10,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('serverinfo')
-    .setDescription('Fresh server name/ID and approximate count,no member enumeration.')
+    .setDescription('Fresh server name/ID and approximate count, no member enumeration.')
     .setContexts(InteractionContextType.Guild),
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });

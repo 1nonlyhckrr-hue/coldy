@@ -43,25 +43,25 @@ for (const sub of ['results', 'end', 'list'])
 data.addSubcommand((s) =>
   s
     .setName('summary')
-    .setDescription('Private stored send-receipt counts bystate,not voting counts/active polls.'),
+    .setDescription('Private stored send-receipt counts by state, not voting counts/active polls.'),
 );
 data.addSubcommand((s) =>
   s
     .setName('export')
     .setDescription(
-      'Private latest100storedreceipt bindings/timestamps JSON,total/truncated,no actors/voters.',
+      'Private latest 100 stored receipt bindings/timestamps JSON, total/truncated, no actors/voters.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('channelreceipts')
     .setDescription(
-      'Private latest100storedsendreceipts for exactchannelID,no native channel/voting lookup.',
+      'Private latest 100 stored send receipts for exact channel ID, no native channel/voting lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('channel-id')
-        .setDescription('Exact17-20digit storedchannelID')
+        .setDescription('Exact 17-20 digit stored channel ID')
         .setMinLength(17)
         .setMaxLength(20)
         .setRequired(true),
@@ -71,26 +71,26 @@ data.addSubcommand((s) =>
   s
     .setName('exportmetadata')
     .setDescription(
-      'Latest100minimal storedreceiptID/channel/state/timeJSON,total/truncation,no sourceIDs.',
+      'Latest 100 minimal stored receipt ID/channel/state/time JSON, total/truncation, no source IDs.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('channelcounts')
     .setDescription(
-      'Stored poll sendreceiptcounts bychannelID/state,no votingcounts or native lookup.',
+      'Stored poll send receipt counts by channel ID/state, no voting counts or native lookup.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('inspectreceipt')
     .setDescription(
-      'ExactstoredreceiptID minimalmetadataJSON/null,no nativepoll/message lookup or voterIDs.',
+      'Exact stored receipt ID minimal metadata JSON/null, no native poll/message lookup or voter IDs.',
     )
     .addIntegerOption((o) =>
       o
         .setName('id')
-        .setDescription('ExactstoredreceiptID')
+        .setDescription('Exact stored receipt ID')
         .setMinValue(1)
         .setMaxValue(Number.MAX_SAFE_INTEGER)
         .setRequired(true),
@@ -100,12 +100,12 @@ data.addSubcommand((s) =>
   s
     .setName('channelmetadata')
     .setDescription(
-      'Latest100minimal stored pollreceiptmetadata for exactchannelID,no sourceIDs/votinglookup.',
+      'Latest 100 minimal stored poll receipt metadata for exact channel ID, no source IDs/voting lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('channel-id')
-        .setDescription('Exact17-20digit storedchannelID')
+        .setDescription('Exact 17-20 digit stored channel ID')
         .setRequired(true)
         .setMinLength(17)
         .setMaxLength(20),
@@ -115,12 +115,12 @@ data.addSubcommand((s) =>
   s
     .setName('statemetadata')
     .setDescription(
-      'Latest100minimal stored pollreceiptmetadata in exactstate,no native outcomeproof.',
+      'Latest 100 minimal stored poll receipt metadata in exact state, no native outcome proof.',
     )
     .addStringOption((o) =>
       o
         .setName('state')
-        .setDescription('Storedsendreceiptstate,not votingstate')
+        .setDescription('Stored send receipt state, not voting state')
         .setRequired(true)
         .addChoices(...['sending', 'sent', 'uncertain'].map((value) => ({ name: value, value }))),
     ),
@@ -129,7 +129,7 @@ data.addSubcommand((s) =>
   s
     .setName('exportunresolved')
     .setDescription(
-      'Latest100sending/uncertain minimal pollreceiptmetadata,no nativelookup/retry/repair.',
+      'Latest 100 sending/uncertain minimal poll receipt metadata, no native lookup/retry/repair.',
     ),
 );
 export default {

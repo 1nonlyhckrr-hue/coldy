@@ -5,7 +5,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('membercount')
-    .setDescription('Fresh approximate server member/presence counts,no member enumeration.')
+    .setDescription('Fresh approximate server member/presence counts, no member enumeration.')
     .setContexts(InteractionContextType.Guild),
   async execute(i, c) {
     await i.deferReply({ flags: MessageFlags.Ephemeral });

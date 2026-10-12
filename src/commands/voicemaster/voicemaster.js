@@ -38,7 +38,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('status')
       .setDescription(
-        'Privately inspect your stored voice ownership record,not live channel state.',
+        'Privately inspect your stored voice ownership record, not live channel state.',
       ),
   )
   .addSubcommand((s) =>
@@ -47,11 +47,11 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('bitrate')
-      .setDescription('Set empty owned voice channel bitrate8-96kbps;private access unchanged.')
+      .setDescription('Set empty owned voice channel bitrate 8-96 kbps; private access unchanged.')
       .addIntegerOption((o) =>
         o
           .setName('kbps')
-          .setDescription('8-96kilobits/sec')
+          .setDescription('8-96 kilo bits/sec')
           .setMinValue(8)
           .setMaxValue(96)
           .setRequired(true),
@@ -60,13 +60,13 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('regionauto')
-      .setDescription('Return empty owned channel to automatic RTC region;access unchanged.'),
+      .setDescription('Return empty owned channel to automatic RTC region; access unchanged.'),
   )
   .addSubcommand((s) =>
     s
       .setName('inspect')
       .setDescription(
-        'Privately read your current tracked channel name/capacity/bitrate;no members.',
+        'Privately read your current tracked channel name/capacity/bitrate; no members.',
       ),
   )
   .addSubcommand((s) =>
@@ -129,7 +129,7 @@ data.addSubcommand((s) =>
   s
     .setName('resetsetup')
     .setDescription(
-      'ManageChannels:forget creation category,existing ownership/access/channels kept.',
+      'Manage Channels: forget creation category, existing ownership/access/channels kept.',
     )
     .addBooleanOption((o) =>
       o
@@ -142,19 +142,19 @@ data.addSubcommand((s) =>
   s
     .setName('exportconfig')
     .setDescription(
-      'ManageChannels:private stored category configuration only,not ownership/access backup.',
+      'Manage Channels: private stored category configuration only, not ownership/access backup.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('records')
     .setDescription(
-      'ManageChannels:private stored ownership records only,not live state/access/memberlist.',
+      'Manage Channels: private stored ownership records only, not live state/access/member list.',
     )
     .addIntegerOption((o) =>
       o
         .setName('page')
-        .setDescription('Newestfirst10/page,page1-1000')
+        .setDescription('Newest first 10/page, page 1-1000')
         .setMinValue(1)
         .setMaxValue(1000),
     )
@@ -174,33 +174,33 @@ data.addSubcommand((s) =>
   s
     .setName('summary')
     .setDescription(
-      'ManageChannels:private storedstate/publicflag counts,no owners/nativeaccess claim.',
+      'Manage Channels: private stored state/public flag counts, no owners/native access claim.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportrecords')
     .setDescription(
-      'ManageChannels:private latest100channelstate metadata,no owner/source IDs,total/truncated.',
+      'Manage Channels: private latest 100 channel state metadata, no owner/source IDs, total/truncated.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportmine')
     .setDescription(
-      'Private latest100onlyyour storedchannel metadata,no nativeaccess/currentmembership claim.',
+      'Private latest 100 only your stored channel metadata, no native access/current membership claim.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('inspectrecord')
     .setDescription(
-      'ManageChannels:exact stored recordID metadataJSON/null,no owner/sourceIDs or channel lookup.',
+      'Manage Channels: exact stored record ID metadata JSON/null, no owner/source IDs or channel lookup.',
     )
     .addIntegerOption((o) =>
       o
         .setName('id')
-        .setDescription('ExactstoredrecordID')
+        .setDescription('Exact stored record ID')
         .setRequired(true)
         .setMinValue(1)
         .setMaxValue(Number.MAX_SAFE_INTEGER),
@@ -210,12 +210,12 @@ data.addSubcommand((s) =>
   s
     .setName('channelrecords')
     .setDescription(
-      'ManageChannels:latest100stored records forchannelIDJSON,total/truncated,no native lookup.',
+      'Manage Channels: latest 100 stored records for channel IDJSON, total/truncated, no native lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('channel-id')
-        .setDescription('ExactstoredchannelID17-20digits')
+        .setDescription('Exact stored channel ID 17-20 digits')
         .setRequired(true)
         .setMinLength(17)
         .setMaxLength(20),
@@ -225,14 +225,14 @@ data.addSubcommand((s) =>
   s
     .setName('exportrecovery')
     .setDescription(
-      'ManageChannels:latest100creating/deleting/uncertain metadataJSON;not recovery,retry or repair.',
+      'Manage Channels: read up to 100 unresolved channel records; no recovery, retry or repair.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('buttons')
     .setDescription(
-      'Private owner one-use10min controls:emptychannel lock,shareeveryone/unlock,deleteclose.',
+      'Private owner one-use 10 min controls: empty channel lock, share everyone/unlock, delete close.',
     ),
 );
 export default {

@@ -11,7 +11,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('stickerinfo')
-    .setDescription('Read current server sticker metadata,no uploader or file download.')
+    .setDescription('Read current server sticker metadata, no uploader or file download.')
     .setContexts(InteractionContextType.Guild)
     .addStringOption((o) =>
       o

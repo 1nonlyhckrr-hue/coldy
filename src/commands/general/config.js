@@ -16,14 +16,14 @@ const data = new SlashCommandBuilder()
     s
       .setName('export')
       .setDescription(
-        'Private stored language/welcome/logging JSON,includes templates/channel IDs,no token/runtime.',
+        'Private stored language/welcome/logging JSON, includes templates/channel IDs, no token/runtime.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('pause')
       .setDescription(
-        'Stop welcome/goodbye/logging delivery;keep destination/templates/options/language.',
+        'Stop welcome/goodbye/logging delivery; keep destination/templates/options/language.',
       )
       .addBooleanOption((o) =>
         o
@@ -36,7 +36,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('resetdelivery')
       .setDescription(
-        'Stop and forget welcome/goodbye/logging settings;keep language/other modules/history.',
+        'Stop and forget welcome/goodbye/logging settings; keep language/other modules/history.',
       )
       .addBooleanOption((o) =>
         o

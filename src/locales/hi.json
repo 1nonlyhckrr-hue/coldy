@@ -1089,5 +1089,18 @@
   "bulkTimeoutUnavailable": "वर्तमान actor,bot या member permission/state उपलब्ध नहीं।",
   "bulkTimeoutConfirm": "Preview के सभी exact deadlines clear करने की पुष्टि करें।",
   "bulkTimeoutBlocked": "Preview expired,changed,busy,used या uncertain है। Partial clears संभव;cases जाँचें। बिना जाँच retry नहीं।",
-  "bulkTimeoutStatus": "Exact bounded timeout data संलग्न है। केवल दिखाए गए1-10members,सब नहीं। Deadline drift पर कार्रवाई रुकेगी। Changes atomic नहीं;partial/uncertain effects संभव।"
+  "bulkTimeoutStatus": "Exact bounded timeout data संलग्न है। केवल दिखाए गए1-10members,सब नहीं। Deadline drift पर कार्रवाई रुकेगी। Changes atomic नहीं;partial/uncertain effects संभव।",
+  "helpNavTitle": "Emika | कमांड निर्देशिका",
+  "helpNavIntro": "नीचे श्रेणी चुनें, फिर पिछला और अगला दबाएं। यह निर्देशिका सार्वजनिक है; चैनल में कोई भी इसे देख सकता है। बटन 30 मिनट तक या बॉट रीस्टार्ट होने तक काम करते हैं।",
+  "helpNavCategory": "श्रेणी चुनें",
+  "helpNavAll": "सभी श्रेणियां",
+  "helpNavHome": "मुख्य पृष्ठ",
+  "helpNavPrev": "पिछला",
+  "helpNavNext": "अगला",
+  "helpNavScope": "श्रेणी / खोज",
+  "helpNavPage": "पृष्ठ",
+  "helpNavCount": "प्रविष्टियां",
+  "helpNavCommands": "कमांड",
+  "helpNavDetails": "पैरामीटर और विकल्प",
+  "helpExpired": "इस निर्देशिका का समय खत्म हो गया। नया खोलने के लिए /help चलाएं।"
 }

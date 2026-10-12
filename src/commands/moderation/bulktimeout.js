@@ -14,7 +14,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('bulktimeout')
     .setDescription(
-      'Preview then confirm clearing1-10exact current human timeout deadlines,not serverwide.',
+      'Preview then confirm clearing 1-10 exact current human timeout deadlines, not server wide.',
     )
     .setContexts(InteractionContextType.Guild)
     .setDefaultMemberPermissions(P.ModerateMembers)
@@ -22,12 +22,12 @@ export default {
       s
         .setName('preview')
         .setDescription(
-          'Explicit1-10memberIDstrings JSON;private exactdeadline preview valid120s,no effects.',
+          'Explicit 1-10 member ID strings JSON; private exact deadline preview valid 120 s, no effects.',
         )
         .addStringOption((o) =>
           o
             .setName('members')
-            .setDescription('JSONarray1-10distinct member ID strings')
+            .setDescription('JSON array 1-10 distinct member ID strings')
             .setRequired(true)
             .setMaxLength(250),
         ),
@@ -36,7 +36,7 @@ export default {
       s
         .setName('confirm')
         .setDescription(
-          'Your exact unexpired preview;freshpermission/deadline guards,partial/uncertain stops,no retry.',
+          'Your exact unexpired preview; fresh permission/deadline guards, partial/uncertain stops, no retry.',
         )
         .addIntegerOption((o) =>
           o.setName('plan-id').setDescription('Exact preview ID').setMinValue(1).setRequired(true),

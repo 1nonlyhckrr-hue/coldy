@@ -1,3 +1,4 @@
+import { HelpNavigation, createHelpNavigationHandler } from './services/helpNavigation.js';
 import { BulkTimeout } from './services/bulkTimeout.js';
 import { RankRewards } from './services/rankRewards.js';
 import { Jail } from './services/jail.js';
@@ -201,6 +202,8 @@ if (config.memberEventsEnabled) {
   client.on(Events.GuildMemberAdd, createMemberMessageHandler(context, 'welcome'));
   client.on(Events.GuildMemberRemove, createMemberMessageHandler(context, 'goodbye'));
 }
+context.helpNavigation = new HelpNavigation();
+client.on(Events.InteractionCreate, createHelpNavigationHandler(context));
 client.on(Events.InteractionCreate, createInteractionHandler(context));
 for (const [event, kind] of [
   [Events.GuildRoleCreate, 'rolecreate'],

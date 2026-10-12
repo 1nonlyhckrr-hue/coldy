@@ -14,14 +14,14 @@ export default {
   data: new SlashCommandBuilder()
     .setName('mentionguard')
     .setDescription(
-      'Owner-only protected-member direct-mention timeout policy;off until explicitly set.',
+      'Owner-only protected-member direct-mention timeout policy; off until explicitly set.',
     )
     .setContexts(InteractionContextType.Guild)
     .addSubcommand((s) =>
       s
         .setName('set')
         .setDescription(
-          'Enable fourth direct-mention-message timeout in10minutes;explicit1s-28d duration.',
+          'Enable fourth direct-mention-message timeout in 10 minutes; explicit 1 s-28 d duration.',
         )
         .addUserOption((o) =>
           o.setName('target').setDescription('One protected human guild member').setRequired(true),
@@ -29,7 +29,7 @@ export default {
         .addStringOption((o) =>
           o
             .setName('duration')
-            .setDescription('Integer with s/m/h/d,1s-28d,for example10m;no default')
+            .setDescription('Integer with s/m/h/d, 1 s-28 d, for example 10 m; no default')
             .setRequired(true)
             .setMinLength(2)
             .setMaxLength(9),
@@ -38,12 +38,12 @@ export default {
     .addSubcommand((s) =>
       s
         .setName('off')
-        .setDescription('Disable protected-member mention timeouts;existing timeout unchanged.'),
+        .setDescription('Disable protected-member mention timeouts; existing timeout unchanged.'),
     )
     .addSubcommand((s) =>
       s
         .setName('status')
-        .setDescription('Private saved policy and last result;not native timeout proof.'),
+        .setDescription('Private saved policy and last result; not native timeout proof.'),
     ),
   async execute(i, c) {
     if (!c.config.ownerIds.includes(i.user.id)) throw new UserError('ownerOnly');

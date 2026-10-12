@@ -21,14 +21,14 @@ const data = new SlashCommandBuilder()
     s
       .setName('exportmetadata')
       .setDescription(
-        'Private latest100 schedule metadata JSON,total/truncation,no message text/source IDs.',
+        'Private latest 100 schedule metadata JSON, total/truncation, no message text/source IDs.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('channelrecords')
       .setDescription(
-        'Private latest100 stored schedule metadata for exactchannelID,no native validity claim.',
+        'Private latest 100 stored schedule metadata for exact channel ID, no native validity claim.',
       )
       .addStringOption((o) =>
         o
@@ -98,12 +98,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('stoprepeats')
       .setDescription(
-        'Make all pending repeats one-time;next due/body/channel preserved,sending untouched.',
+        'Make all pending repeats one-time; next due/body/channel preserved, sending untouched.',
       )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm stopping repeats after each pending nextsend')
+          .setDescription('Confirm stopping repeats after each pending next send')
           .setRequired(true),
       ),
   )
@@ -111,7 +111,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('forgetfinished')
       .setDescription(
-        'Erase bodies of done/cancelled schedules;metadata kept,no native message change.',
+        'Erase bodies of done/cancelled schedules; metadata kept, no native message change.',
       )
       .addBooleanOption((o) =>
         o
@@ -124,7 +124,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('clearfinished')
       .setDescription(
-        'Delete done/cancelled schedule records;active/uncertain/native messages kept.',
+        'Delete done/cancelled schedule records; active/uncertain/native messages kept.',
       )
       .addBooleanOption((o) =>
         o
@@ -155,7 +155,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('local')
-          .setDescription('Exact local time YYYY-MM-DDTHH:mm:ss; ambiguous/gap times rejected')
+          .setDescription('Exact local time YYYY-MM-DDTHH: mm: ss; ambiguous/gap times rejected')
           .setRequired(true)
           .setMinLength(19)
           .setMaxLength(19),
@@ -180,7 +180,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('cancelpending')
       .setDescription(
-        'Confirm cancellation of all pending guild schedules;in-flight/uncertain untouched.',
+        'Confirm cancellation of all pending guild schedules; in-flight/uncertain untouched.',
       )
       .addBooleanOption((o) =>
         o
@@ -193,7 +193,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('reschedule')
       .setDescription(
-        'Move pending next send to explicit offset time;repeat stays elapsed interval.',
+        'Move pending next send to explicit offset time; repeat stays elapsed interval.',
       )
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
@@ -201,7 +201,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('at')
-          .setDescription('ISO time with offset,one minute to365days ahead')
+          .setDescription('ISO time with offset, one minute to 365 days ahead')
           .setMaxLength(25)
           .setRequired(true),
       ),
@@ -209,14 +209,14 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('edit')
-      .setDescription('Replace text of a pending schedule only;time/destination unchanged.')
+      .setDescription('Replace text of a pending schedule only; time/destination unchanged.')
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
       )
       .addStringOption((o) =>
         o
           .setName('text')
-          .setDescription('Replacement message,mentions disabled')
+          .setDescription('Replacement message, mentions disabled')
           .setMinLength(1)
           .setMaxLength(1800)
           .setRequired(true),
@@ -225,7 +225,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('repeat')
-      .setDescription('Change pending elapsed repeat;omit minutes to make next send one-time.')
+      .setDescription('Change pending elapsed repeat; omit minutes to make next send one-time.')
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
       )
@@ -235,7 +235,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('minutes')
-          .setDescription('10-43200;omit to stop repeating after next send')
+          .setDescription('10-43200; omit to stop repeating after next send')
           .setMinValue(10)
           .setMaxValue(43200),
       ),
@@ -243,7 +243,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('inspect')
-      .setDescription('Privately review one stored schedule,text and metadata;no native effects.')
+      .setDescription('Privately review one stored schedule, text and metadata; no native effects.')
       .addIntegerOption((o) =>
         o
           .setName('id')
@@ -262,7 +262,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('local')
-          .setDescription('YYYY-MM-DDTHH:mm:ss;ambiguous/gap times rejected')
+          .setDescription('YYYY-MM-DDTHH: mm: ss; ambiguous/gap times rejected')
           .setMinLength(19)
           .setMaxLength(19)
           .setRequired(true),
@@ -279,7 +279,9 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('destination')
-      .setDescription('Move one pending message schedule to a validated channel;does not send now.')
+      .setDescription(
+        'Move one pending message schedule to a validated channel; does not send now.',
+      )
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Schedule ID').setMinValue(1).setRequired(true),
       )
@@ -294,7 +296,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('forget')
-      .setDescription('Erase stored text of a completed/cancelled schedule,not Discord messages.')
+      .setDescription('Erase stored text of a completed/cancelled schedule, not Discord messages.')
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Schedule ID').setMinValue(1).setRequired(true),
       )
@@ -311,28 +313,28 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('upcoming')
-      .setDescription('Privately inspect pending sends ordered by time;no content or sending.')
+      .setDescription('Privately inspect pending sends ordered by time; no content or sending.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Pending queue page1-3').setMinValue(1).setMaxValue(3),
+        o.setName('page').setDescription('Pending queue page 1-3').setMinValue(1).setMaxValue(3),
       )
       .addBooleanOption((o) =>
         o
           .setName('recurring')
-          .setDescription('True:repeat schedules only;false:one-time only;unset:all pending'),
+          .setDescription('True: repeat schedules only; false: one-time only; unset: all pending'),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('overview')
       .setDescription(
-        'Privately count stored schedule states;not delivery receipts or live readiness.',
+        'Privately count stored schedule states; not delivery receipts or live readiness.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('shift')
       .setDescription(
-        'Confirmed pending nextsend offset +/- minutes;repeat interval/body/channel kept.',
+        'Confirmed pending next send offset +/- minutes; repeat interval/body/channel kept.',
       )
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Pending schedule ID').setMinValue(1).setRequired(true),
@@ -341,21 +343,21 @@ const data = new SlashCommandBuilder()
         o
           .setName('minutes')
           .setDescription(
-            'Signed offset,-525600 to525600,not0;new due must remain1min-365days ahead',
+            'Signed offset, -525600 to 525600, not 0; new due must remain 1 min-365 days ahead',
           )
           .setMinValue(-525600)
           .setMaxValue(525600)
           .setRequired(true),
       )
       .addBooleanOption((o) =>
-        o.setName('confirm').setDescription('Confirm nextsend time shift').setRequired(true),
+        o.setName('confirm').setDescription('Confirm next send time shift').setRequired(true),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('clone')
       .setDescription(
-        'Confirmed copy of pending body/destination into new one-time future send,no repeats.',
+        'Confirmed copy of pending body/destination into new one-time future send, no repeats.',
       )
       .addIntegerOption((o) =>
         o
@@ -367,7 +369,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('at')
-          .setDescription('New ISO time with offset,one minute to365days ahead')
+          .setDescription('New ISO time with offset, one minute to 365 days ahead')
           .setMaxLength(25)
           .setRequired(true),
       )
@@ -382,7 +384,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('export')
       .setDescription(
-        'Private JSON of latest100stored schedules including body/destination;not backup/replay.',
+        'Private JSON of latest 100 stored schedules including body/destination; not backup/replay.',
       ),
   )
   .addSubcommand((s) =>

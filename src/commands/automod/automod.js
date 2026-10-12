@@ -40,7 +40,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('timeoutminutes')
-      .setDescription('Set automatic timeout duration1-60 minutes;does not enable rules.')
+      .setDescription('Set automatic timeout duration 1-60 minutes; does not enable rules.')
       .addIntegerOption((o) =>
         o
           .setName('minutes')
@@ -67,7 +67,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('spamthresholds')
-      .setDescription('Tune bounded spam counts/window;does not enable moderation.')
+      .setDescription('Tune bounded spam counts/window; does not enable moderation.')
       .addIntegerOption((o) =>
         o
           .setName('messages')
@@ -85,7 +85,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('seconds')
-          .setDescription('Rolling window5-30seconds')
+          .setDescription('Rolling window 5-30 seconds')
           .setMinValue(5)
           .setMaxValue(30),
       ),
@@ -145,7 +145,7 @@ const data = new SlashCommandBuilder()
       .addBooleanOption((o) =>
         o
           .setName('enabled')
-          .setDescription('Exclude this exact channel,no parent inheritance')
+          .setDescription('Exclude this exact channel, no parent inheritance')
           .setRequired(true),
       ),
   )
@@ -153,7 +153,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('removepolicy')
       .setDescription(
-        'Remove one stored ignored channel/exempt role ID,including deleted subjects.',
+        'Remove one stored ignored channel/exempt role ID, including deleted subjects.',
       )
       .addStringOption((o) =>
         o
@@ -183,11 +183,11 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('testtext')
-      .setDescription('Private dry-run of literal/caps/link rules,no punishment or spam tracking.')
+      .setDescription('Private dry-run of literal/caps/link rules, no punishment or spam tracking.')
       .addStringOption((o) =>
         o
           .setName('text')
-          .setDescription('Sample text,no real message fetched or saved')
+          .setDescription('Sample text, no real message fetched or saved')
           .setMinLength(1)
           .setMaxLength(1800)
           .setRequired(true),
@@ -196,25 +196,25 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('thresholds')
-      .setDescription('Tune mention/caps thresholds;does not enable rules or moderation.')
+      .setDescription('Tune mention/caps thresholds; does not enable rules or moderation.')
       .addIntegerOption((o) =>
         o
           .setName('mentions')
-          .setDescription('Unique user/role mentions2-20')
+          .setDescription('Unique user/role mentions 2-20')
           .setMinValue(2)
           .setMaxValue(20),
       )
       .addIntegerOption((o) =>
         o
           .setName('caps-percent')
-          .setDescription('Uppercase percentage must exceed this50-100')
+          .setDescription('Uppercase percentage must exceed this 50-100')
           .setMinValue(50)
           .setMaxValue(100),
       )
       .addIntegerOption((o) =>
         o
           .setName('caps-letters')
-          .setDescription('Minimum letters10-100')
+          .setDescription('Minimum letters 10-100')
           .setMinValue(10)
           .setMaxValue(100),
       ),
@@ -224,33 +224,33 @@ const data = new SlashCommandBuilder()
       .setName('wordlist')
       .setDescription('Privately inspect twenty stored literal phrases per page.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-5').setMinValue(1).setMaxValue(5),
+        o.setName('page').setDescription('Page 1-5').setMinValue(1).setMaxValue(5),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('stats')
-      .setDescription('Private aggregate stored incident outcomes;no content,IDs or retries.'),
+      .setDescription('Private aggregate stored incident outcomes; no content, IDs or retries.'),
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show configured rules and limits.'))
   .addSubcommand((s) =>
     s
       .setName('unresolved')
       .setDescription(
-        'Privately inspect unresolved stored incident metadata;never retries actions.',
+        'Privately inspect unresolved stored incident metadata; never retries actions.',
       )
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Oldest-first page1-10').setMinValue(1).setMaxValue(10),
+        o.setName('page').setDescription('Oldest-first page 1-10').setMinValue(1).setMaxValue(10),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('incidents')
-      .setDescription('Show 20 recent stored outcomes,optionally filtered,no message content.')
+      .setDescription('Show 20 recent stored outcomes, optionally filtered, no message content.')
       .addStringOption((o) =>
         o
           .setName('status')
-          .setDescription('Stored outcome filter before newest20 selection')
+          .setDescription('Stored outcome filter before newest 20 selection')
           .addChoices(
             ...['reserved', 'completed', 'uncertain', 'failed'].map((value) => ({
               name: value,
@@ -264,17 +264,19 @@ data
     s
       .setName('exportpolicy')
       .setDescription(
-        'Private JSON of stored rules/literal words/exemptIDs,not incident/message history.',
+        'Private JSON of stored rules/literal words/exempt IDs, not incident/message history.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('clearwords')
-      .setDescription('Confirmed remove all storedliteralblockedwords;other rules/settings kept.')
+      .setDescription(
+        'Confirmed remove all stored literal blocked words; other rules/settings kept.',
+      )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm clearing this guild literalword list')
+          .setDescription('Confirm clearing this guild literal word list')
           .setRequired(true),
       ),
   )
@@ -282,12 +284,12 @@ data
     s
       .setName('resetpolicy')
       .setDescription(
-        'Confirmed disabled/defaultpolicy reset,words/exemptions cleared;incidents/cases kept.',
+        'Confirmed disabled/default policy reset, words/exemptions cleared; incidents/cases kept.',
       )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm stopping AutoMod and clearing storedpolicy/exemptions')
+          .setDescription('Confirm stopping Auto Mod and clearing stored policy/exemptions')
           .setRequired(true),
       ),
   );
@@ -295,12 +297,12 @@ data.addSubcommand((s) =>
   s
     .setName('importpolicy')
     .setDescription(
-      'Replace strict policy JSON,force disabled,clear own spam memory;no native effects.',
+      'Replace strict policy JSON, force disabled, clear own spam memory; no native effects.',
     )
     .addStringOption((o) =>
       o
         .setName('json')
-        .setDescription('Policy object,4000chars max;IDs are stored only,review before enable')
+        .setDescription('Policy object, 4000 chars max; IDs are stored only, review before enable')
         .setMinLength(2)
         .setMaxLength(4000)
         .setRequired(true),
@@ -308,7 +310,7 @@ data.addSubcommand((s) =>
     .addBooleanOption((o) =>
       o
         .setName('confirm')
-        .setDescription('Confirm replacing current policy and stopping AutoMod')
+        .setDescription('Confirm replacing current policy and stopping Auto Mod')
         .setRequired(true),
     ),
 );
@@ -318,8 +320,8 @@ for (const name of ['clearignored', 'clearexempt'])
       .setName(name)
       .setDescription(
         name === 'clearignored'
-          ? 'Clear ignored channels;if enabled,future messages there may be moderated.'
-          : 'Clear role exemptions;if enabled,future messages by these roles may be moderated.',
+          ? 'Clear ignored channels; if enabled, future messages there may be moderated.'
+          : 'Clear role exemptions; if enabled, future messages by these roles may be moderated.',
       )
       .addBooleanOption((o) =>
         o
@@ -334,16 +336,16 @@ for (const sub of ['disablerules', 'resetthresholds'])
       .setName(sub)
       .setDescription(
         sub === 'disablerules'
-          ? 'Disable allsix moderationrules,keep enabledswitch/action/exclusions/words/history.'
-          : 'Reset caps/mentions/spam limits to defaults,keep switches/action/exclusions/words/history.',
+          ? 'Disable all six moderation rules, keep enabled switch/action/exclusions/words/history.'
+          : 'Reset caps/mentions/spam limits to defaults, keep switches/action/exclusions/words/history.',
       )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
           .setDescription(
             sub === 'disablerules'
-              ? 'Confirm stopping allsix future rulematches'
-              : 'Confirm default thresholds;may make future moderation more or less sensitive',
+              ? 'Confirm stopping all six future rule matches'
+              : 'Confirm default thresholds; may make future moderation more or less sensitive',
           )
           .setRequired(true),
       ),

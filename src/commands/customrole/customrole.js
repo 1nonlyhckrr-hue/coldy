@@ -64,7 +64,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('clear')
       .setDescription(
-        'Manage Roles:remove all mappings,leaving native roles,assignments and eligibility unchanged.',
+        'Manage Roles: remove all mappings, leaving native roles, assignments and eligibility unchanged.',
       )
       .addBooleanOption((o) =>
         o.setName('confirm').setDescription('Confirm mapping removal only').setRequired(true),
@@ -73,11 +73,13 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('creation')
-      .setDescription('ManageRoles:opt in/out of unassigned zero-permission member role creation.')
+      .setDescription(
+        'Manage Roles: opt in/out of unassigned zero-permission member role creation.',
+      )
       .addBooleanOption((o) =>
         o
           .setName('enabled')
-          .setDescription('Enable member role creation,cap50 per guild')
+          .setDescription('Enable member role creation, cap 50 per guild')
           .setRequired(true),
       )
       .addBooleanOption((o) =>
@@ -90,23 +92,29 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('createown')
-      .setDescription('Create one unassigned zero-permission role for yourself,if manager enabled.')
+      .setDescription(
+        'Create one unassigned zero-permission role for yourself, if manager enabled.',
+      )
       .addStringOption((o) =>
         o
           .setName('label')
-          .setDescription('Role name1-32chars,no @')
+          .setDescription('Role name 1-32 chars, no @')
           .setMaxLength(32)
           .setMinLength(1)
           .setRequired(true),
       )
       .addStringOption((o) =>
-        o.setName('hex').setDescription('Optional6hex RGB digits').setMinLength(6).setMaxLength(6),
+        o
+          .setName('hex')
+          .setDescription('Optional 6 hex RGB digits')
+          .setMinLength(6)
+          .setMaxLength(6),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('reconcile')
-      .setDescription('ManageRoles:verify observed uncertain creation,no native changes.')
+      .setDescription('Manage Roles: verify observed uncertain creation, no native changes.')
       .addUserOption((o) => o.setName('member').setDescription('Creation owner').setRequired(true))
       .addBooleanOption((o) =>
         o.setName('confirm').setDescription('Confirm stored status repair only').setRequired(true),
@@ -118,31 +126,35 @@ const data = new SlashCommandBuilder()
       .setDescription('Assign your verified zero-permission created role to yourself.'),
   )
   .addSubcommand((s) =>
-    s.setName('releaseown').setDescription('Remove your created role from yourself,no deletion.'),
+    s.setName('releaseown').setDescription('Remove your created role from yourself, no deletion.'),
   )
   .addSubcommand((s) =>
     s
       .setName('created')
-      .setDescription('Privately inspect your stored creation record,no native role changes.'),
+      .setDescription('Privately inspect your stored creation record, no native role changes.'),
   )
   .addSubcommand((s) =>
     s
       .setName('creations')
-      .setDescription('ManageRoles:private paged creation records,status and IDs only.')
+      .setDescription('Manage Roles: private paged creation records, status and IDs only.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-5,ten records each').setMinValue(1).setMaxValue(5),
+        o
+          .setName('page')
+          .setDescription('Page 1-5, ten records each')
+          .setMinValue(1)
+          .setMaxValue(5),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('renameown')
       .setDescription(
-        'Confirmed own zero-permission created role name,not mapping/native other roles.',
+        'Confirmed own zero-permission created role name, not mapping/native other roles.',
       )
       .addStringOption((o) =>
         o
           .setName('label')
-          .setDescription('Name1-32characters,no @')
+          .setDescription('Name 1-32 characters, no @')
           .setMinLength(1)
           .setMaxLength(32)
           .setRequired(true),
@@ -157,7 +169,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('colorown')
-      .setDescription('Confirmed own zero-permission created role primaryRGB color only.')
+      .setDescription('Confirmed own zero-permission created role primary RGB color only.')
       .addStringOption((o) =>
         o
           .setName('hex')
@@ -176,7 +188,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('resetstyle')
-      .setDescription('Confirmed own created role primary color reset to0;name/access retained.')
+      .setDescription('Confirmed own created role primary color reset to 0; name/access retained.')
       .addBooleanOption((o) =>
         o.setName('confirm').setDescription('Confirm own-role color reset').setRequired(true),
       ),
@@ -198,12 +210,14 @@ data
   .addSubcommand((s) =>
     s
       .setName('renamemapping')
-      .setDescription('ManageRoles:change only storedmapping alias,not nativerolename/access.')
+      .setDescription(
+        'Manage Roles: change only stored mapping alias, not native role name/access.',
+      )
       .addStringOption(name)
       .addStringOption((o) =>
         o
           .setName('new-name')
-          .setDescription('Unique lowercasealias1-24,letters/digits/_/-')
+          .setDescription('Unique lowercase alias 1-24, letters/digits/_/-')
           .setMinLength(1)
           .setMaxLength(24)
           .setRequired(true),
@@ -213,14 +227,14 @@ data
     s
       .setName('exportmappings')
       .setDescription(
-        'ManageRoles:privateJSON mappingnames/roleIDs/gate/policy,no ownership/memberhistory.',
+        'Manage Roles: private JSON mapping names/role IDs/gate/policy, no ownership/member history.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('eligibility')
       .setDescription(
-        'Privately check your current storedgate membership,no role grants/safety/readinessclaim.',
+        'Privately check your current stored gate membership, no role grants/safety/readiness claim.',
       ),
   );
 for (const name of ['unmaprole', 'clearrequired', 'resetconfig'])
@@ -228,10 +242,10 @@ for (const name of ['unmaprole', 'clearrequired', 'resetconfig'])
     s.setName(name)
       .setDescription(
         name === 'unmaprole'
-          ? 'ManageRoles:remove exact stored mapped role ID,no native assignments changed.'
+          ? 'Manage Roles: remove exact stored mapped role ID, no native assignments changed.'
           : name === 'clearrequired'
-            ? 'ManageRoles:remove eligibility gate,allowing otherwise eligible future self claims.'
-            : 'ManageRoles:forget mappings/gate and stop creation,ownership/native roles/cases kept.',
+            ? 'Manage Roles: remove eligibility gate, allowing otherwise eligible future self claims.'
+            : 'Manage Roles: forget mappings/gate and stop creation, ownership/native roles/cases kept.',
       )
       .addBooleanOption((o) =>
         o
@@ -243,7 +257,7 @@ for (const name of ['unmaprole', 'clearrequired', 'resetconfig'])
       s.addStringOption((o) =>
         o
           .setName('role-id')
-          .setDescription('Exact stored mapped role ID,deleted roles allowed')
+          .setDescription('Exact stored mapped role ID, deleted roles allowed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),

@@ -16,23 +16,26 @@ import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('rankreward')
   .setDescription(
-    'Owner-approved zero-permission role milestones;member-confirmed claim,not autogrants.',
+    'Owner-approved zero-permission role milestones; member-confirmed claim, not auto grants.',
   )
   .setContexts(InteractionContextType.Guild);
 for (const sub of ['set', 'remove', 'config', 'eligible', 'claim'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
-        set: 'Owner confirm:zero-permission existingrole;retained90day messages or sampledvoice minutes.',
-        remove: 'Owner confirm:remove rule only;never remove granted roles or erase receipts.',
-        config: 'Private stored milestone rules,not count or role-access guarantee.',
-        eligible: 'Only your retained90day eligibility;tracking/privacy checks,no grant.',
-        claim: 'Your explicit one-shot rolegrant;no automaticclaim/regrant/revocation.',
+        set: 'Owner confirm: zero-permission existing role; retained 90 day messages or sampled voice minutes.',
+        remove: 'Owner confirm: remove rule only; never remove granted roles or erase receipts.',
+        config: 'Private stored milestone rules, not count or role-access guarantee.',
+        eligible: 'Only your retained 90 day eligibility; tracking/privacy checks, no grant.',
+        claim: 'Your explicit one-shot role grant; no automatic claim/regrant/revocation.',
       }[sub],
     );
     if (['set', 'remove', 'claim'].includes(sub)) {
       s.addRoleOption((o) =>
-        o.setName('role').setDescription('Existing zero-permission cosmeticrole').setRequired(true),
+        o
+          .setName('role')
+          .setDescription('Existing zero-permission cosmetic role')
+          .setRequired(true),
       );
       s.addBooleanOption((o) =>
         o.setName('confirm').setDescription('Confirm rule/grant action').setRequired(true),
@@ -42,7 +45,7 @@ for (const sub of ['set', 'remove', 'config', 'eligible', 'claim'])
       s.addStringOption((o) =>
         o
           .setName('kind')
-          .setDescription('Retained90UTCday metric,not all-time')
+          .setDescription('Retained 90 UTCday metric, not all-time')
           .addChoices(
             { name: 'Messages', value: 'messages' },
             { name: 'Sampled voice minutes', value: 'voice-minutes' },
@@ -52,7 +55,7 @@ for (const sub of ['set', 'remove', 'config', 'eligible', 'claim'])
       s.addIntegerOption((o) =>
         o
           .setName('threshold')
-          .setDescription('1-900000 retained messages or sampledvoice minutes')
+          .setDescription('1-900000 retained messages or sampled voice minutes')
           .setMinValue(1)
           .setMaxValue(900000)
           .setRequired(true),

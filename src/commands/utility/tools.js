@@ -32,16 +32,16 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('tools')
-    .setDescription('Private Discord ID,time and embed-color helpers;no API changes.')
+    .setDescription('Private Discord ID, time and embed-color helpers; no API changes.')
     .setContexts(InteractionContextType.Guild)
     .addSubcommand((s) =>
       s
         .setName('sortlines')
-        .setDescription('Private exact-line UTF-16 sort TXT,no trimming or locale collation.')
+        .setDescription('Private exact-line UTF-16 sort TXT, no trimming or locale collation.')
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('1-1200characters,max100lines')
+            .setDescription('1-1200 characters, max 100 lines')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -61,12 +61,12 @@ export default {
       s
         .setName('uniquelines')
         .setDescription(
-          'Private exact-line deduplication TXT,first occurrence order kept,no trimming.',
+          'Private exact-line deduplication TXT, first occurrence order kept, no trimming.',
         )
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('1-1200characters,max100lines')
+            .setDescription('1-1200 characters, max 100 lines')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -74,13 +74,13 @@ export default {
     )
     .addSubcommand((s) => {
       s.setName('comparelines').setDescription(
-        'Private exact-line sets JSON:onlyleft/onlyright/common,no full diff or evaluation.',
+        'Private exact-line sets JSON: only left/only right/common, no full diff or evaluation.',
       );
       for (const key of ['left', 'right'])
         s.addStringOption((o) =>
           o
             .setName(key)
-            .setDescription('1-1200characters,max100lines')
+            .setDescription('1-1200 characters, max 100 lines')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -91,12 +91,12 @@ export default {
       s
         .setName('integerstats')
         .setDescription(
-          'Private count/sum/min/max/mean/median of2-20 explicit integers,no storage.',
+          'Private count/sum/min/max/mean/median of 2-20 explicit integers, no storage.',
         )
         .addStringOption((o) =>
           o
             .setName('values')
-            .setDescription('2-20 integers -1000000 to1000000 separated by |,no spaces')
+            .setDescription('2-20 integers -1000000 to 1000000 separated by |, no spaces')
             .setMinLength(3)
             .setMaxLength(219)
             .setRequired(true),
@@ -105,11 +105,11 @@ export default {
     .addSubcommand((s) =>
       s
         .setName('gcdlcm')
-        .setDescription('Private exact GCD/LCM of two positive integers,no settings changed.')
+        .setDescription('Private exact GCD/LCM of two positive integers, no settings changed.')
         .addIntegerOption((o) =>
           o
             .setName('a')
-            .setDescription('Positive integer1-1000000000')
+            .setDescription('Positive integer 1-1000000000')
             .setMinValue(1)
             .setMaxValue(1000000000)
             .setRequired(true),
@@ -117,7 +117,7 @@ export default {
         .addIntegerOption((o) =>
           o
             .setName('b')
-            .setDescription('Positive integer1-1000000000')
+            .setDescription('Positive integer 1-1000000000')
             .setMinValue(1)
             .setMaxValue(1000000000)
             .setRequired(true),
@@ -125,11 +125,13 @@ export default {
     )
     .addSubcommand((s) => {
       s.setName('baseconvert')
-        .setDescription('Private unsigned64bit integer base2/8/10/16 conversion,no prefixes/signs.')
+        .setDescription(
+          'Private unsigned 64 bit integer base 2/8/10/16 conversion, no prefixes/signs.',
+        )
         .addStringOption((o) =>
           o
             .setName('number')
-            .setDescription('Unsigned digits only,no spaces/prefixes,maximum64bits')
+            .setDescription('Unsigned digits only, no spaces/prefixes, maximum 64 bits')
             .setMinLength(1)
             .setMaxLength(64)
             .setRequired(true),
@@ -148,12 +150,12 @@ export default {
       s
         .setName('base64encode')
         .setDescription(
-          'Private exact UTF-8 text to standard Base64 TXT,not encryption/no evaluation.',
+          'Private exact UTF-8 text to standard Base64 TXT, not encryption/no evaluation.',
         )
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Exact UTF-8 text,1-1200 characters')
+            .setDescription('Exact UTF-8 text, 1-1200 characters')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -163,12 +165,12 @@ export default {
       s
         .setName('base64decode')
         .setDescription(
-          'Private canonical padded standard Base64 to valid UTF-8 TXT,no evaluation.',
+          'Private canonical padded standard Base64 to valid UTF-8 TXT, no evaluation.',
         )
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Canonical standard Base64,1-1600characters,no whitespace')
+            .setDescription('Canonical standard Base64, 1-1600 characters, no whitespace')
             .setMinLength(1)
             .setMaxLength(1600)
             .setRequired(true),
@@ -178,12 +180,12 @@ export default {
       s
         .setName('urlcomponent')
         .setDescription(
-          'Private URI component encoding/decoding TXT,not a URL fetch or form parser.',
+          'Private URI component encoding/decoding TXT, not a URL fetch or form parser.',
         )
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Explicit component text,1-1200characters')
+            .setDescription('Explicit component text, 1-1200 characters')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -199,11 +201,11 @@ export default {
     .addSubcommand((s) =>
       s
         .setName('sha256')
-        .setDescription('SHA256 of explicit exactUTF8text,no URL/file fetch/password storage.')
+        .setDescription('SHA256 of explicit exact UTF-8 text, no URL/file fetch/password storage.')
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Text1-1200UTF16units,not trimmed;do not paste secrets')
+            .setDescription('Text 1-1200 UTF-16 units, not trimmed; do not paste secrets')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -213,12 +215,12 @@ export default {
       s
         .setName('jsonformat')
         .setDescription(
-          'Private prettyJSON TXT,keepsnumber spelling/key order/duplicates;no execution/storage.',
+          'Private pretty JSON TXT, keeps number spelling/key order/duplicates; no execution/storage.',
         )
         .addStringOption((o) =>
           o
             .setName('json')
-            .setDescription('ValidJSON1-1800chars,do not paste secrets')
+            .setDescription('Valid JSON 1-1800 chars, do not paste secrets')
             .setMinLength(1)
             .setMaxLength(1800)
             .setRequired(true),
@@ -228,12 +230,12 @@ export default {
       s
         .setName('normalize')
         .setDescription(
-          'Private explicit Unicode normalization TXT;compatibilityforms may change meaning.',
+          'Private explicit Unicode normalization TXT; compatibility forms may change meaning.',
         )
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Text1-1200UTF16units,no persistence')
+            .setDescription('Text 1-1200 UTF-16 units, no persistence')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -241,7 +243,7 @@ export default {
         .addStringOption((o) =>
           o
             .setName('form')
-            .setDescription('Explicit normalization form,no inferred selection')
+            .setDescription('Explicit normalization form, no inferred selection')
             .addChoices(...['NFC', 'NFD', 'NFKC', 'NFKD'].map((value) => ({ name: value, value })))
             .setRequired(true),
         ),
@@ -250,12 +252,12 @@ export default {
       s
         .setName('duration')
         .setDescription(
-          'Parse explicit elapsed duration into seconds;no reminder/calendar arithmetic.',
+          'Parse explicit elapsed duration into seconds; no reminder/calendar arithmetic.',
         )
         .addStringOption((o) =>
           o
             .setName('duration')
-            .setDescription('Descending unique d/h/m/s e.g.1d2h30m,max365days,no spaces')
+            .setDescription('Descending unique d/h/m/s e.g. 1d2h30m, max 365 days, no spaces')
             .setMinLength(2)
             .setMaxLength(80)
             .setRequired(true),
@@ -264,11 +266,13 @@ export default {
     .addSubcommand((s) =>
       s
         .setName('textstats')
-        .setDescription('Count explicit text UTF16/codepoints/graphemes/UTF8bytes/lines privately.')
+        .setDescription(
+          'Count explicit text UTF-16/code points/graphemes/UTF-8 bytes/lines privately.',
+        )
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Text1-1200UTF16units;not stored or sent elsewhere')
+            .setDescription('Text 1-1200 UTF-16 units; not stored or sent elsewhere')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -283,7 +287,7 @@ export default {
         .addStringOption((o) =>
           o
             .setName('text')
-            .setDescription('Text1-1200UTF16units;returns TXT,no send or settings change')
+            .setDescription('Text 1-1200 UTF-16 units; returns TXT, no send or settings change')
             .setMinLength(1)
             .setMaxLength(1200)
             .setRequired(true),
@@ -292,11 +296,11 @@ export default {
     .addSubcommand((s) =>
       s
         .setName('snowflake')
-        .setDescription('Decode supplied ID timestamp/bits;does not fetch or verify an object.')
+        .setDescription('Decode supplied ID timestamp/bits; does not fetch or verify an object.')
         .addStringOption((o) =>
           o
             .setName('id')
-            .setDescription('Positive decimal Discord snowflake,up to unsigned64bits')
+            .setDescription('Positive decimal Discord snowflake, up to unsigned 64 bits')
             .setMinLength(1)
             .setMaxLength(20)
             .setRequired(true),
@@ -306,12 +310,12 @@ export default {
       s
         .setName('timestamp')
         .setDescription(
-          'Format explicit Unix seconds for client-local Discord display;not a reminder.',
+          'Format explicit Unix seconds for client-local Discord display; not a reminder.',
         )
         .addIntegerOption((o) =>
           o
             .setName('seconds')
-            .setDescription('Unix seconds0-253402300799,not milliseconds')
+            .setDescription('Unix seconds 0-253402300799, not milliseconds')
             .setMinValue(0)
             .setMaxValue(253402300799)
             .setRequired(true),
@@ -319,7 +323,7 @@ export default {
         .addStringOption((o) =>
           o
             .setName('style')
-            .setDescription('Discord display style,defaultf')
+            .setDescription('Discord display style, default f')
             .addChoices(...TIMESTAMP_STYLES.map((v) => ({ name: v, value: v }))),
         ),
     )
@@ -327,12 +331,12 @@ export default {
       s
         .setName('localtimestamp')
         .setDescription(
-          'Convert explicit localdatetime/namedzone to Discordtimestamp,not a scheduledsend.',
+          'Convert explicit local date time/named zone to Discord timestamp, not a scheduled send.',
         )
         .addStringOption((o) =>
           o
             .setName('local')
-            .setDescription('Exact YYYY-MM-DDTHH:mm:ss;DSTgap/overlap rejected')
+            .setDescription('Exact YYYY-MM-DDTHH: mm: ss; DSTgap/overlap rejected')
             .setMinLength(19)
             .setMaxLength(19)
             .setRequired(true),
@@ -340,25 +344,27 @@ export default {
         .addStringOption((o) =>
           o
             .setName('timezone')
-            .setDescription('Namedtimezone e.g.Asia/Kolkata or UTC')
+            .setDescription('Named timezone e.g. Asia/Kolkata or UTC')
             .setMaxLength(80)
             .setRequired(true),
         )
         .addStringOption((o) =>
           o
             .setName('style')
-            .setDescription('Discorddisplaystyle,defaultf')
+            .setDescription('Discord display style, default f')
             .addChoices(...TIMESTAMP_STYLES.map((v) => ({ name: v, value: v }))),
         ),
     )
     .addSubcommand((s) =>
       s
         .setName('timezone')
-        .setDescription('Display explicitUnixseconds in one namedzone,not inferredtime/location.')
+        .setDescription(
+          'Display explicit Unix seconds in one named zone, not inferred time/location.',
+        )
         .addIntegerOption((o) =>
           o
             .setName('seconds')
-            .setDescription('Unixseconds0-253402300799')
+            .setDescription('Unix seconds 0-253402300799')
             .setMinValue(0)
             .setMaxValue(253402300799)
             .setRequired(true),
@@ -366,7 +372,7 @@ export default {
         .addStringOption((o) =>
           o
             .setName('timezone')
-            .setDescription('Namedtimezone e.g.America/New_York or UTC')
+            .setDescription('Named timezone e.g. America/New_York or UTC')
             .setMaxLength(80)
             .setRequired(true),
         ),
@@ -375,12 +381,12 @@ export default {
       s
         .setName('timedifference')
         .setDescription(
-          'Signed elapsedseconds and absoluteday/hour/minute/second breakdown,no calendardays.',
+          'Signed elapsed seconds and absolute day/hour/minute/second breakdown, no calendar days.',
         )
         .addIntegerOption((o) =>
           o
             .setName('start')
-            .setDescription('StartUnixseconds0-253402300799')
+            .setDescription('Start Unix seconds 0-253402300799')
             .setMinValue(0)
             .setMaxValue(253402300799)
             .setRequired(true),
@@ -388,7 +394,7 @@ export default {
         .addIntegerOption((o) =>
           o
             .setName('end')
-            .setDescription('EndUnixseconds0-253402300799')
+            .setDescription('End Unix seconds 0-253402300799')
             .setMinValue(0)
             .setMaxValue(253402300799)
             .setRequired(true),
@@ -398,12 +404,12 @@ export default {
       s
         .setName('permissions')
         .setDescription(
-          'Decode explicit raw permission bits;not effective member/channel permissions.',
+          'Decode explicit raw permission bits; not effective member/channel permissions.',
         )
         .addStringOption((o) =>
           o
             .setName('bits')
-            .setDescription('Unsigned64bit decimal,0allowed,no leadingzeros')
+            .setDescription('Unsigned 64 bit decimal, 0 allowed, no leading zeros')
             .setMinLength(1)
             .setMaxLength(20)
             .setRequired(true),
@@ -411,13 +417,13 @@ export default {
     )
     .addSubcommand((s) => {
       s.setName('rgb').setDescription(
-        'Convert explicit RGB components to six-digit hex and decimal,no settings changed.',
+        'Convert explicit RGB components to six-digit hex and decimal, no settings changed.',
       );
       for (const name of ['red', 'green', 'blue'])
         s.addIntegerOption((o) =>
           o
             .setName(name)
-            .setDescription('Component0-255')
+            .setDescription('Component 0-255')
             .setMinValue(0)
             .setMaxValue(255)
             .setRequired(true),
@@ -428,12 +434,12 @@ export default {
       s
         .setName('isotimestamp')
         .setDescription(
-          'Convert explicit ISO seconds with Z/offset into Discordtimestamp,not schedule.',
+          'Convert explicit ISO seconds with Z/offset into Discord timestamp, not schedule.',
         )
         .addStringOption((o) =>
           o
             .setName('iso')
-            .setDescription('YYYY-MM-DDTHH:mm:ssZ or signedHH:mm offset,up to14hours')
+            .setDescription('YYYY-MM-DDTHH: mm: ss Z or signed HH: mm offset, up to 14 hours')
             .setMinLength(20)
             .setMaxLength(25)
             .setRequired(true),
@@ -441,18 +447,18 @@ export default {
         .addStringOption((o) =>
           o
             .setName('style')
-            .setDescription('Discorddisplaystyle,defaultf')
+            .setDescription('Discord display style, default f')
             .addChoices(...TIMESTAMP_STYLES.map((v) => ({ name: v, value: v }))),
         ),
     )
     .addSubcommand((s) =>
       s
         .setName('color')
-        .setDescription('Convert six hex digits to RGB/decimal;does not change bot settings.')
+        .setDescription('Convert six hex digits to RGB/decimal; does not change bot settings.')
         .addStringOption((o) =>
           o
             .setName('hex')
-            .setDescription('Six hex digits,with optional#')
+            .setDescription('Six hex digits, with optional#')
             .setMinLength(6)
             .setMaxLength(7)
             .setRequired(true),

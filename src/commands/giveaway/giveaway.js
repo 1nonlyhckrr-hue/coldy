@@ -73,12 +73,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('list')
       .setDescription(
-        'List latest100 stored records,2 complete prizes/page,no live delivery claim.',
+        'List latest 100 stored records, 2 complete prizes/page, no live delivery claim.',
       )
       .addIntegerOption((o) =>
         o
           .setName('page')
-          .setDescription('Page1-50,latest100 records')
+          .setDescription('Page 1-50, latest 100 records')
           .setMinValue(1)
           .setMaxValue(50),
       ),
@@ -89,17 +89,17 @@ for (const sub of ['inspect', 'cancel', 'forgetentries'])
     s.setName(sub)
       .setDescription(
         sub === 'inspect'
-          ? 'Private stored prize/state/entrycount,no entrantIDs/live readiness.'
+          ? 'Private stored prize/state/entry count, no entrant IDs/live readiness.'
           : sub === 'cancel'
-            ? 'Confirmed stop stored activegiveaway,no native announcement/button edit.'
-            : 'Confirmed erase ended/cancelled entrantIDs;future rerolls lose candidates.',
+            ? 'Confirmed stop stored active giveaway, no native announcement/button edit.'
+            : 'Confirmed erase ended/cancelled entrant IDs; future rerolls lose candidates.',
       )
       .addIntegerOption(idOption);
     if (sub !== 'inspect')
       s.addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm stored stop/entry erasure;native messages untouched')
+          .setDescription('Confirm stored stop/entry erasure; native messages untouched')
           .setRequired(true),
       );
     return s;
@@ -108,7 +108,7 @@ data.addSubcommand((s) =>
   s
     .setName('export')
     .setDescription(
-      'Private latest100 stored giveaway prize/schedule/binding records,no entrant/winner IDs.',
+      'Private latest 100 stored giveaway prize/schedule/binding records, no entrant/winner IDs.',
     ),
 );
 for (const name of ['cancelall', 'forgetfinishedentries'])
@@ -117,8 +117,8 @@ for (const name of ['cancelall', 'forgetfinishedentries'])
       .setName(name)
       .setDescription(
         name === 'cancelall'
-          ? 'Cancel all active giveaways in storage only;no native message edits or announcements.'
-          : 'Erase entrant IDs for ended/cancelled giveaways;winner history/native messages kept.',
+          ? 'Cancel all active giveaways in storage only; no native message edits or announcements.'
+          : 'Erase entrant IDs for ended/cancelled giveaways; winner history/native messages kept.',
       )
       .addBooleanOption((o) =>
         o
@@ -131,7 +131,7 @@ data.addSubcommand((s) =>
   s
     .setName('summary')
     .setDescription(
-      'Private storedgiveawaystate/retained-entry counts,no entrant/winner identities.',
+      'Private stored giveaway state/retained-entry counts, no entrant/winner identities.',
     ),
 );
 for (const sub of ['channelrecords', 'cancelchannel'])
@@ -139,13 +139,13 @@ for (const sub of ['channelrecords', 'cancelchannel'])
     s.setName(sub)
       .setDescription(
         sub === 'channelrecords'
-          ? 'Private latest100metadata for exactstoredchannelID,total/truncated,no entrant IDs.'
-          : 'Confirmedcancel onlyactivegiveaways in exactstoredchannel,no native announcements/deletes.',
+          ? 'Private latest 100 metadata for exact stored channel ID, total/truncated, no entrant IDs.'
+          : 'Confirmed cancel only active giveaways in exact stored channel, no native announcements/deletes.',
       )
       .addStringOption((o) =>
         o
           .setName('channel-id')
-          .setDescription('Exact17-20digit storedchannelID,deleted resources allowed')
+          .setDescription('Exact 17-20 digit stored channel ID, deleted resources allowed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),
@@ -155,7 +155,7 @@ for (const sub of ['channelrecords', 'cancelchannel'])
         o
           .setName('confirm')
           .setDescription(
-            'Confirm stopping activegiveaways here,entries/history/native messages kept',
+            'Confirm stopping active giveaways here, entries/history/native messages kept',
           )
           .setRequired(true),
       );
@@ -164,15 +164,15 @@ for (const sub of ['channelrecords', 'cancelchannel'])
 for (const [name, desc] of [
   [
     'exportmetadata',
-    'Private latest100 minimalID/channel/state/due/count/drawversion/timeJSON,no prize/sourceIDs.',
+    'Private latest 100 minimal ID/channel/state/due/count/draw version/time JSON, no prize/source IDs.',
   ],
   [
     'entrycounts',
-    'Private retained entrycounts forlatest100 giveawayID/stateJSON,total/truncation,no memberIDs.',
+    'Export entry counts for up to 100 stored giveaways; total and truncation, no member IDs.',
   ],
   [
     'channelcounts',
-    'Private stored giveaway counts bychannelID/state,no entries/memberIDs/currentactivityproof.',
+    'Private stored giveaway counts by channel ID/state, no entries/member IDs/current activity proof.',
   ],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(desc));
@@ -180,12 +180,12 @@ data.addSubcommand((s) =>
   s
     .setName('inspectmetadata')
     .setDescription(
-      'ExactstoredgiveawayID minimalmetadataJSON/null,no prize/winner/member/sourceIDs/nativeproof.',
+      'Exact stored giveaway ID minimal metadata JSON/null, no prize/winner/member/source IDs/native proof.',
     )
     .addIntegerOption((o) =>
       o
         .setName('id')
-        .setDescription('ExactstoredgiveawayID')
+        .setDescription('Exact stored giveaway ID')
         .setRequired(true)
         .setMinValue(1)
         .setMaxValue(Number.MAX_SAFE_INTEGER),
@@ -195,12 +195,12 @@ data.addSubcommand((s) =>
   s
     .setName('channelmetadata')
     .setDescription(
-      'Latest100minimalgiveawaymetadata for exactstoredchannelID,no prize/member/native lookup.',
+      'Latest 100 minimal giveaway metadata for exact stored channel ID, no prize/member/native lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('channel-id')
-        .setDescription('Exact17-20digit storedchannelID')
+        .setDescription('Exact 17-20 digit stored channel ID')
         .setRequired(true)
         .setMinLength(17)
         .setMaxLength(20),
@@ -210,7 +210,7 @@ data.addSubcommand((s) =>
   s
     .setName('exportunresolved')
     .setDescription(
-      'Latest100pending/ending/uncertain minimalgiveawaymetadata,no draw/retry/native outcomeproof.',
+      'Latest 100 pending/ending/uncertain minimal giveaway metadata, no draw/retry/native outcome proof.',
     ),
 );
 export default {

@@ -7,7 +7,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('enlarge')
     .setDescription(
-      'Private high-resolution current guild custom emoji image;no foreign emoji/Unicode rendering.',
+      'Private high-resolution current guild custom emoji image; no foreign emoji/Unicode rendering.',
     )
     .setContexts(InteractionContextType.Guild)
     .addStringOption((o) =>

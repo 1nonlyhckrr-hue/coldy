@@ -12,7 +12,7 @@ import { lunaPayload } from '../../utils/embeds.js';
 import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('jail')
-  .setDescription('Bounded native timeout jail,not role stripping or single-channel isolation.')
+  .setDescription('Bounded native timeout jail, not role stripping or single-channel isolation.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ModerateMembers);
 for (const sub of ['setup', 'config', 'reset', 'apply', 'release', 'list'])
@@ -20,12 +20,13 @@ for (const sub of ['setup', 'config', 'reset', 'apply', 'release', 'list'])
     s.setName(sub).setDescription(
       {
         setup:
-          'Owner:record existing normaltext jail referencechannel,no permission or role edits.',
-        config: 'Private stored referencechannel policy,not isolation proof.',
-        reset: 'Owner:forget policy only when no live or uncertain jail records.',
-        apply: 'Confirmed1s-28d native timeout;roles unchanged,no existing timeout overwritten.',
-        release: 'Confirmed clear exact owned current timeout only;drift/uncertain blocks.',
-        list: 'Up to25active/uncertain jail metadata;expired native timeouts settle locally.',
+          'Owner: record existing normal text jail reference channel, no permission or role edits.',
+        config: 'Private stored reference channel policy, not isolation proof.',
+        reset: 'Owner: forget policy only when no live or uncertain jail records.',
+        apply:
+          'Confirmed 1 s-28 d native timeout; roles unchanged, no existing timeout overwritten.',
+        release: 'Confirmed clear exact owned current timeout only; drift/uncertain blocks.',
+        list: 'Up to 25 active/uncertain jail metadata; expired native timeouts settle locally.',
       }[sub],
     );
     if (!['config', 'list'].includes(sub))
@@ -36,7 +37,7 @@ for (const sub of ['setup', 'config', 'reset', 'apply', 'release', 'list'])
       s.addChannelOption((o) =>
         o
           .setName('channel')
-          .setDescription('Existing normaltext referencechannel,not timeout exemption')
+          .setDescription('Existing normal text reference channel, not timeout exemption')
           .addChannelTypes(ChannelType.GuildText)
           .setRequired(true),
       );
@@ -49,7 +50,7 @@ for (const sub of ['setup', 'config', 'reset', 'apply', 'release', 'list'])
       s.addStringOption((o) =>
         o
           .setName('duration')
-          .setDescription('Required1s-28d,no permanent jail')
+          .setDescription('Required 1 s-28 d, no permanent jail')
           .setRequired(true)
           .setMaxLength(12),
       );

@@ -1089,5 +1089,18 @@
   "bulkTimeoutUnavailable": "Current native actor,bot or member permission/state is unavailable.",
   "bulkTimeoutConfirm": "Confirm clearing all exact previewed deadlines explicitly.",
   "bulkTimeoutBlocked": "Preview expired,changed,busy,used or uncertain. Partial clears may have happened;inspect cases.No blind retry.",
-  "bulkTimeoutStatus": "Exact bounded timeout data attached. Only displayed1-10members,not everyone.Native deadline drift blocks clearing. Multi-member changes are not atomic;partial or uncertain effects are possible."
+  "bulkTimeoutStatus": "Exact bounded timeout data attached. Only displayed1-10members,not everyone.Native deadline drift blocks clearing. Multi-member changes are not atomic;partial or uncertain effects are possible.",
+  "helpNavTitle": "Emika | Command Directory",
+  "helpNavIntro": "Browse every installed command. Choose a category below, then use Previous and Next. This directory is public; anyone in this channel can browse. Controls stay active for 30 minutes, or until the bot restarts.",
+  "helpNavCategory": "Browse category",
+  "helpNavAll": "All categories",
+  "helpNavHome": "Home",
+  "helpNavPrev": "Previous",
+  "helpNavNext": "Next",
+  "helpNavScope": "Scope",
+  "helpNavPage": "Page",
+  "helpNavCount": "Entries",
+  "helpNavCommands": "Commands",
+  "helpNavDetails": "Parameters & choices",
+  "helpExpired": "This directory has expired. Run /help to open a new one."
 }

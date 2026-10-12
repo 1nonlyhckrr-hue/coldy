@@ -18,21 +18,24 @@ import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('vector')
   .setDescription(
-    'Private bounded integer vector products and exact squared norm;no native effects.',
+    'Private bounded integer vector products and exact squared norm; no native effects.',
   )
   .setContexts(InteractionContextType.Guild);
 for (const [name, description] of [
   [
     'distancesquared',
-    'Exact squared Euclidean distance of equal-length1-4integer vectors;not square root.',
+    'Exact squared Euclidean distance of equal-length 1-4 integer vectors; not square root.',
   ],
-  ['project', 'Exact rational projection of left onto nonzero right vector;no unit normalization.'],
+  [
+    'project',
+    'Exact rational projection of left onto nonzero right vector; no unit normalization.',
+  ],
   ['reject', 'Exact rational perpendicular remainder left minus projection onto nonzero right.'],
-  ['dot', 'Exact dot product of equal-length1-4integer vectors JSON;decimalstring output.'],
-  ['cross', 'Exact ordered right-hand3Dcross product of integer vectors JSON;decimalstrings.'],
+  ['dot', 'Exact dot product of equal-length 1-4 integer vectors JSON; decimal string output.'],
+  ['cross', 'Exact ordered right-hand 3D cross product of integer vectors JSON; decimal strings.'],
   [
     'normsquared',
-    'Exact squared Euclidean norm of1-4integer vector JSON;not square root/normalization.',
+    'Exact squared Euclidean norm of 1-4 integer vector JSON; not square root/normalization.',
   ],
 ])
   data.addSubcommand((s) => {
@@ -41,7 +44,7 @@ for (const [name, description] of [
       s.addStringOption((o) =>
         o
           .setName(key)
-          .setDescription('JSONarray1-4integers -1000000to1000000;cross requires3')
+          .setDescription('JSON array 1-4 integers -1000000 to 1000000; cross requires 3')
           .setRequired(true)
           .setMinLength(3)
           .setMaxLength(200),

@@ -38,14 +38,14 @@ for (const sub of ['blockchannel', 'unblockchannel'])
       .setName(sub)
       .setDescription(
         sub === 'blockchannel'
-          ? 'Deny one command in this exact channel,no inheritance/Discord overwrite.'
-          : 'Remove exact stored channel deny,including deleted channels.',
+          ? 'Deny one command in this exact channel, no inheritance/Discord overwrite.'
+          : 'Remove exact stored channel deny, including deleted channels.',
       )
       .addStringOption(command)
       .addStringOption((o) =>
         o
           .setName('channel-id')
-          .setDescription('Exact server channel ID17-20digits')
+          .setDescription('Exact server channel ID 17-20 digits')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),
@@ -54,9 +54,9 @@ for (const sub of ['blockchannel', 'unblockchannel'])
 data.addSubcommand((s) =>
   s
     .setName('channelrules')
-    .setDescription('Private stored channel denies,ten perpage;not Discord permissions.')
+    .setDescription('Private stored channel denies, ten per page; not Discord permissions.')
     .addIntegerOption((o) =>
-      o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+      o.setName('page').setDescription('Page 1-10').setMinValue(1).setMaxValue(10),
     )
     .addStringOption((o) =>
       o
@@ -70,13 +70,17 @@ data
   .addSubcommand((s) =>
     s
       .setName('status')
-      .setDescription('Check your current stored command restriction only,not Discord permissions.')
+      .setDescription(
+        'Check your current stored command restriction only, not Discord permissions.',
+      )
       .addStringOption(command),
   )
   .addSubcommand((s) =>
     s
       .setName('remove')
-      .setDescription('Remove one exact stored restriction,including departed/deleted subject IDs.')
+      .setDescription(
+        'Remove one exact stored restriction, including departed/deleted subject IDs.',
+      )
       .addStringOption(command)
       .addStringOption((o) =>
         o
@@ -104,15 +108,15 @@ data
     s
       .setName('list')
       .setDescription(
-        'Inspect stored deny rules,optional command/kind filters;no permission grants.',
+        'Inspect stored deny rules, optional command/kind filters; no permission grants.',
       )
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-10').setMinValue(1).setMaxValue(10),
+        o.setName('page').setDescription('Page 1-10').setMinValue(1).setMaxValue(10),
       )
       .addStringOption((o) =>
         o
           .setName('command')
-          .setDescription('Exact stored command name,including previously removed commands')
+          .setDescription('Exact stored command name, including previously removed commands')
           .setMinLength(1)
           .setMaxLength(32),
       )
@@ -134,14 +138,14 @@ data
     s
       .setName('export')
       .setDescription(
-        'Private JSON of stored user/role/channel deny IDs,no permissions or native grants.',
+        'Private JSON of stored user/role/channel deny IDs, no permissions or native grants.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('clearall')
       .setDescription(
-        'Confirmed remove all guild Emika denies,user/role/channel;native permissions unchanged.',
+        'Confirmed remove all guild Emika denies, user/role/channel; native permissions unchanged.',
       )
       .addBooleanOption((o) =>
         o
@@ -154,13 +158,13 @@ data
     s
       .setName('clearcommand')
       .setDescription(
-        'Confirmed remove bothsubject/channel denies for one storedcommand,including removed ones.',
+        'Confirmed remove both subject/channel denies for one stored command, including removed ones.',
       )
       .addStringOption(command)
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm removing all denies for this exact storedcommand')
+          .setDescription('Confirm removing all denies for this exact stored command')
           .setRequired(true),
       ),
   );
@@ -189,18 +193,18 @@ for (const kind of ['user', 'role', 'channel'])
 data.addSubcommand((s) =>
   s
     .setName('summary')
-    .setDescription('Private stored deny counts bykind/command,no native permissions or IDs.'),
+    .setDescription('Private stored deny counts by kind/command, no native permissions or IDs.'),
 );
 data.addSubcommand((s) =>
   s
     .setName('searchid')
     .setDescription(
-      'Private exact stored ID lookup across user/role/channel denies,no native lookup.',
+      'Private exact stored ID lookup across user/role/channel denies, no native lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('id')
-        .setDescription('Exact stored17-20digit ID')
+        .setDescription('Exact stored 17-20 digit ID')
         .setMinLength(17)
         .setMaxLength(20)
         .setRequired(true),
@@ -210,26 +214,26 @@ data.addSubcommand((s) =>
   s
     .setName('obsolete')
     .setDescription(
-      'Private JSON denies for commands absent from current registry;no deletion/resource claims.',
+      'Private JSON denies for commands absent from current registry; no deletion/resource claims.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('commandcounts')
     .setDescription(
-      'Private stored deny counts percommand,no subject IDs or effectivepermission claim.',
+      'Private stored deny counts per command, no subject IDs or effective permission claim.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportcommand')
     .setDescription(
-      'Private all stored subject/channel denies for exactcommandname,including absentcommands.',
+      'Private all stored subject/channel denies for exact command name, including absent commands.',
     )
     .addStringOption((o) =>
       o
         .setName('command')
-        .setDescription('Exact stored top-level name,without /')
+        .setDescription('Exact stored top-level name, without /')
         .setMinLength(1)
         .setMaxLength(32)
         .setRequired(true),
@@ -239,12 +243,12 @@ data.addSubcommand((s) =>
   s
     .setName('clearobsolete')
     .setDescription(
-      'Erase denies for registry-absent commands,may affect them if reinstalled later.',
+      'Erase denies for registry-absent commands, may affect them if reinstalled later.',
     )
     .addBooleanOption((o) =>
       o
         .setName('confirm')
-        .setDescription('Confirm forgetting absentcommand denies,no currentcommand changes')
+        .setDescription('Confirm forgetting absent command denies, no current command changes')
         .setRequired(true),
     ),
 );

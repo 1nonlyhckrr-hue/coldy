@@ -10,7 +10,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('roleinfo')
-    .setDescription('Read current role ID,color,position and permission flags.')
+    .setDescription('Read current role ID, color, position and permission flags.')
     .setContexts(InteractionContextType.Guild)
     .addRoleOption((o) =>
       o.setName('role').setDescription('Role in this server').setRequired(true),

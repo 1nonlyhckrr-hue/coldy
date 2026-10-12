@@ -5,7 +5,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('banner')
-    .setDescription('Fetch a public user profile banner link,no guild membership assumption.')
+    .setDescription('Fetch a public user profile banner link, no guild membership assumption.')
     .setContexts(InteractionContextType.Guild)
     .addUserOption((o) => o.setName('user').setDescription('Defaults to you')),
   async execute(i, c) {

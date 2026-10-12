@@ -10,13 +10,15 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('casehistory')
-  .setDescription('Private stored Emika case audit,no native effects or recovery.')
+  .setDescription('Private stored Emika case audit, no native effects or recovery.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
     s
       .setName('inspect')
-      .setDescription('Read one exact stored case identity/reason/status,not current native state.')
+      .setDescription(
+        'Read one exact stored case identity/reason/status, not current native state.',
+      )
       .addIntegerOption((o) =>
         o.setName('id').setDescription('Case ID in this server').setMinValue(1).setRequired(true),
       ),
@@ -24,9 +26,13 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('list')
-      .setDescription('Page stored case metadata,ten per page,optional exact status filter.')
+      .setDescription('Page stored case metadata, ten per page, optional exact status filter.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-1000,newestfirst').setMinValue(1).setMaxValue(1000),
+        o
+          .setName('page')
+          .setDescription('Page 1-1000, newest first')
+          .setMinValue(1)
+          .setMaxValue(1000),
       )
       .addStringOption((o) =>
         o
@@ -41,14 +47,14 @@ const data = new SlashCommandBuilder()
     s
       .setName('export')
       .setDescription(
-        'Private latest100case metadata/reasons JSON,total/truncated,no recovery/grant.',
+        'Private latest 100 case metadata/reasons JSON, total/truncated, no recovery/grant.',
       ),
   );
 data.addSubcommand((s) =>
   s
     .setName('summary')
     .setDescription(
-      'Private allstoredcase counts bystatus,no identities/reasons or native claims.',
+      'Private all stored case counts by status, no identities/reasons or native claims.',
     ),
 );
 for (const kind of ['actor', 'target'])
@@ -67,7 +73,11 @@ for (const kind of ['actor', 'target'])
           .setRequired(true),
       )
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page1-1000,newestfirst').setMinValue(1).setMaxValue(1000),
+        o
+          .setName('page')
+          .setDescription('Page 1-1000, newest first')
+          .setMinValue(1)
+          .setMaxValue(1000),
       ),
   );
 for (const sub of ['exportmetadata', 'actioncounts', 'exportunresolved'])
@@ -75,11 +85,11 @@ for (const sub of ['exportmetadata', 'actioncounts', 'exportunresolved'])
     s.setName(sub).setDescription(
       {
         exportmetadata:
-          'Latest100minimal storedcaseID/action/state/timeJSON,total/truncated,no reasons/actor/targetIDs.',
+          'Export up to 100 case metadata records; total and truncation, no reasons or actor/target IDs.',
         actioncounts:
-          'Storedcase counts by action/state,no identities/reasons/currentnative state claims.',
+          'Stored case counts by action/state, no identities/reasons/current native state claims.',
         exportunresolved:
-          'Latest100pending/uncertain caseID/action/state/timeJSON,no recovery/retry/nativeproof.',
+          'Latest 100 pending/uncertain case ID/action/state/time JSON, no recovery/retry/native proof.',
       }[sub],
     ),
   );

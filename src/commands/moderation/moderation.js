@@ -39,7 +39,7 @@ for (const action of actions)
       s.addStringOption((o) =>
         o
           .setName('duration')
-          .setDescription('1s to 28d, e.g. 30m or 1h')
+          .setDescription('1 s to 28 d, e.g. 30 m or 1 h')
           .setRequired(true)
           .setMaxLength(12),
       );
@@ -47,7 +47,7 @@ for (const action of actions)
       s.addIntegerOption((o) =>
         o
           .setName('page')
-          .setDescription('Two complete warning reasons/page1-1000,newestfirst')
+          .setDescription('Two complete warning reasons/page 1-1000, newest first')
           .setMinValue(1)
           .setMaxValue(1000),
       );
@@ -78,7 +78,7 @@ for (const action of ['editwarning', 'clearwarning', 'exportwarnings'])
       s.addStringOption((o) =>
         o
           .setName('reason')
-          .setDescription('Replacement reason1-400characters,recorded in new case')
+          .setDescription('Replacement reason 1-400 characters, recorded in new case')
           .setMinLength(1)
           .setMaxLength(400)
           .setRequired(true),
@@ -99,7 +99,7 @@ data.addSubcommand((s) =>
     .addIntegerOption((o) =>
       o
         .setName('count')
-        .setDescription('Recent messages to inspect, skip pinned/system/older than13 days')
+        .setDescription('Recent messages to inspect, skip pinned/system/older than 13 days')
         .setMinValue(1)
         .setMaxValue(10)
         .setRequired(true),
@@ -108,7 +108,7 @@ data.addSubcommand((s) =>
 data.addSubcommand((s) =>
   s
     .setName('purgeconfirm')
-    .setDescription('Delete only your exact previewed IDs, expires in2 minutes.')
+    .setDescription('Delete only your exact previewed IDs, expires in 2 minutes.')
     .addIntegerOption((o) =>
       o.setName('plan-id').setDescription('Preview plan ID').setMinValue(1).setRequired(true),
     )

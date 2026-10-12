@@ -10,21 +10,21 @@ import { lunaPayload } from '../../utils/embeds.js';
 import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('voicelb')
-  .setDescription('Opt-in sampled human voice time,90UTCdays retained,no startup backfill.')
+  .setDescription('Opt-in sampled human voice time, 90 UTC days retained, no startup backfill.')
   .setContexts(InteractionContextType.Guild);
 for (const sub of ['enable', 'disable', 'config', 'stats', 'top', 'resetmine', 'optout', 'optin'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
         enable:
-          'Manage Server:start future voicejoin sampling;no credit for alreadyconnected sessions.',
-        disable: 'Manage Server:stop sampling and discard unfinished intervals;counts retained.',
+          'Manage Server: start future voice join sampling; no credit for already connected sessions.',
+        disable: 'Manage Server: stop sampling and discard unfinished intervals; counts retained.',
         config: 'Private saved voice tracking switch and your privacy preference.',
-        stats: 'Only your settled sampled voice milliseconds today/week/90retainedUTCdays.',
-        top: 'Private ten sampled voice ranks/page;not full call duration or speaking activity.',
-        resetmine: 'Erase only your voice counts and active sample;privacy preference kept.',
+        stats: 'Only your settled sampled voice milliseconds today/week/90 retained UTC days.',
+        top: 'Private ten sampled voice ranks/page; not full call duration or speaking activity.',
+        resetmine: 'Erase only your voice counts and active sample; privacy preference kept.',
         optout: 'Erase your counts/active sample and stop future sampling here.',
-        optin: 'Allow future join samples if server tracking enabled;no existing-call backfill.',
+        optin: 'Allow future join samples if server tracking enabled; no existing-call backfill.',
       }[sub],
     );
     if (sub === 'top') {
@@ -35,7 +35,7 @@ for (const sub of ['enable', 'disable', 'config', 'stats', 'top', 'resetmine', '
           .addChoices(...['today', 'week', 'retained'].map((value) => ({ name: value, value }))),
       );
       s.addIntegerOption((o) =>
-        o.setName('page').setDescription('Ten rows/page1-1000').setMinValue(1).setMaxValue(1000),
+        o.setName('page').setDescription('Ten rows/page 1-1000').setMinValue(1).setMaxValue(1000),
       );
     }
     return s;

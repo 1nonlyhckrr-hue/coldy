@@ -35,7 +35,7 @@ test('help refuses malformed/out-of-range pages/categories/search without clampi
   for (const search of ['', ' ', 'x'.repeat(81), 'a\nb', 42])
     assert.throws(() => helpPage(commands, { search }));
 });
-test('help filtered results and empty state are private localized no-ping full rows', async () => {
+test('help filtered results and empty state are public localized no-ping full rows', async () => {
   for (const locale of ['en', 'hi', 'hinglish'])
     for (const search of ['shuffle', 'impossible-path-name']) {
       let payload;
@@ -54,12 +54,12 @@ test('help filtered results and empty state are private localized no-ping full r
         version: '0.1.0',
         localization: { locale: () => locale },
       });
-      assert.equal(payload.flags, 64);
+      assert.equal(payload.flags, undefined);
       assert.deepEqual(payload.allowedMentions.parse, []);
       const text = payload.embeds[0].data.description;
       assert(text.length < 2000);
       assert(!text.includes('helpNoResults'));
-      if (search === 'shuffle') assert(text.includes('/music shuffle:'));
+      if (search === 'shuffle') assert(text.includes('/music shuffle'));
     }
 });
 
@@ -113,7 +113,7 @@ test('help detail pagination uses6whole lines and exact stored bounds and repeat
   assert.equal(rows.filter((r) => r.kind === 'choice').length, 6);
   assert(first.pages > 1);
 });
-test('help command details localize private no-ping bounded replies over all paths/pages with no effects', async () => {
+test('help command details localize public no-ping bounded replies over all paths/pages with no effects', async () => {
   for (const locale of ['en', 'hi', 'hinglish'])
     for (const cmd of commands.values()) {
       const d = cmd.data.toJSON(),
@@ -135,10 +135,10 @@ test('help command details localize private no-ping bounded replies over all pat
             localization: { locale: () => locale },
             version: '0.1.0',
           });
-          assert.equal(payload.flags, 64);
+          assert.equal(payload.flags, undefined);
           assert.deepEqual(payload.allowedMentions.parse, []);
           assert(payload.embeds[0].data.description.length < 2000);
-          assert(payload.embeds[0].data.description.includes('/' + path));
+          assert.equal(payload.embeds[0].data.fields[0].value, '/' + path);
         }
       }
     }

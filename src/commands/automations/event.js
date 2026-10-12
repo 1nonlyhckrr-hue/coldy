@@ -12,7 +12,7 @@ import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('event')
   .setDescription(
-    'Owner-only bounded selected-channel event visibility;exact owned restore,not server isolation.',
+    'Owner-only bounded selected-channel event visibility; exact owned restore, not server isolation.',
   )
   .setContexts(InteractionContextType.Guild);
 for (const sub of ['setup', 'enable', 'disable', 'reset', 'config'])
@@ -20,13 +20,13 @@ for (const sub of ['setup', 'enable', 'disable', 'reset', 'config'])
     s.setName(sub).setDescription(
       {
         setup:
-          'Select alreadyvisible eventcategory+1-10outside textchannelIDs JSON,min100members;no creation.',
+          'Select a visible event category and 1-10 outside text channels; at least 100 members, no creation.',
         enable:
-          'Confirm selected everyoneView denies;eventcategory unchanged;partial effects possible.',
+          'Confirm selected everyone View denies; event category unchanged; partial effects possible.',
         disable:
-          'Confirm exactsnapshot ownedrestore only;thirdparty drift/uncertainty blocks overwrite.',
-        reset: 'Forget inactive fullyrestored policy only;never delete category/channels.',
-        config: 'Private stored policy/receiptstates,not proof complete server isolation.',
+          'Confirm exact snapshot owned restore only; third party drift/uncertainty blocks overwrite.',
+        reset: 'Forget inactive fully restored policy only; never delete category/channels.',
+        config: 'Private stored policy/receipt states, not proof complete server isolation.',
       }[sub],
     );
     if (sub !== 'config')
@@ -40,14 +40,14 @@ for (const sub of ['setup', 'enable', 'disable', 'reset', 'config'])
       s.addChannelOption((o) =>
         o
           .setName('category')
-          .setDescription('Existing eventcategory')
+          .setDescription('Existing event category')
           .setRequired(true)
           .addChannelTypes(ChannelType.GuildCategory),
       );
       s.addStringOption((o) =>
         o
           .setName('channels')
-          .setDescription('JSONarray1-10outside normaltextchannel-IDstrings')
+          .setDescription('JSON array 1-10 outside normal text channel-ID strings')
           .setRequired(true)
           .setMaxLength(250),
       );

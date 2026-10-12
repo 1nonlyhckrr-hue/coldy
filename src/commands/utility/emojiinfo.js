@@ -10,7 +10,7 @@ export default {
   category: 'utility',
   data: new SlashCommandBuilder()
     .setName('emojiinfo')
-    .setDescription('Read one current server custom emoji,no uploader or role enumeration.')
+    .setDescription('Read one current server custom emoji, no uploader or role enumeration.')
     .setContexts(InteractionContextType.Guild)
     .addStringOption((o) =>
       o

@@ -20,14 +20,14 @@ const data = new SlashCommandBuilder()
     s
       .setName('deliverysummary')
       .setDescription(
-        'Private stored metadata-event receipt counts by state,no native verification.',
+        'Private stored metadata-event receipt counts by state, no native verification.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('exportreceipts')
       .setDescription(
-        'Private latest100 metadata-event state/timeJSON,total/truncation,no source IDs.',
+        'Private latest 100 metadata-event state/time JSON, total/truncation, no source IDs.',
       ),
   )
   .addSubcommand((s) =>
@@ -103,14 +103,14 @@ const data = new SlashCommandBuilder()
     s
       .setName('preview')
       .setDescription(
-        'Private sample case-log payload only,no native delivery or readiness claim.',
+        'Private sample case-log payload only, no native delivery or readiness claim.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('pauseevents')
       .setDescription(
-        'Confirmed clear all metadata-event opt-ins;case master/channel/replay receipts kept.',
+        'Confirmed clear all metadata-event opt-ins; case master/channel/replay receipts kept.',
       )
       .addBooleanOption((o) =>
         o
@@ -123,7 +123,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('reset')
       .setDescription(
-        'Confirmed stop logging and forget destination/event opt-ins,no native log deletion.',
+        'Confirmed stop logging and forget destination/event opt-ins, no native log deletion.',
       )
       .addBooleanOption((o) =>
         o
@@ -138,18 +138,18 @@ const data = new SlashCommandBuilder()
 data.addSubcommand((s) =>
   s
     .setName('export')
-    .setDescription('Private stored logging policy JSON;no case or delivery history.'),
+    .setDescription('Private stored logging policy JSON; no case or delivery history.'),
 );
 data.addSubcommand((s) =>
   s
     .setName('import')
     .setDescription(
-      'Replace strict stored logging policy JSON,force disabled;review destination later.',
+      'Replace strict stored logging policy JSON, force disabled; review destination later.',
     )
     .addStringOption((o) =>
       o
         .setName('json')
-        .setDescription('Strict enabled/channelId/events object,4000characters max')
+        .setDescription('Strict enabled/channel Id/events object, 4000 characters max')
         .setMinLength(2)
         .setMaxLength(4000)
         .setRequired(true),
@@ -164,7 +164,7 @@ data.addSubcommand((s) =>
 data.addSubcommand((s) =>
   s
     .setName('clearchannel')
-    .setDescription('Stop logging and forget only destination;event opt-ins/history retained.')
+    .setDescription('Stop logging and forget only destination; event opt-ins/history retained.')
     .addBooleanOption((o) =>
       o
         .setName('confirm')
@@ -176,12 +176,12 @@ data.addSubcommand((s) =>
   s
     .setName('statereceipts')
     .setDescription(
-      'Latest100stored receipts in explicitstate,state/timeJSON,total/truncated,no sourceIDs.',
+      'Latest 100 stored receipts in explicit state, state/time JSON, total/truncated, no source IDs.',
     )
     .addStringOption((o) =>
       o
         .setName('state')
-        .setDescription('Exact stored state,no native delivery proof')
+        .setDescription('Exact stored state, no native delivery proof')
         .setRequired(true)
         .addChoices(
           ...['reserved', 'sent', 'uncertain', 'unavailable'].map((value) => ({
@@ -195,18 +195,18 @@ data.addSubcommand((s) =>
   s
     .setName('unresolvedreceipts')
     .setDescription(
-      'Latest100reserved/uncertain/unavailable storedreceipts,no retry or native outcome proof.',
+      'Latest 100 reserved/uncertain/unavailable stored receipts, no retry or native outcome proof.',
     ),
 );
 data.addSubcommand((s) => {
   s.setName('windowreceipts').setDescription(
-    'Latest100storedreceipts in inclusive explicitUnixmillisecondwindow,no relative dates/sourceIDs.',
+    'Read up to 100 stored receipts in a Unix millisecond window; no relative dates or source IDs.',
   );
   for (const key of ['start', 'end'])
     s.addIntegerOption((o) =>
       o
         .setName(key)
-        .setDescription('Inclusive Unixmilliseconds0to9007199254740991')
+        .setDescription('Inclusive Unix milliseconds 0 to 9007199254740991')
         .setRequired(true)
         .setMinValue(0)
         .setMaxValue(Number.MAX_SAFE_INTEGER),

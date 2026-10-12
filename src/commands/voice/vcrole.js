@@ -15,7 +15,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('vcrole')
     .setDescription(
-      'Future voice-event safe role policy;only Emika-owned grants cleaned on disconnect.',
+      'Future voice-event safe role policy; only Emika-owned grants cleaned on disconnect.',
     )
     .setContexts(InteractionContextType.Guild)
     .setDefaultMemberPermissions(P.ManageGuild | P.ManageRoles)
@@ -23,7 +23,7 @@ export default {
       s
         .setName('add')
         .setDescription(
-          'Configure one safe role for future human voice joins;existing memberships untouched.',
+          'Configure one safe role for future human voice joins; existing memberships untouched.',
         )
         .addRoleOption((o) =>
           o.setName('role').setDescription('Safe role below actor/bot').setRequired(true),
@@ -33,14 +33,14 @@ export default {
       s
         .setName('remove')
         .setDescription(
-          'Disable future grants;existing Emika-owned grants retain future-disconnect cleanup.',
+          'Disable future grants; existing Emika-owned grants retain future-disconnect cleanup.',
         ),
     )
     .addSubcommand((s) =>
       s
         .setName('show')
         .setDescription(
-          'Private saved policy and retained grant counts,not native voice/membership proof.',
+          'Private saved policy and retained grant counts, not native voice/membership proof.',
         ),
     ),
   async execute(i, c) {

@@ -58,7 +58,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('status')
       .setDescription(
-        'Privately show your ten latest stored ticket states,no live access or transcript.',
+        'Privately show your ten latest stored ticket states, no live access or transcript.',
       ),
   )
   .addSubcommand((s) => s.setName('open').setDescription('Open one private support ticket.'))
@@ -68,7 +68,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('unclaim')
-      .setDescription('Release your own claim on this open ticket,without changing access.'),
+      .setDescription('Release your own claim on this open ticket, without changing access.'),
   )
   .addSubcommand((s) =>
     s.setName('close').setDescription('Store transcript and make the owner read-only.'),
@@ -113,19 +113,19 @@ const data = new SlashCommandBuilder()
     s
       .setName('queue')
       .setDescription(
-        'Manage Server:inspect unresolved stored ticket IDs,not content or live access.',
+        'Manage Server: inspect unresolved stored ticket IDs, not content or live access.',
       )
       .addIntegerOption((o) =>
         o
           .setName('page')
-          .setDescription('Page1-10,oldest unresolved first')
+          .setDescription('Page 1-10, oldest unresolved first')
           .setMinValue(1)
           .setMaxValue(10),
       )
       .addStringOption((o) =>
         o
           .setName('state')
-          .setDescription('One stored unresolved state,not native channel state')
+          .setDescription('One stored unresolved state, not native channel state')
           .addChoices(
             ...['creating', 'open', 'closing', 'reopening', 'uncertain'].map((value) => ({
               name: value,
@@ -136,7 +136,7 @@ const data = new SlashCommandBuilder()
       .addBooleanOption((o) =>
         o
           .setName('unclaimed')
-          .setDescription('Only rows with no stored claimant;no ownership/access change'),
+          .setDescription('Only rows with no stored claimant; no ownership/access change'),
       ),
   )
   .addSubcommand((s) =>
@@ -148,15 +148,15 @@ for (const sub of ['resetsetup', 'forgetalltranscripts', 'releaseclaims'])
       .setName(sub)
       .setDescription(
         sub === 'resetsetup'
-          ? 'Confirmed stop newticket opens/panels by forgettingsetup;existingtickets/nativechannels kept.'
+          ? 'Confirmed stop new ticket opens/panels by forgetting setup; existing tickets/native channels kept.'
           : sub === 'forgetalltranscripts'
-            ? 'Confirmed erase allguild storedtranscripts,no native/exportedmessage deletion.'
-            : 'Confirmed release allopen storedclaims,not access/ownership/nativechannels.',
+            ? 'Confirmed erase all guild stored transcripts, no native/exported message deletion.'
+            : 'Confirmed release all open stored claims, not access/ownership/native channels.',
       )
       .addBooleanOption((o) =>
         o
           .setName('confirm')
-          .setDescription('Confirm stored setup/content/claim change,no native effect')
+          .setDescription('Confirm stored setup/content/claim change, no native effect')
           .setRequired(true),
       ),
   );
@@ -165,10 +165,10 @@ for (const name of ['forgetbyid', 'forgetusertranscripts', 'forgetclosedtranscri
     s.setName(name)
       .setDescription(
         name === 'forgetbyid'
-          ? 'Erase one stored ticket snapshot by ID,not native messages or ticket state.'
+          ? 'Erase one stored ticket snapshot by ID, not native messages or ticket state.'
           : name === 'forgetusertranscripts'
-            ? 'Erase all stored snapshots for one owner ID here;no native messages or state changes.'
-            : 'Erase snapshots of closed tickets only;open/uncertain snapshots and native history kept.',
+            ? 'Erase all stored snapshots for one owner ID here; no native messages or state changes.'
+            : 'Erase snapshots of closed tickets only; open/uncertain snapshots and native history kept.',
       )
       .addBooleanOption((o) =>
         o
@@ -188,7 +188,7 @@ for (const name of ['forgetbyid', 'forgetusertranscripts', 'forgetclosedtranscri
       s.addStringOption((o) =>
         o
           .setName('owner-id')
-          .setDescription('Exact stored ticket owner ID,departed users allowed')
+          .setDescription('Exact stored ticket owner ID, departed users allowed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),
@@ -199,42 +199,42 @@ data.addSubcommand((s) =>
   s
     .setName('summary')
     .setDescription(
-      'ManageServer:private stored ticket states/snapshotcount,no identities/content.',
+      'Manage Server: private stored ticket states/snapshot count, no identities/content.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportconfig')
     .setDescription(
-      'ManageServer:private stored category/supportrole/retention JSON,no live validation.',
+      'Manage Server: private stored category/support role/retention JSON, no live validation.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportmine')
     .setDescription(
-      'Private latest100onlyyour ticket metadata,total/truncated,no staff/source/transcript content.',
+      'Private latest 100 only your ticket metadata, total/truncated, no staff/source/transcript content.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('exportrecords')
     .setDescription(
-      'Manage Server:latest100 stored ticketmetadataJSON,total/truncation,no owner/staff/sourceIDs.',
+      'Manage Server: latest 100 stored ticket metadata JSON, total/truncation, no owner/staff/source IDs.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('transcriptmetadata')
     .setDescription(
-      'Manage Server:latest100 snapshot ticketID/count/truncated/time,no messagebody/memberIDs.',
+      'Manage Server: latest 100 snapshot ticket ID/count/truncated/time, no message body/member IDs.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('claimsummary')
     .setDescription(
-      'Manage Server:stored ticket state/claimed-flag counts only,no staff/ownerIDs.',
+      'Manage Server: stored ticket state/claimed-flag counts only, no staff/owner IDs.',
     ),
 );
 export default {

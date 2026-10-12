@@ -10,7 +10,7 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('afk')
-  .setDescription('Opt-in own status,reason disclosed only in this exact channel.')
+  .setDescription('Opt-in own status, reason disclosed only in this exact channel.')
   .setContexts(InteractionContextType.Guild)
   .addSubcommand((s) =>
     s
@@ -23,24 +23,24 @@ const data = new SlashCommandBuilder()
     s
       .setName('channelcounts')
       .setDescription(
-        'Manage Server: private unexpired stored AFK counts perchannelID, no user IDs/reasons.',
+        'Manage Server: count unexpired stored AFK statuses per channel; no user IDs or reasons.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('exportnotices')
       .setDescription(
-        'Manage Server: private latest100 notice channel/time JSON,no message/member IDs.',
+        'Manage Server: private latest 100 notice channel/time JSON, no message/member IDs.',
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('set')
-      .setDescription('Set status up to7days,clear on your next eligible server message.')
+      .setDescription('Set status up to 7 days, clear on your next eligible server message.')
       .addStringOption((o) =>
         o
           .setName('reason')
-          .setDescription('Public reason for this channel,no private details')
+          .setDescription('Public reason for this channel, no private details')
           .setMinLength(1)
           .setMaxLength(200)
           .setRequired(true),
@@ -56,12 +56,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('reason')
       .setDescription(
-        'Edit own existing public reason without extending expiry;confirm exact-channel sharing.',
+        'Edit own existing public reason without extending expiry; confirm exact-channel sharing.',
       )
       .addStringOption((o) =>
         o
           .setName('reason')
-          .setDescription('New public reason,1-200characters')
+          .setDescription('New public reason, 1-200 characters')
           .setMinLength(1)
           .setMaxLength(200)
           .setRequired(true),
@@ -77,7 +77,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('move')
       .setDescription(
-        'Move own existing reason sharing to this current channel,without extending expiry.',
+        'Move own existing reason sharing to this current channel, without extending expiry.',
       )
       .addBooleanOption((o) =>
         o
@@ -90,7 +90,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('clearall')
       .setDescription(
-        'Manage Server:erase all stored guild AFK reasons;no native message deletion.',
+        'Manage Server: erase all stored guild AFK reasons; no native message deletion.',
       )
       .addBooleanOption((o) =>
         o
@@ -106,7 +106,7 @@ const data = new SlashCommandBuilder()
 data.addSubcommand((s) =>
   s
     .setName('exportmine')
-    .setDescription('Private JSON of only your stored away reason/channel/expiry,no notice IDs.'),
+    .setDescription('Private JSON of only your stored away reason/channel/expiry, no notice IDs.'),
 );
 for (const sub of ['clearchannel', 'clearuser'])
   data.addSubcommand((s) =>
@@ -114,13 +114,13 @@ for (const sub of ['clearchannel', 'clearuser'])
       .setName(sub)
       .setDescription(
         sub === 'clearchannel'
-          ? 'Manage Server:erase stored away reasons shared in one exact channel,no native deletes.'
-          : 'Manage Server:erase one exact user away reason/status,no native deletes.',
+          ? 'Manage Server: erase stored away reasons shared in one exact channel, no native deletes.'
+          : 'Manage Server: erase one exact user away reason/status, no native deletes.',
       )
       .addStringOption((o) =>
         o
           .setName('id')
-          .setDescription('Exact stored channel/user ID,deleted/departed resources allowed')
+          .setDescription('Exact stored channel/user ID, deleted/departed resources allowed')
           .setMinLength(17)
           .setMaxLength(20)
           .setRequired(true),
@@ -136,19 +136,19 @@ data.addSubcommand((s) =>
   s
     .setName('exportstatuses')
     .setDescription(
-      'ManageServer:latest100unexpired status channel/time/expiryJSON,no reasons/userIDs,total/truncated.',
+      'Manage Server: export up to 100 unexpired status records; includes total, no reasons or user IDs.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('channelmetadata')
     .setDescription(
-      'ManageServer:latest100unexpired statusmetadata forstoredchannelID,no reasons/userIDs/native lookup.',
+      'Manage Server: read up to 100 stored statuses for a channel; no reasons, user IDs or live lookup.',
     )
     .addStringOption((o) =>
       o
         .setName('channel-id')
-        .setDescription('ExactstoredchannelID17-20digits')
+        .setDescription('Exact stored channel ID 17-20 digits')
         .setRequired(true)
         .setMinLength(17)
         .setMaxLength(20),
@@ -158,7 +158,7 @@ data.addSubcommand((s) =>
   s
     .setName('agebands')
     .setDescription(
-      'ManageServer:unexpired storedstatus agebands fromasOfclock,no userIDs/reasons/currentawayclaim.',
+      'Manage Server: count unexpired stored statuses by age; no reasons, user IDs or live status claim.',
     ),
 );
 export default {

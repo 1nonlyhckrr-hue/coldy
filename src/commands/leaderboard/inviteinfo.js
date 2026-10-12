@@ -13,7 +13,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('inviteinfo')
     .setDescription(
-      'Private current native metadata for your own active invites;no join attribution or tracking.',
+      'Private current native metadata for your own active invites; no join attribution or tracking.',
     )
     .setContexts(InteractionContextType.Guild),
   async execute(i, c) {

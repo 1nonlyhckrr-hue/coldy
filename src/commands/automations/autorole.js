@@ -13,7 +13,7 @@ import { translate } from '../../services/localization.js';
 const data = new SlashCommandBuilder()
   .setName('autorole')
   .setDescription(
-    'Safe future-join human/bot role policies;no bulk assignment or retroactive grants.',
+    'Safe future-join human/bot role policies; no bulk assignment or retroactive grants.',
   )
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild | P.ManageRoles);
@@ -21,10 +21,10 @@ for (const sub of ['add', 'remove', 'reset', 'config'])
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
-        add: 'Configure safe role for future human/bot joins,max10perkind;requires member events.',
-        remove: 'Remove exact saved role policy;does not remove existing member roles.',
-        reset: 'Clear human/bot/all policies only;existing member roles and receipts unchanged.',
-        config: 'Private saved human/bot role policies;not native grants or current member proof.',
+        add: 'Configure safe role for future human/bot joins, max 10 per kind; requires member events.',
+        remove: 'Remove exact saved role policy; does not remove existing member roles.',
+        reset: 'Clear human/bot/all policies only; existing member roles and receipts unchanged.',
+        config: 'Private saved human/bot role policies; not native grants or current member proof.',
       }[sub],
     );
     if (sub !== 'config')
@@ -44,14 +44,14 @@ for (const sub of ['add', 'remove', 'reset', 'config'])
       s.addRoleOption((o) =>
         o
           .setName('role')
-          .setDescription('Reviewed nonmanaged role with safe permissions')
+          .setDescription('Reviewed non managed role with safe permissions')
           .setRequired(true),
       );
     if (sub === 'remove')
       s.addStringOption((o) =>
         o
           .setName('role-id')
-          .setDescription('Exact stored role ID,including deleted role')
+          .setDescription('Exact stored role ID, including deleted role')
           .setRequired(true)
           .setMinLength(17)
           .setMaxLength(20),

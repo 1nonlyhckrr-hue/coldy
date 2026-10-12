@@ -10,13 +10,13 @@ export default {
   category: 'moderation',
   data: new SlashCommandBuilder()
     .setName('nickname')
-    .setDescription('Confirmed one-member nickname update or explicit reset,no bulk changes.')
+    .setDescription('Confirmed one-member nickname update or explicit reset, no bulk changes.')
     .setContexts(InteractionContextType.Guild)
     .setDefaultMemberPermissions(P.ManageNicknames)
     .addUserOption((o) =>
       o
         .setName('member')
-        .setDescription('One server member,not yourself/owner/bot')
+        .setDescription('One server member, not yourself/owner/bot')
         .setRequired(true),
     )
     .addBooleanOption((o) =>
@@ -25,7 +25,7 @@ export default {
     .addStringOption((o) =>
       o
         .setName('text')
-        .setDescription('1-32 characters,no @;omit to explicitly reset nickname')
+        .setDescription('1-32 characters, no @; omit to explicitly reset nickname')
         .setMinLength(1)
         .setMaxLength(32),
     ),

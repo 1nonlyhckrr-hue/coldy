@@ -9,7 +9,7 @@ import { publishPoll } from '../../services/polls.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('poll')
-  .setDescription('Manage Server: publish a native Discord poll with2-10 answers.')
+  .setDescription('Manage Server: publish a native Discord poll with 2-10 answers.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
   .addChannelOption((o) =>
@@ -40,12 +40,12 @@ data
   .addIntegerOption((o) =>
     o
       .setName('hours')
-      .setDescription('Duration1-768 hours,default24')
+      .setDescription('Duration 1-768 hours, default 24')
       .setMinValue(1)
       .setMaxValue(768),
   )
   .addBooleanOption((o) =>
-    o.setName('multiple').setDescription('Allow multiple answers,defaultfalse'),
+    o.setName('multiple').setDescription('Allow multiple answers, default false'),
   );
 export default {
   category: 'utility',

@@ -41,11 +41,13 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('roundrobin')
-      .setDescription('Private complete pair schedule for2-10 labels,no dates/member assignments.')
+      .setDescription(
+        'Private complete pair schedule for 2-10 labels, no dates/member assignments.',
+      )
       .addStringOption((o) =>
         o
           .setName('labels')
-          .setDescription('2-10 distinct labels separated by |,max30characters each')
+          .setDescription('2-10 distinct labels separated by |, max 30 characters each')
           .setMinLength(3)
           .setMaxLength(309)
           .setRequired(true),
@@ -55,12 +57,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('dealhands')
       .setDescription(
-        'Private2-5 numbered hands,1-5cards each,unique standarddeck,no bets/secret delivery.',
+        'Private 2-5 numbered hands, 1-5 cards each, unique standard deck, no bets/secret delivery.',
       )
       .addIntegerOption((o) =>
         o
           .setName('players')
-          .setDescription('Numbered hands2-5')
+          .setDescription('Numbered hands 2-5')
           .setMinValue(2)
           .setMaxValue(5)
           .setRequired(true),
@@ -68,7 +70,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('cards')
-          .setDescription('Cards perhand1-5')
+          .setDescription('Cards perhand 1-5')
           .setMinValue(1)
           .setMaxValue(5)
           .setRequired(true),
@@ -78,12 +80,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('dicehistogram')
       .setDescription(
-        'Private1-100 independent dice rolls summarized by face,count/total,no stored state.',
+        'Private 1-100 independent dice rolls summarized by face, count/total, no stored state.',
       )
       .addIntegerOption((o) =>
         o
           .setName('count')
-          .setDescription('Roll count1-100')
+          .setDescription('Roll count 1-100')
           .setMinValue(1)
           .setMaxValue(100)
           .setRequired(true),
@@ -91,7 +93,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('sides')
-          .setDescription('Sides2-20')
+          .setDescription('Sides 2-20')
           .setMinValue(2)
           .setMaxValue(20)
           .setRequired(true),
@@ -101,7 +103,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('pairs')
       .setDescription(
-        'Private random pairings of2-20 labels,odd label gets bye;no member assignment.',
+        'Private random pairings of 2-20 labels, odd label gets bye; no member assignment.',
       )
       .addStringOption((o) =>
         o
@@ -116,12 +118,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('exchange')
       .setDescription(
-        'Private one-cycle label exchange;no self match,no messages or secret delivery.',
+        'Private one-cycle label exchange; no self match, no messages or secret delivery.',
       )
       .addStringOption((o) =>
         o
           .setName('labels')
-          .setDescription('2-20 distinct labels separated by |,result visible to you')
+          .setDescription('2-20 distinct labels separated by |, result visible to you')
           .setMinLength(3)
           .setMaxLength(1800)
           .setRequired(true),
@@ -131,7 +133,7 @@ const data = new SlashCommandBuilder()
     s
       .setName('weightedchoice')
       .setDescription(
-        'Private weighted draw from explicit labels/positive integer weights,not advice.',
+        'Private weighted draw from explicit labels/positive integer weights, not advice.',
       )
       .addStringOption((o) =>
         o
@@ -144,7 +146,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('weights')
-          .setDescription('Matching positive1-1000 integer weights separated by |,no spaces')
+          .setDescription('Matching positive 1-1000 integer weights separated by |, no spaces')
           .setMinLength(3)
           .setMaxLength(119)
           .setRequired(true),
@@ -195,7 +197,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('shuffle')
-      .setDescription('Privately randomize all 2-20 distinct choices,no assignments.')
+      .setDescription('Privately randomize all 2-20 distinct choices, no assignments.')
       .addStringOption((o) =>
         o
           .setName('choices')
@@ -209,12 +211,12 @@ const data = new SlashCommandBuilder()
     s
       .setName('teams')
       .setDescription(
-        'Privately split 2-20 distinct labels into balanced random groups,no invites.',
+        'Privately split 2-20 distinct labels into balanced random groups, no invites.',
       )
       .addStringOption((o) =>
         o
           .setName('labels')
-          .setDescription('Labels separated by |,not Discord member assignments')
+          .setDescription('Labels separated by |, not Discord member assignments')
           .setMinLength(3)
           .setMaxLength(1800)
           .setRequired(true),
@@ -222,7 +224,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('groups')
-          .setDescription('Group count2-5,no empty groups')
+          .setDescription('Group count 2-5, no empty groups')
           .setMinValue(2)
           .setMaxValue(5)
           .setRequired(true),
@@ -231,11 +233,11 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('number')
-      .setDescription('One uniform integer in an inclusive bounded range;not advice.')
+      .setDescription('One uniform integer in an inclusive bounded range; not advice.')
       .addIntegerOption((o) =>
         o
           .setName('minimum')
-          .setDescription('Inclusive minimum,-1000000 to1000000')
+          .setDescription('Inclusive minimum, -1000000 to 1000000')
           .setMinValue(-1000000)
           .setMaxValue(1000000)
           .setRequired(true),
@@ -243,7 +245,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('maximum')
-          .setDescription('Inclusive maximum,at least minimum')
+          .setDescription('Inclusive maximum, at least minimum')
           .setMinValue(-1000000)
           .setMaxValue(1000000)
           .setRequired(true),
@@ -252,7 +254,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('sample')
-      .setDescription('Pick1-20 distinct waiting labels without replacement;no assignments.')
+      .setDescription('Pick 1-20 distinct waiting labels without replacement; no assignments.')
       .addStringOption((o) =>
         o
           .setName('choices')
@@ -264,7 +266,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('count')
-          .setDescription('How many labels,at most total supplied')
+          .setDescription('How many labels, at most total supplied')
           .setMinValue(1)
           .setMaxValue(20)
           .setRequired(true),
@@ -277,11 +279,13 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('dicekeep')
-      .setDescription('Roll bounded dice,keep highest or lowest results;no stakes or saved state.')
+      .setDescription(
+        'Roll bounded dice, keep highest or lowest results; no stakes or saved state.',
+      )
       .addIntegerOption((o) =>
         o
           .setName('count')
-          .setDescription('Number of dice1-10')
+          .setDescription('Number of dice 1-10')
           .setMinValue(1)
           .setMaxValue(10)
           .setRequired(true),
@@ -289,7 +293,7 @@ const data = new SlashCommandBuilder()
       .addIntegerOption((o) =>
         o
           .setName('keep')
-          .setDescription('Keep1-count dice')
+          .setDescription('Keep 1-count dice')
           .setMinValue(1)
           .setMaxValue(10)
           .setRequired(true),
@@ -302,17 +306,21 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       )
       .addIntegerOption((o) =>
-        o.setName('sides').setDescription('Sides2-1000,default6').setMinValue(2).setMaxValue(1000),
+        o
+          .setName('sides')
+          .setDescription('Sides 2-1000, default 6')
+          .setMinValue(2)
+          .setMaxValue(1000),
       ),
   )
   .addSubcommand((s) =>
     s
       .setName('rpsseries')
-      .setDescription('Play2-10 preselected RPS rounds against Emika;private score,no stakes.')
+      .setDescription('Play 2-10 preselected RPS rounds against Emika; private score, no stakes.')
       .addStringOption((o) =>
         o
           .setName('moves')
-          .setDescription('2-10 moves separated by |,e.g. rock|paper|scissors')
+          .setDescription('2-10 moves separated by |, e.g. rock|paper|scissors')
           .setMinLength(3)
           .setMaxLength(100)
           .setRequired(true),
@@ -333,21 +341,21 @@ const data = new SlashCommandBuilder()
 data.addSubcommand((s) =>
   s
     .setName('cards')
-    .setDescription('Draw1-10 distinct cards from a fresh52card deck,no betting/saved game.')
+    .setDescription('Draw 1-10 distinct cards from a fresh 52 card deck, no betting/saved game.')
     .addIntegerOption((o) =>
-      o.setName('count').setDescription('Cards1-10,default1').setMinValue(1).setMaxValue(10),
+      o.setName('count').setDescription('Cards 1-10, default 1').setMinValue(1).setMaxValue(10),
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('wordscramble')
     .setDescription(
-      'Scramble your supplied ASCII word,answer in spoiler;no dictionary/guess tracking.',
+      'Scramble your supplied ASCII word, answer in spoiler; no dictionary/guess tracking.',
     )
     .addStringOption((o) =>
       o
         .setName('word')
-        .setDescription('3-20Englishletters,at least2distinct;kept private/not saved')
+        .setDescription('3-20 English letters, at least 2 distinct; kept private/not saved')
         .setMinLength(3)
         .setMaxLength(20)
         .setRequired(true),
@@ -356,32 +364,32 @@ data.addSubcommand((s) =>
 data.addSubcommand((s) =>
   s
     .setName('dicetarget')
-    .setDescription('Roll dice and count values at or above an explicit target,no stakes.')
+    .setDescription('Roll dice and count values at or above an explicit target, no stakes.')
     .addIntegerOption((o) =>
       o
         .setName('target')
-        .setDescription('Target2-sides')
+        .setDescription('Target 2-sides')
         .setMinValue(2)
         .setMaxValue(1000)
         .setRequired(true),
     )
     .addIntegerOption((o) =>
-      o.setName('count').setDescription('Dice1-10,default1').setMinValue(1).setMaxValue(10),
+      o.setName('count').setDescription('Dice 1-10, default 1').setMinValue(1).setMaxValue(10),
     )
     .addIntegerOption((o) =>
-      o.setName('sides').setDescription('Sides2-1000,default6').setMinValue(2).setMaxValue(1000),
+      o.setName('sides').setDescription('Sides 2-1000, default 6').setMinValue(2).setMaxValue(1000),
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('bracket')
     .setDescription(
-      'Private randomized first-round single-elimination bracket2-16labels,no winners or assignments.',
+      'Private randomized first-round single-elimination bracket 2-16 labels, no winners or assignments.',
     )
     .addStringOption((o) =>
       o
         .setName('labels')
-        .setDescription('2-16distinct labels separatedby|,max40characters each')
+        .setDescription('2-16 distinct labels separated by|, max 40 characters each')
         .setRequired(true)
         .setMinLength(3)
         .setMaxLength(655),
@@ -391,17 +399,22 @@ data.addSubcommand((s) =>
   s
     .setName('bingo')
     .setDescription(
-      'Private fresh75ball5x5BINGOcard,freeNcenter,no called numbers/prizes/saved game.',
+      'Private fresh 75 ball 5 x 5 BINGO card, free N center, no called numbers/prizes/saved game.',
     ),
 );
 data.addSubcommand((s) =>
   s
     .setName('dominoes')
     .setDescription(
-      'Private draw1-7unique double-six domino tiles from fresh28tile set,no bets/saved game.',
+      'Private draw 1-7 unique double-six domino tiles from fresh 28 tile set, no bets/saved game.',
     )
     .addIntegerOption((o) =>
-      o.setName('count').setDescription('Tiles1-7').setRequired(true).setMinValue(1).setMaxValue(7),
+      o
+        .setName('count')
+        .setDescription('Tiles 1-7')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(7),
     ),
 );
 export default {
