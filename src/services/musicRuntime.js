@@ -52,6 +52,44 @@ export function validateMusicNodeConfig({
     throw new Error('Invalid music node address');
   return { name: 'luna-music', url: u.host, auth, secure: true };
 }
+export function musicResolveDiagnostic(logger, item, { result, error, stage }) {
+  // Log selected bounded fields only,never raw errors/headers/tracks/tokens/stack traces.
+  const text = (value) =>
+    typeof value === 'string'
+      ? value
+          .replace(/https?:\/\/[^\s]+/gi, '[URL]')
+          .replace(/(?:authorization|password|auth|token|secret)\s*[:=]\s*[^\s,;]+/gi, '[REDACTED]')
+          .replace(/Bearer\s+[^\s]+/gi, 'Bearer [REDACTED]')
+          .replace(/[\x00-\x1f\x7f]/g, ' ')
+          .slice(0, 500)
+      : null;
+  const query =
+    typeof item?.url === 'string' && /^ytsearch:/.test(item.url)
+      ? text(item.url.slice(9)).slice(0, 180)
+      : /^[A-Za-z0-9_-]{11}$/.test(item?.id ?? '')
+        ? item.id
+        : '[unrecognized request]';
+  const data = result?.loadType === 'error' ? result.data : null;
+  const status = error?.statusCode ?? error?.status ?? error?.response?.status ?? data?.status;
+  try {
+    logger?.warn(
+      {
+        kind: 'music-resolve',
+        stage,
+        query,
+        loadType: text(result?.loadType),
+        statusCode: Number.isInteger(status) && status >= 100 && status <= 599 ? status : null,
+        errorName: text(error?.name),
+        errorMessage: text(error?.message ?? data?.message),
+        exception: text(data?.cause ?? data?.exception?.message),
+        severity: text(data?.severity),
+      },
+      'Music track resolve failed',
+    );
+  } catch {
+    /* Diagnostics must never change resolver outcome. */
+  }
+}
 export class YouTubeLavalinkAdapter extends LavalinkAdapter {
   constructor(manager) {
     super(manager);
@@ -63,7 +101,13 @@ export class YouTubeLavalinkAdapter extends LavalinkAdapter {
     return node;
   }
   async resolve(item) {
-    const result = await this.node().rest.resolve(item.url);
+    let result;
+    try {
+      result = await this.node().rest.resolve(item.url);
+    } catch (error) {
+      musicResolveDiagnostic(this.logger, item, { error, stage: 'request' });
+      throw error;
+    }
     const track =
       result?.loadType === 'search'
         ? result.data?.[0]
@@ -84,8 +128,10 @@ export class YouTubeLavalinkAdapter extends LavalinkAdapter {
       info.length <= 0 ||
       info.length > 7200000 ||
       (item.id !== 'search' && info.identifier !== item.id)
-    )
+    ) {
+      musicResolveDiagnostic(this.logger, item, { result, stage: 'validate' });
       throw new UserError('musicLoadFailed');
+    }
     return {
       encoded: track.encoded,
       item: {
