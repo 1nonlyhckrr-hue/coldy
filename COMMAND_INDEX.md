@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-58 top-level commands, 555 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+65 top-level commands, 586 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -54,6 +54,11 @@
 | /autorole config | Private saved human/bot role policies;not native grants or current member proof. | Local mock/unit only |
 | /autorole remove | Remove exact saved role policy;does not remove existing member roles. | Local mock/unit only |
 | /autorole reset | Clear human/bot/all policies only;existing member roles and receipts unchanged. | Local mock/unit only |
+| /event config | Private stored policy/receiptstates,not proof complete server isolation. | Local mock/unit only |
+| /event disable | Confirm exactsnapshot ownedrestore only;thirdparty drift/uncertainty blocks overwrite. | Local mock/unit only |
+| /event enable | Confirm selected everyoneView denies;eventcategory unchanged;partial effects possible. | Local mock/unit only |
+| /event reset | Forget inactive fullyrestored policy only;never delete category/channels. | Local mock/unit only |
+| /event setup | Select alreadyvisible eventcategory+1-10outside textchannelIDs JSON,min100members;no creation. | Local mock/unit only |
 | /react add | Set one singleword trigger with1-10distinct emojiJSONstrings,max10rules;futuremessagesonly. | Local mock/unit only |
 | /react list | Private saved trigger/emojiJSON,not native reactions proof. | Local mock/unit only |
 | /react remove | Remove one literal singleword rule;existing reactions unchanged. | Local mock/unit only |
@@ -205,6 +210,7 @@
 | /giveaway start | Create a giveaway with checked eligibility. | Local mock/unit only |
 | /giveaway summary | Private storedgiveawaystate/retained-entry counts,no entrant/winner identities. | Local mock/unit only |
 | /giveawayleave | Withdraw only your own entry from an active giveaway before its deadline. | Local mock/unit only |
+| /inviteinfo | Private current native metadata for your own active invites;no join attribution or tracking. | Local mock/unit only |
 | /leaderboard activity | Only your retained90UTC-day counts,active days and longest run;not quality. | Local mock/unit only |
 | /leaderboard clearexclusions | Clear stored exclusion IDs;tracking/counts/preferences/replay guards stay as-is. | Local mock/unit only |
 | /leaderboard config | View tracking status and excluded IDs. | Local mock/unit only |
@@ -229,6 +235,19 @@
 | /leaderboard stats | Show your own retained message counts. | Local mock/unit only |
 | /leaderboard top | Show retained message ranks, ten per page. | Local mock/unit only |
 | /leaderboard weeklymine | Only your90retained UTCdays in13 disjoint newest-first elapsed7-day buckets. | Local mock/unit only |
+| /rankreward claim | Your explicit one-shot rolegrant;no automaticclaim/regrant/revocation. | Local mock/unit only |
+| /rankreward config | Private stored milestone rules,not count or role-access guarantee. | Local mock/unit only |
+| /rankreward eligible | Only your retained90day eligibility;tracking/privacy checks,no grant. | Local mock/unit only |
+| /rankreward remove | Owner confirm:remove rule only;never remove granted roles or erase receipts. | Local mock/unit only |
+| /rankreward set | Owner confirm:zero-permission existingrole;retained90day messages or sampledvoice minutes. | Local mock/unit only |
+| /voicelb config | Private saved voice tracking switch and your privacy preference. | Local mock/unit only |
+| /voicelb disable | Manage Server:stop sampling and discard unfinished intervals;counts retained. | Local mock/unit only |
+| /voicelb enable | Manage Server:start future voicejoin sampling;no credit for alreadyconnected sessions. | Local mock/unit only |
+| /voicelb optin | Allow future join samples if server tracking enabled;no existing-call backfill. | Local mock/unit only |
+| /voicelb optout | Erase your counts/active sample and stop future sampling here. | Local mock/unit only |
+| /voicelb resetmine | Erase only your voice counts and active sample;privacy preference kept. | Local mock/unit only |
+| /voicelb stats | Only your settled sampled voice milliseconds today/week/90retainedUTCdays. | Local mock/unit only |
+| /voicelb top | Private ten sampled voice ranks/page;not full call duration or speaking activity. | Local mock/unit only |
 | /casehistory actioncounts | Storedcase counts by action/state,no identities/reasons/currentnative state claims. | Local mock/unit only |
 | /casehistory actor | Private storedcase metadata for exact actor ID,10/page,no native lookup. | Local mock/unit only |
 | /casehistory export | Private latest100case metadata/reasons JSON,total/truncated,no recovery/grant. | Local mock/unit only |
@@ -256,6 +275,14 @@
 | /logging test | Send one test log to the configured channel. | Local mock/unit only |
 | /logging unresolvedreceipts | Latest100reserved/uncertain/unavailable storedreceipts,no retry or native outcome proof. | Local mock/unit only |
 | /logging windowreceipts | Latest100storedreceipts in inclusive explicitUnixmillisecondwindow,no relative dates/sourceIDs. | Local mock/unit only |
+| /bulktimeout confirm | Your exact unexpired preview;freshpermission/deadline guards,partial/uncertain stops,no retry. | Local mock/unit only |
+| /bulktimeout preview | Explicit1-10memberIDstrings JSON;private exactdeadline preview valid120s,no effects. | Local mock/unit only |
+| /jail apply | Confirmed1s-28d native timeout;roles unchanged,no existing timeout overwritten. | Local mock/unit only |
+| /jail config | Private stored referencechannel policy,not isolation proof. | Local mock/unit only |
+| /jail list | Up to25active/uncertain jail metadata;expired native timeouts settle locally. | Local mock/unit only |
+| /jail release | Confirmed clear exact owned current timeout only;drift/uncertain blocks. | Local mock/unit only |
+| /jail reset | Owner:forget policy only when no live or uncertain jail records. | Local mock/unit only |
+| /jail setup | Owner:record existing normaltext jail referencechannel,no permission or role edits. | Local mock/unit only |
 | /moderation ban | ban: one member, checked and recorded. | Local mock/unit only |
 | /moderation clearwarning | CurrentModerateMembers/hierarchy:one target stored warning clearwarning. | Local mock/unit only |
 | /moderation clearwarns | clearwarns: one member, checked and recorded. | Local mock/unit only |
@@ -517,7 +544,11 @@
 | /voice mute | mute: one current voice member. | Local mock/unit only |
 | /voice undeafen | undeafen: one current voice member. | Local mock/unit only |
 | /voice unmute | unmute: one current voice member. | Local mock/unit only |
+| /vmjoin config | Private saved lobby and actor IDs,not native state or automaticcleanup proof. | Local mock/unit only |
+| /vmjoin off | Stop future join-to-create;existing ownedchannels/uncertain moves retained. | Local mock/unit only |
+| /vmjoin setup | Use existing normalvoice lobby;confirm future privatechannel creation and member move. | Local mock/unit only |
 | /voicemaster bitrate | Set empty owned voice channel bitrate8-96kbps;private access unchanged. | Local mock/unit only |
+| /voicemaster buttons | Private owner one-use10min controls:emptychannel lock,shareeveryone/unlock,deleteclose. | Local mock/unit only |
 | /voicemaster channelrecords | ManageChannels:latest100stored records forchannelIDJSON,total/truncated,no native lookup. | Local mock/unit only |
 | /voicemaster close | Delete only your tracked empty private channel. | Local mock/unit only |
 | /voicemaster config | Show configured private channel category and limits. | Local mock/unit only |

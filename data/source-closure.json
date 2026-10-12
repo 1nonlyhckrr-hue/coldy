@@ -1,0 +1,240 @@
+[
+  {
+    "source": "https://docs.zynrax.site/security/moderation",
+    "commandLedger": "data/moderation-closure.json",
+    "behaviorDoc": "docs/MODERATION_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "commandLedger": "data/activity-closure.json",
+    "behaviorDoc": "docs/ACTIVITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "commandLedger": "data/activity-closure.json",
+    "behaviorDoc": "docs/ACTIVITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/security/automod",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/security/jail",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "commandLedger": "data/security-closure.json",
+    "behaviorDoc": "docs/SECURITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "commandLedger": "data/roles-closure.json",
+    "behaviorDoc": "docs/ROLES_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "commandLedger": "data/roles-closure.json",
+    "behaviorDoc": "docs/ROLES_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "commandLedger": "data/roles-closure.json",
+    "behaviorDoc": "docs/ROLES_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "commandLedger": "data/roles-closure.json",
+    "behaviorDoc": "docs/ROLES_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "commandLedger": "data/roles-closure.json",
+    "behaviorDoc": "docs/ROLES_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "commandLedger": "data/configuration-closure.json",
+    "behaviorDoc": "docs/CONFIGURATION_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "commandLedger": "data/configuration-closure.json",
+    "behaviorDoc": "docs/CONFIGURATION_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "commandLedger": "data/configuration-closure.json",
+    "behaviorDoc": "docs/CONFIGURATION_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/media",
+    "commandLedger": "data/configuration-closure.json",
+    "behaviorDoc": "docs/CONFIGURATION_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "commandLedger": "data/configuration-closure.json",
+    "behaviorDoc": "docs/CONFIGURATION_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "commandLedger": "data/support-closure.json",
+    "behaviorDoc": "docs/SUPPORT_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "commandLedger": "data/support-closure.json",
+    "behaviorDoc": "docs/SUPPORT_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/",
+    "commandLedger": "data/utility-closure.json",
+    "behaviorDoc": "docs/UTILITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/miscellaneous/embed",
+    "commandLedger": "data/utility-closure.json",
+    "behaviorDoc": "docs/UTILITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "commandLedger": "data/utility-closure.json",
+    "behaviorDoc": "docs/UTILITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/overview/customization",
+    "commandLedger": "data/utility-closure.json",
+    "behaviorDoc": "docs/UTILITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/overview/setup",
+    "commandLedger": "data/utility-closure.json",
+    "behaviorDoc": "docs/UTILITY_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "commandLedger": "data/entertainment-closure.json",
+    "behaviorDoc": "docs/ENTERTAINMENT_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "commandLedger": "data/entertainment-closure.json",
+    "behaviorDoc": "docs/ENTERTAINMENT_CLOSURE.md",
+    "scope": "exact command rows and supplemental prose adaptations or explicit safety/native-limit omissions;local tests only",
+    "verification": "native Discord/provider/client acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/intro/whatiszynrax.md",
+    "commandLedger": null,
+    "behaviorDoc": "docs/SUPPLEMENTAL_CLOSURE.md",
+    "scope": "introduction,commercial/legal/privacy behavior explicitly adapted or omitted;premium3command rows outside original319 registry",
+    "verification": "native/provider/commercial acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/intro/whyzynrax.md",
+    "commandLedger": null,
+    "behaviorDoc": "docs/SUPPLEMENTAL_CLOSURE.md",
+    "scope": "introduction,commercial/legal/privacy behavior explicitly adapted or omitted;premium3command rows outside original319 registry",
+    "verification": "native/provider/commercial acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/intro/premium.md",
+    "commandLedger": null,
+    "behaviorDoc": "docs/SUPPLEMENTAL_CLOSURE.md",
+    "scope": "introduction,commercial/legal/privacy behavior explicitly adapted or omitted;premium3command rows outside original319 registry",
+    "verification": "native/provider/commercial acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/legal/terms.md",
+    "commandLedger": null,
+    "behaviorDoc": "docs/SUPPLEMENTAL_CLOSURE.md",
+    "scope": "introduction,commercial/legal/privacy behavior explicitly adapted or omitted;premium3command rows outside original319 registry",
+    "verification": "native/provider/commercial acceptance unverified"
+  },
+  {
+    "source": "https://docs.zynrax.site/legal/privacy.md",
+    "commandLedger": null,
+    "behaviorDoc": "docs/SUPPLEMENTAL_CLOSURE.md",
+    "scope": "introduction,commercial/legal/privacy behavior explicitly adapted or omitted;premium3command rows outside original319 registry",
+    "verification": "native/provider/commercial acceptance unverified"
+  }
+]

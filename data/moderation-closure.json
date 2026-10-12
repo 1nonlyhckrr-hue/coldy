@@ -1,0 +1,700 @@
+[
+  {
+    "referenceName": "ban",
+    "referenceSyntax": ",ban (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation ban"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "One current target,permissions/hierarchy/case guards;keeps message history,not a bulk ban.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "clearwarns",
+    "referenceSyntax": ",clearwarns (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation clearwarns"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "Marks warnings cleared,keeps audit cases;does not lift a native timeout.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "clone",
+    "referenceSyntax": ",clone (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Exact channel clone cannot preserve message history,thread/access/integration state or certify permissions for all children;creating a seemingly equivalent channel would mislead operators.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "delemoji",
+    "referenceSyntax": ",delemoji [emoji]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Irreversible guild asset deletion can break messages and integrations;no automatic asset destroy workflow.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "delsticker",
+    "referenceSyntax": ",delsticker [reply]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Reply-based sticker identity can be ambiguous and irreversible deletion breaks existing use;no guessed asset deletion.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "enlarge",
+    "referenceSyntax": ",enlarge (emoji)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "enlarge"
+    ],
+    "evidenceDoc": "docs/UTILITY_INFO.md",
+    "reason": "Currentguild custom emoji CDN image request4096,not Unicode/foreign-emoji guessing.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "hide",
+    "referenceSyntax": ",hide",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "hideall",
+    "referenceSyntax": ",hideall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "kick",
+    "referenceSyntax": ",kick (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation kick"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "One current target,permissions/hierarchy/case guards.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "lock",
+    "referenceSyntax": ",lock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "lockall",
+    "referenceSyntax": ",lockall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "mute",
+    "referenceSyntax": ",mute (member) (duration) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation timeout"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "Explicit1s-28d native timeout,current target guards;no permanent punishment.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "nick",
+    "referenceSyntax": ",nick (member) [new_nick]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "nickname"
+    ],
+    "evidenceDoc": "docs/NICKNAME.md",
+    "reason": "One confirmed bounded nickname/reset,current permissions/hierarchy/exact post-proof.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "nuke",
+    "referenceSyntax": ",nuke",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Deleting/recreating a channel irreversibly destroys messages and disrupts channel IDs,links,webhooks,threads and permissions;no automatic destructive server maintenance.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "pb",
+    "referenceSyntax": ",pb [amount]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Bot-only broad deletion not implemented;deleting bots can remove safety/moderation audit messages. Current exact-ID preview is unfiltered.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "purge",
+    "referenceSyntax": ",purge (amount)\n,purge (filter) [amount]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation purgepreview",
+      "moderation purgeconfirm"
+    ],
+    "evidenceDoc": "docs/PURGE.md",
+    "reason": "Exact recent1-10IDs/120s confirmed deletion,not999messages or broad filters;no content retained.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "purge user",
+    "referenceSyntax": ",purge user @user [amount]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Content/user-filtered broad deletion not implemented;current exact-ID recent10preview does not claim target-filter selection or999coverage.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "removerole all",
+    "referenceSyntax": ",removerole all (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "removerole bots",
+    "referenceSyntax": ",removerole bots (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "removerole humans",
+    "referenceSyntax": ",removerole humans (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role",
+    "referenceSyntax": ",role (member) (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "role add",
+      "role remove"
+    ],
+    "evidenceDoc": "docs/ROLE_ASSIGNMENTS.md",
+    "reason": "Explicit confirmed add/remove for one human/safe-role allowlist,not ambiguous toggle or privileged automation-owned grants.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role all",
+    "referenceSyntax": ",role all (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role bots",
+    "referenceSyntax": ",role bots (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role create",
+    "referenceSyntax": ",role create (name)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "role create"
+    ],
+    "evidenceDoc": "docs/ROLE_ASSIGNMENTS.md",
+    "reason": "Creates one unassigned zero-permission role,no privileged permissions/position/grant.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role delete",
+    "referenceSyntax": ",role delete (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Deletion destroys memberships/channel-overwrite links/integration dependencies without complete restoration;do not delete potentially automation-owned roles.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role humans",
+    "referenceSyntax": ",role humans (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role rename",
+    "referenceSyntax": ",role rename (role) (name)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "role rename"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "One unmanaged safe-role confirmed metadata change,current hierarchy/post-proof.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "role unverified",
+    "referenceSyntax": ",role unverified (role)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic guild-wide/group role mutations can conflict with managed/automation roles,access policy and concurrent membership. Single explicit safe human add/remove remains. Avatar absence is not proof a person is unverified.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "roleicon",
+    "referenceSyntax": ",roleicon (role) [icon]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Boost-dependent capability and remote image decoding/size/content need verified media handling;no blind remote fetch or unsupported icon claim.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "slowmode",
+    "referenceSyntax": ",slowmode (seconds)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "slowmode"
+    ],
+    "evidenceDoc": "docs/SLOWMODE.md",
+    "reason": "One confirmed normal text channel0-21600seconds,not every channel/type or bypassing native enforcement.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "snipe",
+    "referenceSyntax": ",snipe",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Retaining and resurfacing deleted message/attachment content violates deletion expectations and privacy;no deleted-content archive.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unban",
+    "referenceSyntax": ",unban (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation unban"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "One explicit user ID,native BanMembers/case/no-retry guards;not full-list clearing.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unbanall",
+    "referenceSyntax": ",unbanall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "No ban generation/version is exposed by native ban records. An exact ID/reason preview cannot distinguish an intervening unban/reban with the same reason;batch clearing could undo a newer moderator decision. Single explicit unban remains available;whole-list automaticclear omitted.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unhide",
+    "referenceSyntax": ",unhide",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unhideall",
+    "referenceSyntax": ",unhideall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unlock",
+    "referenceSyntax": ",unlock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unlockall",
+    "referenceSyntax": ",unlockall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General everyone overwrite edits can conflict with category inheritance,role/member allows and concurrent admin changes. No global visibility/isolation claim or unowned allow/reset. Event mode is only existingvisiblecategory+1-10selected normaltext exact-owned visibility;not this general command.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unmute",
+    "referenceSyntax": ",unmute (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation untimeout"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "One current target timeout clear,case guards;native state not compare-and-swap.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unmuteall",
+    "referenceSyntax": ",unmuteall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "bulktimeout preview",
+      "bulktimeout confirm"
+    ],
+    "evidenceDoc": "docs/BULK_TIMEOUT.md",
+    "reason": "Adapted to1-10explicit human IDs/exact current deadline preview/120s confirmed clear;serverwide selection omitted safety.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unslowmode",
+    "referenceSyntax": ",unslowmode",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "slowmode"
+    ],
+    "evidenceDoc": "docs/SLOWMODE.md",
+    "reason": "Adapted to explicit seconds0 with confirmation;no separate alias inflation.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "warn",
+    "referenceSyntax": ",warn (member) [reason]",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "moderation warn"
+    ],
+    "evidenceDoc": "docs/MODERATION.md",
+    "reason": "Stored warning/case only;automatic4+warning timeout omitted safety to avoid unreviewed punishment from accumulated/reset/edited history.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice deafen",
+    "referenceSyntax": ",voice deafen (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice deafen"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "One current normalvoice human,server deafen not client self-deafen.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice deafenall",
+    "referenceSyntax": ",voice deafenall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice kick",
+    "referenceSyntax": ",voice kick (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice disconnect"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "One exact current normalvoice human disconnect with runtime/hierarchy/permission guards.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice kickall",
+    "referenceSyntax": ",voice kickall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice lock",
+    "referenceSyntax": ",voice lock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General voice-channel permission rewrites omitted;can affect unrelated occupants and inheritance. Owned empty VoiceMaster lock/unlock is a separate narrow workflow,not general channel isolation.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice move",
+    "referenceSyntax": ",voice move (member) (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice move"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "One exact current normalvoice human,destination access/capacity/runtime/hierarchy guards.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice moveall",
+    "referenceSyntax": ",voice moveall (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice mute",
+    "referenceSyntax": ",voice mute (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice mute"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "One current normalvoice human,voice runtime/readiness/access/hierarchy,server mute not self-mute.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice muteall",
+    "referenceSyntax": ",voice muteall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice private",
+    "referenceSyntax": ",voice private",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General voice-channel permission rewrites omitted;can affect unrelated occupants and inheritance. Owned empty VoiceMaster lock/unlock is a separate narrow workflow,not general channel isolation.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice pull",
+    "referenceSyntax": ",voice pull (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice move"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "Adapted to explicit destination voice channel,not automatic current-caller channel guessing.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice pullall",
+    "referenceSyntax": ",voice pullall (channel)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice undeafen",
+    "referenceSyntax": ",voice undeafen (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice undeafen"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "One current normalvoice human,server deafen clear.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice undeafenall",
+    "referenceSyntax": ",voice undeafenall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice unlock",
+    "referenceSyntax": ",voice unlock",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General voice-channel permission rewrites omitted;can affect unrelated occupants and inheritance. Owned empty VoiceMaster lock/unlock is a separate narrow workflow,not general channel isolation.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice unmute",
+    "referenceSyntax": ",voice unmute (member)",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voice unmute"
+    ],
+    "evidenceDoc": "docs/VOICE.md",
+    "reason": "One current normalvoice human,server mute clear;not self-microphone override.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice unmuteall",
+    "referenceSyntax": ",voice unmuteall",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "Automatic group occupancy selection/mass effects can chase changing membership or erase another moderator decision. Single explicit native voice actions remain;no unreviewed group punishment/moves.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  },
+  {
+    "referenceName": "voice unprivate",
+    "referenceSyntax": ",voice unprivate",
+    "source": "https://docs.zynrax.site/security/moderation",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MODERATION_CLOSURE.md",
+    "reason": "General voice-channel permission rewrites omitted;can affect unrelated occupants and inheritance. Owned empty VoiceMaster lock/unlock is a separate narrow workflow,not general channel isolation.",
+    "verification": "local mocks only;native Discord execution/visual acceptance unverified"
+  }
+]

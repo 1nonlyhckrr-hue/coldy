@@ -1,0 +1,473 @@
+[
+  {
+    "referenceName": "addvctime",
+    "referenceSyntax": ",addvctime (member) (time)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/ACTIVITY_CLOSURE.md",
+    "reason": "Manual fabricated voice-time adjustments omitted safety:counts are observed settled samples,not administrator-assigned reward credit;avoid misrepresenting tracked activity. Own erasure remains.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "blacklistcategory",
+    "referenceSyntax": ",blacklistcategory (category)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard exclude"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Explicit current manager category exclusion;applies futurecounts,no historical erasure.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "blacklistchannel",
+    "referenceSyntax": ",blacklistchannel (channel)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard exclude"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Explicit current manager textchannel exclusion;applies future eligible counts only.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "clearinvites",
+    "referenceSyntax": ",clearinvites",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "clearmsgs",
+    "referenceSyntax": ",clearmsgs\n,clearmsgs (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard resetall",
+      "leaderboard eraseuser"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Confirmed manager erasure allguildcounts or exactuser;preferences/replayguards/cases remain.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "clearvoice",
+    "referenceSyntax": ",clearvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/ACTIVITY_CLOSURE.md",
+    "reason": "Wholeguild voice erase omitted safety in current interface:one manager bulk action could remove many opt-in histories/reward evidence without reviewed per-target scope. Own erasure/privacy optout exist;no fake no-op reset path.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "dailyvoice",
+    "referenceSyntax": ",dailyvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb top"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Explicit today UTCcalendar sampledsettledtime,not certifiedcontinuouspresence.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "invited",
+    "referenceSyntax": ",invited (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "inviteinfo",
+    "referenceSyntax": ",inviteinfo (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "inviteinfo"
+    ],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "Own active native invitecodes/counters cap25 privately,no persistent attribution/history,no othermember lookup.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "invitelb off",
+    "referenceSyntax": ",invitelb off",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "invitelb on",
+    "referenceSyntax": ",invitelb on",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "inviteleaderboard",
+    "referenceSyntax": ",inviteleaderboard",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "inviteleaderboard fake",
+    "referenceSyntax": ",inviteleaderboard fake",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "inviteleaderboard regular",
+    "referenceSyntax": ",inviteleaderboard regular",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "inviter",
+    "referenceSyntax": ",inviter (member)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "invites",
+    "referenceSyntax": ",invites [member]",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "leaderboard dailymessages",
+    "referenceSyntax": ",leaderboard dailymessages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard top"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Explicit period today,UTC calendar day,not trailing24hours;retained metric boundaries stated.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "leaderboard messages",
+    "referenceSyntax": ",leaderboard messages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard top"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Explicit period retained90UTCdays,not all-time;indefinite history omitted privacy.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "leaderboard weeklymessages",
+    "referenceSyntax": ",leaderboard weeklymessages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard top"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Explicit week,today+previous6UTCdays,not current calendar-week or indefinite history.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "msgleaderboard off",
+    "referenceSyntax": ",msgleaderboard off",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard disable"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Stops future counting,retains privacy-bounded counts/no submitted effect reversal.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "msgleaderboard on",
+    "referenceSyntax": ",msgleaderboard on",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard enable"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Future eligible messages only,opt-in,no content;not historical import.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "msgstats",
+    "referenceSyntax": ",msgstats [member]",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard stats"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Only requesting member counts retained90UTCdays,today/week;other-member detail omitted privacy.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "reducevctime",
+    "referenceSyntax": ",reducevctime (member) (time)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/ACTIVITY_CLOSURE.md",
+    "reason": "Manual fabricated voice-time adjustments omitted safety:counts are observed settled samples,not administrator-assigned reward credit;avoid misrepresenting tracked activity. Own erasure remains.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "resetmyinvites",
+    "referenceSyntax": ",resetmyinvites",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "resetmymessages",
+    "referenceSyntax": ",resetmymessages",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "leaderboard resetmine"
+    ],
+    "evidenceDoc": "docs/LEADERBOARD.md",
+    "reason": "Own retainedcounts only,privacy/replayguards retained;not native message deletion.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "resetmyvoice",
+    "referenceSyntax": ",resetmyvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb resetmine"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Erases ownsettledcounts anddrops session,no native disconnect/effect/rewardrevocation.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "setaltthreshold",
+    "referenceSyntax": ",setaltthreshold (days)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "setinviterole",
+    "referenceSyntax": ",setinviterole (invites) (role)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/INVITE_SCOPE.md",
+    "reason": "No reliable usedinvite identity in memberjoin events;counterdelta races/offline/deleted/vanity/rejoin gaps cannot justify exact inviter stats/rankings/rewards. Fake/alt account-age labels omitted safety;no such tracker to reset or enable. Specific behavior dispositions in INVITE_SCOPE.md.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "setmessagerole",
+    "referenceSyntax": ",setmessagerole (messages) (role)",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "rankreward set",
+      "rankreward claim"
+    ],
+    "evidenceDoc": "docs/RANK_REWARDS.md",
+    "reason": "Owner-configured zero-permission role and explicitmember claim against retained90daycounts;automatic grant omitted safety,channel access owner-review required.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "vcstats",
+    "referenceSyntax": ",vcstats [member]",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb stats"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Own settled sampledconnectedmilliseconds today/week/90days only;othermemberdetails omitted privacy.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voicelb off",
+    "referenceSyntax": ",voicelb off",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb disable"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Stops sampling,retains settled90UTCdays;inflight/restarttails dropped rather than guessed.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voicelb on",
+    "referenceSyntax": ",voicelb on",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb enable"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Opt-in futurehumanjoins and60secondnative sampling,not startup/backfill/speaking activity.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voiceleaderboard",
+    "referenceSyntax": ",voiceleaderboard",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb top"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Explicit retained90UTCdays sampledconnectiontime,not all-time speaking ranking.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "weeklyvoice",
+    "referenceSyntax": ",weeklyvoice",
+    "source": "https://docs.zynrax.site/configuration/leaderboard",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicelb top"
+    ],
+    "evidenceDoc": "docs/VOICE_LEADERBOARD.md",
+    "reason": "Explicit week UTCtoday+previous6days sampledsettledtime,not speakingquality.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voicemaster buttons",
+    "referenceSyntax": ",voicemaster buttons",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicemaster buttons"
+    ],
+    "evidenceDoc": "docs/VMCONTROLS.md",
+    "reason": "Private10min one-use ownerbound fixedlock/shareeveryoneunlock/emptyclose buttons. Dropdowncustomization/mute/hide/ban/transfer omitted safety:no overwriting participant access/punishment/ownership. Rename/limit stay explicitslash.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voicemaster config",
+    "referenceSyntax": ",voicemaster config",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicemaster config",
+      "vmjoin config",
+      "voicemaster records"
+    ],
+    "evidenceDoc": "docs/VOICE_MASTER.md",
+    "reason": "Stored active setup/lobby/ownership metadata privately,currentnative room config separately inspectable;storedrecord is not occupancy/access proof.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voicemaster reset",
+    "referenceSyntax": ",voicemaster reset",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "vmjoin off",
+      "voicemaster resetsetup",
+      "voicemaster close"
+    ],
+    "evidenceDoc": "docs/VOICE_MASTER.md",
+    "reason": "Adapted stopfuturejoincreation/forgetcreationcategory/manualowneremptyroomclose. Fullsystem category/lobby/occupiedchannel destruction omitted safety;no massdisconnect/delete or autoemptycleanup.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  },
+  {
+    "referenceName": "voicemaster setup",
+    "referenceSyntax": ",voicemaster setup",
+    "source": "https://docs.zynrax.site/configuration/voicemaster",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "voicemaster setup",
+      "vmjoin setup"
+    ],
+    "evidenceDoc": "docs/VMJOIN.md",
+    "reason": "Existing category/lobby explicit setup,futurehumanjoin private creation+one-shotmove. Auto category/lobby creation omitted safety to avoid unreviewed hierarchy/audience creation;no startupexistinglobbysweep.",
+    "verification": "local mocks only;native Discord/UI/voice/button acceptance unverified"
+  }
+]

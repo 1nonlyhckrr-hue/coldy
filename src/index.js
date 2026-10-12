@@ -1,3 +1,10 @@
+import { BulkTimeout } from './services/bulkTimeout.js';
+import { RankRewards } from './services/rankRewards.js';
+import { Jail } from './services/jail.js';
+import { EventMode } from './services/eventMode.js';
+import { VoiceControls, createVoiceControlHandler } from './services/vmControls.js';
+import { VoiceJoin, createVoiceJoinHandler } from './services/vmJoin.js';
+import { VoiceRanks, createVoiceRankHandler, sampleVoiceRanks } from './services/voiceRanks.js';
 import { AntiBot, createAntiBotHandler } from './services/antibot.js';
 import { AutoReactions, createAutoReactHandler } from './services/autoreact.js';
 import { MediaPolicy, createMediaHandler } from './services/mediaPolicy.js';
@@ -79,20 +86,45 @@ if (config.musicNode) {
 context.eventLogs = new EventLogDelivery(db);
 context.eventLogs.recover();
 context.eventLogs.cleanup();
+context.voiceRanks = new VoiceRanks(db);
+context.voiceRanks.cleanup();
+if (config.voiceEventsEnabled) {
+  client.on(Events.VoiceStateUpdate, createVoiceRankHandler(context));
+  const voiceRankTimer = setInterval(
+    () => sampleVoiceRanks(context).catch(() => context.logger.warn('Voice sampling unavailable')),
+    60000,
+  );
+  voiceRankTimer.unref();
+}
 context.voiceRoles = new VoiceRoles(db);
 context.voiceRoles.recover();
 context.voiceReadiness = new VoiceReadiness();
 if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, createVoiceRoleHandler(context));
 client.on(Events.ShardDisconnect, (_event, id) => context.voiceReadiness.disconnected(id));
 client.on(Events.ShardReconnecting, (id) => context.voiceReadiness.disconnected(id));
+context.bulkTimeout = new BulkTimeout(db);
+context.bulkTimeout.recover();
+context.jail = new Jail(db);
+context.jail.recover();
+context.eventMode = new EventMode(db);
+context.eventMode.recover();
 context.voiceMaster = new VoiceMaster(db);
 context.voiceMaster.recover();
+context.voiceControls = new VoiceControls(db);
+context.voiceControls.recover();
+context.voiceControls.cleanup();
+client.on(Events.InteractionCreate, createVoiceControlHandler(context));
+context.voiceJoin = new VoiceJoin(db);
+context.voiceJoin.recover();
+if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, createVoiceJoinHandler(context));
 context.guildTags = new GuildTags(db);
 context.guildTags.recover();
 context.antinuke = new AntinukeAlerts(db);
 context.antinuke.cleanup();
 if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
+context.rankRewards = new RankRewards(db);
+context.rankRewards.recover();
 context.messageRanks = new MessageRanks(db);
 context.messageRanks.cleanup();
 context.autoroles = new AutoRoles(db);

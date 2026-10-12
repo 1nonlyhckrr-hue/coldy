@@ -1,0 +1,524 @@
+[
+  {
+    "referenceName": "anticonfig",
+    "referenceSyntax": ",anticonfig",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke config"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Stored alert-only policy,not protection/prevention/recovery proof.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antilimit",
+    "referenceSyntax": ",antilimit (event) (limit)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke threshold"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Mixed supported auditactions/actor rolling10-300s threshold2-20,not daily per-event quotas or preventive punishment.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antinuke",
+    "referenceSyntax": ",antinuke",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke enable",
+      "antinuke disable"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Direct current-manager opt-in auditalerts/destination,not interactivebutton prevention;owner-only referenceauthority narrower difference explicit.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antipunish",
+    "referenceSyntax": ",antipunish (event) (punishment)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "Automatic ban/kick/role-stripping on auditcounts omitted:delayedaudit attribution/legitstaff work/threshold false positives must not punish without explicit review. Alert-only persists.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "extraowner set",
+    "referenceSyntax": ",extraowner set (user)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "Delegating security-owner configuration creates broad reusable authority;no user-appointed Extra Owner grant UI. Current native manager permission checks remain.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "whitelist add",
+    "referenceSyntax": ",whitelist add (user)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke trust"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Explicit alert-exemption only,max20members;not blanket security/Mainrole/Permit immunity.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "whitelist remove",
+    "referenceSyntax": ",whitelist remove (user)",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke trust",
+      "antinuke removetrust"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Explicit alerttrust removal,not nativepermission or globalsecurity change.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "whitelist show",
+    "referenceSyntax": ",whitelist show",
+    "source": "https://docs.zynrax.site/security/antinuke",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke trustlist"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Private stored audit-alert trust IDs only,not currentmembership/native immunity proof.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "event disable",
+    "referenceSyntax": ",event disable",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "event disable"
+    ],
+    "evidenceDoc": "docs/EVENT_MODE.md",
+    "reason": "Exact-owned snapshotrestore only,refusesdrift/unknown,category unchanged,no unconditionalserverwide overwrite.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "event enable",
+    "referenceSyntax": ",event enable",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "event enable"
+    ],
+    "evidenceDoc": "docs/EVENT_MODE.md",
+    "reason": "Only selectedoutside everyoneView denies,eventcategory unchanged;not role/whole-server isolation or inheritedcategoryfanout.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "event reset",
+    "referenceSyntax": ",event reset",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "event reset"
+    ],
+    "evidenceDoc": "docs/EVENT_MODE.md",
+    "reason": "Forgetfullyrestoredinactivepolicy only,no nativecategory/channels deletion.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "event setup",
+    "referenceSyntax": ",event setup",
+    "source": "https://docs.zynrax.site/configuration/eventmanager",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "event setup"
+    ],
+    "evidenceDoc": "docs/EVENT_MODE.md",
+    "reason": "Ownerconfirmexistingvisibleeventcategory+1-10outsidetextchannels,min100members,no automatic12channels/rolecreation.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "react add",
+    "referenceSyntax": ",react add (trigger) (emojis)",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "react add"
+    ],
+    "evidenceDoc": "docs/AUTOREACT.md",
+    "reason": "LiteralNFKCsingleword1-50,up to10rules/10distinct reviewedUnicode/currentguildemoji perrule,futurehuman normaltextonly,reserve+exactreactionproof.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "react list",
+    "referenceSyntax": ",react list",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "react list"
+    ],
+    "evidenceDoc": "docs/AUTOREACT.md",
+    "reason": "Private storedliteral trigger/emoji policy,not nativecurrentavailability proof.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "react remove",
+    "referenceSyntax": ",react remove (trigger)",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "react remove"
+    ],
+    "evidenceDoc": "docs/AUTOREACT.md",
+    "reason": "Forgetone trigger,existingreactions/receipts untouched.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "react reset",
+    "referenceSyntax": ",react reset",
+    "source": "https://docs.zynrax.site/configuration/autoreact",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "react reset"
+    ],
+    "evidenceDoc": "docs/AUTOREACT.md",
+    "reason": "Forgetrules only,existingreactions/replayguards unchanged.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antibot add",
+    "referenceSyntax": ",antibot add #channel",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antibot add"
+    ],
+    "evidenceDoc": "docs/ANTIBOT.md",
+    "reason": "Confirmedselectednormaltext futurebotmessage deletion,max25channels,no webhook/Luna/history/raidban actions.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antibot config",
+    "referenceSyntax": ",antibot config",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antibot config"
+    ],
+    "evidenceDoc": "docs/ANTIBOT.md",
+    "reason": "Private storedchannel/whitelistIDs,not nativeeffectproof.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antibot remove",
+    "referenceSyntax": ",antibot remove #channel",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antibot remove"
+    ],
+    "evidenceDoc": "docs/ANTIBOT.md",
+    "reason": "Stopsfuturedeletion in selectedchannel,submitteddelete mayfinish.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antibot reset",
+    "referenceSyntax": ",antibot reset",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antibot reset"
+    ],
+    "evidenceDoc": "docs/ANTIBOT.md",
+    "reason": "Clearschannels+whitelist,not messages/receipts/nativeeffects.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antibot wl add",
+    "referenceSyntax": ",antibot wl add @bot",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antibot wladd"
+    ],
+    "evidenceDoc": "docs/ANTIBOT.md",
+    "reason": "Exactcurrentbotmember exemption,max100,no nativegrant/securityimmunity.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "antibot wl remove",
+    "referenceSyntax": ",antibot wl remove @bot",
+    "source": "https://docs.zynrax.site/configuration/antibot",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antibot wlremove"
+    ],
+    "evidenceDoc": "docs/ANTIBOT.md",
+    "reason": "Exact storedbotID exemption removal,departedbot supported.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod config",
+    "referenceSyntax": ",automod config",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod config"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Private stored policy,not live false-positive protection guarantee.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod disable",
+    "referenceSyntax": ",automod disable",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod disable"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Stopsfuture enabled moderation;submittedactions can finish,replayguards retained.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod enable",
+    "referenceSyntax": ",automod enable",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod enable",
+      "automod rule"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Direct manager policy/rule setup,disableddefault,explicit boundedwarn/delete/confirmedtimeout mode,not referenceinteractive menu or all rules automatically.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod ignore channel",
+    "referenceSyntax": ",automod ignore channel #channel",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod ignorechannel"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Exact channel exclusion,max20,not categoryinheritance or nativepermissionchange.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod ignore reset",
+    "referenceSyntax": ",automod ignore reset",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod clearignored",
+      "automod clearexempt"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Separate confirmed channel/role exclusion clears,not otherpolicy/history/native changes.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod ignore role",
+    "referenceSyntax": ",automod ignore role @role",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod exempt"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Stored role exemption policy,currentmanager configuration,no native rolegrant.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod logging",
+    "referenceSyntax": ",automod logging #channel",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "Dedicated auto-created/pushed AutoMod logs omitted:incident IDs/status are private stored metadata;no automatic disclosure to a channel with unverifiedstaff audience. Generalconfigured caselogs are not an Automodlogging equivalent.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "automod punishment",
+    "referenceSyntax": ",automod punishment",
+    "source": "https://docs.zynrax.site/security/automod",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "automod enable",
+      "automod timeoutminutes"
+    ],
+    "evidenceDoc": "docs/AUTOMOD.md",
+    "reason": "Warn/delete/explicit1-60min native timeout policy,not per-eventinteractive kick/ban;autokick/ban omitted safety.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "jail",
+    "referenceSyntax": ",jail (member) [duration] [reason]",
+    "source": "https://docs.zynrax.site/security/jail",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "jail apply"
+    ],
+    "evidenceDoc": "docs/JAIL.md",
+    "reason": "Explicit1s-28d native timeout,not strippingroles/singlechannel exemption/permanentjail. Roles remain;referencechannel also blocked.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "jail config",
+    "referenceSyntax": ",jail config",
+    "source": "https://docs.zynrax.site/security/jail",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "jail config"
+    ],
+    "evidenceDoc": "docs/JAIL.md",
+    "reason": "Private stored referencechannel/no isolationproof.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "jail list",
+    "referenceSyntax": ",jail list",
+    "source": "https://docs.zynrax.site/security/jail",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "jail list"
+    ],
+    "evidenceDoc": "docs/JAIL.md",
+    "reason": "Private confirmedactive/uncertaindeadline records cap25,total;pastdeadlines settlemetadata only.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "jail reset",
+    "referenceSyntax": ",jail reset",
+    "source": "https://docs.zynrax.site/security/jail",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "jail reset"
+    ],
+    "evidenceDoc": "docs/JAIL.md",
+    "reason": "Ownerconfirmed forgetpolicy only withoutactive/uncertain records,no nativepunishment/history erasure.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "jail setup",
+    "referenceSyntax": ",jail setup",
+    "source": "https://docs.zynrax.site/security/jail",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "jail setup"
+    ],
+    "evidenceDoc": "docs/JAIL.md",
+    "reason": "Ownerconfirmexistingnormaltext referencechannel,no jailrole/overwrites/menu/structurecreation.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "unjail",
+    "referenceSyntax": ",unjail (member) [reason]",
+    "source": "https://docs.zynrax.site/security/jail",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "jail release"
+    ],
+    "evidenceDoc": "docs/JAIL.md",
+    "reason": "Exact-owned currenttimeoutrelease only,no role restoration because rolesneverremoved,drift/unknown frozen.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "mainrole add",
+    "referenceSyntax": ",mainrole add (role)",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "Instantban for one protectedrole mention omitted;accidental/reference/legitimate mentions and false positives must not trigger irreversible punishment. MentionGuard protects onehuman directmention threshold timeout,not a rolemention equivalent.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "mainrole list",
+    "referenceSyntax": ",mainrole list",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "No protectedrole instantban list exists;listing unrelatedhuman MentionGuardpolicy would misrepresent security.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "mainrole remove",
+    "referenceSyntax": ",mainrole remove (role)",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "No instantban protectedrole policy installed;do not pretend to remove or enable protection. MentionGuard is a distinct humanmention feature.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "mainrole reset",
+    "referenceSyntax": ",mainrole reset",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "No instantban policy to reset;no fake config command or globalsecurity bypass.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  },
+  {
+    "referenceName": "whitelist",
+    "referenceSyntax": ",whitelist (user)",
+    "source": "https://docs.zynrax.site/security/mainrole",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/SECURITY_CLOSURE.md",
+    "reason": "No blanket immunity/ExtraOwner security grant;Antinuke alerttrust is narrow and MentionGuardexemptions are nativeowner/admin checks,not Mainroleban immunity.",
+    "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
+  }
+]

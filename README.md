@@ -4,7 +4,7 @@ Professional multipurpose Discord bot project. Repository name: `coldy`. Node.js
 
 ## Honest status
 
-**This is not a finished 541-command bot.** 58 top-level slash commands provide 555 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music has18 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
+**This is not a finished 541-command bot.** 65 top-level slash commands provide 586 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message/sampled-voice Leaderboards. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates private channels explicitly or from an opt-in existing lobby. Music has18 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
 
 The official Zynrax documentation yields 319 distinct documented command paths after shortcut deduplication. These are reference-only rows, not Luna implementations. The reference inventory is not advertised as the complete 541-command list. Aliases do not count as separate commands. Examples and parameter values do not count as new commands.
 
@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1205 distinct automated tests pass locally; these are not live Discord integration tests. The1132-test/505-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38202924773). 1132/505 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1284 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -63,3 +63,7 @@ Follow [Railway quickstart](docs/RAILWAY_QUICKSTART.md):separate service,Dockerf
 Help supports exact category and literal case-insensitive search filters with eight full rows/page. Command descriptions remain English;headers/errors use saved guild locale. No claim of full translated slash metadata.
 
 `npm run doctor` is an offline preflight after setting env:Node version,required field shapes,guild-registration ID and command registry. Prints no token/node-auth/database-path values and performs no login/network/registration/DB write. Missing required env exits1. Passing is not live readiness:token validity,volume ownership,intents,permissions and provider playback still need actual verification.
+
+## Documented reference scope
+
+[Behavior closure](docs/REFERENCE_CLOSURE_MAP.md) maps319exact registry rows to bounded adaptations or explicit safety/native-limit omissions. [Supplemental scope](docs/SUPPLEMENTAL_CLOSURE.md) covers the5non-registry introduction/premium/legal/privacy pages,including3Premium command rows outside the original319inventory. All34official index pages have source-level dispositions. This is not541+numeric parity,live Discord acceptance or production readiness. Known music resolution diagnosis and native/client/audio acceptance remain open.

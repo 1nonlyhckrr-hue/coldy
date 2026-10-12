@@ -1,0 +1,418 @@
+[
+  {
+    "referenceName": "media bypass add",
+    "referenceSyntax": ",media bypass add (member)",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "media bypassadd"
+    ],
+    "evidenceDoc": "docs/MEDIA.md",
+    "reason": "Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "media bypass remove",
+    "referenceSyntax": ",media bypass remove (member)",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "media bypassremove"
+    ],
+    "evidenceDoc": "docs/MEDIA.md",
+    "reason": "Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "media bypass show",
+    "referenceSyntax": ",media bypass show",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "media bypassshow"
+    ],
+    "evidenceDoc": "docs/MEDIA.md",
+    "reason": "Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "media config",
+    "referenceSyntax": ",media config",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "media config"
+    ],
+    "evidenceDoc": "docs/MEDIA.md",
+    "reason": "Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "media remove",
+    "referenceSyntax": ",media remove",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "media remove"
+    ],
+    "evidenceDoc": "docs/MEDIA.md",
+    "reason": "Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "media setup",
+    "referenceSyntax": ",media setup (channel)",
+    "source": "https://docs.zynrax.site/configuration/media",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "media setup"
+    ],
+    "evidenceDoc": "docs/MEDIA.md",
+    "reason": "Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autoresponder config",
+    "referenceSyntax": ",autoresponder config",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autoresponder config"
+    ],
+    "evidenceDoc": "docs/AUTORESPONDERS.md",
+    "reason": "Managerchosenliteralnormalized exact/wholeword keyword trigger,responseverbatim,max50rules/cooldown10-3600s/exactfirst. Futurefreshhumanmessage only,persistentone-shotno unknownsend retry. Privateconfigmetadata,not instant/every-event promise.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autoresponder create",
+    "referenceSyntax": ",autoresponder create (trigger) (response)",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autoresponder create"
+    ],
+    "evidenceDoc": "docs/AUTORESPONDERS.md",
+    "reason": "Managerchosenliteralnormalized exact/wholeword keyword trigger,responseverbatim,max50rules/cooldown10-3600s/exactfirst. Futurefreshhumanmessage only,persistentone-shotno unknownsend retry. Privateconfigmetadata,not instant/every-event promise.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autoresponder delete",
+    "referenceSyntax": ",autoresponder delete (trigger)",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autoresponder delete"
+    ],
+    "evidenceDoc": "docs/AUTORESPONDERS.md",
+    "reason": "Managerchosenliteralnormalized exact/wholeword keyword trigger,responseverbatim,max50rules/cooldown10-3600s/exactfirst. Futurefreshhumanmessage only,persistentone-shotno unknownsend retry. Privateconfigmetadata,not instant/every-event promise.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autoresponder edit",
+    "referenceSyntax": ",autoresponder edit (trigger) (new_response)",
+    "source": "https://docs.zynrax.site/configuration/autoresponder",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autoresponder edit"
+    ],
+    "evidenceDoc": "docs/AUTORESPONDERS.md",
+    "reason": "Managerchosenliteralnormalized exact/wholeword keyword trigger,responseverbatim,max50rules/cooldown10-3600s/exactfirst. Futurefreshhumanmessage only,persistentone-shotno unknownsend retry. Privateconfigmetadata,not instant/every-event promise.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "logging auto setup",
+    "referenceSyntax": ",logging auto setup",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/EVENT_LOGS.md",
+    "reason": "Automaticcategory+7logchannels creation/routing omitted:unknown audience/inheritedpermissions must not disclose member/activity history. Owner selects existingdestination explicitly.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "logging config",
+    "referenceSyntax": ",logging config",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "logging config"
+    ],
+    "evidenceDoc": "docs/EVENT_LOGS.md",
+    "reason": "Directexistingdestination/explicitselected metadataevents+Lunacases,not interactivecategorymenus/70eventcompleteaudit. No deleted/editedmessage content or guessedactor attribution,staffaudience reviewedby operator. Reset stopsfuture/forgetsconfig,keeps native/history/guards.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "logging disable",
+    "referenceSyntax": ",logging disable",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "logging disable"
+    ],
+    "evidenceDoc": "docs/EVENT_LOGS.md",
+    "reason": "Directexistingdestination/explicitselected metadataevents+Lunacases,not interactivecategorymenus/70eventcompleteaudit. No deleted/editedmessage content or guessedactor attribution,staffaudience reviewedby operator. Reset stopsfuture/forgetsconfig,keeps native/history/guards.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "logging enable",
+    "referenceSyntax": ",logging enable",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "logging enable"
+    ],
+    "evidenceDoc": "docs/EVENT_LOGS.md",
+    "reason": "Directexistingdestination/explicitselected metadataevents+Lunacases,not interactivecategorymenus/70eventcompleteaudit. No deleted/editedmessage content or guessedactor attribution,staffaudience reviewedby operator. Reset stopsfuture/forgetsconfig,keeps native/history/guards.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "logging reset",
+    "referenceSyntax": ",logging reset",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "logging reset"
+    ],
+    "evidenceDoc": "docs/EVENT_LOGS.md",
+    "reason": "Directexistingdestination/explicitselected metadataevents+Lunacases,not interactivecategorymenus/70eventcompleteaudit. No deleted/editedmessage content or guessedactor attribution,staffaudience reviewedby operator. Reset stopsfuture/forgetsconfig,keeps native/history/guards.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "logging setup",
+    "referenceSyntax": ",logging setup",
+    "source": "https://docs.zynrax.site/configuration/logging",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "logging channel",
+      "logging event"
+    ],
+    "evidenceDoc": "docs/EVENT_LOGS.md",
+    "reason": "Directexistingdestination/explicitselected metadataevents+Lunacases,not interactivecategorymenus/70eventcompleteaudit. No deleted/editedmessage content or guessedactor attribution,staffaudience reviewedby operator. Reset stopsfuture/forgetsconfig,keeps native/history/guards.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore bypass add",
+    "referenceSyntax": ",ignore bypass add (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Blankettrusteduser immunity to all restrictions omitted safety. Permit is additive per-top-level command user/role/exactchannel denies;nativepermissions/hierarchy still apply. Serverowner and Help/Permit recovery bypass only thisdeny layer,not globaltrust grants.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore bypass remove",
+    "referenceSyntax": ",ignore bypass remove (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Blankettrusteduser immunity to all restrictions omitted safety. Permit is additive per-top-level command user/role/exactchannel denies;nativepermissions/hierarchy still apply. Serverowner and Help/Permit recovery bypass only thisdeny layer,not globaltrust grants.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore bypass show",
+    "referenceSyntax": ",ignore bypass show",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Blankettrusteduser immunity to all restrictions omitted safety. Permit is additive per-top-level command user/role/exactchannel denies;nativepermissions/hierarchy still apply. Serverowner and Help/Permit recovery bypass only thisdeny layer,not globaltrust grants.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore channel add",
+    "referenceSyntax": ",ignore channel add (channel)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "permit blockchannel"
+    ],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Adapted explicitcommand-scoped user/exactchannel denies,not silentallcommands/allbackgroundjobs suppression. No inheritance/nativepermission grant;owner/help/permit recovery exemptions retained. Storedlist is not universalignorepolicy.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore channel remove",
+    "referenceSyntax": ",ignore channel remove (channel)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "permit unblockchannel"
+    ],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Adapted explicitcommand-scoped user/exactchannel denies,not silentallcommands/allbackgroundjobs suppression. No inheritance/nativepermission grant;owner/help/permit recovery exemptions retained. Storedlist is not universalignorepolicy.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore command add",
+    "referenceSyntax": ",ignore command add (command_name)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Universalserverwide commanddisable/re-enable omitted safety because recovery/admin paths must not be globally locked out. Explicit per-subject/per-channel Permit denies available,not automatic allmember ban.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore command remove",
+    "referenceSyntax": ",ignore command remove (command_name)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Universalserverwide commanddisable/re-enable omitted safety because recovery/admin paths must not be globally locked out. Explicit per-subject/per-channel Permit denies available,not automatic allmember ban.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore command show",
+    "referenceSyntax": ",ignore command show",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "permit list"
+    ],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Adapted explicitcommand-scoped user/exactchannel denies,not silentallcommands/allbackgroundjobs suppression. No inheritance/nativepermission grant;owner/help/permit recovery exemptions retained. Storedlist is not universalignorepolicy.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore user add",
+    "referenceSyntax": ",ignore user add (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "permit blockuser"
+    ],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Adapted explicitcommand-scoped user/exactchannel denies,not silentallcommands/allbackgroundjobs suppression. No inheritance/nativepermission grant;owner/help/permit recovery exemptions retained. Storedlist is not universalignorepolicy.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ignore user remove",
+    "referenceSyntax": ",ignore user remove (member)",
+    "source": "https://docs.zynrax.site/configuration/ignore",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "permit unblockuser"
+    ],
+    "evidenceDoc": "docs/PERMIT.md",
+    "reason": "Adapted explicitcommand-scoped user/exactchannel denies,not silentallcommands/allbackgroundjobs suppression. No inheritance/nativepermission grant;owner/help/permit recovery exemptions retained. Storedlist is not universalignorepolicy.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet autodelete",
+    "referenceSyntax": ",greet autodelete (seconds)",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Schedulednativewelcome deletion omitted:without durable exactmessage-ID ownership/deletionfollowthrough a timer could fail or delete unrelated content. Native welcome messages remain,manualmoderation available.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet channel",
+    "referenceSyntax": ",greet channel #channel",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "welcome channel"
+    ],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Currentmanager existingdestination/opt-infuturememberwelcome,sharedlocalizedembeds/verbatimcustomtemplate/privatepreview/explicitselftest. Only joiningmemberping maybeallowed;roles/everyone suppressed. Resetdisableddefault,native/inflightmessages/history not erased.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet config",
+    "referenceSyntax": ",greet config",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "welcome config"
+    ],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Currentmanager existingdestination/opt-infuturememberwelcome,sharedlocalizedembeds/verbatimcustomtemplate/privatepreview/explicitselftest. Only joiningmemberping maybeallowed;roles/everyone suppressed. Resetdisableddefault,native/inflightmessages/history not erased.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet disable",
+    "referenceSyntax": ",greet disable",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "welcome disable"
+    ],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Currentmanager existingdestination/opt-infuturememberwelcome,sharedlocalizedembeds/verbatimcustomtemplate/privatepreview/explicitselftest. Only joiningmemberping maybeallowed;roles/everyone suppressed. Resetdisableddefault,native/inflightmessages/history not erased.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet enable",
+    "referenceSyntax": ",greet enable",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "welcome enable"
+    ],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Currentmanager existingdestination/opt-infuturememberwelcome,sharedlocalizedembeds/verbatimcustomtemplate/privatepreview/explicitselftest. Only joiningmemberping maybeallowed;roles/everyone suppressed. Resetdisableddefault,native/inflightmessages/history not erased.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet reset",
+    "referenceSyntax": ",greet reset",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "welcome reset"
+    ],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Currentmanager existingdestination/opt-infuturememberwelcome,sharedlocalizedembeds/verbatimcustomtemplate/privatepreview/explicitselftest. Only joiningmemberping maybeallowed;roles/everyone suppressed. Resetdisableddefault,native/inflightmessages/history not erased.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greet test",
+    "referenceSyntax": ",greet test",
+    "source": "https://docs.zynrax.site/configuration/welcome",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "welcome test"
+    ],
+    "evidenceDoc": "docs/WELCOMER.md",
+    "reason": "Currentmanager existingdestination/opt-infuturememberwelcome,sharedlocalizedembeds/verbatimcustomtemplate/privatepreview/explicitselftest. Only joiningmemberping maybeallowed;roles/everyone suppressed. Resetdisableddefault,native/inflightmessages/history not erased.",
+    "verification": "local mocks only;native Discord/gateway/message/visual acceptance unverified"
+  }
+]

@@ -1,0 +1,635 @@
+[
+  {
+    "referenceName": "8ball",
+    "referenceSyntax": ",8ball (question)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "fun 8ball"
+    ],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Private localized safe fixed optional prompts/cryptographic8ball selection;question validated but not echoed/stored,no multiplayer/physical coercion or external provider. No public targetperson disclosure.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "bonk",
+    "referenceSyntax": ",bonk (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "chutiya",
+    "referenceSyntax": ",chutiya (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "cry",
+    "referenceSyntax": ",cry",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "cuddle",
+    "referenceSyntax": ",cuddle [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "cute",
+    "referenceSyntax": ",cute (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "dance",
+    "referenceSyntax": ",dance",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "dare",
+    "referenceSyntax": ",dare",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "fun dare"
+    ],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Private localized safe fixed optional prompts/cryptographic8ball selection;question validated but not echoed/stored,no multiplayer/physical coercion or external provider. No public targetperson disclosure.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "gif",
+    "referenceSyntax": ",gif (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "External image/GIF query lookup omitted without verified provider/API and adult-content/safe-media contract. No random unreviewed URL/results are fetched;NSFW channel flag is not permission to bypass safety.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "handhold",
+    "referenceSyntax": ",handhold [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "happy",
+    "referenceSyntax": ",happy",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "highfive",
+    "referenceSyntax": ",highfive [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "horny",
+    "referenceSyntax": ",horny (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "howgay",
+    "referenceSyntax": ",howgay (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "hug",
+    "referenceSyntax": ",hug [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "image",
+    "referenceSyntax": ",image (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "External image/GIF query lookup omitted without verified provider/API and adult-content/safe-media contract. No random unreviewed URL/results are fetched;NSFW channel flag is not permission to bypass safety.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "iq",
+    "referenceSyntax": ",iq (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "kick",
+    "referenceSyntax": ",kick [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "kill",
+    "referenceSyntax": ",kill (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "kiss",
+    "referenceSyntax": ",kiss [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "lappillow",
+    "referenceSyntax": ",lappillow [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "lesbian",
+    "referenceSyntax": ",lesbian (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "pat",
+    "referenceSyntax": ",pat [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "poke",
+    "referenceSyntax": ",poke [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "punch",
+    "referenceSyntax": ",punch [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "slap",
+    "referenceSyntax": ",slap (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "smile",
+    "referenceSyntax": ",smile",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "smug",
+    "referenceSyntax": ",smug",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "spank",
+    "referenceSyntax": ",spank (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "stare",
+    "referenceSyntax": ",stare [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "tharki",
+    "referenceSyntax": ",tharki (person)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted orientation/sexuality/intelligence/appearance/insult scoring omitted to avoid identity judgments,sexualization and humiliating arbitrary members. No fabricated percentages or inferred private traits.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "tickle",
+    "referenceSyntax": ",tickle [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "truth",
+    "referenceSyntax": ",truth",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "fun truth"
+    ],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Private localized safe fixed optional prompts/cryptographic8ball selection;question validated but not echoed/stored,no multiplayer/physical coercion or external provider. No public targetperson disclosure.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "wave",
+    "referenceSyntax": ",wave [@user]",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "yeet",
+    "referenceSyntax": ",yeet (@user)",
+    "source": "https://docs.zynrax.site/miscellaneous/fun",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/FUN.md",
+    "reason": "Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "247",
+    "referenceSyntax": ",247",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music stay"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Explicit enabledflag keeps idle session while current process/node healthy only. No persisted channel,automatic restart reconnect,24/7 SLA,premium bypass or unconditional unattended voice occupation.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "autoplay",
+    "referenceSyntax": ",autoplay",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Automatic related-track selection omitted:may choose unwanted/unreviewed copyrighted content and extend voice occupation without explicit request. Queue plays explicitly requested tracks only.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "clearqueue",
+    "referenceSyntax": ",clearqueue",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music clear"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Drops waiting tracks only,not current track/paused/stay/provider state. Samevoice/lock guards;memory-only queue.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "disconnect",
+    "referenceSyntax": ",disconnect",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music stop"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Explicit samevoice stop disconnects provider and clears entire memory session after confirmed outcome. Unknown disconnect freezes,no blind replay.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "filter disable",
+    "referenceSyntax": ",filter disable",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Filter reset omitted with unsupported owned filter state:no native update under guessed prior parameters. Existing unfiltered playback policy unchanged.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "filter enable",
+    "referenceSyntax": ",filter enable",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "8D/Bassboost/Nightcore/Vaporwave/Vibrato/Tremolo/Karaoke/Rotation/Distortion/Channelmix filters omitted pending bounded audible-effect review and provider acknowledgement. Never enable guessed gain/filter presets.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "join",
+    "referenceSyntax": ",join",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Standalone empty voice join omitted:join occurs only after explicit validated play request and fresh exact samevoice authority. Avoid unattended connection without track/session intent.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "loop",
+    "referenceSyntax": ",loop",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Indefinite currenttrack loop omitted to avoid unattended repeating sharedvoice content and no persisted user/revision-controlled loop policy. No automatic requeue on completion.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "nowplaying",
+    "referenceSyntax": ",nowplaying",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music nowplaying"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Private current title/author and session snapshot only,not live exactposition/artwork/lyrics/detailed provider proof.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "pause",
+    "referenceSyntax": ",pause",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music pause"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Samevoice fresh authority,serialized provider pause with unknown-effect freeze;not guaranteed audio/client response.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "play",
+    "referenceSyntax": ",play (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music play"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Explicit opt-in YouTube keyword search(first result) or exact11character videoID only,finite validated track,max50waiting queue,current samevoice/native authority. No arbitrary URLs/playlists/multi-platform media.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "queue",
+    "referenceSyntax": ",queue",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music queue"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Private10waiting tracks/page1-5,current separate,max50queue;escaped bounded metadata,not unbounded saved history or public playlist.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "replay",
+    "referenceSyntax": ",replay",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Currenttrack seek/replay omitted without validated provider position/seek acknowledgement and exact event-revision safety. Waiting duplicate copies are not currenttrack replay.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "resume",
+    "referenceSyntax": ",resume",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music resume"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Samevoice fresh authority,serialized provider resume with unknown-effect freeze;no auto restart/recovery.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "search",
+    "referenceSyntax": ",search (query)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Interactive multi-platform result picker omitted:current adapter returns validated first YouTube search result only. No session-bound selectable result catalogue exists;play firstresult is not search parity.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "seek",
+    "referenceSyntax": ",seek (percentage)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Percentage seek omitted without current exact finite playback-position/duration and provider acknowledgement safety. No percentage-to-time action inferred.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "shuffle",
+    "referenceSyntax": ",shuffle",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music shuffle"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Unbiased system RNG shuffles waiting queue only,under session lock/currentvoice authority,no current playback change/provider call.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "skip",
+    "referenceSyntax": ",skip",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music skip"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Stop current once then advance one waiting item after fresh samevoice checks. Unknown stop/play freezes;matching expected stopped event ignored,no cascade from late failure.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "stop",
+    "referenceSyntax": ",stop",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "music stop"
+    ],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Disconnect-and-clear adaptation,not stay-connected stop. Confirmed provider disconnect reconciles frozen session;no durable playback history retained.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  },
+  {
+    "referenceName": "volume",
+    "referenceSyntax": ",volume (level)",
+    "source": "https://docs.zynrax.site/miscellaneous/music",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/MUSIC_CORE.md",
+    "reason": "Volume1-150% changes omitted pending bounded reviewed gain policy/provider outcome proof. Cannot unexpectedly amplify shared-channel sound;no volume command fabricated.",
+    "verification": "local mocks only;native Discord/provider/audio/client visual acceptance unverified"
+  }
+]

@@ -149,3 +149,15 @@ Original public checkpoint passed Node 22/24 GitHub CI. This newer consolidated 
 ## Reference-led AntiBot checkpoint
 
 58top-level/555paths/1205localtests,33migrations56applicationtables.6newAntiBotpaths with explicit deletion confirmation,freshbot-only/nativeproof/uncertaintyfreeze. See ANTIBOT.md. Published1132/505 remains separate;50localnewpaths. Nativeacceptance pending;541-equivalenceunknown.
+
+## Bounded voice leaderboard
+
+59top/563paths/1212localtests,34migrations59tables.8voicelbpaths sample futureverifiedhumanvoicejoins only,90UTCdays/privacy,restart/missed/disconnecttailsdropped. Published1205/555andexactheadCIremainseparate. See VOICE_LEADERBOARD.md;nativeunverified.
+
+## Existing-lobby join-to-create
+
+60top566paths1218localtests35migrations61tables.3vmjoinpaths opt-inexistinglobby/privatechannelcreation/forcednativeone-shotmove;no automaticcleanup/ownerbuttonsyet. Published1205/555separate;11localnewpaths,nativeunverified. See VMJOIN.md and REFERENCE_CLOSURE_MAP.md.
+
+## Private owner control panel
+
+60top567paths1224localtests36migrations62tables. /voicemasterbuttons fixed3one-useowner10minbuttons lock/shareeveryoneunlock/emptyclose. Existingempty/nativepermission/ownershipsafety unchanged. No nativebuttonvisualacceptance. See VMCONTROLS.md.

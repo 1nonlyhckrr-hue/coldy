@@ -1,0 +1,279 @@
+[
+  {
+    "referenceName": "gconfig",
+    "referenceSyntax": ",gconfig",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "giveaway config"
+    ],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Private current manager view of runtime policy/limits, not nonexistent staff-role/banner settings.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "gembed reset",
+    "referenceSyntax": ",gembed reset",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Global banner reset omitted with safety-limited unsupported custom banner state; must not overwrite all native announcements under guessed ownership. Existing fixed Luna presentation remains.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "gembed set",
+    "referenceSyntax": ",gembed set (url/upload)",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Giveaway global URL/upload banner customization omitted for safety: no reviewed remote-image audience/privacy policy, byte validation or durable owned-message update proof. Fixed branded Luna embeds only.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "gend",
+    "referenceSyntax": ",gend [message_id]",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "giveaway end"
+    ],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Explicit positive stored record ID in this guild, not replied/guessed message. Current eligibility checked; bounded stored draw saved before original-message edit. Early end supported, unknown/newdraw failures fail closed.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "glist",
+    "referenceSyntax": ",glist",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "giveaway list"
+    ],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Private manager view, two full-prize records per page from latest100 stored records with scope/truncation labels. Not every live active giveaway or proof of eligibility/delivery.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "greroll",
+    "referenceSyntax": ",greroll",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "giveaway reroll"
+    ],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Explicit ended stored record ID, not reply inference. Fresh eligibility, cryptographic unique selection excludes immediately previous winners only. Persisted draw version reused on publish retry.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "gstaff reset",
+    "referenceSyntax": ",gstaff reset",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Staff grant reset omitted with safety-limited unsupported delegated-role grants; native permission changes remain server operator work, never automatic role edits.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "gstaff role",
+    "referenceSyntax": ",gstaff role @GiveawayManager",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Delegated giveaway staff-role grants omitted for safety: no source-grounded role-specific permission/revision model for draw/reroll/disclosure authority. Current native Manage Server required, not blanket Administrator.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "gstart",
+    "referenceSyntax": ",gstart (time) (winners) (prize)",
+    "source": "https://docs.zynrax.site/miscellaneous/giveaway",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "giveaway start"
+    ],
+    "evidenceDoc": "docs/GIVEAWAYS.md",
+    "reason": "Explicit existing output destination, minutes1-43200, winners1-20, prize text and optional role. Up to1000 entries/20unresolved; fresh manager, persisted announcement binding, no prize purchase/delivery.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket addcategory",
+    "referenceSyntax": ",ticket addcategory",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Multiple ticket-type creation omitted for safety: no durable per-type audience/revision policy, so silently multiplying private support audiences is not allowed. One explicitly reviewed category/support-role configuration only.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket adduser",
+    "referenceSyntax": ",ticket adduser (user)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Guest access widening omitted for safety: transcript authorization and exact overwrite ownership bind owner/stored support role only; no durable participant consent/revocation model exists.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket categories",
+    "referenceSyntax": ",ticket categories",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Multi-type category listing omitted with the safety-limited single configuration. Config displays the chosen base setup, not a fabricated three-type catalogue.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket close",
+    "referenceSyntax": ",ticket close",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket close"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Exact owned privacy snapshot required; bounded JSON-lines transcript saved before owner becomes read-only. Staff retain access, not channel deletion/full HTML or all-party revocation. Unknown transitions freeze.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket config",
+    "referenceSyntax": ",ticket config",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket config"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Current server manager sees stored setup privately. Stored queue/metadata are not live channel availability or full private conversation export.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket delete",
+    "referenceSyntax": ",ticket delete",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Native ticket channel deletion omitted for safety: destructive removal can erase uncaptured or later staff content, with no recoverable deletion/retention approval receipt. Close is reversible read-only owner adaptation.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket edit",
+    "referenceSyntax": ",ticket edit",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Interactive welcome/panel content editing omitted for safety: no durable original-public-message revision proof exists for safe update. Fixed localized panel labels and no automatic arbitrary native message overwrite.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket panel",
+    "referenceSyntax": ",ticket panel (channel)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket panel"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Explicit existing output channel with fixed open button, stored original guild/channel/message binding and support/admin audience notice. Uncertain send blocks blind retry.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket removecategory",
+    "referenceSyntax": ",ticket removecategory (id)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Multi-type removal omitted for safety: no durable per-type configuration/ownership exists. Resetsetup stops future opens without deleting a Discord category or existing tickets.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket removeuser",
+    "referenceSyntax": ",ticket removeuser (user)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Guest access removal omitted for safety because guest grants are not supported and arbitrary overwrite edits must not override operator privacy changes.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket reset",
+    "referenceSyntax": ",ticket reset",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket resetsetup"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Confirmed manager forgets future setup only. Existing channels, staff access, panel records and transcripts remain; in-flight opens may finish. No whole-system destructive reset.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket setup",
+    "referenceSyntax": ",ticket setup",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket setup"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Existing category and unmanaged support role selected explicitly for future tickets; one configuration, fixed localized Luna embed, no interactive Simple/Embed/customwelcome wizard.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket staff",
+    "referenceSyntax": ",ticket staff (role)",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket setup"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Support role selected alongside category for future tickets only. Existing records keep their recorded role; no retroactive disclosure to a newly chosen staff audience.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  },
+  {
+    "referenceName": "ticket transcript",
+    "referenceSyntax": ",ticket transcript (channel)\n,ticket transcript",
+    "source": "https://docs.zynrax.site/configuration/tickets",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "ticket transcript"
+    ],
+    "evidenceDoc": "docs/TICKETS.md",
+    "reason": "Private authorized ephemeral UTF-8 JSON-lines snapshot, latest1000 messages/about1MB with partial label, attachment names/URLs and embed counts. No public transcript destination, executable HTML, embed bodies or attachment byte archive.",
+    "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
+  }
+]

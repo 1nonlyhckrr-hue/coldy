@@ -1,0 +1,450 @@
+[
+  {
+    "referenceName": "customize avatar",
+    "referenceSyntax": ",customize avatar (image URL)",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "customize banner",
+    "referenceSyntax": ",customize banner (image URL)",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "customize reset",
+    "referenceSyntax": ",customize reset",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "customize resetavatar",
+    "referenceSyntax": ",customize resetavatar",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "customize resetbanner",
+    "referenceSyntax": ",customize resetbanner",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "prefix",
+    "referenceSyntax": "?prefix (new prefix)",
+    "source": "https://docs.zynrax.site/overview/customization",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Luna uses registered native slash commands only;no prefix parser/runtime exists. Changing prefix cannot affect slash naming or command routing.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "prefixset",
+    "referenceSyntax": "?prefixset (symbol)",
+    "source": "https://docs.zynrax.site/",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Overview prefix alias omitted with slash-only native command surface;no invented configurable prefix behavior.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "security",
+    "referenceSyntax": "?security",
+    "source": "https://docs.zynrax.site/overview/setup",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "antinuke config",
+      "antinuke enable"
+    ],
+    "evidenceDoc": "docs/ANTINUKE.md",
+    "reason": "Adapted manual configuration/enable of opt-in audit alerts only,not automatic Administrator invitation/extraowner/fullprotection wizard. No punishment/prevention/recovery or top-role hierarchy bypass.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "afk",
+    "referenceSyntax": ",afk [reason]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "afk set",
+      "afk status",
+      "afk clear"
+    ],
+    "evidenceDoc": "docs/AFK.md",
+    "reason": "Explicit own reason share:true,server-scoped7day status and exact-channel notices only. Eligible new message in same guild clears; no nickname edits/global cross-server disclosure or mention-count report.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "avatar",
+    "referenceSyntax": ",avatar [member]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "avatar"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched selected public user profile avatar URL1024size privately; not a native inline photo preview or guild-avatar/membership inference.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "banner",
+    "referenceSyntax": ",banner [member]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "banner"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched public user profile banner link or honest missing result privately; not guild banner/profile edits or membership inference.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "boostcount",
+    "referenceSyntax": ",boostcount",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "boostcount"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched exactguild current boost subscription count and tier0-3,private localized output; malformed provider fields fail closed.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "embed",
+    "referenceSyntax": ",embed",
+    "source": "https://docs.zynrax.site/miscellaneous/embed",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "General interactive embed builder/public send omitted without durable session-bound recipient+final-content review and native message ownership proof. Shared Luna embeds and scoped welcome style are not arbitrary rich-message publishing.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "invite",
+    "referenceSyntax": ",invite",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "No verified deployed application OAuth invite/support destination is configured for this source package. Never invent Zynrax or Luna invite/support links; operators register their own Discord application using documented setup.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list admins",
+    "referenceSyntax": ",list admins",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list admins"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Private fresh manager-only guild member snapshot10/page,explicit member-runtime opt-in,without presences/storage. Current membership can change after snapshot;not complete live universal census.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list bans",
+    "referenceSyntax": ",list bans",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list bans"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Fresh manager+BanMembers and currentbot/nativepermission checks. Max100 ban IDs/names fetched per cursor page,JSONattachment/private,not reasons/history or unban effect.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list boosters",
+    "referenceSyntax": ",list boosters",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list boosters"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Private fresh manager-only guild member snapshot10/page,explicit member-runtime opt-in,without presences/storage. Current membership can change after snapshot;not complete live universal census.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list bots",
+    "referenceSyntax": ",list bots",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list bots"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Private fresh manager-only guild member snapshot10/page,explicit member-runtime opt-in,without presences/storage. Current membership can change after snapshot;not complete live universal census.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list emojis",
+    "referenceSyntax": ",list emojis",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list emojis"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Fresh current guild emoji name/ID/animated metadata,10/page,literalnamefilter,private/no-ping;not stolen/reuploaded image content.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list inrole",
+    "referenceSyntax": ",list inrole (role)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list inrole"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Private fresh manager-only guild member snapshot10/page,explicit member-runtime opt-in,without presences/storage. Current membership can change after snapshot;not complete live universal census.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "list roles",
+    "referenceSyntax": ",list roles",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "list roles"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Fresh current guild role metadata,10/page,literalnamefilter,private/no-ping;not member enumeration or permission mutation.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "makeqr",
+    "referenceSyntax": ",makeqr (slot)\n,makeqr (slot) (amount)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Payment QR generation with optional amount omitted without verified beneficiary/amount and secure ownership/encoding workflow. No payment destination or amount is inferred.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "membercount",
+    "referenceSyntax": ",membercount",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "membercount"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched approximate total/presence counts with validity bounds,not exact online census or human/bot split. No presence/member enumeration for this path.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "poll",
+    "referenceSyntax": "/poll (question) (answers) [duration] [multiple]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "poll"
+    ],
+    "evidenceDoc": "docs/POLLS.md",
+    "reason": "Fresh manager/native output permissions,explicit text/announcement destination,2-10separate textanswers,question300/answers55,hours1-768,multipleflag. Native poll owns votes,not pipe/reply parser or simulated poll. Stored publication receipt prevents blind unknown send retry.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "removeupi",
+    "referenceSyntax": ",removeupi [slot]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "UPI slot deletion omitted with unsupported payment-data store;native/external payment accounts never changed and no secure-erase promise.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "roleinfo",
+    "referenceSyntax": ",roleinfo (role)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "roleinfo"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched current selected guild role ID/name/color/position/managed/permission flags privately,no member list or role mutation.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "say",
+    "referenceSyntax": ",say (channel) (message)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Arbitrary bot-identity message relay to text/voice/thread omitted to avoid impersonation and unreviewed audience disclosure. Reviewed module-specific messages are not a general say/send endpoint.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "serverinfo",
+    "referenceSyntax": ",serverinfo",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "serverinfo"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched exactguild name/ID/approximate member count only. Full server settings/detailed stats omitted as unnecessary disclosure; not full configuration inventory.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setupi",
+    "referenceSyntax": ",setupi (slot) (upi id)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Personal/business payment-identifier slot storage omitted without verified recipient ownership,private-at-rest/payment-data handling policy. Bot is not a wallet or UPI credential store.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "showupi",
+    "referenceSyntax": ",showupi",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Payment-identifier listing omitted with unsupported personal slot store to prevent accidental payment-address disclosure. No hidden UPI records are claimed.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "stats",
+    "referenceSyntax": ",stats",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "stats"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Private local build version/top-level/path counts/processRSS. Shard details and per-user command usage analytics omitted native-limit/privacy; no historical telemetry tracker exists.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "steal",
+    "referenceSyntax": ",steal (emoji)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Cross-server emoji URL download/reupload omitted without safe remote-byte validation/content rights and reviewed native asset mutation receipts. Metadata/enlarge links do not add assets.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "translate",
+    "referenceSyntax": ",translate (language) [text]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "Sending arbitrary or replied conversation text to a third-party translation provider omitted without explicit disclosure policy/provider setup. EN/HI/Hinglish bot-label localization is not a text/message translation service.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "uptime",
+    "referenceSyntax": ",uptime",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "uptime"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Private current Node process uptime hours/minutes/seconds only,not service SLA,shard history or prior process lifetime.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "urban",
+    "referenceSyntax": ",urban (phrase)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "No verified Urban Dictionary API/provider integration,availability/content filtering contract or localized error path exists. External phrase lookup is explicitly omitted,not substituted with invented definitions.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "userinfo",
+    "referenceSyntax": ",userinfo [member]",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "userinfo"
+    ],
+    "evidenceDoc": "README.md",
+    "reason": "Force-fetched public selected user name/ID/bot/account creation date only. Join date,member roles and permissions omitted privacy because user profile is not verified guild-member context.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  },
+  {
+    "referenceName": "weather",
+    "referenceSyntax": ",weather (city)",
+    "source": "https://docs.zynrax.site/miscellaneous/utility",
+    "disposition": "omitted",
+    "limitKind": "native-limit",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/UTILITY_CLOSURE.md",
+    "reason": "No verified live weather/geocoding provider or credential/configuration contract exists. City current-weather lookup omitted rather than fabricate conditions or silently use cached guesses.",
+    "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
+  }
+]

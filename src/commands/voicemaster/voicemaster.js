@@ -1,3 +1,4 @@
+import { privateVoiceControls } from '../../services/vmControls.js';
 import {
   SlashCommandBuilder,
   AttachmentBuilder,
@@ -227,6 +228,13 @@ data.addSubcommand((s) =>
       'ManageChannels:latest100creating/deleting/uncertain metadataJSON;not recovery,retry or repair.',
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('buttons')
+    .setDescription(
+      'Private owner one-use10min controls:emptychannel lock,shareeveryone/unlock,deleteclose.',
+    ),
+);
 export default {
   category: 'voicemaster',
   data,
@@ -237,6 +245,10 @@ export default {
       locale = c.localization.locale(i.guildId),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
+    if (sub === 'buttons') {
+      await i.editReply(lunaPayload(await privateVoiceControls(i, c), { locale }));
+      return;
+    }
     if (
       [
         'resetsetup',

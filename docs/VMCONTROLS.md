@@ -1,0 +1,9 @@
+# Private owner control buttons
+
+Reference: https://docs.zynrax.site/configuration/voicemaster . Luna fixed safe subset,not full configurable reference interface. Native Discord button/client pixels not verified.
+
+`/voicemaster buttons` creates a private10minute panel bound to current activeownedVoiceMasterrow,guild and humanowner. Three localized buttons:Lock:owneronly;Unlock:shareeveryone;Close:deleteempty. Unlock explicitly grants allservermembersView/Connect. Everybutton requires emptychannel and existing nativepermission/ownership/voice-readiness/exactoverwrite guards from slashactions. This does not weaken occupiedchannelguard just to mimic referencecontrols. Buttons themselves are not extra slashpaths.
+
+Oneuse perpanel:reserve before nativeaction;anyattempt after reservation consumes panel,including guardfailure. Duplicate/expired/foreignowner/guild/stalechannelrecord rejected. Restartreserved=>uncertain,no automaticretry. Completed/uncertainpanels cleaned afterexpiry+1day at startup. No persistentpublicpanel,no thirdparty control,no slashauthoritybypass,no announcements/DMs. A privatepanel may be reissued via slash;channeluncertainty remainsblockeduntilsupportedreconcile. Close delegatesexistingmanualVoiceMasterdelete behavior;native deletionacknowledgement does not independentlycertifyabsence and requiresacceptance review.
+
+Omitted inthissubset:dropdownbuttoncustomization,occupiedmute/hide/ban/transfer,automaticemptycleanup andfullsystemdelete. Reasons:avoid overwritingcurrentparticipantaccess/unreviewedmemberpermissions,unprovenownershiptransfer/cleanup. Rename/capacity remain existingexplicit slashactions. These differences are discoverable safetyadaptations,not fullreferenceparity. Nativevisualverification and gatewayinteractionacceptance remain releasegates.

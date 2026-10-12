@@ -210,6 +210,44 @@ export function openDatabase(path) {
         CREATE TABLE antibot_receipts(message_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','completed','uncertain')),created_at INTEGER NOT NULL);`);
       db.prepare('INSERT INTO schema_migrations VALUES(33,?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=34').get()) {
+      db.exec(`CREATE TABLE voice_rank_config(guild_id TEXT PRIMARY KEY,enabled INTEGER NOT NULL CHECK(enabled IN (0,1)),revision TEXT NOT NULL);
+        CREATE TABLE voice_rank_privacy(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,PRIMARY KEY(guild_id,user_id));
+        CREATE TABLE voice_rank_days(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,day TEXT NOT NULL,milliseconds INTEGER NOT NULL CHECK(milliseconds>=0 AND milliseconds<=86400000),PRIMARY KEY(guild_id,user_id,day));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(34,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=35').get()) {
+      db.exec(`CREATE TABLE vm_join_config(guild_id TEXT PRIMARY KEY,channel_id TEXT NOT NULL,actor_id TEXT NOT NULL,revision TEXT NOT NULL);
+        CREATE TABLE vm_join_moves(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,channel_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','completed','uncertain')),PRIMARY KEY(guild_id,user_id,channel_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(35,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=36').get()) {
+      db.exec(
+        `CREATE TABLE vm_control_panels(token TEXT PRIMARY KEY,guild_id TEXT NOT NULL,owner_id TEXT NOT NULL,channel_row INTEGER NOT NULL,expires_at INTEGER NOT NULL,status TEXT NOT NULL CHECK(status IN ('ready','reserved','completed','uncertain')));`,
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES(36,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=37').get()) {
+      db.exec(`CREATE TABLE event_mode_config(guild_id TEXT PRIMARY KEY,category_id TEXT NOT NULL,channels_json TEXT NOT NULL,revision TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('inactive','enabling','active','disabling','uncertain')));
+        CREATE TABLE event_mode_changes(guild_id TEXT NOT NULL,channel_id TEXT NOT NULL,before_json TEXT NOT NULL,desired INTEGER NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','applied','restoring','restored','uncertain')),after_json TEXT,PRIMARY KEY(guild_id,channel_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(37,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=38').get()) {
+      db.exec(`CREATE TABLE jail_config(guild_id TEXT PRIMARY KEY,channel_id TEXT NOT NULL);
+        CREATE TABLE jail_members(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,until_ms INTEGER NOT NULL,status TEXT NOT NULL CHECK(status IN ('applying','active','releasing','released','expired','uncertain')),case_id INTEGER NOT NULL,reason TEXT NOT NULL,PRIMARY KEY(guild_id,user_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(38,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=39').get()) {
+      db.exec(`CREATE TABLE rank_reward_rules(guild_id TEXT NOT NULL,role_id TEXT NOT NULL,kind TEXT NOT NULL CHECK(kind IN ('messages','voice-minutes')),threshold INTEGER NOT NULL,revision TEXT NOT NULL,PRIMARY KEY(guild_id,role_id));
+        CREATE TABLE rank_reward_receipts(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,role_id TEXT NOT NULL,revision TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','granted','uncertain')),PRIMARY KEY(guild_id,user_id,role_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(39,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=40').get()) {
+      db.exec(
+        `CREATE TABLE bulk_timeout_plans(id INTEGER PRIMARY KEY AUTOINCREMENT,guild_id TEXT NOT NULL,actor_id TEXT NOT NULL,rows_json TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('preview','executing','completed','uncertain')),created_at INTEGER NOT NULL);`,
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES(40,?)').run(Date.now());
+    }
   })();
   return db;
 }

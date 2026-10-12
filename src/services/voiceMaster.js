@@ -229,7 +229,7 @@ function verifyVoiceActors(i, owner, bot) {
   if (!i.client?.user?.id || bot?.id !== i.client.user.id || bot.guild?.id !== i.guildId)
     throw new UserError('vmBotPermission');
 }
-export async function openPrivateVoice(i, c) {
+export async function openPrivateVoice(i, c, { beforeCreate = null } = {}) {
   requireVoiceReady(i, c);
   const key = `${i.guildId}:${i.user.id}`;
   if (c.voiceMaster.active.has(key)) throw new UserError('roleActionBusy');
@@ -259,6 +259,12 @@ export async function openPrivateVoice(i, c) {
       throw new UserError('vmBotPermission');
     if (c.voiceMaster.config(i.guildId)?.category_id !== category.id)
       throw new UserError('customConfigChanged');
+    requireVoiceReady(i, c);
+    if (beforeCreate) {
+      await beforeCreate();
+      if (c.voiceMaster.config(i.guildId)?.category_id !== category.id)
+        throw new UserError('customConfigChanged');
+    }
     requireVoiceReady(i, c);
     const id = c.voiceMaster.reserve(i.guildId, i.user.id, i.id);
     let channel;

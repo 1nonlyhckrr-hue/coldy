@@ -1,0 +1,423 @@
+[
+  {
+    "referenceName": "autorole bots add",
+    "referenceSyntax": ",autorole bots add @Bots",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole add"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole bots remove",
+    "referenceSyntax": ",autorole bots remove @Bots",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole remove"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole config",
+    "referenceSyntax": ",autorole config",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole config"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole humans add",
+    "referenceSyntax": ",autorole humans add @Member",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole add"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole humans remove",
+    "referenceSyntax": ",autorole humans remove @Member",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole remove"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole reset all",
+    "referenceSyntax": ",autorole reset all",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole reset"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole reset bots",
+    "referenceSyntax": ",autorole reset bots",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole reset"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "autorole reset humans",
+    "referenceSyntax": ",autorole reset humans",
+    "source": "https://docs.zynrax.site/configuration/roles/autorole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "autorole reset"
+    ],
+    "evidenceDoc": "docs/AUTOROLE.md",
+    "reason": "Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "friend",
+    "referenceSyntax": ",friend @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Required-role possession is not delegated native authority to toggle other members. Thirdparty presetgender/status/access role toggles and dynamic prefixcommands omitted safety;only explicit safe selfclaims/release mappedroles implemented.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "girl",
+    "referenceSyntax": ",girl @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Required-role possession is not delegated native authority to toggle other members. Thirdparty presetgender/status/access role toggles and dynamic prefixcommands omitted safety;only explicit safe selfclaims/release mappedroles implemented.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "guest",
+    "referenceSyntax": ",guest @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Required-role possession is not delegated native authority to toggle other members. Thirdparty presetgender/status/access role toggles and dynamic prefixcommands omitted safety;only explicit safe selfclaims/release mappedroles implemented.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup config",
+    "referenceSyntax": ",setup config",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole exportmappings"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup create",
+    "referenceSyntax": ",setup create <name> <@role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole map"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup delete",
+    "referenceSyntax": ",setup delete <name>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole unmap"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup friend",
+    "referenceSyntax": ",setup friend <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole map"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup girl",
+    "referenceSyntax": ",setup girl <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole map"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup guest",
+    "referenceSyntax": ",setup guest <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole map"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup list",
+    "referenceSyntax": ",setup list",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole list"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup reqrole",
+    "referenceSyntax": ",setup reqrole <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole required"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup staff",
+    "referenceSyntax": ",setup staff <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole map"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "setup vip",
+    "referenceSyntax": ",setup vip <role>",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "customrole map"
+    ],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Adapted storedalias rolemapping/requiredselfclaimgate,not dynamicnative/prefixcommand registration or authority to change othermembers. Presetnames staff/vip/girl/guest/friend are optional explicitaliases,not separate commands/autoassign classifications. Safe-role/currentManageRoles/hierarchy guards;unmap leaves roles/assignments.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "staff",
+    "referenceSyntax": ",staff @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Required-role possession is not delegated native authority to toggle other members. Thirdparty presetgender/status/access role toggles and dynamic prefixcommands omitted safety;only explicit safe selfclaims/release mappedroles implemented.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "vip",
+    "referenceSyntax": ",vip @Montage",
+    "source": "https://docs.zynrax.site/configuration/roles/custom",
+    "disposition": "omitted",
+    "limitKind": "safety",
+    "lunaPaths": [],
+    "evidenceDoc": "docs/CUSTOM_ROLES.md",
+    "reason": "Required-role possession is not delegated native authority to toggle other members. Thirdparty presetgender/status/access role toggles and dynamic prefixcommands omitted safety;only explicit safe selfclaims/release mappedroles implemented.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "reactionrole add",
+    "referenceSyntax": ",reactionrole add (message_id) (emoji) (role)",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "reactionroles create",
+      "reactionroles multi"
+    ],
+    "evidenceDoc": "docs/ROLE_PANELS.md",
+    "reason": "Adapted to newly published safe self-service buttons,not attaching emoji to arbitraryexistingmessages. Exactpanel/message/guild/role receipt binding,independent2-5buttons. Nativeemoji event/partialmessage/reaction-state binding omitted safety/native limits.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "reactionrole list",
+    "referenceSyntax": ",reactionrole list",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "reactionroles list",
+      "reactionroles inspect"
+    ],
+    "evidenceDoc": "docs/ROLE_PANELS.md",
+    "reason": "Private storedpanels/mappings bounded100metadata/latest10pages,not native active-reaction audit proof.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "reactionrole remove",
+    "referenceSyntax": ",reactionrole remove (message_id) (emoji)",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "reactionroles disable"
+    ],
+    "evidenceDoc": "docs/ROLE_PANELS.md",
+    "reason": "Disables whole storedLuna panel,not a selectedemoji binding on arbitrarymessage. Keeps assignments/receipts/native messages;inflightclick mayfinish.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "reactionrole reset",
+    "referenceSyntax": ",reactionrole reset",
+    "source": "https://docs.zynrax.site/configuration/roles/reaction",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "reactionroles disableactive"
+    ],
+    "evidenceDoc": "docs/ROLE_PANELS.md",
+    "reason": "Confirmed disableactive only,not wiping pendinguncertain/history/native messages or revoking roles. Native reactions and exclusivegroups omitted safety.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "guildtag reset",
+    "referenceSyntax": ",guildtag reset",
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "guildtag reset"
+    ],
+    "evidenceDoc": "docs/GUILD_TAGS.md",
+    "reason": "Stored safe-rolepolicy and explicitself refresh of exact currentprimaryGuildidentity only. Automaticprofileevents/publiccongratulatorychannel omitted safety/native limits;unknownidentity cannot grant/revoke. Reset doesnot revoke/historyerase.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "guildtag setup",
+    "referenceSyntax": ",guildtag setup <@role> <#channel>",
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "guildtag setup"
+    ],
+    "evidenceDoc": "docs/GUILD_TAGS.md",
+    "reason": "Stored safe-rolepolicy and explicitself refresh of exact currentprimaryGuildidentity only. Automaticprofileevents/publiccongratulatorychannel omitted safety/native limits;unknownidentity cannot grant/revoke. Reset doesnot revoke/historyerase.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "guildtag show",
+    "referenceSyntax": ",guildtag show",
+    "source": "https://docs.zynrax.site/configuration/roles/guildtag",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "guildtag show"
+    ],
+    "evidenceDoc": "docs/GUILD_TAGS.md",
+    "reason": "Stored safe-rolepolicy and explicitself refresh of exact currentprimaryGuildidentity only. Automaticprofileevents/publiccongratulatorychannel omitted safety/native limits;unknownidentity cannot grant/revoke. Reset doesnot revoke/historyerase.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "vcrole add",
+    "referenceSyntax": ",vcrole add <@role>",
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "vcrole add"
+    ],
+    "evidenceDoc": "docs/VCROLE.md",
+    "reason": "One safe-role humanfuturevoicepolicy with forcedvoice/member/manager checks and ownedonly disconnectcleanup. Preexisting roles never adopted,uncertain receipts freeze,no startupbackfill. Bot/stage/generalvoice parity not promised.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "vcrole remove",
+    "referenceSyntax": ",vcrole remove",
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "vcrole remove"
+    ],
+    "evidenceDoc": "docs/VCROLE.md",
+    "reason": "One safe-role humanfuturevoicepolicy with forcedvoice/member/manager checks and ownedonly disconnectcleanup. Preexisting roles never adopted,uncertain receipts freeze,no startupbackfill. Bot/stage/generalvoice parity not promised.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  },
+  {
+    "referenceName": "vcrole show",
+    "referenceSyntax": ",vcrole show",
+    "source": "https://docs.zynrax.site/configuration/roles/vcrole",
+    "disposition": "adapted",
+    "limitKind": null,
+    "lunaPaths": [
+      "vcrole show"
+    ],
+    "evidenceDoc": "docs/VCROLE.md",
+    "reason": "One safe-role humanfuturevoicepolicy with forcedvoice/member/manager checks and ownedonly disconnectcleanup. Preexisting roles never adopted,uncertain receipts freeze,no startupbackfill. Bot/stage/generalvoice parity not promised.",
+    "verification": "local mocks only;native Discord/role/gateway/visual acceptance unverified"
+  }
+]
