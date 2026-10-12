@@ -18,6 +18,7 @@ function fakeGuild({ withStructure = true, existingRoles = [] } = {}) {
           name: ch.name,
           parentId: cat.id,
           type: ch.type === 'voice' ? ChannelType.GuildVoice : ChannelType.GuildText,
+          createInvite: async () => ({ url: 'https://discord.gg/abc' }),
         });
     }
   const roles = new Map(existingRoles.map((r) => [r.id, r]));
@@ -70,6 +71,15 @@ function fakeContext(flags = {}) {
     tickets: { configure: rec('tickets') },
     voiceMaster: { setup: rec('voice'), config: () => ({ category_id: 'x' }) },
     voiceJoin: { set: rec('vmjoin') },
+    mediaPolicy: { setup: rec('media') },
+    voiceRoles: { set: rec('vcrole') },
+    guildTags: { setup: rec('guildtag') },
+    autoresponders: {
+      find: () => null,
+      create: rec('responder'),
+      edit: rec('responderEdit'),
+    },
+    rolePanels: { channelRecords: () => ({ panels: [] }) },
   };
 }
 const bot = { id: 'bot', roles: { highest: { position: 5 } } };
@@ -80,7 +90,7 @@ test('writes the full default config, creating roles, and marks off-flag parts d
   // Roles are created without managed/permission data, so skip the real role safety check.
   const results = await runAutoSetup({ guild, context: c, actorId: 'u1', bot });
   const by = Object.fromEntries(results.map((r) => [r.key, r]));
-  assert.deepEqual(guild.createdRoles, ['Owner', 'Mod', 'Member']);
+  assert.deepEqual(guild.createdRoles.slice(0, 3), ['Owner', 'Mod', 'Member']);
   assert.equal(by.language.status, 'saved');
   assert.equal(by.roles.status, 'saved');
   assert.equal(by.logging.status, 'dormant');
@@ -135,5 +145,39 @@ test('owner role falls back without Administrator when Discord refuses it', asyn
   const results = await runAutoSetup({ guild, context: fakeContext(), actorId: 'u1', bot });
   const roles = results.find((r) => r.key === 'roles');
   assert.deepEqual(roles.notes, ['autoOwnerNoAdmin']);
-  assert.deepEqual(guild.createdRoles, ['Owner', 'Mod', 'Member']);
+  assert.deepEqual(guild.createdRoles.slice(0, 3), ['Owner', 'Mod', 'Member']);
+});
+
+test('extended defaults: media-only, voice role, guild tag, responders, banned words, input list', async () => {
+  const guild = fakeGuild();
+  const c = fakeContext();
+  const results = await runAutoSetup({ guild, context: c, actorId: 'u1', bot });
+  const by = Object.fromEntries(results.map((r) => [r.key, r]));
+  assert.deepEqual(guild.createdRoles.slice(3), [
+    'In Voice',
+    'FF Player',
+    'Minecraft',
+    'Announcements',
+  ]);
+  assert.equal(by.media.flag, 'ENABLE_MESSAGE_EVENTS');
+  assert.equal(by.vcrole.status, 'saved');
+  assert.equal(by.guildtag.status, 'saved');
+  assert.equal(by.autoresponders.flag, 'ENABLE_MESSAGE_EVENTS');
+  assert.equal(by.reactionroles.reason, 'noInteraction');
+  assert.equal(by.needsInput.status, 'info');
+  const triggers = c.calls.filter((x) => x[0] === 'responder').map((x) => x[2].trigger);
+  assert.deepEqual(triggers, ['rules', 'invite']);
+  const automod = c.calls.find((x) => x[0] === 'automod')[2];
+  assert.equal(automod.rules.words, true);
+  assert.ok(automod.words.includes('madarchod') && automod.words.includes('fuck'));
+  assert.equal(automod.exemptRoles.length, 2);
+});
+
+test('rerun edits existing responders instead of failing', async () => {
+  const guild = fakeGuild();
+  const c = fakeContext();
+  c.autoresponders.find = () => ({ id: 1 });
+  const results = await runAutoSetup({ guild, context: c, actorId: 'u1', bot });
+  assert.equal(results.find((r) => r.key === 'autoresponders').status, 'dormant');
+  assert.equal(c.calls.filter((x) => x[0] === 'responderEdit').length, 2);
 });

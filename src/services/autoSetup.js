@@ -1,7 +1,7 @@
 import { ChannelType, PermissionFlagsBits as P } from 'discord.js';
 import { STRUCTURE } from './serverStructure.js';
 import { validateTicketConfig } from './tickets.js';
-import { validateSelfRole } from './rolePanels.js';
+import { validateSelfRole, createMultiRolePanel } from './rolePanels.js';
 
 export const LOG_EVENTS = [
   'memberjoin',
@@ -22,7 +22,51 @@ export const NAMES = {
   staffCategory: STRUCTURE[5].name,
   voiceCategory: STRUCTURE[3].name,
   lobby: STRUCTURE[3].channels[0].name,
+  rules: STRUCTURE[0].channels[1].name,
+  media: STRUCTURE[1].channels[1].name,
+  infoCategory: STRUCTURE[0].name,
+  chatCategory: STRUCTURE[1].name,
 };
+export const EXTRA_ROLES = {
+  inVoice: 'In Voice',
+  ffPlayer: 'FF Player',
+  minecraft: 'Minecraft',
+  announcements: 'Announcements',
+};
+// Standard profanity, English plus common romanized Hindi. Short fragments are left out so
+// ordinary words never trip the filter.
+export const BANNED_WORDS = [
+  'fuck',
+  'fucker',
+  'motherfucker',
+  'shit',
+  'bitch',
+  'asshole',
+  'bastard',
+  'dickhead',
+  'cunt',
+  'slut',
+  'whore',
+  'nigger',
+  'faggot',
+  'retard',
+  'madarchod',
+  'behenchod',
+  'bhenchod',
+  'bhosdike',
+  'bhosdi',
+  'chutiya',
+  'chutiye',
+  'gandu',
+  'gaandu',
+  'harami',
+  'haramkhor',
+  'randi',
+  'lund',
+  'kutta',
+  'kamina',
+  'saala',
+];
 
 function findChannel(guild, name, type, parentName) {
   return guild.channels.cache.find((ch) => {
@@ -172,7 +216,15 @@ export async function runAutoSetup({ guild, context: c, actorId, bot, options = 
   });
 
   await step(results, 'automod', async () => {
-    c.automod.patch(gid, { enabled: true, action: 'delete' });
+    const current = c.automod.get?.(gid);
+    const exempt = [roles.owner?.id, roles.mod?.id].filter(Boolean);
+    c.automod.patch(gid, {
+      enabled: true,
+      action: 'delete',
+      rules: { words: true, invites: true, mentions: true, caps: true, spam: true },
+      words: [...new Set([...(current?.words ?? []), ...BANNED_WORDS])].slice(0, 100),
+      exemptRoles: [...new Set([...(current?.exemptRoles ?? []), ...exempt])].slice(0, 20),
+    });
     return c.config.messageEventsEnabled
       ? { status: 'saved' }
       : { status: 'dormant', flag: 'ENABLE_MESSAGE_EVENTS' };
@@ -212,5 +264,106 @@ export async function runAutoSetup({ guild, context: c, actorId, bot, options = 
       ? { status: 'saved' }
       : { status: 'dormant', flag: 'ENABLE_VOICE_EVENTS' };
   });
+
+  const extra = {};
+  await step(results, 'extraRoles', async () => {
+    const created = [];
+    for (const [kind, name] of Object.entries(EXTRA_ROLES)) {
+      let role = guild.roles.cache.find((r) => r.name === name && !r.managed);
+      if (!role) {
+        role = await guild.roles.create({
+          name,
+          hoist: false,
+          mentionable: kind === 'announcements',
+          permissions: [],
+          reason: 'Emika auto setup',
+        });
+        created.push(name);
+      }
+      extra[kind] = role;
+    }
+    return { status: 'saved', detail: { created: created.join(', ') || '-', used: '-' } };
+  });
+
+  await step(results, 'media', async () => {
+    const channel = findChannel(guild, NAMES.media, text, NAMES.chatCategory);
+    if (!channel) return missing;
+    c.mediaPolicy.setup(gid, channel.id);
+    return c.config.messageEventsEnabled
+      ? { status: 'saved' }
+      : { status: 'dormant', flag: 'ENABLE_MESSAGE_EVENTS' };
+  });
+
+  await step(results, 'vcrole', async () => {
+    if (!extra.inVoice) return { status: 'skipped', reason: 'rolesMissing' };
+    c.voiceRoles.set(gid, extra.inVoice.id, actorId);
+    return c.config.voiceEventsEnabled
+      ? { status: 'saved' }
+      : { status: 'dormant', flag: 'ENABLE_VOICE_EVENTS' };
+  });
+
+  await step(results, 'guildtag', async () => {
+    if (!roles.member) return { status: 'skipped', reason: 'rolesMissing' };
+    c.guildTags.setup(gid, roles.member.id);
+    return { status: 'saved' };
+  });
+
+  await step(results, 'autoresponders', async () => {
+    const welcome = findChannel(guild, NAMES.welcome, text, NAMES.infoCategory);
+    const rulesChannel = findChannel(guild, NAMES.rules, text, NAMES.infoCategory);
+    const wanted = [];
+    if (rulesChannel)
+      wanted.push([
+        'rules',
+        `Please read the server rules in <#${rulesChannel.id}> before chatting.`,
+      ]);
+    if (welcome) {
+      const invite = await welcome.createInvite({
+        maxAge: 0,
+        maxUses: 0,
+        unique: false,
+        reason: 'Emika auto setup',
+      });
+      wanted.push(['invite', `Invite your friends: ${invite.url}`]);
+    }
+    if (!wanted.length) return missing;
+    for (const [trigger, response] of wanted) {
+      const existing = c.autoresponders.find(gid, trigger);
+      if (existing) c.autoresponders.edit(gid, trigger, response);
+      else
+        c.autoresponders.create(gid, { trigger, mode: 'keyword', response, cooldownSeconds: 60 });
+    }
+    return c.config.messageEventsEnabled
+      ? { status: 'saved' }
+      : { status: 'dormant', flag: 'ENABLE_MESSAGE_EVENTS' };
+  });
+
+  await step(results, 'reactionroles', async () => {
+    const channel = findChannel(guild, NAMES.welcome, text, NAMES.infoCategory);
+    if (!channel) return missing;
+    const picks = [extra.ffPlayer, extra.minecraft, extra.announcements];
+    if (picks.some((r) => !r)) return { status: 'skipped', reason: 'rolesMissing' };
+    if (!options.interaction) return { status: 'skipped', reason: 'noInteraction' };
+    const ids = picks.map((r) => r.id).sort();
+    const have = c.rolePanels
+      .channelRecords(gid, channel.id)
+      .panels.some(
+        (p) =>
+          p.status === 'active' &&
+          JSON.stringify(p.buttons.map((b) => b.role_id).sort()) === JSON.stringify(ids),
+      );
+    if (have) return { status: 'saved' };
+    await createMultiRolePanel(options.interaction, c, {
+      channelId: channel.id,
+      buttons: [
+        { roleId: extra.ffPlayer.id, label: 'FF Player' },
+        { roleId: extra.minecraft.id, label: 'Minecraft' },
+        { roleId: extra.announcements.id, label: 'Announcements' },
+      ],
+    });
+    return { status: 'saved' };
+  });
+
+  results.push({ key: 'needsInput', status: 'info' });
   return results;
 }

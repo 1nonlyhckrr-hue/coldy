@@ -1130,5 +1130,14 @@
   "autoStep_voice": "Voice Master",
   "autoStep_vmjoin": "Join-to-create lobby",
   "autoOwnerNoAdmin": "Owner role me Administrator nahi hai kyunki Emika ye de nahi sakta.",
-  "autoOwnerPosition": "Owner role ko Emika ke top role ke neeche nahi rakha ja saka."
+  "autoOwnerPosition": "Owner role ko Emika ke top role ke neeche nahi rakha ja saka.",
+  "autoStep_extraRoles": "Extra roles",
+  "autoStep_media": "Media-only channel",
+  "autoStep_vcrole": "Voice role",
+  "autoStep_guildtag": "Guild tag",
+  "autoStep_autoresponders": "Autoresponders aur invite",
+  "autoStep_reactionroles": "Reaction roles panel",
+  "autoStep_needsInput": "Aapka input chahiye",
+  "autoReason_noInteraction": "Skip, command interaction chahiye",
+  "autoNeedsInput": "Ye automatically set nahi hue kyunki inke liye aapka apna content chahiye: custom autoresponder replies, rank rewards, scheduled message text, mention guard target, event mode. Ready hone par inke commands use karein."
 }

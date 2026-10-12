@@ -1130,5 +1130,14 @@
   "autoStep_voice": "Voice Master",
   "autoStep_vmjoin": "Join-to-create lobby",
   "autoOwnerNoAdmin": "Owner role has no Administrator because Emika cannot grant it.",
-  "autoOwnerPosition": "Owner role could not be moved under Emika's top role."
+  "autoOwnerPosition": "Owner role could not be moved under Emika's top role.",
+  "autoStep_extraRoles": "Extra roles",
+  "autoStep_media": "Media-only channel",
+  "autoStep_vcrole": "Voice role",
+  "autoStep_guildtag": "Guild tag",
+  "autoStep_autoresponders": "Autoresponders and invite",
+  "autoStep_reactionroles": "Reaction roles panel",
+  "autoStep_needsInput": "Needs your input",
+  "autoReason_noInteraction": "Skipped, needs the command interaction",
+  "autoNeedsInput": "Not set automatically because they need your own content: custom autoresponder replies, rank rewards (level roles and thresholds), scheduled message text, mention guard target, event mode. Use their commands when ready."
 }

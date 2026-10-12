@@ -1130,5 +1130,14 @@
   "autoStep_voice": "Voice Master",
   "autoStep_vmjoin": "Join-to-create लॉबी",
   "autoOwnerNoAdmin": "Owner रोल में Administrator नहीं है क्योंकि Emika इसे नहीं दे सकता।",
-  "autoOwnerPosition": "Owner रोल को Emika के सबसे ऊँचे रोल के नीचे नहीं रखा जा सका।"
+  "autoOwnerPosition": "Owner रोल को Emika के सबसे ऊँचे रोल के नीचे नहीं रखा जा सका।",
+  "autoStep_extraRoles": "अतिरिक्त रोल",
+  "autoStep_media": "सिर्फ मीडिया चैनल",
+  "autoStep_vcrole": "वॉइस रोल",
+  "autoStep_guildtag": "गिल्ड टैग",
+  "autoStep_autoresponders": "ऑटोरेस्पॉन्डर और इनवाइट",
+  "autoStep_reactionroles": "रिएक्शन रोल पैनल",
+  "autoStep_needsInput": "आपका इनपुट चाहिए",
+  "autoReason_noInteraction": "स्किप, कमांड इंटरैक्शन चाहिए",
+  "autoNeedsInput": "ये अपने आप सेट नहीं हुए क्योंकि इनके लिए आपका अपना कंटेंट चाहिए: कस्टम ऑटोरेस्पॉन्डर जवाब, रैंक रिवॉर्ड, शेड्यूल्ड मैसेज टेक्स्ट, मेंशन गार्ड टारगेट, इवेंट मोड। तैयार होने पर इनके कमांड इस्तेमाल करें।"
 }

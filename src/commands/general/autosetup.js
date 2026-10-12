@@ -18,6 +18,7 @@ const botPermissions = [
 function describe(t, result) {
   if (result.status === 'saved')
     return result.detail ? t('autoSavedRoles', result.detail) : t('autoStatusSaved');
+  if (result.status === 'info') return t('autoNeedsInput');
   if (result.status === 'dormant') return t('autoStatusDormant', { flag: result.flag });
   if (result.status === 'skipped') return t('autoReason_' + result.reason);
   return t('autoStatusFailed');
@@ -73,6 +74,7 @@ export default {
       actorId: i.user.id,
       bot,
       options: {
+        interaction: i,
         language: i.options.getString('language') ?? undefined,
         roles: i.options.getString('roles') ?? undefined,
         modRole: i.options.getRole('mod-role') ?? undefined,
