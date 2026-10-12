@@ -30,6 +30,8 @@ const id = z.string().regex(/^\d{17,20}$/),
       quarantine: z
         .object({
           enabled: z.boolean().default(true),
+          // Opt-in: re-apply quarantine when someone tampers with it. Off unless an admin enables it.
+          tamperHold: z.boolean().default(false),
           roleId: id.optional(),
           punishRoleId: id.optional(),
           channelDeleteThreshold: z.number().int().min(2).max(20).default(3),
@@ -219,6 +221,33 @@ export class AntinukeAlerts {
       .get(guild.id, entry.executorId, entry.action, now - window * 1000, now).n;
     if (count < threshold) return null;
     return { actorId: entry.executorId, reason, count, window, roleId: q.roleId ?? null };
+  }
+  setTamperHold(guildId, enabled) {
+    const q = this.get(guildId).quarantine;
+    return this.patch(guildId, { quarantine: { ...q, tamperHold: enabled === true } });
+  }
+  markQuarantined(guildId, userId, roleId, removed = []) {
+    this.db
+      .prepare(
+        "INSERT INTO antinuke_quarantined VALUES(?,?,?,?,?) ON CONFLICT(guild_id,user_id) DO UPDATE SET role_id=excluded.role_id, removed_json=CASE WHEN excluded.removed_json='[]' THEN antinuke_quarantined.removed_json ELSE excluded.removed_json END",
+      )
+      .run(guildId, userId, roleId, JSON.stringify(removed.slice(0, 250)), Date.now());
+  }
+  quarantinedRow(guildId, userId) {
+    const r = this.db
+      .prepare('SELECT * FROM antinuke_quarantined WHERE guild_id=? AND user_id=?')
+      .get(guildId, userId);
+    return r ? { ...r, removed: JSON.parse(r.removed_json) } : null;
+  }
+  quarantinedCount(guildId) {
+    return this.db
+      .prepare('SELECT count(*) n FROM antinuke_quarantined WHERE guild_id=?')
+      .get(guildId).n;
+  }
+  forgetQuarantined(guildId, userId) {
+    return this.db
+      .prepare('DELETE FROM antinuke_quarantined WHERE guild_id=? AND user_id=?')
+      .run(guildId, userId).changes;
   }
   setPunishRole(guildId, roleId) {
     if (roleId !== null && !/^\d{17,20}$/.test(roleId)) throw new UserError('roleInvalid');
@@ -442,16 +471,112 @@ async function quarantineActor(c, guild, trigger) {
       if (!member.roles.cache.has(role.id)) await member.roles.add(role, reason);
     }
     await hideChannels(guild, role);
+    c.antinuke.markQuarantined(guild.id, member.id, role.id, partial ? [] : removed);
     return { status: partial ? 'partial' : 'quarantined', removed: partial ? [] : removed };
   } finally {
     quarantining.delete(key);
   }
+}
+const HOLD_ACTIONS = new Set([
+  AuditLogEvent.MemberRoleUpdate,
+  AuditLogEvent.ChannelOverwriteCreate,
+  AuditLogEvent.ChannelOverwriteUpdate,
+  AuditLogEvent.ChannelOverwriteDelete,
+  AuditLogEvent.RoleUpdate,
+]);
+/**
+ * Opt-in tamper-hold. When an admin enabled it and someone is quarantined, a removed punish role,
+ * regained roles, edited channel overwrites or an edited quarantine role are put back.
+ * Emika's own changes are ignored so the repair cannot loop.
+ */
+export async function holdQuarantine(c, guild, entry) {
+  const cfg = c.antinuke.get(guild.id);
+  if (!cfg.enabled || !cfg.quarantine.tamperHold || !HOLD_ACTIONS.has(entry?.action)) return null;
+  if (entry.executorId === guild.client.user.id) return null;
+  if (!c.antinuke.quarantinedCount(guild.id)) return null;
+  const bot = guild.members.me ?? (await guild.members.fetchMe());
+  if (!bot.permissions?.has(P.ManageRoles)) return null;
+  const roleId = cfg.quarantine.punishRoleId ?? cfg.quarantine.roleId;
+  if (!roleId) return null;
+  await guild.roles.fetch();
+  const role = guild.roles.cache.get(roleId);
+  if (!role || role.managed || role.position >= bot.roles.highest.position) return null;
+  if (entry.action === AuditLogEvent.MemberRoleUpdate) {
+    const targetId = entry.targetId ?? entry.target?.id;
+    if (!/^\d{17,20}$/.test(targetId ?? '') || !c.antinuke.quarantinedRow(guild.id, targetId))
+      return null;
+    const member = await guild.members.fetch(targetId).catch(() => null);
+    if (!member || member.id === guild.ownerId) return null;
+    if (member.roles.highest.position >= bot.roles.highest.position) return null;
+    const held = [...member.roles.cache.values()].filter((r) => r.id !== guild.id);
+    const extra = held.filter((r) => !r.managed && r.id !== role.id);
+    if (member.roles.cache.has(role.id) && !extra.length) return null;
+    const keep = held.filter((r) => r.managed).map((r) => r.id);
+    await member.roles.set([...new Set([...keep, role.id])], 'Emika antinuke: tamper-hold');
+    return { kind: 'member', target: targetId };
+  }
+  if (entry.action === AuditLogEvent.RoleUpdate) {
+    if ((entry.targetId ?? entry.target?.id) !== role.id) return null;
+    if (!roleHasDangerousPermissions(role)) return null;
+    if (cfg.quarantine.punishRoleId) return { kind: 'rolechosen', target: role.id };
+    await role.setPermissions([], 'Emika antinuke: tamper-hold');
+    return { kind: 'role', target: role.id };
+  }
+  const { hidden } = await hideChannels(guild, role);
+  return hidden ? { kind: 'overwrite', target: role.id } : null;
+}
+/** Releases a quarantined member: gives back the roles that were removed and drops the punish role. */
+export async function releaseQuarantine(guild, antinuke, userId) {
+  const row = antinuke.quarantinedRow(guild.id, userId);
+  if (!row) throw new UserError('antinukeNotQuarantined');
+  const member = await guild.members.fetch(userId).catch(() => null);
+  if (!member) {
+    antinuke.forgetQuarantined(guild.id, userId);
+    return { restored: 0, skipped: 0, gone: true };
+  }
+  const bot = guild.members.me ?? (await guild.members.fetchMe());
+  if (!bot.permissions?.has(P.ManageRoles)) throw new UserError('antinukeBotPermission');
+  await guild.roles.fetch();
+  const restorable = row.removed.filter((id) => {
+    const r = guild.roles.cache.get(id);
+    return r && !r.managed && id !== guild.id && r.position < bot.roles.highest.position;
+  });
+  const current = [...member.roles.cache.values()]
+    .filter((r) => r.id !== guild.id && r.id !== row.role_id)
+    .map((r) => r.id);
+  await member.roles.set([...new Set([...current, ...restorable])], 'Emika antinuke: released');
+  antinuke.forgetQuarantined(guild.id, userId);
+  return { restored: restorable.length, skipped: row.removed.length - restorable.length };
 }
 export function createAntinukeHandler(c) {
   return async (entry, guild) => {
     let incident;
     if (c.config?.auditEventsEnabled !== true) return;
     try {
+      try {
+        const held = await holdQuarantine(c, guild, entry);
+        const hcfg = held && c.antinuke.get(guild.id);
+        if (held && hcfg.channelId) {
+          const channel = await validateOutputChannel(guild, hcfg.channelId);
+          await channel.send(
+            lunaPayload(
+              {
+                content: c.localization.t(guild.id, 'antinukeHold_' + held.kind, {
+                  target: held.target,
+                  actor: entry.executorId ?? '-',
+                }),
+                allowedMentions: { parse: [] },
+              },
+              { locale: c.localization.locale(guild.id) },
+            ),
+          );
+        }
+      } catch {
+        c.logger?.warn?.(
+          { guildId: guild.id, kind: 'antinuke_hold' },
+          'Tamper-hold unavailable; no automatic retry',
+        );
+      }
       incident = c.antinuke.record(entry, guild);
       try {
         const trigger = c.antinuke.quarantineTrigger(entry, guild);

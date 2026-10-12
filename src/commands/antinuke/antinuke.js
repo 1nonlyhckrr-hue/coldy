@@ -5,7 +5,7 @@ import {
   PermissionFlagsBits as P,
   MessageFlags,
 } from 'discord.js';
-import { validatePunishRole } from '../../services/antinuke.js';
+import { validatePunishRole, releaseQuarantine } from '../../services/antinuke.js';
 import { validateOutputChannel } from '../../services/guildConfig.js';
 import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
@@ -61,6 +61,24 @@ const data = new SlashCommandBuilder()
       .setDescription('Choose the role given by auto-quarantine; leave empty for the default.')
       .addRoleOption((o) =>
         o.setName('role').setDescription('Role to apply, below Emika, not managed'),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('tamperhold')
+      .setDescription(
+        'Opt in or out: re-apply quarantine if it is removed or edited (default off).',
+      )
+      .addBooleanOption((o) =>
+        o.setName('enabled').setDescription('Turn tamper-hold on or off').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('release')
+      .setDescription('Release a quarantined member and give back the roles that were removed.')
+      .addUserOption((o) =>
+        o.setName('member').setDescription('Quarantined member').setRequired(true),
       ),
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show alert settings and limitations.'))
@@ -361,6 +379,19 @@ export default {
       await authorize();
       c.antinuke.setPunishRole(i.guildId, chosen?.id ?? null);
       text = t('antinukeSaved');
+    } else if (sub === 'tamperhold') {
+      await authorize();
+      c.antinuke.setTamperHold(i.guildId, i.options.getBoolean('enabled', true));
+      text = t('antinukeSaved');
+    } else if (sub === 'release') {
+      const user = i.options.getUser('member', true);
+      await authorize();
+      const out = await releaseQuarantine(i.guild, c.antinuke, user.id);
+      text = t(out.gone ? 'antinukeReleaseGone' : 'antinukeReleased', {
+        member: user.id,
+        restored: out.restored,
+        skipped: out.skipped,
+      });
     } else if (sub === 'config') {
       const cfg = c.antinuke.get(i.guildId);
       text = t('antinukeConfig', {
@@ -369,6 +400,7 @@ export default {
         window: cfg.windowSeconds,
         channel: cfg.channelId ?? '-',
         trusted: cfg.trustedUsers.join(', ') || '-',
+        hold: t(cfg.quarantine.tamperHold ? 'enabled' : 'disabled'),
         quarantine: cfg.quarantine.enabled
           ? cfg.quarantine.punishRoleId
             ? `<@&${cfg.quarantine.punishRoleId}>`

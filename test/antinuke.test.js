@@ -1037,6 +1037,7 @@ test('audit alert policyreset/trustIDremoval exactscope/defaults/receipts preser
       trustedUsers: [],
       quarantine: {
         enabled: true,
+        tamperHold: false,
         channelDeleteThreshold: 3,
         channelDeleteWindowSeconds: 60,
         banThreshold: 3,

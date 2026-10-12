@@ -248,6 +248,12 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES(40,?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=41').get()) {
+      db.exec(
+        "CREATE TABLE antinuke_quarantined(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,role_id TEXT NOT NULL,removed_json TEXT NOT NULL DEFAULT '[]',created_at INTEGER NOT NULL,PRIMARY KEY(guild_id,user_id));",
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (41, ?)').run(Date.now());
+    }
   })();
   return db;
 }

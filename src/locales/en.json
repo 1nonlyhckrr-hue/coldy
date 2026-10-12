@@ -291,7 +291,7 @@
   "antinukeEnabled": "Alert-only audit monitoring enabled. No automatic punishment or rollback.",
   "antinukeDisabled": "Audit alerts disabled.",
   "antinukeSaved": "Audit alert configuration saved.",
-  "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nNo restoration of changes.",
+  "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nTamper-hold: {hold}\nNo restoration of changes.",
   "antinukeIncidents": "Recent audit burst incidents (alert-only)",
   "antinukeEmpty": "No stored audit incidents.",
   "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{count} supported administrative actions observed in {window}s.\nReview the audit log. This may be legitimate work. Emika does not restore changes. If auto-quarantine triggers, you get a separate notice.",
@@ -1150,5 +1150,12 @@
   "antinukeQuarantine_roleInvalid": "Quarantine skipped for actor {actor} ({reason} x{count} in {window}s): the configured punish role is missing, managed, above Emika or grants dangerous permissions. Fix it with /antinuke punishrole.",
   "autoVmActorPerms": "Warning: the user who ran this lacks Move Members and Manage Channels, and join-to-create checks that user on every join. Run /vmjoin as an admin or give them those permissions.",
   "mediaNotice": "{user} this channel is media only. Post an image, video or file. Your message was removed. This notice deletes itself in 2 minutes.",
-  "antinukeQuarantine_partial": "Quarantine partly applied to actor {actor} ({reason} x{count} in {window}s): Emika could not remove their other roles, so only the Quarantine role was added. Their existing roles and permissions are still active. Review now."
+  "antinukeQuarantine_partial": "Quarantine partly applied to actor {actor} ({reason} x{count} in {window}s): Emika could not remove their other roles, so only the Quarantine role was added. Their existing roles and permissions are still active. Review now.",
+  "antinukeHold_member": "Tamper-hold: quarantine was changed for member {target} (by {actor}). Emika put the quarantine role back and removed other roles.",
+  "antinukeHold_overwrite": "Tamper-hold: a channel permission for the quarantine role was changed (by {actor}). Emika hid the affected channels again.",
+  "antinukeHold_role": "Tamper-hold: the quarantine role {target} was given dangerous permissions (by {actor}). Emika removed them.",
+  "antinukeHold_rolechosen": "Tamper-hold warning: the chosen punish role {target} was given dangerous permissions (by {actor}). Emika does not edit chosen roles, please check it.",
+  "antinukeReleased": "Released <@{member}>. Roles given back: {restored}. Skipped (deleted or above Emika): {skipped}.",
+  "antinukeReleaseGone": "That member has left the server. The quarantine record was cleared.",
+  "antinukeNotQuarantined": "That member is not quarantined by Emika."
 }

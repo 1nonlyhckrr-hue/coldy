@@ -7,6 +7,7 @@ import {
   createAntinukeHandler,
   ensureQuarantineRole,
   validatePunishRole,
+  releaseQuarantine,
 } from '../src/services/antinuke.js';
 const ids = {
   actor: '100000000000000001',
@@ -86,6 +87,7 @@ function fakeGuild({
     client: { user: { id: ids.bot } },
     added,
     sets,
+    memberMap: members,
     adminRole,
     integrationRole,
     created,
@@ -296,6 +298,104 @@ test('a punish role with dangerous permissions is refused at set and apply time'
     assert.equal(guild.added.length, 0);
     assert.equal(guild.sets.length, 0);
     assert.equal(guild.created.length, 0);
+  } finally {
+    db.close();
+  }
+});
+
+async function quarantined(config = {}) {
+  const ctx = setup({ quarantine: { tamperHold: false, ...config } });
+  const guild = fakeGuild();
+  await fire(ctx.handler, guild, AuditLogEvent.ChannelDelete, 3);
+  const member = guild.memberMap.get(ids.actor);
+  return { ...ctx, guild, member };
+}
+const roleUpdate = (
+  targetId,
+  action = AuditLogEvent.MemberRoleUpdate,
+  executorId = ids.trusted,
+) => ({
+  ...entry(action, executorId),
+  targetId,
+});
+test('tamper-hold is off by default and changes nothing', async () => {
+  const { db, antinuke, handler, guild, member } = await quarantined();
+  try {
+    assert.equal(antinuke.get('g').quarantine.tamperHold, false);
+    member.roles.cache = new Map();
+    const before = guild.sets.length;
+    await handler(roleUpdate(ids.actor), guild);
+    assert.equal(guild.sets.length, before);
+  } finally {
+    db.close();
+  }
+});
+test('tamper-hold re-applies the punish role and strips regained roles when enabled', async () => {
+  const { db, antinuke, handler, guild, member } = await quarantined();
+  try {
+    antinuke.setTamperHold('g', true);
+    const before = guild.sets.length;
+    member.roles.cache = new Map([[guild.adminRole.id, guild.adminRole]]);
+    await handler(roleUpdate(ids.actor), guild);
+    assert.equal(guild.sets.length, before + 1);
+    assert.deepEqual(guild.sets.at(-1), ['900000000000000001']);
+    // Already correct: no second write, so the repair cannot loop.
+    member.roles.cache = new Map([
+      ['900000000000000001', guild.roles.cache.get('900000000000000001')],
+    ]);
+    await handler(roleUpdate(ids.actor), guild);
+    assert.equal(guild.sets.length, before + 1);
+    // Emika's own role changes and unrelated members are ignored.
+    member.roles.cache = new Map();
+    await handler(roleUpdate(ids.actor, AuditLogEvent.MemberRoleUpdate, ids.bot), guild);
+    await handler(roleUpdate(ids.trusted), guild);
+    assert.equal(guild.sets.length, before + 1);
+  } finally {
+    db.close();
+  }
+});
+test('tamper-hold re-hides channels when quarantine overwrites are edited', async () => {
+  const { db, antinuke, handler, guild } = await quarantined();
+  try {
+    antinuke.setTamperHold('g', true);
+    guild.channels.cache.get('c2').permissionOverwrites.cache.clear();
+    await handler(roleUpdate(null, AuditLogEvent.ChannelOverwriteUpdate), guild);
+    assert.equal(guild.channels.cache.get('c2').permissionOverwrites.cache.size, 1);
+  } finally {
+    db.close();
+  }
+});
+test('tamper-hold resets dangerous permissions on the default role but only warns for a chosen role', async () => {
+  const { db, antinuke, handler, guild } = await quarantined();
+  try {
+    antinuke.setTamperHold('g', true);
+    const role = guild.roles.cache.get('900000000000000001');
+    const resets = [];
+    role.setPermissions = async (p) => resets.push(p);
+    role.permissions = { has: (f) => f === P.Administrator };
+    await handler(roleUpdate(role.id, AuditLogEvent.RoleUpdate), guild);
+    assert.deepEqual(resets, [[]]);
+    antinuke.setPunishRole('g', role.id);
+    await handler(roleUpdate(role.id, AuditLogEvent.RoleUpdate), guild);
+    assert.equal(resets.length, 1);
+  } finally {
+    db.close();
+  }
+});
+test('release gives back removed roles that still exist and drops the punish role', async () => {
+  const { db, antinuke, guild, member } = await quarantined();
+  try {
+    guild.roles.cache.set(guild.adminRole.id, { ...guild.adminRole, position: 2 });
+    member.roles.cache = new Map([
+      ['900000000000000001', guild.roles.cache.get('900000000000000001')],
+    ]);
+    const out = await releaseQuarantine(guild, antinuke, ids.actor);
+    assert.equal(out.restored, 1);
+    assert.deepEqual(guild.sets.at(-1), [guild.adminRole.id]);
+    assert.equal(antinuke.quarantinedRow('g', ids.actor), null);
+    await assert.rejects(() => releaseQuarantine(guild, antinuke, ids.actor), {
+      message: 'antinukeNotQuarantined',
+    });
   } finally {
     db.close();
   }

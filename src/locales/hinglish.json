@@ -291,7 +291,7 @@
   "antinukeEnabled": "Sirf audit alerts on. Automatic punishment ya rollback nahi.",
   "antinukeDisabled": "Audit alerts off.",
   "antinukeSaved": "Audit alert config save hui.",
-  "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nChanges restore nahi hote.",
+  "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nTamper-hold: {hold}\nChanges restore nahi hote.",
   "antinukeIncidents": "Recent audit burst incidents (sirf alerts)",
   "antinukeEmpty": "Koi stored audit incident nahi.",
   "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{window}s mein {count} supported administrative actions dekhe.\nAudit log check karein. Yeh legitimate kaam bhi ho sakta hai. Emika changes restore nahi karta. Auto-quarantine chala to alag notice milega.",
@@ -1150,5 +1150,12 @@
   "antinukeQuarantine_roleInvalid": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): chuna gaya punish role missing, managed, Emika se upar ya dangerous permissions wala hai. /antinuke punishrole se theek karein.",
   "autoVmActorPerms": "Warning: jisne ye chalaya uske paas Move Members aur Manage Channels nahi hain, aur join-to-create har join par isi user ko check karta hai. /vmjoin admin se chalwayein ya ye permissions dein.",
   "mediaNotice": "{user} yeh channel sirf media ke liye hai. Image, video ya file bhejein. Aapka message hata diya gaya. Yeh notice 2 minute mein apne aap delete ho jayega.",
-  "antinukeQuarantine_partial": "Quarantine aadha laga ({actor}, {window}s mein {reason} x{count}): Emika uske baaki roles nahi hata saka, sirf Quarantine role add hua. Uske purane roles aur permissions abhi bhi active hain. Abhi check karein."
+  "antinukeQuarantine_partial": "Quarantine aadha laga ({actor}, {window}s mein {reason} x{count}): Emika uske baaki roles nahi hata saka, sirf Quarantine role add hua. Uske purane roles aur permissions abhi bhi active hain. Abhi check karein.",
+  "antinukeHold_member": "Tamper-hold: member {target} ka quarantine badla gaya ({actor} ne). Emika ne quarantine role wapas lagaya aur baaki roles hataye.",
+  "antinukeHold_overwrite": "Tamper-hold: quarantine role ki channel permission badli gayi ({actor} ne). Emika ne affected channels phir se chhupaye.",
+  "antinukeHold_role": "Tamper-hold: quarantine role {target} ko dangerous permissions di gayi ({actor} ne). Emika ne hata di.",
+  "antinukeHold_rolechosen": "Tamper-hold warning: chuna hua punish role {target} ko dangerous permissions di gayi ({actor} ne). Emika chune hue role edit nahi karta, please check karo.",
+  "antinukeReleased": "<@{member}> ko release kiya. Wapas diye roles: {restored}. Skip kiye (deleted ya Emika se upar): {skipped}.",
+  "antinukeReleaseGone": "Ye member server chhod chuka hai. Quarantine record clear kar diya.",
+  "antinukeNotQuarantined": "Ye member Emika ke quarantine me nahi hai."
 }

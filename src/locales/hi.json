@@ -291,7 +291,7 @@
   "antinukeEnabled": "सिर्फ ऑडिट अलर्ट चालू। स्वतः दंड या बदलाव वापस नहीं होंगे।",
   "antinukeDisabled": "ऑडिट अलर्ट बंद।",
   "antinukeSaved": "ऑडिट अलर्ट कॉन्फिग सहेजी।",
-  "antinukeConfig": "ऑडिट अलर्ट: {status}\nसीमा: {count} मिली-जुली कार्रवाइयां / {window}s\nचैनल: {channel}\nविश्वसनीय सदस्य IDs: {trusted}\nऑटो-क्वारंटीन रोल: {quarantine}\nबदलाव वापस नहीं किए जाते।",
+  "antinukeConfig": "ऑडिट अलर्ट: {status}\nसीमा: {count} मिली-जुली कार्रवाइयां / {window}s\nचैनल: {channel}\nविश्वसनीय सदस्य IDs: {trusted}\nऑटो-क्वारंटीन रोल: {quarantine}\nटैम्पर-होल्ड: {hold}\nबदलाव वापस नहीं किए जाते।",
   "antinukeIncidents": "हाल के ऑडिट घटनाक्रम (सिर्फ अलर्ट)",
   "antinukeEmpty": "कोई सहेजी ऑडिट घटना नहीं।",
   "antinukeAlert": "ऑडिट अलर्ट #{id}\nकरने वाले की ID: {actor}\n{window}s में {count} समर्थित प्रशासनिक कार्रवाइयां देखीं।\nऑडिट लॉग जांचें। यह सही काम भी हो सकता है। Emika बदलाव वापस नहीं करता। ऑटो-क्वारंटीन चला तो अलग नोटिस मिलेगा।",
@@ -1150,5 +1150,12 @@
   "antinukeQuarantine_roleInvalid": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): चुना गया सज़ा रोल मौजूद नहीं है, managed है, Emika से ऊपर है या खतरनाक परमिशन देता है। /antinuke punishrole से ठीक करें।",
   "autoVmActorPerms": "चेतावनी: इसे चलाने वाले के पास Move Members और Manage Channels नहीं हैं, और join-to-create हर जॉइन पर इसी यूज़र की जांच करता है। /vmjoin किसी एडमिन से चलवाएं या ये परमिशन दें।",
   "mediaNotice": "{user} यह चैनल सिर्फ मीडिया के लिए है। इमेज, वीडियो या फ़ाइल भेजें। आपका मैसेज हटा दिया गया। यह नोटिस 2 मिनट में अपने आप हट जाएगा।",
-  "antinukeQuarantine_partial": "क्वारंटीन आधा लगा ({actor}, {window}s में {reason} x{count}): Emika उसके बाकी रोल नहीं हटा सका, सिर्फ Quarantine रोल जोड़ा गया। उसके पुराने रोल और परमिशन अभी भी चालू हैं। अभी जांचें।"
+  "antinukeQuarantine_partial": "क्वारंटीन आधा लगा ({actor}, {window}s में {reason} x{count}): Emika उसके बाकी रोल नहीं हटा सका, सिर्फ Quarantine रोल जोड़ा गया। उसके पुराने रोल और परमिशन अभी भी चालू हैं। अभी जांचें।",
+  "antinukeHold_member": "टैम्पर-होल्ड: सदस्य {target} का क्वारंटीन बदला गया ({actor} द्वारा)। Emika ने क्वारंटीन रोल वापस लगाया और बाकी रोल हटाए।",
+  "antinukeHold_overwrite": "टैम्पर-होल्ड: क्वारंटीन रोल की चैनल अनुमति बदली गई ({actor} द्वारा)। Emika ने प्रभावित चैनल फिर छिपाए।",
+  "antinukeHold_role": "टैम्पर-होल्ड: क्वारंटीन रोल {target} को खतरनाक अनुमतियां दी गईं ({actor} द्वारा)। Emika ने उन्हें हटाया।",
+  "antinukeHold_rolechosen": "टैम्पर-होल्ड चेतावनी: चुने गए punish रोल {target} को खतरनाक अनुमतियां दी गईं ({actor} द्वारा)। Emika चुने हुए रोल नहीं बदलता, कृपया जांचें।",
+  "antinukeReleased": "<@{member}> को रिलीज़ किया। वापस दिए रोल: {restored}। छोड़े गए (हटे हुए या Emika से ऊपर): {skipped}।",
+  "antinukeReleaseGone": "यह सदस्य सर्वर छोड़ चुका है। क्वारंटीन रिकॉर्ड साफ़ किया गया।",
+  "antinukeNotQuarantined": "यह सदस्य Emika द्वारा क्वारंटीन में नहीं है।"
 }

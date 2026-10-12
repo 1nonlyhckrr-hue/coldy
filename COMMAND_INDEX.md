@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-67 top-level commands, 589 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+67 top-level commands, 591 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -20,9 +20,11 @@
 | /antinuke incidents | Show20 recent stored audit burst alerts. | Local mock/unit only |
 | /antinuke inspectincident | ExactstoredincidentID minimalmetadataJSON/null,no actor/auditentryIDs or native lookup. | Local mock/unit only |
 | /antinuke punishrole | Choose the role given by auto-quarantine; leave empty for the default. | Local mock/unit only |
+| /antinuke release | Release a quarantined member and give back the roles that were removed. | Local mock/unit only |
 | /antinuke removetrust | Confirmed remove one exactstored trustedID,including departedusers,not nativeaccess. | Local mock/unit only |
 | /antinuke resetpolicy | Confirmed stopalerts/forgetdestination/trust/defaultthresholds,receipts kept. | Local mock/unit only |
 | /antinuke summary | Private retained incident counts by state,no actor/source IDs or protection claim. | Local mock/unit only |
+| /antinuke tamperhold | Opt in or out: re-apply quarantine if it is removed or edited (default off). | Local mock/unit only |
 | /antinuke threshold | Set mixed-action count and observation window. | Local mock/unit only |
 | /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
 | /antinuke trustlist | Private stored trusteduser IDs only,no native membership/permission claim. | Local mock/unit only |
