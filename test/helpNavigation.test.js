@@ -33,7 +33,7 @@ test('public help sends structured Emika embed and21category options with bounde
   assert.deepEqual(payload.allowedMentions.parse, []);
   const embed = payload.embeds[0].toJSON();
   assert.match(embed.title, /Emika/);
-  assert.equal(embed.fields[2].value, '588');
+  assert.equal(embed.fields[2].value, '589');
   const rows = payload.components.map((r) => r.toJSON());
   assert.equal(rows[0].components[0].options.length, 21);
   assert.equal(rows[1].components[1].disabled, true);

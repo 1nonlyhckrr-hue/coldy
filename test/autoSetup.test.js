@@ -65,7 +65,10 @@ function fakeContext(flags = {}) {
       ...flags,
     },
     guildConfig: { setLanguage: rec('language'), patch: rec('patch') },
-    antinuke: { patch: rec('antinuke') },
+    antinuke: {
+      patch: rec('antinuke'),
+      get: () => ({ quarantine: {} }),
+    },
     automod: { patch: rec('automod') },
     autoroles: { add: rec('autorole') },
     tickets: { configure: rec('tickets') },
@@ -111,7 +114,7 @@ test('writes the full default config, creating roles, and marks off-flag parts d
   assert.equal(welcome.messageCustom, true);
   assert.equal(welcome.goodbyeEnabled, true);
   const staffCat = [...guild.channels.cache.values()].find((x) => x.name === STRUCTURE[5].name);
-  assert.equal(staffCat.edits.length, 1);
+  assert.equal(staffCat.edits.length, 2);
 });
 
 test('skips channel-based steps when the layout does not exist', async () => {
@@ -154,6 +157,7 @@ test('extended defaults: media-only, voice role, guild tag, responders, banned w
   const results = await runAutoSetup({ guild, context: c, actorId: 'u1', bot });
   const by = Object.fromEntries(results.map((r) => [r.key, r]));
   assert.deepEqual(guild.createdRoles.slice(3), [
+    'Quarantine',
     'In Voice',
     'FF Player',
     'Minecraft',
@@ -180,4 +184,16 @@ test('rerun edits existing responders instead of failing', async () => {
   const results = await runAutoSetup({ guild, context: c, actorId: 'u1', bot });
   assert.equal(results.find((r) => r.key === 'autoresponders').status, 'dormant');
   assert.equal(c.calls.filter((x) => x[0] === 'responderEdit').length, 2);
+});
+
+test('renamed or plain-named channels still match through normalized names', async () => {
+  const guild = fakeGuild();
+  for (const ch of guild.channels.cache.values())
+    if (ch.name === STRUCTURE[3].channels[0].name) ch.name = 'join to create';
+    else if (ch.name === STRUCTURE[5].channels[1].name) ch.name = 'Mod Logs';
+  const c = fakeContext();
+  const results = await runAutoSetup({ guild, context: c, actorId: 'u1', bot });
+  const by = Object.fromEntries(results.map((r) => [r.key, r]));
+  assert.equal(by.vmjoin.status, 'saved');
+  assert.equal(by.logging.status, 'dormant');
 });

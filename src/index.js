@@ -4,7 +4,7 @@ import { RankRewards } from './services/rankRewards.js';
 import { Jail } from './services/jail.js';
 import { EventMode } from './services/eventMode.js';
 import { VoiceControls, createVoiceControlHandler } from './services/vmControls.js';
-import { VoiceJoin, createVoiceJoinHandler } from './services/vmJoin.js';
+import { VoiceJoin, createVoiceJoinHandler, createVoiceCleanupHandler } from './services/vmJoin.js';
 import { VoiceRanks, createVoiceRankHandler, sampleVoiceRanks } from './services/voiceRanks.js';
 import { AntiBot, createAntiBotHandler } from './services/antibot.js';
 import { AutoReactions, createAutoReactHandler } from './services/autoreact.js';
@@ -101,8 +101,19 @@ context.voiceRoles = new VoiceRoles(db);
 context.voiceRoles.recover();
 context.voiceReadiness = new VoiceReadiness();
 if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, createVoiceRoleHandler(context));
-client.on(Events.ShardDisconnect, (_event, id) => context.voiceReadiness.disconnected(id));
-client.on(Events.ShardReconnecting, (id) => context.voiceReadiness.disconnected(id));
+client.on(Events.ShardDisconnect, (event, id) => {
+  logger.warn({ shardId: id, code: event?.code }, 'Shard disconnected; voice effects paused');
+  context.voiceReadiness.disconnected(id);
+});
+client.on(Events.ShardReconnecting, (id) => {
+  logger.warn({ shardId: id }, 'Shard reconnecting; voice effects paused');
+  context.voiceReadiness.disconnected(id);
+});
+for (const event of [Events.ShardResume, Events.ShardReady])
+  client.on(event, (id) => {
+    if (context.voiceReadiness.recovered(id))
+      logger.info({ shardId: id, event }, 'Shard recovered; voice effects resumed');
+  });
 context.bulkTimeout = new BulkTimeout(db);
 context.bulkTimeout.recover();
 context.jail = new Jail(db);
@@ -118,6 +129,8 @@ client.on(Events.InteractionCreate, createVoiceControlHandler(context));
 context.voiceJoin = new VoiceJoin(db);
 context.voiceJoin.recover();
 if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, createVoiceJoinHandler(context));
+if (config.voiceEventsEnabled)
+  client.on(Events.VoiceStateUpdate, createVoiceCleanupHandler(context));
 context.guildTags = new GuildTags(db);
 context.guildTags.recover();
 context.antinuke = new AntinukeAlerts(db);

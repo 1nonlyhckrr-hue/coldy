@@ -291,7 +291,7 @@
   "antinukeEnabled": "Sirf audit alerts on. Automatic punishment ya rollback nahi.",
   "antinukeDisabled": "Audit alerts off.",
   "antinukeSaved": "Audit alert config save hui.",
-  "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nSirf alerts. Punishment ya restore nahi.",
+  "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nChanges restore nahi hote.",
   "antinukeIncidents": "Recent audit burst incidents (sirf alerts)",
   "antinukeEmpty": "Koi stored audit incident nahi.",
   "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{window}s mein {count} supported administrative actions dekhe.\nAudit log check karein. Yeh legitimate kaam bhi ho sakta hai. Emika ne punishment ya changes restore nahi kiye.",
@@ -1059,7 +1059,7 @@
   "voiceRankStatus": "Sampled voice counts attached hain,speaking activity nahi.90UTCdays;futurejoins only,60secondsamples,max120secondinterval,no startupcredit. Disconnecttails/missedsamples drop hote hain. Privacycommands counts erase karte hain.",
   "vmJoinConfirm": "Future automatic privatechannel creation aur move confirm karein.",
   "vmJoinUnavailable": "Current lobby/voice/actor/bot/category unavailable hai.",
-  "vmJoinStatus": "Join-to-create policy attached hai. Futurehumanlobbyjoins;oneownedchannel/no uncertainretry. Existingchannels kept,empty hone par manuallyclose karein. Autocleanup/buttons abhi nahi.",
+  "vmJoinStatus": "Join-to-create policy attached hai. Future human lobby joins par ek owned channel banega, uncertain retry nahi hoga. Existing channels rahenge, empty hone par manually close karein. Auto cleanup aur buttons abhi nahi.",
   "vmControlStatus": "Privateone-usecontrols10minutesmeinexpirehotehain. Emptyownedchannelrequired. UnlocksabkoView/Connectdetahai;Closedeletekartahai. Attemptpanelconsumehotahai.",
   "vmControl_lock": "Lock:owneronly",
   "vmControl_unlock": "Unlock:shareeveryone",
@@ -1139,5 +1139,14 @@
   "autoStep_reactionroles": "Reaction roles panel",
   "autoStep_needsInput": "Aapka input chahiye",
   "autoReason_noInteraction": "Skip, command interaction chahiye",
-  "autoNeedsInput": "Ye automatically set nahi hue kyunki inke liye aapka apna content chahiye: custom autoresponder replies, rank rewards, scheduled message text, mention guard target, event mode. Ready hone par inke commands use karein."
+  "autoNeedsInput": "Ye automatically set nahi hue kyunki inke liye aapka apna content chahiye: custom autoresponder replies, rank rewards, scheduled message text, mention guard target, event mode. Ready hone par inke commands use karein.",
+  "antinukeQuarantine_quarantined": "Quarantine: {actor} ne {window}s mein {reason} {count} baar kiye, isliye ab uske paas Quarantine role hai jo saare channels chhupa deta hai. Audit log check karein aur pakka hone par role hata dein.",
+  "antinukeQuarantine_hierarchy": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): uska top role Emika ke barabar ya upar hai, isliye Emika action nahi le sakta.",
+  "antinukeQuarantine_unavailable": "Quarantine nahi ho paya ({actor}, {window}s mein {reason} x{count}): Emika ke paas Manage Roles nahi hai.",
+  "antinukeQuarantineReason_channelDelete": "channel delete",
+  "antinukeQuarantineReason_ban": "ban",
+  "antinukeQuarantineReason_kick": "kick",
+  "autoStep_quarantine": "Antinuke quarantine",
+  "antinukeQuarantine_roleInvalid": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): chuna gaya punish role missing, managed ya Emika se upar hai. /antinuke punishrole se theek karein.",
+  "autoVmActorPerms": "Warning: jisne ye chalaya uske paas Move Members aur Manage Channels nahi hain, aur join-to-create har join par isi user ko check karta hai. /vmjoin admin se chalwayein ya ye permissions dein."
 }

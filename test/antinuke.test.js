@@ -1030,7 +1030,20 @@ test('audit alert policyreset/trustIDremoval exactscope/defaults/receipts preser
     r.record(entry(2), guild, now);
     const events = db.prepare('SELECT count(*) n FROM antinuke_events').get().n;
     const reset = r.resetPolicy('g');
-    assert.deepEqual(reset, { enabled: false, threshold: 5, windowSeconds: 60, trustedUsers: [] });
+    assert.deepEqual(reset, {
+      enabled: false,
+      threshold: 5,
+      windowSeconds: 60,
+      trustedUsers: [],
+      quarantine: {
+        enabled: true,
+        channelDeleteThreshold: 3,
+        channelDeleteWindowSeconds: 60,
+        banThreshold: 3,
+        kickThreshold: 3,
+        windowSeconds: 300,
+      },
+    });
     assert.equal(r.get('other').enabled, true);
     assert.equal(db.prepare('SELECT count(*) n FROM antinuke_events').get().n, events);
     assert.equal(r.incidents('g').length, 1);

@@ -15,13 +15,16 @@ const botPermissions = [
   P.EmbedLinks,
   P.ReadMessageHistory,
 ];
-function describe(t, result) {
+function describeStatus(t, result) {
   if (result.status === 'saved')
     return result.detail ? t('autoSavedRoles', result.detail) : t('autoStatusSaved');
   if (result.status === 'info') return t('autoNeedsInput');
   if (result.status === 'dormant') return t('autoStatusDormant', { flag: result.flag });
   if (result.status === 'skipped') return t('autoReason_' + result.reason);
   return t('autoStatusFailed');
+}
+function describe(t, result) {
+  return [describeStatus(t, result), ...(result.notes ?? []).map((key) => t(key))].join('\n');
 }
 export default {
   category: 'general',

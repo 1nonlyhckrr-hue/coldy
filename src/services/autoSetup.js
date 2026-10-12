@@ -1,6 +1,7 @@
 import { ChannelType, PermissionFlagsBits as P } from 'discord.js';
 import { STRUCTURE } from './serverStructure.js';
 import { validateTicketConfig } from './tickets.js';
+import { ensureQuarantineRole } from './antinuke.js';
 import { validateSelfRole, createMultiRolePanel } from './rolePanels.js';
 
 export const LOG_EVENTS = [
@@ -68,13 +69,27 @@ export const BANNED_WORDS = [
   'saala',
 ];
 
+// Gothic letters fold to ASCII under NFKC, so "𝖏𝖔𝖎𝖓-𝖙𝖔-𝖈𝖗𝖊𝖆𝖙𝖊", "join-to-create" and
+// "join to create" all compare equal. Decoration and separators are ignored.
+export function normalizeName(value) {
+  return String(value ?? '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]/gu, '');
+}
 function findChannel(guild, name, type, parentName) {
-  return guild.channels.cache.find((ch) => {
-    if (ch.type !== type || ch.name !== name) return false;
-    if (!parentName) return true;
-    const parent = guild.channels.cache.get(ch.parentId);
-    return parent?.name === parentName;
-  });
+  const wanted = normalizeName(name);
+  const candidates = [...guild.channels.cache.values()].filter(
+    (ch) => ch.type === type && normalizeName(ch.name) === wanted,
+  );
+  if (!parentName) return candidates[0];
+  const parentWanted = normalizeName(parentName);
+  // Prefer the channel in the expected category, but accept a renamed or moved one.
+  return (
+    candidates.find(
+      (ch) => normalizeName(guild.channels.cache.get(ch.parentId)?.name) === parentWanted,
+    ) ?? candidates[0]
+  );
 }
 
 async function step(results, key, fn) {
@@ -215,6 +230,15 @@ export async function runAutoSetup({ guild, context: c, actorId, bot, options = 
       : { status: 'dormant', flag: 'ENABLE_AUDIT_EVENTS' };
   });
 
+  await step(results, 'quarantine', async () => {
+    const out = await ensureQuarantineRole(guild, c.antinuke);
+    c.antinuke.patch(gid, { quarantine: { ...c.antinuke.get(gid).quarantine, enabled: true } });
+    if (out.failed) throw new Error('quarantine overwrites incomplete');
+    return c.config.auditEventsEnabled
+      ? { status: 'saved' }
+      : { status: 'dormant', flag: 'ENABLE_AUDIT_EVENTS' };
+  });
+
   await step(results, 'automod', async () => {
     const current = c.automod.get?.(gid);
     const exempt = [roles.owner?.id, roles.mod?.id].filter(Boolean);
@@ -260,9 +284,14 @@ export async function runAutoSetup({ guild, context: c, actorId, bot, options = 
     if (!lobby) return missing;
     if (!c.voiceMaster.config(gid)) return { status: 'skipped', reason: 'voiceFirst' };
     c.voiceJoin.set(gid, lobby.id, actorId);
+    // Join-to-create re-checks this user's permissions on every join, so flag a gap now.
+    const actor = await guild.members.fetch(actorId).catch(() => null);
+    const notes = actor?.permissions?.has?.([P.MoveMembers, P.ManageChannels])
+      ? []
+      : ['autoVmActorPerms'];
     return c.config.voiceEventsEnabled
-      ? { status: 'saved' }
-      : { status: 'dormant', flag: 'ENABLE_VOICE_EVENTS' };
+      ? { status: 'saved', notes }
+      : { status: 'dormant', flag: 'ENABLE_VOICE_EVENTS', notes };
   });
 
   const extra = {};

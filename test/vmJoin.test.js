@@ -4,7 +4,11 @@ import { ChannelType } from 'discord.js';
 import { openDatabase } from '../src/database/index.js';
 import { VoiceMaster, privateVoiceOverwrites } from '../src/services/voiceMaster.js';
 import { VoiceReadiness } from '../src/services/voiceReadiness.js';
-import { VoiceJoin, createVoiceJoinHandler } from '../src/services/vmJoin.js';
+import {
+  VoiceJoin,
+  createVoiceJoinHandler,
+  createVoiceCleanupHandler,
+} from '../src/services/vmJoin.js';
 import command from '../src/commands/voicemaster/vmjoin.js';
 const g = '100000000000000001',
   u = '100000000000000002',
@@ -90,7 +94,7 @@ function setup() {
       voiceJoin: j,
       voiceReadiness: ready,
       config: { voiceEventsEnabled: true },
-      logger: { warn: () => {} },
+      logger: { warn: (...a) => process.env.DBG && console.log(JSON.stringify(a)) },
       guildConfig: { get: () => ({ language: 'en' }) },
     };
   v.setup(g, cat);
@@ -266,5 +270,36 @@ test('vmjoin3paths private3locale confirm freshauthority manualexistinglobbyguar
     } finally {
       s.db.close();
     }
+  }
+});
+
+test('vmjoin cleanup deletes only an empty join-created channel, never lobby or hand-made ones', async () => {
+  const s = setup();
+  try {
+    s.join();
+    const h = createVoiceJoinHandler(s.c);
+    await h(s.old, s.state);
+    const row = s.v.owned(g, u);
+    assert.equal(row.status, 'active');
+    let deleted = 0;
+    s.channel.delete = async () => deleted++;
+    s.guild.voiceStates.cache = new Map([[u, { channelId: s.channel.id }]]);
+    const cleanup = createVoiceCleanupHandler(s.c, { graceMs: 0 });
+    const leave = { guild: s.guild, client: s.state.client, id: u, channelId: s.channel.id };
+    const gone = { guild: s.guild, client: s.state.client, id: u, channelId: null };
+    await cleanup(leave, gone);
+    assert.equal(deleted, 0, 'occupied channel is kept');
+    s.guild.voiceStates.cache = new Map([[u, { channelId: null }]]);
+    await cleanup({ ...leave, channelId: lobby }, gone);
+    assert.equal(deleted, 0, 'lobby is never deleted');
+    s.db.prepare('DELETE FROM vm_join_moves').run();
+    await cleanup(leave, gone);
+    assert.equal(deleted, 0, 'channel without a join receipt is never deleted');
+    s.db.prepare('INSERT INTO vm_join_moves VALUES(?,?,?,?)').run(g, u, s.channel.id, 'completed');
+    await cleanup(leave, gone);
+    assert.equal(deleted, 1);
+    assert.equal(s.v.inspectRecord(g, row.id)?.status ?? 'closed', 'closed');
+  } finally {
+    s.db.close();
   }
 });

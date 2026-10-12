@@ -10,6 +10,11 @@ export class VoiceReadiness {
   disconnected(shardId) {
     this.unsafeShards.add(shardId);
   }
+  // A resumed session replays missed events and a fresh READY resends voice states with the
+  // guilds, so the voice cache is trustworthy again; keep the shard blocked only until then.
+  recovered(shardId) {
+    return this.unsafeShards.delete(shardId);
+  }
   require(i, c) {
     if (c.config?.voiceEventsEnabled !== true) throw new UserError('voiceRuntimeDisabled');
     if (

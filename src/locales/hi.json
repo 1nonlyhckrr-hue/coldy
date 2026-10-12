@@ -291,7 +291,7 @@
   "antinukeEnabled": "सिर्फ ऑडिट अलर्ट चालू। स्वतः दंड या बदलाव वापस नहीं होंगे।",
   "antinukeDisabled": "ऑडिट अलर्ट बंद।",
   "antinukeSaved": "ऑडिट अलर्ट कॉन्फिग सहेजी।",
-  "antinukeConfig": "ऑडिट अलर्ट: {status}\nसीमा: {count} मिली-जुली कार्रवाइयां / {window}s\nचैनल: {channel}\nविश्वसनीय सदस्य IDs: {trusted}\nसिर्फ अलर्ट। दंड या बहाली नहीं।",
+  "antinukeConfig": "ऑडिट अलर्ट: {status}\nसीमा: {count} मिली-जुली कार्रवाइयां / {window}s\nचैनल: {channel}\nविश्वसनीय सदस्य IDs: {trusted}\nऑटो-क्वारंटीन रोल: {quarantine}\nबदलाव वापस नहीं किए जाते।",
   "antinukeIncidents": "हाल के ऑडिट घटनाक्रम (सिर्फ अलर्ट)",
   "antinukeEmpty": "कोई सहेजी ऑडिट घटना नहीं।",
   "antinukeAlert": "ऑडिट अलर्ट #{id}\nकरने वाले की ID: {actor}\n{window}s में {count} समर्थित प्रशासनिक कार्रवाइयां देखीं।\nऑडिट लॉग जांचें। यह सही काम भी हो सकता है। Emika ने किसी को दंड नहीं दिया या बदलाव वापस नहीं किए।",
@@ -1059,7 +1059,7 @@
   "voiceRankStatus": "Sampled voice counts संलग्न हैं,बोलने का समय नहीं।90UTCdays;केवल futurejoins,60secondsamples,max120secondinterval,startupcredit नहीं। Disconnecttails/missedsamples छोड़ दिए जाते हैं। Privacycommands counts मिटाते हैं।",
   "vmJoinConfirm": "भविष्य की automatic privatechannel creation/move confirm करें।",
   "vmJoinUnavailable": "वर्तमान lobby/voice/actor/bot/category उपलब्ध नहीं है।",
-  "vmJoinStatus": "Join-to-create policy संलग्न है। Futurehumanlobbyjoins;oneownedchannel/uncertainretry नहीं। Existingchannels रहेंगे,empty होने पर manuallyclose करें। Autocleanup/buttons अभी नहीं।",
+  "vmJoinStatus": "Join-to-create policy संलग्न है। भविष्य में इंसानों के लॉबी जॉइन करने पर एक owned चैनल बनेगा, uncertain retry नहीं होगा। मौजूदा चैनल रहेंगे, खाली होने पर हाथ से बंद करें। Auto cleanup और बटन अभी नहीं।",
   "vmControlStatus": "Privateone-usecontrols10minutesमेंexpireहोते हैं। Emptyownedchannelज़रूरी है। UnlockसबकोView/Connectदेता है;Closedeleteकरता है। Attemptpanelconsumeकरता है।",
   "vmControl_lock": "Lock:केवलowner",
   "vmControl_unlock": "Unlock:सबकेसाथshare",
@@ -1139,5 +1139,14 @@
   "autoStep_reactionroles": "रिएक्शन रोल पैनल",
   "autoStep_needsInput": "आपका इनपुट चाहिए",
   "autoReason_noInteraction": "स्किप, कमांड इंटरैक्शन चाहिए",
-  "autoNeedsInput": "ये अपने आप सेट नहीं हुए क्योंकि इनके लिए आपका अपना कंटेंट चाहिए: कस्टम ऑटोरेस्पॉन्डर जवाब, रैंक रिवॉर्ड, शेड्यूल्ड मैसेज टेक्स्ट, मेंशन गार्ड टारगेट, इवेंट मोड। तैयार होने पर इनके कमांड इस्तेमाल करें।"
+  "autoNeedsInput": "ये अपने आप सेट नहीं हुए क्योंकि इनके लिए आपका अपना कंटेंट चाहिए: कस्टम ऑटोरेस्पॉन्डर जवाब, रैंक रिवॉर्ड, शेड्यूल्ड मैसेज टेक्स्ट, मेंशन गार्ड टारगेट, इवेंट मोड। तैयार होने पर इनके कमांड इस्तेमाल करें।",
+  "antinukeQuarantine_quarantined": "क्वारंटीन: {actor} ने {window}s में {reason} {count} बार किए, इसलिए अब उसके पास Quarantine रोल है जो सारे चैनल छुपा देता है। ऑडिट लॉग जांचें और पक्का होने पर रोल हटा दें।",
+  "antinukeQuarantine_hierarchy": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): उसका सबसे ऊंचा रोल Emika के बराबर या ऊपर है, इसलिए Emika कार्रवाई नहीं कर सकता।",
+  "antinukeQuarantine_unavailable": "क्वारंटीन नहीं हो सका ({actor}, {window}s में {reason} x{count}): Emika के पास Manage Roles नहीं है।",
+  "antinukeQuarantineReason_channelDelete": "चैनल डिलीट",
+  "antinukeQuarantineReason_ban": "बैन",
+  "antinukeQuarantineReason_kick": "किक",
+  "autoStep_quarantine": "एंटीन्यूक क्वारंटीन",
+  "antinukeQuarantine_roleInvalid": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): चुना गया सज़ा रोल मौजूद नहीं है, managed है या Emika से ऊपर है। /antinuke punishrole से ठीक करें।",
+  "autoVmActorPerms": "चेतावनी: इसे चलाने वाले के पास Move Members और Manage Channels नहीं हैं, और join-to-create हर जॉइन पर इसी यूज़र की जांच करता है। /vmjoin किसी एडमिन से चलवाएं या ये परमिशन दें।"
 }

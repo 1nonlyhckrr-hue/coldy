@@ -5,6 +5,7 @@ import {
   PermissionFlagsBits as P,
   MessageFlags,
 } from 'discord.js';
+import { validatePunishRole } from '../../services/antinuke.js';
 import { validateOutputChannel } from '../../services/guildConfig.js';
 import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
@@ -52,6 +53,14 @@ const data = new SlashCommandBuilder()
       )
       .addBooleanOption((o) =>
         o.setName('trusted').setDescription('Alert exemption').setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('punishrole')
+      .setDescription('Choose the role given by auto-quarantine; leave empty for the default.')
+      .addRoleOption((o) =>
+        o.setName('role').setDescription('Role to apply, below Emika, not managed'),
       ),
   )
   .addSubcommand((s) => s.setName('config').setDescription('Show alert settings and limitations.'))
@@ -342,6 +351,16 @@ export default {
       await authorize();
       c.antinuke.trust(i.guildId, selected.id, trusted);
       text = t('antinukeSaved');
+    } else if (sub === 'punishrole') {
+      const chosen = i.options.getRole('role');
+      if (chosen) {
+        const bot = i.guild.members.me ?? (await i.guild.members.fetchMe());
+        const role = await i.guild.roles.fetch(chosen.id, { force: true });
+        validatePunishRole(role, bot, i.guild);
+      }
+      await authorize();
+      c.antinuke.setPunishRole(i.guildId, chosen?.id ?? null);
+      text = t('antinukeSaved');
     } else if (sub === 'config') {
       const cfg = c.antinuke.get(i.guildId);
       text = t('antinukeConfig', {
@@ -350,6 +369,11 @@ export default {
         window: cfg.windowSeconds,
         channel: cfg.channelId ?? '-',
         trusted: cfg.trustedUsers.join(', ') || '-',
+        quarantine: cfg.quarantine.enabled
+          ? cfg.quarantine.punishRoleId
+            ? `<@&${cfg.quarantine.punishRoleId}>`
+            : 'Quarantine'
+          : t('disabled'),
       });
     } else if (sub === 'unresolved') {
       const page = i.options.getInteger('page') ?? 1,

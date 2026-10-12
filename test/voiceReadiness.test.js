@@ -96,3 +96,16 @@ test('voice native client readiness must positively equal true rather than a tru
   i.client.isReady = () => true;
   v.require(i, c);
 });
+
+test('a recovered shard accepts voice work again and other shards stay blocked', () => {
+  const v = new VoiceReadiness();
+  v.initialReady();
+  v.disconnected(0);
+  v.disconnected(1);
+  assert.equal(v.recovered(0), true);
+  assert.equal(v.recovered(0), false);
+  const c = { config: { voiceEventsEnabled: true } };
+  const i = (shardId) => ({ client: { isReady: () => true }, guild: { shardId, available: true } });
+  assert.doesNotThrow(() => v.require(i(0), c));
+  assert.throws(() => v.require(i(1), c), { message: 'voiceStateUnavailable' });
+});

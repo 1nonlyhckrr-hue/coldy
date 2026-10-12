@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AuditLogEvent } from 'discord.js';
+import { AuditLogEvent, PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
 import { validateOutputChannel } from './guildConfig.js';
 import { lunaPayload } from '../utils/embeds.js';
@@ -25,6 +25,20 @@ const id = z.string().regex(/^\d{17,20}$/),
       threshold: z.number().int().min(2).max(20).default(5),
       windowSeconds: z.number().int().min(10).max(300).default(60),
       trustedUsers: z.array(id).max(20).default([]),
+      // Auto-quarantine: a role that hides every channel from a member who trips a threshold.
+      quarantine: z
+        .object({
+          enabled: z.boolean().default(true),
+          roleId: id.optional(),
+          punishRoleId: id.optional(),
+          channelDeleteThreshold: z.number().int().min(2).max(20).default(3),
+          channelDeleteWindowSeconds: z.number().int().min(10).max(300).default(60),
+          banThreshold: z.number().int().min(2).max(20).default(3),
+          kickThreshold: z.number().int().min(2).max(20).default(3),
+          windowSeconds: z.number().int().min(60).max(3600).default(300),
+        })
+        .strict()
+        .prefault({}),
     })
     .strict();
 export class AntinukeAlerts {
@@ -108,7 +122,6 @@ export class AntinukeAlerts {
     const cfg = this.get(guild.id);
     if (
       !cfg.enabled ||
-      !cfg.channelId ||
       !WATCHED_AUDIT_ACTIONS.has(entry.action) ||
       !/^\d{17,20}$/.test(entry.id ?? '') ||
       !/^\d{17,20}$/.test(entry.executorId ?? '')
@@ -137,6 +150,8 @@ export class AntinukeAlerts {
           .run(entry.id, guild.id, entry.executorId, entry.action, now).changes
       )
         return null;
+      // Events are counted even without an alert channel, so quarantine can still use them.
+      if (!cfg.channelId) return null;
       const since = now - cfg.windowSeconds * 1000;
       const count = this.db
         .prepare(
@@ -169,6 +184,45 @@ export class AntinukeAlerts {
         channelId: cfg.channelId,
       };
     })();
+  }
+  /**
+   * Decides whether an already-recorded audit entry pushes its actor over a quarantine
+   * threshold. Owner, the bot itself and trusted users are never returned.
+   */
+  quarantineTrigger(entry, guild, now = Date.now()) {
+    const cfg = this.get(guild.id),
+      q = cfg.quarantine;
+    if (!cfg.enabled || !q.enabled || !Number.isSafeInteger(now) || now < 0) return null;
+    if (!/^\d{17,20}$/.test(entry?.executorId ?? '')) return null;
+    if (
+      entry.executorId === guild.ownerId ||
+      entry.executorId === guild.client.user.id ||
+      cfg.trustedUsers.includes(entry.executorId)
+    )
+      return null;
+    const rule = {
+      [AuditLogEvent.ChannelDelete]: [
+        'channelDelete',
+        q.channelDeleteThreshold,
+        q.channelDeleteWindowSeconds,
+      ],
+      [AuditLogEvent.MemberBanAdd]: ['ban', q.banThreshold, q.windowSeconds],
+      [AuditLogEvent.MemberKick]: ['kick', q.kickThreshold, q.windowSeconds],
+    }[entry.action];
+    if (!rule) return null;
+    const [reason, threshold, window] = rule;
+    const count = this.db
+      .prepare(
+        'SELECT count(*) n FROM antinuke_events WHERE guild_id=? AND actor_id=? AND action=? AND created_at>=? AND created_at<=?',
+      )
+      .get(guild.id, entry.executorId, entry.action, now - window * 1000, now).n;
+    if (count < threshold) return null;
+    return { actorId: entry.executorId, reason, count, window, roleId: q.roleId ?? null };
+  }
+  setPunishRole(guildId, roleId) {
+    if (roleId !== null && !/^\d{17,20}$/.test(roleId)) throw new UserError('roleInvalid');
+    const q = this.get(guildId).quarantine;
+    return this.patch(guildId, { quarantine: { ...q, punishRoleId: roleId ?? undefined } });
   }
   recorded(id, guildId, expected = null) {
     const row = this.db
@@ -273,12 +327,144 @@ export class AntinukeAlerts {
     })();
   }
 }
+export const QUARANTINE_ROLE_NAME = 'Quarantine';
+/** The role must exist here, not be @everyone or managed, and sit below the bot's top role. */
+export function validatePunishRole(role, bot, guild) {
+  if (!role || role.guild?.id !== guild.id || role.id === guild.id || role.managed)
+    throw new UserError('roleInvalid');
+  if (role.position >= bot.roles.highest.position) throw new UserError('roleBotHierarchy');
+}
+function overwriteDenies(channel, role) {
+  const o = channel.permissionOverwrites?.cache?.get?.(role.id);
+  return !!o?.deny?.has?.(P.ViewChannel);
+}
+/**
+ * Finds or creates the Quarantine role and makes sure every channel and category hides from it.
+ * Role permissions alone cannot hide channels @everyone can see, so each channel gets an explicit
+ * ViewChannel deny. Safe to rerun: channels that already deny are skipped.
+ */
+export async function ensureQuarantineRole(guild, antinuke, { applyOverwrites = true } = {}) {
+  const cfg = antinuke.get(guild.id);
+  await guild.roles.fetch();
+  if (cfg.quarantine.punishRoleId) {
+    // Admin-chosen role: re-validated every time, never silently replaced by the default role.
+    const chosen = guild.roles.cache.get(cfg.quarantine.punishRoleId);
+    const bot = guild.members.me ?? (await guild.members.fetchMe());
+    validatePunishRole(chosen, bot, guild);
+    const result = { role: chosen, created: false, hidden: 0, failed: 0 };
+    if (applyOverwrites) Object.assign(result, await hideChannels(guild, chosen));
+    return result;
+  }
+  let role =
+    (cfg.quarantine.roleId && guild.roles.cache.get(cfg.quarantine.roleId)) ||
+    guild.roles.cache.find((r) => r.name === QUARANTINE_ROLE_NAME && !r.managed);
+  let created = false;
+  if (!role) {
+    role = await guild.roles.create({
+      name: QUARANTINE_ROLE_NAME,
+      permissions: [],
+      hoist: false,
+      mentionable: false,
+      reason: 'Emika antinuke quarantine role',
+    });
+    created = true;
+  }
+  if (cfg.quarantine.roleId !== role.id)
+    antinuke.patch(guild.id, { quarantine: { ...cfg.quarantine, roleId: role.id } });
+  const result = { role, created, hidden: 0, failed: 0 };
+  if (applyOverwrites) Object.assign(result, await hideChannels(guild, role));
+  return result;
+}
+export async function hideChannels(guild, role) {
+  await guild.channels.fetch();
+  let hidden = 0,
+    failed = 0;
+  for (const channel of guild.channels.cache.values()) {
+    if (channel.isThread?.() || !channel.permissionOverwrites?.edit) continue;
+    if (overwriteDenies(channel, role)) continue;
+    try {
+      await channel.permissionOverwrites.edit(
+        role,
+        { ViewChannel: false },
+        { reason: 'Emika antinuke quarantine' },
+      );
+      hidden++;
+    } catch {
+      failed++;
+    }
+  }
+  return { hidden, failed };
+}
+const quarantining = new Set();
+async function quarantineActor(c, guild, trigger) {
+  const key = guild.id + ':' + trigger.actorId;
+  if (quarantining.has(key)) return null;
+  quarantining.add(key);
+  try {
+    const latest = c.antinuke.get(guild.id);
+    if (
+      !latest.enabled ||
+      !latest.quarantine.enabled ||
+      latest.trustedUsers.includes(trigger.actorId) ||
+      guild.ownerId === trigger.actorId ||
+      guild.client.user.id === trigger.actorId
+    )
+      return null;
+    const member = await guild.members.fetch(trigger.actorId).catch(() => null);
+    if (!member || member.id === guild.ownerId || member.id === guild.client.user.id) return null;
+    const bot = guild.members.me ?? (await guild.members.fetchMe());
+    if (!bot.permissions?.has(P.ManageRoles)) return { status: 'unavailable' };
+    // Never act on someone at or above the bot in the role hierarchy.
+    if (member.roles.highest.position >= bot.roles.highest.position) return { status: 'hierarchy' };
+    let role;
+    try {
+      ({ role } = await ensureQuarantineRole(guild, c.antinuke, { applyOverwrites: false }));
+    } catch (error) {
+      if (error instanceof UserError) return { status: 'roleInvalid' };
+      throw error;
+    }
+    if (role.position >= bot.roles.highest.position) return { status: 'hierarchy' };
+    if (!member.roles.cache.has(role.id))
+      await member.roles.add(role, 'Emika antinuke: ' + trigger.reason + ' x' + trigger.count);
+    await hideChannels(guild, role);
+    return { status: 'quarantined' };
+  } finally {
+    quarantining.delete(key);
+  }
+}
 export function createAntinukeHandler(c) {
   return async (entry, guild) => {
     let incident;
     if (c.config?.auditEventsEnabled !== true) return;
     try {
       incident = c.antinuke.record(entry, guild);
+      try {
+        const trigger = c.antinuke.quarantineTrigger(entry, guild);
+        const outcome = trigger && (await quarantineActor(c, guild, trigger));
+        const cfg = c.antinuke.get(guild.id);
+        if (outcome && cfg.channelId) {
+          const channel = await validateOutputChannel(guild, cfg.channelId);
+          await channel.send(
+            lunaPayload(
+              {
+                content: c.localization.t(guild.id, 'antinukeQuarantine_' + outcome.status, {
+                  actor: trigger.actorId,
+                  count: trigger.count,
+                  window: trigger.window,
+                  reason: c.localization.t(guild.id, 'antinukeQuarantineReason_' + trigger.reason),
+                }),
+                allowedMentions: { parse: [] },
+              },
+              { locale: c.localization.locale(guild.id) },
+            ),
+          );
+        }
+      } catch {
+        c.logger?.warn?.(
+          { guildId: guild.id, kind: 'antinuke_quarantine' },
+          'Quarantine unavailable; no automatic retry',
+        );
+      }
       if (!incident) return;
       const locale = c.localization.locale(guild.id),
         text = c.localization.t(guild.id, 'antinukeAlert', {
