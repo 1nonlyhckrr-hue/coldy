@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-66 top-level commands, 587 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+67 top-level commands, 588 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -181,6 +181,7 @@
 | /fun weightedchoice | Private weighted draw from explicit labels/positive integer weights, not advice. | Local mock/unit only |
 | /fun wordscramble | Scramble your supplied ASCII word, answer in spoiler; no dictionary/guess tracking. | Local mock/unit only |
 | /about | Show Emika version and implementation status. | Local mock/unit only |
+| /autosetup | Save a default Emika setup for the layout from /setupstructure; safe to rerun. | Local mock/unit only |
 | /config export | Private stored language/welcome/logging JSON, includes templates/channel IDs, no token/runtime. | Local mock/unit only |
 | /config language | Set English, Hindi or Hinglish for this server. | Local mock/unit only |
 | /config pause | Stop welcome/goodbye/logging delivery; keep destination/templates/options/language. | Local mock/unit only |

@@ -13,6 +13,7 @@ test('installed command names and option limits validate', async () => {
     'automod',
     'autoresponder',
     'autorole',
+    'autosetup',
     'avatar',
     'banner',
     'boostcount',
@@ -85,6 +86,7 @@ test('foundation and utility commands execute mock replies', async () => {
     if (
       [
         'enlarge',
+        'autosetup',
         'setupstructure',
         'emojiinfo',
         'avatar',

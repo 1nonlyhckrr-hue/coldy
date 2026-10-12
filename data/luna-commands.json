@@ -5134,6 +5134,80 @@
     "source": "src/commands/general/about.js"
   },
   {
+    "name": "autosetup",
+    "category": "general",
+    "syntax": "/autosetup [language] [roles] [mod-role] [member-role]",
+    "description": "Save a default Emika setup for the layout from /setupstructure; safe to rerun.",
+    "parameters": [
+      {
+        "name": "language",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "English",
+            "value": "en"
+          },
+          {
+            "name": "Hindi",
+            "value": "hi"
+          },
+          {
+            "name": "Hinglish",
+            "value": "hinglish"
+          }
+        ]
+      },
+      {
+        "name": "roles",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Create or reuse Owner, Mod and Member",
+            "value": "create"
+          },
+          {
+            "name": "Use the roles I choose below",
+            "value": "existing"
+          }
+        ]
+      },
+      {
+        "name": "mod-role",
+        "required": false,
+        "type": 8
+      },
+      {
+        "name": "member-role",
+        "required": false,
+        "type": 8
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [
+      "ViewChannel",
+      "ManageChannels",
+      "ManageRoles",
+      "SendMessages",
+      "EmbedLinks",
+      "ReadMessageHistory"
+    ],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 60000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/general/autosetup.js"
+  },
+  {
     "name": "config export",
     "category": "general",
     "syntax": "/config export",
