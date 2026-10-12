@@ -1168,5 +1168,12 @@
   "securityAccessInvalid": "अमान्य सदस्य या फ़ीचर।",
   "securityAllowed": "<@{user}> अब यह चला सकता है: {feature}।",
   "securityRevoked": "<@{user}> के लिए {count} अनुमति हटाई गई।",
-  "securityList": "इस सर्वर में दी गई सुरक्षा अनुमतियां:"
+  "securityList": "इस सर्वर में दी गई सुरक्षा अनुमतियां:",
+  "backupCreated": "बैकअप #{id} सेव हुआ: {roles} रोल, {channels} चैनल (अनुमतियों सहित)। /backup restore से वापस लाएं।",
+  "backupList": "सेव किए बैकअप (आखिरी 5 रखे जाते हैं):",
+  "backupExported": "बैकअप #{id} JSON में। इसमें सिर्फ रोल और चैनल के नाम, ID और अनुमतियां हैं।",
+  "backupDeleted": "बैकअप #{id} हटाया गया।",
+  "backupNotFound": "बैकअप नहीं मिला।",
+  "backupConfirm": "रिस्टोर बैकअप से हर गायब रोल और चैनल दोबारा बनाता है। मौजूदा कुछ नहीं हटता या बदलता। confirm:True के साथ फिर चलाएं।",
+  "backupRestored": "बैकअप #{id} से रिस्टोर पूरा। बने रोल: {rolesCreated}। बने चैनल: {channelsCreated}। पहले से मौजूद: {skipped}। विफल: {failed}।"
 }

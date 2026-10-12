@@ -624,6 +624,122 @@
     "source": "src/commands/antinuke/antinuke.js"
   },
   {
+    "name": "backup create",
+    "category": "antinuke",
+    "syntax": "/backup create",
+    "description": "Save roles, channels and permissions as a backup (keeps the latest 5).",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/backup.js"
+  },
+  {
+    "name": "backup delete",
+    "category": "antinuke",
+    "syntax": "/backup delete (id)",
+    "description": "Delete one saved backup.",
+    "parameters": [
+      {
+        "name": "id",
+        "required": true,
+        "type": 4,
+        "min": 1
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/backup.js"
+  },
+  {
+    "name": "backup export",
+    "category": "antinuke",
+    "syntax": "/backup export (id)",
+    "description": "Download one backup as JSON.",
+    "parameters": [
+      {
+        "name": "id",
+        "required": true,
+        "type": 4,
+        "min": 1
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/backup.js"
+  },
+  {
+    "name": "backup list",
+    "category": "antinuke",
+    "syntax": "/backup list",
+    "description": "Show saved backups.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/backup.js"
+  },
+  {
+    "name": "backup restore",
+    "category": "antinuke",
+    "syntax": "/backup restore (id) (confirm)",
+    "description": "Recreate missing roles and channels from a backup. Nothing is deleted or edited.",
+    "parameters": [
+      {
+        "name": "id",
+        "required": true,
+        "type": 4,
+        "min": 1
+      },
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/backup.js"
+  },
+  {
     "name": "lockdown",
     "category": "antinuke",
     "syntax": "/lockdown (confirm)",
@@ -670,6 +786,10 @@
           {
             "name": "lockdown",
             "value": "lockdown"
+          },
+          {
+            "name": "backup",
+            "value": "backup"
           }
         ]
       }
@@ -727,6 +847,10 @@
           {
             "name": "lockdown",
             "value": "lockdown"
+          },
+          {
+            "name": "backup",
+            "value": "backup"
           }
         ]
       }

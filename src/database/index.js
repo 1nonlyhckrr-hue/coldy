@@ -266,6 +266,12 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES (43, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=44').get()) {
+      db.exec(
+        'CREATE TABLE server_backups(id INTEGER PRIMARY KEY AUTOINCREMENT,guild_id TEXT NOT NULL,created_by TEXT NOT NULL,created_at INTEGER NOT NULL,data_json TEXT NOT NULL);CREATE INDEX server_backups_guild ON server_backups(guild_id,id);',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (44, ?)').run(Date.now());
+    }
   })();
   return db;
 }

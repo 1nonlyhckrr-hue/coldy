@@ -168,9 +168,9 @@ export function createVoiceJoinHandler(c) {
 /**
  * Deletes a join-to-create channel once its last member leaves. Only channels with a join-flow
  * receipt are eligible; the lobby, Voice Master channels opened by hand and every other channel
- * are never touched. A short grace lets a quick rejoin keep the channel.
+ * are never touched. A ~1 second grace lets a quick rejoin keep the channel.
  */
-export function createVoiceCleanupHandler(c, { graceMs = 15000 } = {}) {
+export function createVoiceCleanupHandler(c, { graceMs = 1000 } = {}) {
   const pending = new Set();
   return async (old, state) => {
     if (

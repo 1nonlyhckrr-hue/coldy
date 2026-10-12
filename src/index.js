@@ -27,6 +27,7 @@ import {
 import { VoiceMaster } from './services/voiceMaster.js';
 import { GuildTags } from './services/guildTags.js';
 import { SecurityAccess } from './services/securityAccess.js';
+import { ServerBackups } from './services/serverBackup.js';
 import { Lockdown } from './services/lockdown.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
@@ -140,6 +141,7 @@ context.antinuke.cleanup();
 if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
 context.lockdown = new Lockdown(db);
+context.serverBackups = new ServerBackups(db);
 context.securityAccess = new SecurityAccess(db);
 context.rankRewards = new RankRewards(db);
 context.rankRewards.recover();

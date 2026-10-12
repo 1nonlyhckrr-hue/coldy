@@ -1168,5 +1168,12 @@
   "securityAccessInvalid": "Invalid member ya feature.",
   "securityAllowed": "<@{user}> ab ye chala sakta hai: {feature}.",
   "securityRevoked": "<@{user}> ke liye {count} permission hata di gayi.",
-  "securityList": "Is server me di gayi security permissions:"
+  "securityList": "Is server me di gayi security permissions:",
+  "backupCreated": "Backup #{id} save hua: {roles} roles, {channels} channels (permissions ke saath). /backup restore se wapas lao.",
+  "backupList": "Saved backups (last 5 rakhe jaate hain):",
+  "backupExported": "Backup #{id} JSON me. Isme sirf role aur channel ke naam, ID aur permissions hain.",
+  "backupDeleted": "Backup #{id} delete kiya.",
+  "backupNotFound": "Backup nahi mila.",
+  "backupConfirm": "Restore backup se har missing role aur channel dobara banata hai. Jo exist karta hai wo delete ya edit nahi hota. confirm:True ke saath phir chalao.",
+  "backupRestored": "Backup #{id} se restore ho gaya. Bane roles: {rolesCreated}. Bane channels: {channelsCreated}. Pehle se the: {skipped}. Fail: {failed}."
 }

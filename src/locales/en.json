@@ -1168,5 +1168,12 @@
   "securityAccessInvalid": "Invalid member or feature.",
   "securityAllowed": "<@{user}> may now use: {feature}.",
   "securityRevoked": "Removed {count} delegation(s) for <@{user}>.",
-  "securityList": "Delegated security access in this server:"
+  "securityList": "Delegated security access in this server:",
+  "backupCreated": "Backup #{id} saved: {roles} roles, {channels} channels (with permissions). Restore with /backup restore.",
+  "backupList": "Saved backups (latest 5 are kept):",
+  "backupExported": "Backup #{id} as JSON. It holds role and channel names, ids and permissions only.",
+  "backupDeleted": "Backup #{id} deleted.",
+  "backupNotFound": "Backup not found.",
+  "backupConfirm": "Restore recreates every missing role and channel from the backup. Nothing existing is deleted or edited. Run again with confirm:True.",
+  "backupRestored": "Restore from backup #{id} done. Roles created: {rolesCreated}. Channels created: {channelsCreated}. Already existed: {skipped}. Failed: {failed}."
 }
