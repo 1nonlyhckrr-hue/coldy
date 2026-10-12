@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { preflight } from '../src/services/preflight.js';
 const env = {
   DISCORD_TOKEN: 'TEST_SECRET_TOKEN_DO_NOT_OUTPUT'.repeat(2),
-  DISCORD_CLIENT_ID: '1556357674663153694',
+  DISCORD_CLIENT_ID: '1556357674663154994',
   DISCORD_GUILD_ID: '100000000000000001',
   OWNER_IDS: '100000000000000002',
   DATABASE_PATH: '/TEST_SECRET_PATH/luna.sqlite',
@@ -14,7 +14,7 @@ test('offline preflight reports registry/counts with explicit unverified live ga
   const text = JSON.stringify(result);
   assert(!text.includes(env.DISCORD_TOKEN));
   assert(!text.includes(env.DATABASE_PATH));
-  assert(text.includes('505 executable'));
+  assert(text.includes('555 executable'));
   assert(text.includes('NOT live readiness'));
   assert(text.includes('Music off'));
   assert(text.includes('ownership and backup policy NOT checked'));

@@ -5,6 +5,15 @@ import {
   MessageFlags,
 } from 'discord.js';
 import {
+  matrixRowspace,
+  matrixColumnspace,
+  solveGeneralMatrix,
+  subtractMatrices,
+  cofactorMatrix,
+  adjugateMatrix,
+  matrixTrace,
+  matrixRref,
+  matrixNullspace,
   matrixRank,
   inverseMatrix,
   solveMatrix,
@@ -25,6 +34,15 @@ const data = new SlashCommandBuilder()
   )
   .setContexts(InteractionContextType.Guild);
 for (const sub of [
+  'rowspace',
+  'columnspace',
+  'solvegeneral',
+  'subtract',
+  'cofactor',
+  'adjugate',
+  'trace',
+  'rref',
+  'nullspace',
   'transpose',
   'multiply',
   'determinant',
@@ -38,6 +56,16 @@ for (const sub of [
   data.addSubcommand((s) => {
     s.setName(sub).setDescription(
       {
+        rowspace: 'Exact rational independent rowspace basis from reduced row echelon form.',
+        columnspace: 'Independent original integer column vectors,zero-based pivot columns.',
+        solvegeneral:
+          'Rectangular1-4integer system:inconsistent/unique/infinite rational affine solution.',
+        subtract: 'Subtract equalshape1-4integer matrices;exact decimalstrings.',
+        cofactor: 'Signed minors of square1-4integer matrix;1by1cofactor is1,singular accepted.',
+        adjugate: 'Transpose cofactor matrix,not inverse;square1-4integers,singular accepted.',
+        trace: 'Exact trace of square1-4integer matrix;decimalstring output.',
+        rref: 'Exact rational reduced row echelon form with zero-based pivot columns.',
+        nullspace: 'Exact rational nullspace basis vectors;zero-based free columns,no tolerance.',
         rank: 'Exact rational rank of1-4by1-4integer matrix,no floatingpoint tolerance.',
         inverse: 'Exact rational inverse of square1-4integer matrix;singular rejected.',
         solve: 'Solve square1-4integer system with one-column RHS;unique rational solution only.',
@@ -51,9 +79,9 @@ for (const sub of [
         determinant: 'Exact determinant of square1-4integer matrix JSON;result decimal string.',
       }[sub],
     );
-    for (const key of ['multiply', 'add'].includes(sub)
+    for (const key of ['multiply', 'add', 'subtract'].includes(sub)
       ? ['left', 'right']
-      : sub === 'solve'
+      : ['solve', 'solvegeneral'].includes(sub)
         ? ['matrix', 'right']
         : ['matrix'])
       s.addStringOption((o) =>
@@ -83,7 +111,24 @@ export default {
   async execute(i, c) {
     const sub = i.options.getSubcommand();
     let result;
-    if (sub === 'rank') result = matrixRank(i.options.getString('matrix', true));
+    if (sub === 'rowspace') result = matrixRowspace(i.options.getString('matrix', true));
+    else if (sub === 'columnspace') result = matrixColumnspace(i.options.getString('matrix', true));
+    else if (sub === 'solvegeneral')
+      result = solveGeneralMatrix(
+        i.options.getString('matrix', true),
+        i.options.getString('right', true),
+      );
+    else if (sub === 'subtract')
+      result = subtractMatrices(
+        i.options.getString('left', true),
+        i.options.getString('right', true),
+      );
+    else if (sub === 'cofactor') result = cofactorMatrix(i.options.getString('matrix', true));
+    else if (sub === 'adjugate') result = adjugateMatrix(i.options.getString('matrix', true));
+    else if (sub === 'trace') result = matrixTrace(i.options.getString('matrix', true));
+    else if (sub === 'rref') result = matrixRref(i.options.getString('matrix', true));
+    else if (sub === 'nullspace') result = matrixNullspace(i.options.getString('matrix', true));
+    else if (sub === 'rank') result = matrixRank(i.options.getString('matrix', true));
     else if (sub === 'inverse') result = inverseMatrix(i.options.getString('matrix', true));
     else if (sub === 'solve')
       result = solveMatrix(i.options.getString('matrix', true), i.options.getString('right', true));
@@ -113,7 +158,9 @@ export default {
         {
           content: translate(
             locale,
-            ['inverse', 'solve'].includes(sub) ? 'matrixRationalResult' : 'matrixResult',
+            ['inverse', 'solve', 'rref', 'nullspace', 'rowspace', 'solvegeneral'].includes(sub)
+              ? 'matrixRationalResult'
+              : 'matrixResult',
           ),
           flags: MessageFlags.Ephemeral,
           files: [

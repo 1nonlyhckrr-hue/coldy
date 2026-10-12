@@ -1,0 +1,9 @@
+# AntiBot
+
+Reference-led original Luna implementation: https://docs.zynrax.site/configuration/antibot . Native Discord acceptance pending.
+
+`/antibot add channel confirm`:opt in one normal text channel for automatic deletion of future fresh nonwhitelisted bot messages. Message events and current Manage Server authority required;force native channel/bot identity and View/ReadHistory/ManageMessages checks. Maximum25channels per guild. Explicitconfirm required. `remove channel` disables one channel. `config` privately exports saved channel/whitelist IDs,not live deletion proof. `reset` clears all channels AND whitelist,not existing messages or receipts. `wladd user` force validates a current bot member,max100;`wlremove user-id` removes an exact stored ID including departed bots. These are6paths,not multiplied by parameter choices.
+
+Safety adaptation:Luna's own messages,webhooks,humans,system messages,edits,threads/non-normaltext and events older5minutes are never deleted. Other bots,including bots with staff permissions,are eligible unless whitelisted;attachments do not exempt. No history sweep/startup backfill. Future normaltext bot messages must pass forced member/channel/currentmessage checks and repeated bot/member/policy/whitelist checks. Persistent one-shot receipt reserved before deletion. Completion requires forced native message fetch giving exact UnknownMessage10008+HTTP404;network/permission errors or ambiguous submitted effects remain uncertain and never retry. Restarted reserved receipts become uncertain. Receipts kept30days;old gateway events cannot replay. Removing/resetting a policy cannot undo an already submitted deletion. No alert/DM or content storage.
+
+Configuration replies/errors are private3locale shared Luna embeds,no-ping;exports contain saved IDs only. Discord permissions/rate limits/gateway/nativeclient/visual acceptance remains unverified. AntiBot is not anti-raid protection or a bot-join ban system.

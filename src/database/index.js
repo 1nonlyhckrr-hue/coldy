@@ -177,6 +177,39 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES(27,?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=28').get()) {
+      db.exec(`CREATE TABLE mention_guard_settings(guild_id TEXT PRIMARY KEY,target_id TEXT,duration_ms INTEGER,enabled INTEGER NOT NULL DEFAULT 0,revision INTEGER NOT NULL DEFAULT 1,last_result TEXT NOT NULL DEFAULT 'none');
+        CREATE TABLE mention_guard_messages(message_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,sender_id TEXT NOT NULL,revision INTEGER NOT NULL,created_at INTEGER NOT NULL,status TEXT NOT NULL CHECK(status IN ('counted','reserved','completed','skipped','uncertain')));
+        CREATE INDEX mention_guard_window ON mention_guard_messages(guild_id,sender_id,revision,created_at);`);
+      db.prepare('INSERT INTO schema_migrations VALUES(28,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=29').get()) {
+      db.exec(`CREATE TABLE autorole_policy(guild_id TEXT NOT NULL,kind TEXT NOT NULL CHECK(kind IN ('humans','bots')),role_id TEXT NOT NULL,actor_id TEXT NOT NULL,revision TEXT NOT NULL,PRIMARY KEY(guild_id,kind,role_id));
+        CREATE TABLE autorole_receipts(event_key TEXT PRIMARY KEY,guild_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','completed','uncertain')),created_at INTEGER NOT NULL);`);
+      db.prepare('INSERT INTO schema_migrations VALUES(29,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=30').get()) {
+      db.exec(`CREATE TABLE vcrole_policy(guild_id TEXT PRIMARY KEY,role_id TEXT NOT NULL,actor_id TEXT NOT NULL,revision TEXT NOT NULL);
+        CREATE TABLE vcrole_grants(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,role_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('adding','granted','removing','uncertain')),PRIMARY KEY(guild_id,user_id,role_id));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(30,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=31').get()) {
+      db.exec(`CREATE TABLE media_policy(guild_id TEXT PRIMARY KEY,channel_id TEXT NOT NULL,revision TEXT NOT NULL);
+        CREATE TABLE media_bypass(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,PRIMARY KEY(guild_id,user_id));
+        CREATE TABLE media_receipts(message_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','completed','uncertain')),created_at INTEGER NOT NULL);`);
+      db.prepare('INSERT INTO schema_migrations VALUES(31,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=32').get()) {
+      db.exec(`CREATE TABLE autoreact_rules(guild_id TEXT NOT NULL,trigger TEXT NOT NULL,emojis_json TEXT NOT NULL,revision TEXT NOT NULL,PRIMARY KEY(guild_id,trigger));
+        CREATE TABLE autoreact_receipts(message_id TEXT NOT NULL,emoji TEXT NOT NULL,guild_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','completed','uncertain')),created_at INTEGER NOT NULL,PRIMARY KEY(message_id,emoji));`);
+      db.prepare('INSERT INTO schema_migrations VALUES(32,?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=33').get()) {
+      db.exec(`CREATE TABLE antibot_channels(guild_id TEXT NOT NULL,channel_id TEXT NOT NULL,revision TEXT NOT NULL,PRIMARY KEY(guild_id,channel_id));
+        CREATE TABLE antibot_whitelist(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,PRIMARY KEY(guild_id,user_id));
+        CREATE TABLE antibot_receipts(message_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('reserved','completed','uncertain')),created_at INTEGER NOT NULL);`);
+      db.prepare('INSERT INTO schema_migrations VALUES(33,?)').run(Date.now());
+    }
   })();
   return db;
 }

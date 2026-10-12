@@ -141,3 +141,11 @@ Original public checkpoint passed Node 22/24 GitHub CI. This newer consolidated 
 ## Full schema integrity
 
 32/133/261. All22migrations once in order,SQLite integrity and FK checks pass,orphan mapping insertion fails. Normal source publication awaiting secret-safe supported push method;no temporary publisher reuse. No release.
+
+## Reference-led AutoReact checkpoint
+
+57 top-level/549 installed paths/1198 passing local tests;32 migrations/53 application tables. AutoReact adds4paths with per-emoji receipt safety. Published baseline remains1132/505. No live acceptance/deployment;541 reference equivalence unverified. See AUTOREACT.md.
+
+## Reference-led AntiBot checkpoint
+
+58top-level/555paths/1205localtests,33migrations56applicationtables.6newAntiBotpaths with explicit deletion confirmation,freshbot-only/nativeproof/uncertaintyfreeze. See ANTIBOT.md. Published1132/505 remains separate;50localnewpaths. Nativeacceptance pending;541-equivalenceunknown.

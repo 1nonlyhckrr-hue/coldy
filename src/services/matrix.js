@@ -156,3 +156,128 @@ export function solveMatrix(text, right) {
     values: rationalOutput(reduced.values.map((row) => [row[a.length]])).map((row) => row[0]),
   };
 }
+export function matrixTrace(text) {
+  const a = parseMatrix(text);
+  if (a.length !== a[0].length) throw new UserError('matrixSquareInvalid');
+  return { size: a.length, trace: String(a.reduce((sum, row, n) => sum + row[n], 0n)) };
+}
+function reducedMatrix(text) {
+  const a = parseMatrix(text);
+  const reduced = rationalElimination(a, a[0].length);
+  const pivotColumns = reduced.values
+    .slice(0, reduced.rank)
+    .map((row) => row.findIndex((v) => v.n !== 0n));
+  return { a, ...reduced, pivotColumns };
+}
+export function matrixRref(text) {
+  const result = reducedMatrix(text);
+  return {
+    rows: result.a.length,
+    columns: result.a[0].length,
+    rank: result.rank,
+    pivotColumns: result.pivotColumns,
+    values: rationalOutput(result.values),
+  };
+}
+export function matrixNullspace(text) {
+  const result = reducedMatrix(text),
+    columns = result.a[0].length;
+  const freeColumns = Array.from({ length: columns }, (_, n) => n).filter(
+    (n) => !result.pivotColumns.includes(n),
+  );
+  const basis = freeColumns.map((free) => {
+    const vector = Array.from({ length: columns }, (_, n) => fraction(n === free ? 1n : 0n));
+    result.pivotColumns.forEach((pivot, row) => {
+      vector[pivot] = fraction(-result.values[row][free].n, result.values[row][free].d);
+    });
+    return vector;
+  });
+  return {
+    rows: result.a.length,
+    columns,
+    rank: result.rank,
+    nullity: freeColumns.length,
+    freeColumns,
+    basis: rationalOutput(basis),
+  };
+}
+export function subtractMatrices(left, right) {
+  const a = parseMatrix(left),
+    b = parseMatrix(right);
+  if (a.length !== b.length || a[0].length !== b[0].length)
+    throw new UserError('matrixEqualShapeInvalid');
+  return reportMatrix(a.map((row, r) => row.map((v, c) => v - b[r][c])));
+}
+function cofactors(rows) {
+  return rows.map((row, r) =>
+    row.map((_, c) =>
+      rows.length === 1
+        ? 1n
+        : ((r + c) % 2 ? -1n : 1n) *
+          determinant(rows.filter((_, n) => n !== r).map((v) => v.filter((_, n) => n !== c))),
+    ),
+  );
+}
+export function cofactorMatrix(text) {
+  const a = parseMatrix(text);
+  if (a.length !== a[0].length) throw new UserError('matrixSquareInvalid');
+  return reportMatrix(cofactors(a));
+}
+export function adjugateMatrix(text) {
+  const a = parseMatrix(text);
+  if (a.length !== a[0].length) throw new UserError('matrixSquareInvalid');
+  const c = cofactors(a);
+  return reportMatrix(c[0].map((_, n) => c.map((row) => row[n])));
+}
+export function matrixRowspace(text) {
+  const result = reducedMatrix(text);
+  return {
+    rows: result.a.length,
+    columns: result.a[0].length,
+    rank: result.rank,
+    basis: rationalOutput(result.values.slice(0, result.rank)),
+  };
+}
+export function matrixColumnspace(text) {
+  const result = reducedMatrix(text);
+  return {
+    rows: result.a.length,
+    columns: result.a[0].length,
+    rank: result.rank,
+    pivotColumns: result.pivotColumns,
+    basis: result.pivotColumns.map((c) => result.a.map((row) => String(row[c]))),
+  };
+}
+export function solveGeneralMatrix(text, right) {
+  const a = parseMatrix(text),
+    b = parseMatrix(right);
+  if (b.length !== a.length || b[0].length !== 1) throw new UserError('matrixVectorInvalid');
+  const columns = a[0].length;
+  const reduced = rationalElimination(
+    a.map((row, n) => [...row, b[n][0]]),
+    columns,
+  );
+  if (
+    reduced.values.some(
+      (row) => row.slice(0, columns).every((v) => v.n === 0n) && row[columns].n !== 0n,
+    )
+  )
+    return { rows: a.length, columns, rank: reduced.rank, status: 'inconsistent' };
+  const pivotColumns = reduced.values
+    .slice(0, reduced.rank)
+    .map((row) => row.slice(0, columns).findIndex((v) => v.n !== 0n));
+  const particular = Array.from({ length: columns }, () => fraction(0n));
+  pivotColumns.forEach((pivot, row) => {
+    particular[pivot] = reduced.values[row][columns];
+  });
+  const nullspace = matrixNullspace(text);
+  return {
+    rows: a.length,
+    columns,
+    rank: reduced.rank,
+    status: nullspace.nullity ? 'infinite' : 'unique',
+    particular: rationalOutput([particular])[0],
+    freeColumns: nullspace.freeColumns,
+    basis: nullspace.basis,
+  };
+}

@@ -1,13 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { openDatabase } from '../src/database/index.js';
-test('all27 schema migrations apply once in order with foreign-key integrity and transactional new tables', () => {
+test('all33 schema migrations apply once in order with foreign-key integrity and transactional new tables', () => {
   const db = openDatabase(':memory:');
   try {
     const rows = db.prepare('SELECT version FROM schema_migrations ORDER BY version').all();
     assert.deepEqual(
       rows.map((r) => r.version),
-      Array.from({ length: 27 }, (_, n) => n + 1),
+      Array.from({ length: 33 }, (_, n) => n + 1),
     );
     assert.deepEqual(db.pragma('foreign_key_check'), []);
     assert.equal(db.pragma('integrity_check', { simple: true }), 'ok');

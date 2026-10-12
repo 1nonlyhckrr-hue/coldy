@@ -2,7 +2,7 @@
 
 ## Installed Luna commands
 
-50 top-level commands, 505 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+58 top-level commands, 555 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -50,9 +50,23 @@
 | /automation shift | Confirmed pending nextsend offset +/- minutes;repeat interval/body/channel kept. | Local mock/unit only |
 | /automation stoprepeats | Make all pending repeats one-time;next due/body/channel preserved,sending untouched. | Local mock/unit only |
 | /automation upcoming | Privately inspect pending sends ordered by time;no content or sending. | Local mock/unit only |
+| /autorole add | Configure safe role for future human/bot joins,max10perkind;requires member events. | Local mock/unit only |
+| /autorole config | Private saved human/bot role policies;not native grants or current member proof. | Local mock/unit only |
+| /autorole remove | Remove exact saved role policy;does not remove existing member roles. | Local mock/unit only |
+| /autorole reset | Clear human/bot/all policies only;existing member roles and receipts unchanged. | Local mock/unit only |
+| /react add | Set one singleword trigger with1-10distinct emojiJSONstrings,max10rules;futuremessagesonly. | Local mock/unit only |
+| /react list | Private saved trigger/emojiJSON,not native reactions proof. | Local mock/unit only |
+| /react remove | Remove one literal singleword rule;existing reactions unchanged. | Local mock/unit only |
+| /react reset | Clear all auto-reaction rules only;existing reactions and receipts unchanged. | Local mock/unit only |
 | /schedulecleanup cancel | Cancel pending schedules in one stored destination;unknown/in-flight left alone. | Local mock/unit only |
 | /schedulecleanup erasefinished | Erase done/cancelled text in one stored destination;pending/unknown/in-flight kept. | Local mock/unit only |
 | /schedulecleanup stoprepeats | Make pending repeats in one stored destination one-time;next sends still happen. | Local mock/unit only |
+| /antibot add | Enable bot-message deletion in one text channel,max25;explicit confirm required. | Local mock/unit only |
+| /antibot config | Private saved channel and bot whitelist IDs;not live deletion proof. | Local mock/unit only |
+| /antibot remove | Stop future bot-message deletion in one channel;submitted effects may finish. | Local mock/unit only |
+| /antibot reset | Clear channels and whitelist;existing receipts/messages untouched. | Local mock/unit only |
+| /antibot wladd | Whitelist one current bot member,max100;Luna always exempt. | Local mock/unit only |
+| /antibot wlremove | Remove one exact stored bot ID,including departed bots. | Local mock/unit only |
 | /automod clearexempt | Clear role exemptions;if enabled,future messages by these roles may be moderated. | Local mock/unit only |
 | /automod clearignored | Clear ignored channels;if enabled,future messages there may be moderated. | Local mock/unit only |
 | /automod clearwords | Confirmed remove all storedliteralblockedwords;other rules/settings kept. | Local mock/unit only |
@@ -78,6 +92,15 @@
 | /automod wordadd | Add a literal word/phrase to the filter. | Local mock/unit only |
 | /automod wordlist | Privately inspect twenty stored literal phrases per page. | Local mock/unit only |
 | /automod wordremove | Remove a literal filtered word/phrase. | Local mock/unit only |
+| /media bypassadd | Exempt one confirmed current human member,max100saved bypasses. | Local mock/unit only |
+| /media bypassremove | Remove one exact stored bypass member ID,including departed members. | Local mock/unit only |
+| /media bypassshow | Private saved bypass IDs only,not native membership proof. | Local mock/unit only |
+| /media config | Private saved media policy,bypasses count and runtime caveats. | Local mock/unit only |
+| /media remove | Disable future attachment-only deletion;already submitted deletion may finish. | Local mock/unit only |
+| /media setup | Enable one normaltextchannel attachment-only policy;explicit confirm required. | Local mock/unit only |
+| /mentionguard off | Disable protected-member mention timeouts;existing timeout unchanged. | Local mock/unit only |
+| /mentionguard set | Enable fourth direct-mention-message timeout in10minutes;explicit1s-28d duration. | Local mock/unit only |
+| /mentionguard status | Private saved policy and last result;not native timeout proof. | Local mock/unit only |
 | /autoresponder clone | Copy response/mode/cooldown into a new paused rule;no send or replay history copy. | Local mock/unit only |
 | /autoresponder config | List stored trigger configuration,optionally filtered by enabled state. | Local mock/unit only |
 | /autoresponder cooldown | Change one stored trigger cooldown10-3600s;last-send/replay history retained. | Local mock/unit only |
@@ -247,8 +270,11 @@
 | /moderation warn | warn: one member, checked and recorded. | Local mock/unit only |
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
 | /nickname | Confirmed one-member nickname update or explicit reset,no bulk changes. | Local mock/unit only |
+| /role add | Confirmed onehuman safe role add,no managed/panel/autorole/selfcreated roles. | Local mock/unit only |
 | /role color | CurrentManageRoles/hierarchy safeexistingrole color,no assignments/permissionchange. | Local mock/unit only |
+| /role create | Confirmed unassigned zero-permission role create,no member assignment. | Local mock/unit only |
 | /role mentionable | CurrentManageRoles/hierarchy safeexistingrole mentionable,no assignments/permissionchange. | Local mock/unit only |
+| /role remove | Confirmed onehuman safe role remove,no managed/panel/autorole/selfcreated roles. | Local mock/unit only |
 | /role rename | CurrentManageRoles/hierarchy safeexistingrole rename,no assignments/permissionchange. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode,0 disables,no bulk changes. | Local mock/unit only |
 | /music clear | Clear waiting tracks only;current track keeps playing. | Local mock/unit only |
@@ -368,17 +394,32 @@
 | /channel voicelimit | Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness. | Local mock/unit only |
 | /channel voiceregionauto | Confirmedempty normalvoicechannel setting,currentManageChannels+gatewayreadiness. | Local mock/unit only |
 | /emojiinfo | Read one current server custom emoji,no uploader or role enumeration. | Local mock/unit only |
+| /enlarge | Private high-resolution current guild custom emoji image;no foreign emoji/Unicode rendering. | Local mock/unit only |
+| /list admins | Manager-only current admins member snapshot,ten/page,no presences or storage. | Local mock/unit only |
+| /list bans | Manager+BanMembers-only current bans,max100perfetch,no reasons;optional after-ID. | Local mock/unit only |
+| /list boosters | Manager-only current boosters member snapshot,ten/page,no presences or storage. | Local mock/unit only |
+| /list bots | Manager-only current bots member snapshot,ten/page,no presences or storage. | Local mock/unit only |
 | /list emojis | List current server emojis,ten per page with optional literal name search. | Local mock/unit only |
+| /list inrole | Manager-only fresh members holding one confirmed role,ten/page,no presences/storage. | Local mock/unit only |
 | /list roles | List current server roles,ten per page with optional literal name search. | Local mock/unit only |
 | /list stickers | List current server stickers,ten per page with optional literal name search. | Local mock/unit only |
 | /matrix add | Add equalshape1-4integer matrices JSON;exact output decimalstrings. | Local mock/unit only |
+| /matrix adjugate | Transpose cofactor matrix,not inverse;square1-4integers,singular accepted. | Local mock/unit only |
+| /matrix cofactor | Signed minors of square1-4integer matrix;1by1cofactor is1,singular accepted. | Local mock/unit only |
+| /matrix columnspace | Independent original integer column vectors,zero-based pivot columns. | Local mock/unit only |
 | /matrix determinant | Exact determinant of square1-4integer matrix JSON;result decimal string. | Local mock/unit only |
 | /matrix inverse | Exact rational inverse of square1-4integer matrix;singular rejected. | Local mock/unit only |
 | /matrix multiply | Multiply compatible1-4by1-4integer matrices JSON;exact outputs decimal strings. | Local mock/unit only |
+| /matrix nullspace | Exact rational nullspace basis vectors;zero-based free columns,no tolerance. | Local mock/unit only |
 | /matrix power | Square integer matrix power0-10,0identity;exact output decimalstrings. | Local mock/unit only |
 | /matrix rank | Exact rational rank of1-4by1-4integer matrix,no floatingpoint tolerance. | Local mock/unit only |
+| /matrix rowspace | Exact rational independent rowspace basis from reduced row echelon form. | Local mock/unit only |
+| /matrix rref | Exact rational reduced row echelon form with zero-based pivot columns. | Local mock/unit only |
 | /matrix scale | Multiply each matrix integer by explicit bounded scalar;exact output decimalstrings. | Local mock/unit only |
 | /matrix solve | Solve square1-4integer system with one-column RHS;unique rational solution only. | Local mock/unit only |
+| /matrix solvegeneral | Rectangular1-4integer system:inconsistent/unique/infinite rational affine solution. | Local mock/unit only |
+| /matrix subtract | Subtract equalshape1-4integer matrices;exact decimalstrings. | Local mock/unit only |
+| /matrix trace | Exact trace of square1-4integer matrix;decimalstring output. | Local mock/unit only |
 | /matrix transpose | Transpose1-4by1-4integer matrix JSON;exact integer outputs are decimal strings. | Local mock/unit only |
 | /membercount | Fresh approximate server member/presence counts,no member enumeration. | Local mock/unit only |
 | /poll | Manage Server: publish a native Discord poll with2-10 answers. | Local mock/unit only |
@@ -449,6 +490,12 @@
 | /tools uniquelines | Private exact-line deduplication TXT,first occurrence order kept,no trimming. | Local mock/unit only |
 | /tools urlcomponent | Private URI component encoding/decoding TXT,not a URL fetch or form parser. | Local mock/unit only |
 | /userinfo | Show public user information. | Local mock/unit only |
+| /vector cross | Exact ordered right-hand3Dcross product of integer vectors JSON;decimalstrings. | Local mock/unit only |
+| /vector distancesquared | Exact squared Euclidean distance of equal-length1-4integer vectors;not square root. | Local mock/unit only |
+| /vector dot | Exact dot product of equal-length1-4integer vectors JSON;decimalstring output. | Local mock/unit only |
+| /vector normsquared | Exact squared Euclidean norm of1-4integer vector JSON;not square root/normalization. | Local mock/unit only |
+| /vector project | Exact rational projection of left onto nonzero right vector;no unit normalization. | Local mock/unit only |
+| /vector reject | Exact rational perpendicular remainder left minus projection onto nonzero right. | Local mock/unit only |
 | /guildtag exportconfig | ManageRoles:private stored reward role ID/null JSON,no live validation. | Local mock/unit only |
 | /guildtag exportgrants | ManageRoles:private first100 stored userID/roleID/stateJSON,total/truncation,no liveclaims. | Local mock/unit only |
 | /guildtag exportmine | Private JSON of only your stored role grant/state,null if absent,no live identity claim. | Local mock/unit only |
@@ -461,6 +508,9 @@
 | /guildtag show | Show tag reward configuration. | Local mock/unit only |
 | /guildtag status | Privately inspect only your stored tag-grant state;no live identity claim. | Local mock/unit only |
 | /guildtag summary | ManageRoles:private stored grant counts bystate,no identities/native access claims. | Local mock/unit only |
+| /vcrole add | Configure one safe role for future human voice joins;existing memberships untouched. | Local mock/unit only |
+| /vcrole remove | Disable future grants;existing Luna-owned grants retain future-disconnect cleanup. | Local mock/unit only |
+| /vcrole show | Private saved policy and retained grant counts,not native voice/membership proof. | Local mock/unit only |
 | /voice deafen | deafen: one current voice member. | Local mock/unit only |
 | /voice disconnect | disconnect: one current voice member. | Local mock/unit only |
 | /voice move | move: one current voice member. | Local mock/unit only |

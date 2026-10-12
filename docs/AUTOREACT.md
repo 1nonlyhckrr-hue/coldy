@@ -1,0 +1,9 @@
+# AutoReact
+
+Reference-led behavior: https://docs.zynrax.site/configuration/autoreact . Original Luna implementation. Native Discord acceptance pending.
+
+`/react add trigger emojis`:one word1-50letters/digits/underscore,NFKC+lowercase,JSONarray1-10distinct emoji strings. Up to10triggers/guild. Unicode accepts one emoji grapheme sequence from bounded reviewed syntax;custom strings must be exact current-guild emoji IDs forced native validated. Existing trigger replaced;not an additional path. Requires current Manage Server/message events. `remove trigger`,`list`,`reset`:private saved policy changes,existing reactions untouched.
+
+Future fresh human messages in normal text channels only;not threads/edits/bots/webhooks/system/stale messages. Match literal NFKC/lowercase whole-word tokens,not substring/regex. Multiple matching rules share duplicate emoji once. Forced exact bot/channel/current native message/customemoji checks,View/ReadHistory/AddReactions and policyrevision/content/runtime guards before persistent per-message+emoji reservation. Native reaction uses one submission;fresh message fetch and exact reaction.me verifies completion. Ambiguous effects become uncertain,no retry for that emoji. Partial multiemoji completion remains possible;no rollback/removal. Existing bot reaction may be idempotent through Discord but receipt still records the submission outcome. Receipts expire after30days;eventsolder5minutes cannot replay. Reserved restart becomes uncertain.
+
+No alerts/DMs/member data enumeration/message content storage. Trigger/emoji policies and bounded replay receipts only. Unicode support is syntactic,not a guarantee every client renders identically. Command config private3locale/no-ping. Native permission/rate-limit/customemojiavailability/gateway/visual acceptance and recovery remain unverified.

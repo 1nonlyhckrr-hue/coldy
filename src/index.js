@@ -1,3 +1,9 @@
+import { AntiBot, createAntiBotHandler } from './services/antibot.js';
+import { AutoReactions, createAutoReactHandler } from './services/autoreact.js';
+import { MediaPolicy, createMediaHandler } from './services/mediaPolicy.js';
+import { VoiceRoles, createVoiceRoleHandler } from './services/vcrole.js';
+import { AutoRoles, createAutoRoleHandler } from './services/autorole.js';
+import { MentionGuard, createMentionGuardHandler } from './services/mentionGuard.js';
 import { MusicQueues } from './services/musicQueue.js';
 import { YouTubeLavalinkAdapter } from './services/musicRuntime.js';
 import { VoiceReadiness } from './services/voiceReadiness.js';
@@ -73,7 +79,10 @@ if (config.musicNode) {
 context.eventLogs = new EventLogDelivery(db);
 context.eventLogs.recover();
 context.eventLogs.cleanup();
+context.voiceRoles = new VoiceRoles(db);
+context.voiceRoles.recover();
 context.voiceReadiness = new VoiceReadiness();
+if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, createVoiceRoleHandler(context));
 client.on(Events.ShardDisconnect, (_event, id) => context.voiceReadiness.disconnected(id));
 client.on(Events.ShardReconnecting, (id) => context.voiceReadiness.disconnected(id));
 context.voiceMaster = new VoiceMaster(db);
@@ -86,6 +95,9 @@ if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
 context.messageRanks = new MessageRanks(db);
 context.messageRanks.cleanup();
+context.autoroles = new AutoRoles(db);
+context.autoroles.recover();
+context.autoroles.cleanup();
 context.customRoles = new CustomRoles(db);
 context.customRoles.recoverCreation();
 context.commandRestrictions = new CommandRestrictions(db);
@@ -94,19 +106,38 @@ context.autoresponders.recover();
 context.autoresponders.cleanup();
 context.afk = new AfkStates(db);
 context.afk.cleanup();
+context.autoReactions = new AutoReactions(db);
+context.autoReactions.recover();
+context.autoReactions.cleanup();
+context.antiBot = new AntiBot(db);
+context.antiBot.recover();
+context.antiBot.cleanup();
+context.mediaPolicy = new MediaPolicy(db);
+context.mediaPolicy.recover();
+context.mediaPolicy.cleanup();
+context.mentionGuard = new MentionGuard(db);
+context.mentionGuard.recover();
 context.automod = new AutoMod(db);
 context.automod.recover();
 context.automod.cleanup();
 if (config.messageEventsEnabled) {
-  const autoMod = createAutoModHandler(context),
+  const antibot = createAntiBotHandler(context),
+    react = createAutoReactHandler(context),
+    media = createMediaHandler(context),
+    mentionGuard = createMentionGuardHandler(context),
+    autoMod = createAutoModHandler(context),
     respond = createAutoresponderHandler(context),
     rank = createMessageRankHandler(context),
     afk = createAfkHandler(context);
   client.on(Events.MessageCreate, async (message) => {
+    if (await antibot(message)) return;
+    if (await media(message)) return;
+    if (await mentionGuard(message)) return;
     rank(message);
     if (!(await autoMod(message))) {
       await afk(message);
       await respond(message);
+      await react(message);
     }
   });
 }
@@ -134,6 +165,7 @@ context.guildConfig = new GuildConfig(context.settings);
 context.localization = new Localization(context.guildConfig);
 context.serverLogs = new ServerLogs(context.guildConfig, logger);
 if (config.memberEventsEnabled) {
+  client.on(Events.GuildMemberAdd, createAutoRoleHandler(context));
   client.on(Events.GuildMemberAdd, createMemberMessageHandler(context, 'welcome'));
   client.on(Events.GuildMemberRemove, createMemberMessageHandler(context, 'goodbye'));
 }
