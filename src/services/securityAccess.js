@@ -10,6 +10,7 @@ export const SECURITY_FEATURES = [
   'joinraid',
   'antinuke',
   'verification',
+  'activity',
 ];
 export class SecurityAccess {
   constructor(db) {

@@ -284,6 +284,12 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES (46, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=47').get()) {
+      db.exec(
+        'CREATE TABLE bot_activity(id INTEGER PRIMARY KEY CHECK(id=1),type TEXT NOT NULL,text TEXT NOT NULL,url TEXT);',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (47, ?)').run(Date.now());
+    }
   })();
   return db;
 }

@@ -1204,5 +1204,12 @@
   "verifyItem_dog": "dog 🐶",
   "verifyItem_moon": "moon 🌙",
   "verifyItem_star": "star ⭐",
-  "verifyItem_balloon": "balloon 🎈"
+  "verifyItem_balloon": "balloon 🎈",
+  "activityDenied": "Bot activity sirf bot owner ya /owner allow se permission paye users badal sakte hain.",
+  "activityInvalid": "Status text likho.",
+  "activityUrl": "Streaming ke liye https Twitch ya YouTube link chahiye.",
+  "activitySet": "Bot activity set: {type} {text}. Ye save hai aur restart ke baad bhi lagu hogi.",
+  "activityCleared": "Bot activity hata di gayi.",
+  "activityShow": "Saved activity: {type} {text}",
+  "activityNone": "Koi custom activity saved nahi hai."
 }

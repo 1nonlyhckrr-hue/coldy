@@ -1204,5 +1204,12 @@
   "verifyItem_dog": "dog 🐶",
   "verifyItem_moon": "moon 🌙",
   "verifyItem_star": "star ⭐",
-  "verifyItem_balloon": "balloon 🎈"
+  "verifyItem_balloon": "balloon 🎈",
+  "activityDenied": "Only the bot owner or users the owner allowed with /owner allow can change the bot activity.",
+  "activityInvalid": "Enter some status text.",
+  "activityUrl": "Streaming needs a https Twitch or YouTube link.",
+  "activitySet": "Bot activity set: {type} {text}. It is saved and re-applied after restarts.",
+  "activityCleared": "Bot activity cleared.",
+  "activityShow": "Saved activity: {type} {text}",
+  "activityNone": "No custom activity is saved."
 }

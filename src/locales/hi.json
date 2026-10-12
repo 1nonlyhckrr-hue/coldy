@@ -1204,5 +1204,12 @@
   "verifyItem_dog": "कुत्ता 🐶",
   "verifyItem_moon": "चांद 🌙",
   "verifyItem_star": "तारा ⭐",
-  "verifyItem_balloon": "गुब्बारा 🎈"
+  "verifyItem_balloon": "गुब्बारा 🎈",
+  "activityDenied": "बॉट एक्टिविटी सिर्फ बॉट ओनर या /owner allow से अनुमति पाए यूज़र बदल सकते हैं।",
+  "activityInvalid": "स्टेटस टेक्स्ट लिखें।",
+  "activityUrl": "स्ट्रीमिंग के लिए https Twitch या YouTube लिंक चाहिए।",
+  "activitySet": "बॉट एक्टिविटी सेट: {type} {text}। यह सेव है और रीस्टार्ट के बाद भी लागू होगी।",
+  "activityCleared": "बॉट एक्टिविटी हटा दी गई।",
+  "activityShow": "सेव की हुई एक्टिविटी: {type} {text}",
+  "activityNone": "कोई कस्टम एक्टिविटी सेव नहीं है।"
 }

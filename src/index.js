@@ -35,6 +35,7 @@ import {
   createVerificationHandler,
   createVerificationJoinHandler,
 } from './services/verification.js';
+import { BotActivity } from './services/botActivity.js';
 import { Lockdown } from './services/lockdown.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
@@ -150,6 +151,7 @@ if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
 context.lockdown = new Lockdown(db);
 context.verification = new Verification(db);
+context.botActivity = new BotActivity(db);
 context.joinRaid = new JoinRaid(db);
 context.serverBackups = new ServerBackups(db);
 context.securityAccess = new SecurityAccess(db);
@@ -259,6 +261,7 @@ if (config.memberEventsEnabled) {
 
 client.once(Events.ClientReady, (ready) => {
   context.voiceReadiness.initialReady();
+  context.botActivity.apply(ready);
   logger.info({ botId: ready.user.id, commands: commands.size }, 'Emika ready');
   context.giveawayRunner.start();
   context.automationRunner.start();

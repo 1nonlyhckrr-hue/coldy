@@ -6,6 +6,7 @@ test('installed command names and option limits validate', async () => {
   const commands = await loadCommands();
   assert.deepEqual([...commands.keys()].sort(), [
     'about',
+    'activity',
     'afk',
     'antibot',
     'antinuke',
@@ -122,6 +123,7 @@ test('foundation and utility commands execute mock replies', async () => {
         'lockdown',
         'unlockdown',
         'verification',
+        'activity',
         'joinraid',
         'backup',
         'owner',

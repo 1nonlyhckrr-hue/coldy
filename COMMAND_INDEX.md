@@ -2,10 +2,13 @@
 
 ## Installed Emika commands
 
-73 top-level commands, 607 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+74 top-level commands, 610 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
+| /activity clear | Remove the custom activity. | Local mock/unit only |
+| /activity set | Set the bot activity. | Local mock/unit only |
+| /activity show | Show the saved activity. | Local mock/unit only |
 | /antinuke actioncounts | Private retained alert-incident counts by audit action/state,not all audit events. | Local mock/unit only |
 | /antinuke actionincidents | Latest100retainedincidents forwatchedauditactionJSON,total/truncation,no actors/sourceIDs. | Local mock/unit only |
 | /antinuke clearchannel | Stop monitoring and forget alert destination;threshold/trust/history kept. | Local mock/unit only |

@@ -1,5 +1,99 @@
 [
   {
+    "name": "activity clear",
+    "category": "antinuke",
+    "syntax": "/activity clear",
+    "description": "Remove the custom activity.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/activity.js"
+  },
+  {
+    "name": "activity set",
+    "category": "antinuke",
+    "syntax": "/activity set (type) (text) [url]",
+    "description": "Set the bot activity.",
+    "parameters": [
+      {
+        "name": "type",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "playing",
+            "value": "playing"
+          },
+          {
+            "name": "watching",
+            "value": "watching"
+          },
+          {
+            "name": "listening",
+            "value": "listening"
+          },
+          {
+            "name": "competing",
+            "value": "competing"
+          },
+          {
+            "name": "streaming",
+            "value": "streaming"
+          }
+        ]
+      },
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "maxLength": 128
+      },
+      {
+        "name": "url",
+        "required": false,
+        "type": 3,
+        "maxLength": 200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/activity.js"
+  },
+  {
+    "name": "activity show",
+    "category": "antinuke",
+    "syntax": "/activity show",
+    "description": "Show the saved activity.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/activity.js"
+  },
+  {
     "name": "antinuke actioncounts",
     "category": "antinuke",
     "syntax": "/antinuke actioncounts",
@@ -909,6 +1003,10 @@
           {
             "name": "verification",
             "value": "verification"
+          },
+          {
+            "name": "activity",
+            "value": "activity"
           }
         ]
       }
@@ -986,6 +1084,10 @@
           {
             "name": "verification",
             "value": "verification"
+          },
+          {
+            "name": "activity",
+            "value": "activity"
           }
         ]
       }

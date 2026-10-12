@@ -5,7 +5,7 @@ import { loadCommands } from '../src/services/registry.js';
 import { validateCommandOptionOrder } from '../src/services/commandValidation.js';
 test('all65registered commands recursively require required options before optional', async () => {
   const commands = [...(await loadCommands()).values()].map((c) => c.data.toJSON());
-  assert.equal(commands.length, 73);
+  assert.equal(commands.length, 74);
   assert.doesNotThrow(() => validateCommandOptionOrder(commands));
   const apply = commands.find((c) => c.name === 'jail').options.find((o) => o.name === 'apply');
   assert.deepEqual(
@@ -52,6 +52,6 @@ test('register preview validates full65command payload before output or API path
     execFileSync(process.execPath, ['scripts/register.js'], { encoding: 'utf8' }),
   );
   assert.equal(preview.mode, 'preview');
-  assert.equal(preview.commands.length, 73);
+  assert.equal(preview.commands.length, 74);
   validateCommandOptionOrder(preview.commands);
 });
