@@ -254,6 +254,18 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES (41, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=42').get()) {
+      db.exec(
+        'CREATE TABLE lockdown_state(guild_id TEXT PRIMARY KEY,started_at INTEGER NOT NULL,snapshot_json TEXT NOT NULL);',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (42, ?)').run(Date.now());
+    }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=43').get()) {
+      db.exec(
+        'CREATE TABLE security_access(guild_id TEXT NOT NULL,user_id TEXT NOT NULL,feature TEXT NOT NULL,granted_by TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(guild_id,user_id,feature));',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (43, ?)').run(Date.now());
+    }
   })();
   return db;
 }

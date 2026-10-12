@@ -1157,5 +1157,16 @@
   "antinukeHold_rolechosen": "Tamper-hold warning: the chosen punish role {target} was given dangerous permissions (by {actor}). Emika does not edit chosen roles, please check it.",
   "antinukeReleased": "Released <@{member}>. Roles given back: {restored}. Skipped (deleted or above Emika): {skipped}.",
   "antinukeReleaseGone": "That member has left the server. The quarantine record was cleared.",
-  "antinukeNotQuarantined": "That member is not quarantined by Emika."
+  "antinukeNotQuarantined": "That member is not quarantined by Emika.",
+  "lockdownConfirm": "Lockdown stops @everyone from sending messages and joining voice in every channel. Run it again with confirm:True. Undo with /unlockdown.",
+  "lockdownActive": "A lockdown is already active. Use /unlockdown first.",
+  "lockdownNotActive": "No lockdown is active.",
+  "lockdownDone": "Lockdown on. Channels locked: {locked}. Failed: {failed}. Use /unlockdown to restore the exact previous permissions.",
+  "unlockdownDone": "Lockdown ended. Channels restored: {restored}. Deleted since lockdown: {gone}.",
+  "unlockdownPartial": "Some channels could not be restored. Restored: {restored}, failed: {failed}. The lockdown record is kept, run /unlockdown again after fixing Emika's permissions.",
+  "securityDenied": "Only the bot owner, a user the bot owner allowed, or a server Administrator can use this command.",
+  "securityAccessInvalid": "Invalid member or feature.",
+  "securityAllowed": "<@{user}> may now use: {feature}.",
+  "securityRevoked": "Removed {count} delegation(s) for <@{user}>.",
+  "securityList": "Delegated security access in this server:"
 }

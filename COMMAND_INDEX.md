@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-67 top-level commands, 591 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+70 top-level commands, 596 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -29,6 +29,11 @@
 | /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
 | /antinuke trustlist | Private stored trusteduser IDs only,no native membership/permission claim. | Local mock/unit only |
 | /antinuke unresolved | Privately inspect stored unresolved alert metadata;no retry or punishment. | Local mock/unit only |
+| /lockdown | Panic mode: stop @everyone from sending messages or joining voice. Undo: /unlockdown. | Local mock/unit only |
+| /owner allow | Let a member use a security feature (default: nobody is delegated). | Local mock/unit only |
+| /owner list | Show delegated users in this server. | Local mock/unit only |
+| /owner revoke | Remove a delegation (one feature, or everything if feature is empty). | Local mock/unit only |
+| /unlockdown | End /lockdown and restore the exact previous channel permissions. | Local mock/unit only |
 | /automation cancel | Cancel a pending or uncertain schedule. | Local mock/unit only |
 | /automation cancelchannel | Cancel pending schedules for stored channel ID; sending/uncertain/history untouched. | Local mock/unit only |
 | /automation cancelpending | Confirm cancellation of all pending guild schedules; in-flight/uncertain untouched. | Local mock/unit only |

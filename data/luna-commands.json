@@ -624,6 +624,144 @@
     "source": "src/commands/antinuke/antinuke.js"
   },
   {
+    "name": "lockdown",
+    "category": "antinuke",
+    "syntax": "/lockdown (confirm)",
+    "description": "Panic mode: stop @everyone from sending messages or joining voice. Undo: /unlockdown.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/lockdown.js"
+  },
+  {
+    "name": "owner allow",
+    "category": "antinuke",
+    "syntax": "/owner allow (user) (feature)",
+    "description": "Let a member use a security feature (default: nobody is delegated).",
+    "parameters": [
+      {
+        "name": "user",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "feature",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "all",
+            "value": "all"
+          },
+          {
+            "name": "lockdown",
+            "value": "lockdown"
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/owner.js"
+  },
+  {
+    "name": "owner list",
+    "category": "antinuke",
+    "syntax": "/owner list",
+    "description": "Show delegated users in this server.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/owner.js"
+  },
+  {
+    "name": "owner revoke",
+    "category": "antinuke",
+    "syntax": "/owner revoke (user) [feature]",
+    "description": "Remove a delegation (one feature, or everything if feature is empty).",
+    "parameters": [
+      {
+        "name": "user",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "feature",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "all",
+            "value": "all"
+          },
+          {
+            "name": "lockdown",
+            "value": "lockdown"
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/owner.js"
+  },
+  {
+    "name": "unlockdown",
+    "category": "antinuke",
+    "syntax": "/unlockdown",
+    "description": "End /lockdown and restore the exact previous channel permissions.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/unlockdown.js"
+  },
+  {
     "name": "automation cancel",
     "category": "automations",
     "syntax": "/automation cancel (id)",

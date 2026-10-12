@@ -1157,5 +1157,16 @@
   "antinukeHold_rolechosen": "टैम्पर-होल्ड चेतावनी: चुने गए punish रोल {target} को खतरनाक अनुमतियां दी गईं ({actor} द्वारा)। Emika चुने हुए रोल नहीं बदलता, कृपया जांचें।",
   "antinukeReleased": "<@{member}> को रिलीज़ किया। वापस दिए रोल: {restored}। छोड़े गए (हटे हुए या Emika से ऊपर): {skipped}।",
   "antinukeReleaseGone": "यह सदस्य सर्वर छोड़ चुका है। क्वारंटीन रिकॉर्ड साफ़ किया गया।",
-  "antinukeNotQuarantined": "यह सदस्य Emika द्वारा क्वारंटीन में नहीं है।"
+  "antinukeNotQuarantined": "यह सदस्य Emika द्वारा क्वारंटीन में नहीं है।",
+  "lockdownConfirm": "लॉकडाउन हर चैनल में @everyone के मैसेज भेजने और वॉइस जॉइन करने को रोकता है। confirm:True के साथ फिर चलाएं। /unlockdown से वापस करें।",
+  "lockdownActive": "लॉकडाउन पहले से चालू है। पहले /unlockdown चलाएं।",
+  "lockdownNotActive": "कोई लॉकडाउन चालू नहीं है।",
+  "lockdownDone": "लॉकडाउन चालू। लॉक हुए चैनल: {locked}। विफल: {failed}। पुरानी अनुमतियां ठीक वैसी ही लौटाने के लिए /unlockdown चलाएं।",
+  "unlockdownDone": "लॉकडाउन खत्म। लौटाए गए चैनल: {restored}। लॉकडाउन के बाद हटे चैनल: {gone}।",
+  "unlockdownPartial": "कुछ चैनल वापस नहीं हो सके। लौटे: {restored}, विफल: {failed}। रिकॉर्ड रखा गया है, Emika की अनुमतियां ठीक करके /unlockdown फिर चलाएं।",
+  "securityDenied": "यह कमांड सिर्फ बॉट ओनर, बॉट ओनर द्वारा अनुमति प्राप्त यूज़र, या सर्वर Administrator चला सकता है।",
+  "securityAccessInvalid": "अमान्य सदस्य या फ़ीचर।",
+  "securityAllowed": "<@{user}> अब यह चला सकता है: {feature}।",
+  "securityRevoked": "<@{user}> के लिए {count} अनुमति हटाई गई।",
+  "securityList": "इस सर्वर में दी गई सुरक्षा अनुमतियां:"
 }

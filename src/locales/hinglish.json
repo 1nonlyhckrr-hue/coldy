@@ -1157,5 +1157,16 @@
   "antinukeHold_rolechosen": "Tamper-hold warning: chuna hua punish role {target} ko dangerous permissions di gayi ({actor} ne). Emika chune hue role edit nahi karta, please check karo.",
   "antinukeReleased": "<@{member}> ko release kiya. Wapas diye roles: {restored}. Skip kiye (deleted ya Emika se upar): {skipped}.",
   "antinukeReleaseGone": "Ye member server chhod chuka hai. Quarantine record clear kar diya.",
-  "antinukeNotQuarantined": "Ye member Emika ke quarantine me nahi hai."
+  "antinukeNotQuarantined": "Ye member Emika ke quarantine me nahi hai.",
+  "lockdownConfirm": "Lockdown har channel me @everyone ko message bhejne aur voice join karne se rokta hai. confirm:True ke saath phir chalao. /unlockdown se wapas karo.",
+  "lockdownActive": "Lockdown pehle se chalu hai. Pehle /unlockdown chalao.",
+  "lockdownNotActive": "Koi lockdown chalu nahi hai.",
+  "lockdownDone": "Lockdown chalu. Lock hue channels: {locked}. Fail: {failed}. Purani permissions bilkul waisi hi wapas karne ke liye /unlockdown chalao.",
+  "unlockdownDone": "Lockdown khatam. Restore hue channels: {restored}. Lockdown ke baad delete hue: {gone}.",
+  "unlockdownPartial": "Kuch channels restore nahi ho paye. Restored: {restored}, fail: {failed}. Record rakha gaya hai, Emika ki permissions theek karke /unlockdown phir chalao.",
+  "securityDenied": "Ye command sirf bot owner, bot owner se allowed user, ya server Administrator chala sakta hai.",
+  "securityAccessInvalid": "Invalid member ya feature.",
+  "securityAllowed": "<@{user}> ab ye chala sakta hai: {feature}.",
+  "securityRevoked": "<@{user}> ke liye {count} permission hata di gayi.",
+  "securityList": "Is server me di gayi security permissions:"
 }
