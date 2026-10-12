@@ -901,6 +901,14 @@
           {
             "name": "joinraid",
             "value": "joinraid"
+          },
+          {
+            "name": "antinuke",
+            "value": "antinuke"
+          },
+          {
+            "name": "verification",
+            "value": "verification"
           }
         ]
       }
@@ -970,6 +978,14 @@
           {
             "name": "joinraid",
             "value": "joinraid"
+          },
+          {
+            "name": "antinuke",
+            "value": "antinuke"
+          },
+          {
+            "name": "verification",
+            "value": "verification"
           }
         ]
       }
@@ -1003,6 +1019,98 @@
     "cooldownMs": 3000,
     "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/antinuke/unlockdown.js"
+  },
+  {
+    "name": "verification config",
+    "category": "antinuke",
+    "syntax": "/verification config",
+    "description": "Show the current settings.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/verification.js"
+  },
+  {
+    "name": "verification disable",
+    "category": "antinuke",
+    "syntax": "/verification disable",
+    "description": "Turn verification off (roles and channel hiding are kept).",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/verification.js"
+  },
+  {
+    "name": "verification setup",
+    "category": "antinuke",
+    "syntax": "/verification setup (channel) [role] [mode] [kick-on-fail] [attempts]",
+    "description": "Turn on verification, hide other channels from new members and post the panel.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": true,
+        "type": 7
+      },
+      {
+        "name": "role",
+        "required": false,
+        "type": 8
+      },
+      {
+        "name": "mode",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "challenge",
+            "value": "challenge"
+          },
+          {
+            "name": "button",
+            "value": "button"
+          }
+        ]
+      },
+      {
+        "name": "kick-on-fail",
+        "required": false,
+        "type": 5
+      },
+      {
+        "name": "attempts",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 10
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/verification.js"
   },
   {
     "name": "automation cancel",

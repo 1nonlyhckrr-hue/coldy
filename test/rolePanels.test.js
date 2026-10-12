@@ -856,7 +856,7 @@ test('schema25 undirected click receipts migrate to unknown with terminal and un
       db.prepare("SELECT action FROM role_click_receipts WHERE interaction_id='new'").get().action,
       'remove',
     );
-    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 45);
+    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 46);
   } finally {
     db.close();
     rmSync(dir, { recursive: true, force: true });

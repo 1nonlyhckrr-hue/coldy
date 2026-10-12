@@ -278,6 +278,12 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES (45, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=46').get()) {
+      db.exec(
+        'CREATE TABLE verification_config(guild_id TEXT PRIMARY KEY,settings_json TEXT NOT NULL);',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (46, ?)').run(Date.now());
+    }
   })();
   return db;
 }

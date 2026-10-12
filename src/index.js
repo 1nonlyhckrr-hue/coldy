@@ -30,6 +30,11 @@ import { GuildTags } from './services/guildTags.js';
 import { SecurityAccess } from './services/securityAccess.js';
 import { ServerBackups } from './services/serverBackup.js';
 import { JoinRaid, createJoinRaidHandler } from './services/joinRaid.js';
+import {
+  Verification,
+  createVerificationHandler,
+  createVerificationJoinHandler,
+} from './services/verification.js';
 import { Lockdown } from './services/lockdown.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
@@ -144,6 +149,7 @@ context.antinuke.cleanup();
 if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
 context.lockdown = new Lockdown(db);
+context.verification = new Verification(db);
 context.joinRaid = new JoinRaid(db);
 context.serverBackups = new ServerBackups(db);
 context.securityAccess = new SecurityAccess(db);
@@ -223,11 +229,13 @@ context.handleInteractionError = (error, i, logger) =>
   handleInteractionError(error, i, logger, context.localization);
 const roleButtonHandler = createRoleButtonHandler(context);
 client.on(Events.InteractionCreate, roleButtonHandler);
+client.on(Events.InteractionCreate, createVerificationHandler(context));
 context.guildConfig = new GuildConfig(context.settings);
 context.localization = new Localization(context.guildConfig);
 context.serverLogs = new ServerLogs(context.guildConfig, logger);
 if (config.memberEventsEnabled) {
   client.on(Events.GuildMemberAdd, createJoinRaidHandler(context));
+  client.on(Events.GuildMemberAdd, createVerificationJoinHandler(context));
   client.on(Events.GuildMemberAdd, createAutoRoleHandler(context));
   client.on(Events.GuildMemberAdd, createMemberMessageHandler(context, 'welcome'));
   client.on(Events.GuildMemberRemove, createMemberMessageHandler(context, 'goodbye'));

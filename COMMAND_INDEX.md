@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-72 top-level commands, 604 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+73 top-level commands, 607 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -42,6 +42,9 @@
 | /owner list | Show delegated users in this server. | Local mock/unit only |
 | /owner revoke | Remove a delegation (one feature, or everything if feature is empty). | Local mock/unit only |
 | /unlockdown | End /lockdown and restore the exact previous channel permissions. | Local mock/unit only |
+| /verification config | Show the current settings. | Local mock/unit only |
+| /verification disable | Turn verification off (roles and channel hiding are kept). | Local mock/unit only |
+| /verification setup | Turn on verification, hide other channels from new members and post the panel. | Local mock/unit only |
 | /automation cancel | Cancel a pending or uncertain schedule. | Local mock/unit only |
 | /automation cancelchannel | Cancel pending schedules for stored channel ID; sending/uncertain/history untouched. | Local mock/unit only |
 | /automation cancelpending | Confirm cancellation of all pending guild schedules; in-flight/uncertain untouched. | Local mock/unit only |

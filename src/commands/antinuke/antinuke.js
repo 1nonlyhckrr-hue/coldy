@@ -7,6 +7,7 @@ import {
 } from 'discord.js';
 import { validatePunishRole, releaseQuarantine } from '../../services/antinuke.js';
 import { validateOutputChannel } from '../../services/guildConfig.js';
+import { requireSecurityAccess } from '../../services/securityAccess.js';
 import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
@@ -380,11 +381,13 @@ export default {
       c.antinuke.setPunishRole(i.guildId, chosen?.id ?? null);
       text = t('antinukeSaved');
     } else if (sub === 'tamperhold') {
+      await requireSecurityAccess(i, c, 'antinuke');
       await authorize();
       c.antinuke.setTamperHold(i.guildId, i.options.getBoolean('enabled', true));
       text = t('antinukeSaved');
     } else if (sub === 'release') {
       const user = i.options.getUser('member', true);
+      await requireSecurityAccess(i, c, 'antinuke');
       await authorize();
       const out = await releaseQuarantine(i.guild, c.antinuke, user.id);
       text = t(out.gone ? 'antinukeReleaseGone' : 'antinukeReleased', {
