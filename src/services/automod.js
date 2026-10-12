@@ -14,6 +14,9 @@ const schema = z
         links: z.boolean().default(false),
         mentions: z.boolean().default(false),
         caps: z.boolean().default(false),
+        // Opt-in link safety, checked against free public blocklists.
+        phishing: z.boolean().default(false),
+        nsfwlinks: z.boolean().default(false),
         spam: z.boolean().default(false),
       })
       .strict()
@@ -40,6 +43,7 @@ export class AutoMod {
     this.db = db;
     this.now = now;
     this.recent = new Map();
+    this.linkSafety = null;
   }
   get(guildId) {
     const r = this.db
@@ -188,6 +192,8 @@ export class AutoMod {
       /(?:discord\.gg|discord(?:app)?\.com\/invite)\/[a-z0-9-]+/iu.test(text)
     )
       return 'invites';
+    if (settings.rules.phishing && this.linkSafety?.check(text, 'phishing')) return 'phishing';
+    if (settings.rules.nsfwlinks && this.linkSafety?.check(text, 'nsfw')) return 'nsfwlinks';
     if (settings.rules.links && /https?:\/\/[^\s]+/iu.test(text)) return 'links';
     const mentions =
       (message.mentions?.users?.size ?? 0) +
@@ -230,7 +236,9 @@ export class AutoMod {
     const now = this.now();
     if (!Number.isSafeInteger(now) || now < 0) throw new TypeError('Invalid automod clock');
     if (
-      !['words', 'invites', 'links', 'mentions', 'caps', 'spam'].includes(rule) ||
+      !['words', 'invites', 'links', 'mentions', 'caps', 'spam', 'phishing', 'nsfwlinks'].includes(
+        rule,
+      ) ||
       !['warn', 'delete', 'timeout'].includes(action)
     )
       throw new TypeError('Invalid automod reservation');

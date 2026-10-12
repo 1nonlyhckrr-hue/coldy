@@ -1,3 +1,4 @@
+import { join, dirname } from 'node:path';
 import { HelpNavigation, createHelpNavigationHandler } from './services/helpNavigation.js';
 import { BulkTimeout } from './services/bulkTimeout.js';
 import { RankRewards } from './services/rankRewards.js';
@@ -34,6 +35,7 @@ import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
 import { CustomRoles } from './services/customRoles.js';
 import { CommandRestrictions } from './services/permit.js';
+import { LinkSafety } from './services/linkSafety.js';
 import { AutoMod, createAutoModHandler } from './services/automod.js';
 import { MessageSchedules, AutomationRunner } from './services/automations.js';
 import { Tickets } from './services/tickets.js';
@@ -172,9 +174,15 @@ context.mediaPolicy.cleanup();
 context.mentionGuard = new MentionGuard(db);
 context.mentionGuard.recover();
 context.automod = new AutoMod(db);
+context.linkSafety = new LinkSafety({
+  dir: join(dirname(config.databasePath), 'blocklists'),
+  logger,
+});
+context.automod.linkSafety = context.linkSafety;
 context.automod.recover();
 context.automod.cleanup();
 if (config.messageEventsEnabled) {
+  context.linkSafety.start();
   const antibot = createAntiBotHandler(context),
     react = createAutoReactHandler(context),
     media = createMediaHandler(context),

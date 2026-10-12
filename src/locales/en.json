@@ -899,7 +899,7 @@
   "vmMetadataExported": "Private{count}/{total}stored channel metadata,latest100 maximum,total/truncated. Owner/source interaction IDs omitted. Not live channel existence,permission or access verification. No changes.",
   "vmOwnMetadataExported": "Only your{count}/{total}stored channel records,latest100 maximum. No owner/source IDs,current voice-membership or live access claim. No changes.",
   "vmMemberInvalid": "Current caller membership could not be verified.",
-  "automodRulesDisabled": "Disabled{count}enabled rules;all six now off. Server enabled switch,action,words,exclusions/history/replay guards kept. Current in-memory spam window cleared. In-flight/native actions not undone.",
+  "automodRulesDisabled": "Disabled{count}enabled rules;all now off. Server enabled switch,action,words,exclusions/history/replay guards kept. Current in-memory spam window cleared. In-flight/native actions not undone.",
   "automodThresholdsReset": "Reset mentions to5,caps to80% with20letters,spam to6messages/3repeats in10seconds. Switches/action/words/exclusions/history kept;spam memory cleared. Future moderation may be more or less sensitive. Not false-positive tuning or live verification.",
   "antinukeTrustExported": "Private{count}stored trusted-user IDs attached. These are alert exemptions only,not current membership/native permissions/trustworthiness. Owner/bot exemptions are separate;no changes or punishment.",
   "toolsJsonInvalid": "Supply valid JSON1-1800characters. Nothing was executed or stored.",

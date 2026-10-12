@@ -60,3 +60,10 @@ test('closed DMs return the link for the moderator; missing invite permission re
   const c = setup({ inviteFails: true });
   assert.deepEqual(await sendUnbanInvite(c.guild, c.client, '1', { t }), { status: 'noInvite' });
 });
+test('unban user-id accepts raw IDs and pasted mentions', async () => {
+  const { parseUserId } = await import('../src/commands/moderation/moderation.js');
+  assert.equal(parseUserId('123456789012345678'), '123456789012345678');
+  assert.equal(parseUserId('<@123456789012345678>'), '123456789012345678');
+  assert.equal(parseUserId(' <@!123456789012345678> '), '123456789012345678');
+  assert.equal(parseUserId('<@12>'), '<@12>');
+});

@@ -13,6 +13,12 @@ import {
 import { moderate } from '../../services/moderation.js';
 import { requireSecurityAccess } from '../../services/securityAccess.js';
 import { sendUnbanInvite, MESSAGE_MAX } from '../../services/unbanInvite.js';
+/** Accepts a raw ID or a pasted mention like <@123> or <@!123>. */
+export function parseUserId(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/^<@!?(\d{17,20})>$/, '$1');
+}
 const actions = ['warn', 'warnings', 'clearwarns', 'timeout', 'untimeout', 'kick', 'ban', 'unban'];
 const data = new SlashCommandBuilder()
   .setName('moderation')
@@ -30,10 +36,10 @@ for (const action of actions)
       s.addStringOption((o) =>
         o
           .setName('user-id')
-          .setDescription('Banned Discord user ID')
+          .setDescription('Banned Discord user ID (a pasted mention also works)')
           .setRequired(true)
           .setMinLength(17)
-          .setMaxLength(20),
+          .setMaxLength(24),
       );
       s.addBooleanOption((o) =>
         o.setName('invite').setDescription('Also DM a one-use invite link (default: no)'),
@@ -175,7 +181,7 @@ export default {
       page: action === 'warnings' ? (i.options.getInteger('page') ?? 1) : undefined,
       targetId:
         action === 'unban'
-          ? i.options.getString('user-id', true)
+          ? parseUserId(i.options.getString('user-id', true))
           : i.options.getUser('member', true).id,
       reason: ['warnings', 'exportwarnings', 'clearwarning'].includes(action)
         ? undefined
@@ -212,7 +218,7 @@ export default {
         actorId: i.user.id,
         targetId:
           action === 'unban'
-            ? i.options.getString('user-id', true)
+            ? parseUserId(i.options.getString('user-id', true))
             : i.options.getUser('member', true).id,
       });
       if (delivered.reason === 'unavailable') result.logUnavailable = true;
@@ -241,10 +247,15 @@ export default {
     if (result.count !== undefined) content += ' ' + t('modCleared', { count: result.count });
     if (result.logUnavailable) content += ' ' + t('modLogUnavailable');
     if (wantsInvite && result.id) {
-      const inv = await sendUnbanInvite(i.guild, i.client, i.options.getString('user-id', true), {
-        message: i.options.getString('message'),
-        t,
-      });
+      const inv = await sendUnbanInvite(
+        i.guild,
+        i.client,
+        parseUserId(i.options.getString('user-id', true)),
+        {
+          message: i.options.getString('message'),
+          t,
+        },
+      );
       content += '\n' + t('unbanInvite_' + inv.status, { link: inv.url ?? '-' });
     }
     await i.editReply(lunaPayload({ content, allowedMentions: { parse: [] } }, { locale }));

@@ -10,7 +10,16 @@ import {
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
-const ruleNames = ['words', 'invites', 'links', 'mentions', 'caps', 'spam'];
+const ruleNames = [
+  'words',
+  'invites',
+  'links',
+  'mentions',
+  'caps',
+  'spam',
+  'phishing',
+  'nsfwlinks',
+];
 const data = new SlashCommandBuilder()
   .setName('automod')
   .setDescription('Configure server-owned message moderation rules.')

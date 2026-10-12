@@ -2935,6 +2935,14 @@
           {
             "name": "spam",
             "value": "spam"
+          },
+          {
+            "name": "phishing",
+            "value": "phishing"
+          },
+          {
+            "name": "nsfwlinks",
+            "value": "nsfwlinks"
           }
         ]
       },
@@ -8798,7 +8806,7 @@
         "required": true,
         "type": 3,
         "minLength": 17,
-        "maxLength": 20
+        "maxLength": 24
       },
       {
         "name": "invite",
