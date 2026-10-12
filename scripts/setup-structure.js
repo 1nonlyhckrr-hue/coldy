@@ -1,81 +1,10 @@
 import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
-import { ChannelType, Client, GatewayIntentBits, PermissionFlagsBits as P } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
+import { STRUCTURE, createStructure } from '../src/services/serverStructure.js';
 
+export { STRUCTURE };
 export const ALLOWED_GUILD_ID = '1551646147100024925';
-const READ_ONLY = 'readOnly';
-const PRIVATE = 'private';
-
-export const STRUCTURE = [
-  {
-    name: '𝕴𝖓𝖋𝖔',
-    channels: [
-      { name: '⚔・𝖜𝖊𝖑𝖈𝖔𝖒𝖊', type: 'text', access: READ_ONLY },
-      { name: '⚔・𝖗𝖚𝖑𝖊𝖘', type: 'text', access: READ_ONLY },
-      { name: '⚔・𝖆𝖓𝖓𝖔𝖚𝖓𝖈𝖊𝖒𝖊𝖓𝖙𝖘', type: 'text', access: READ_ONLY },
-    ],
-  },
-  {
-    name: '𝕮𝖍𝖆𝖙',
-    channels: [
-      { name: '⚔・𝖌𝖊𝖓𝖊𝖗𝖆𝖑', type: 'text' },
-      { name: '⚔・𝖒𝖊𝖉𝖎𝖆-𝖈𝖑𝖎𝖕𝖘', type: 'text' },
-      { name: '⚔・𝖇𝖔𝖙-𝖈𝖔𝖒𝖒𝖆𝖓𝖉𝖘', type: 'text' },
-    ],
-  },
-  {
-    name: '𝕲𝖆𝖒𝖎𝖓𝖌',
-    channels: [
-      { name: '⚔・𝖋𝖋-𝖑𝖋𝖌', type: 'text' },
-      { name: '⚔・𝖍𝖎𝖌𝖍𝖑𝖎𝖌𝖍𝖙𝖘', type: 'text' },
-    ],
-  },
-  {
-    name: '𝖁𝖔𝖎𝖈𝖊',
-    channels: [
-      { name: '⚔・𝖏𝖔𝖎𝖓-𝖙𝖔-𝖈𝖗𝖊𝖆𝖙𝖊', type: 'voice' },
-      { name: '⚔・𝖌𝖆𝖒𝖎𝖓𝖌-𝖛𝖈', type: 'voice' },
-      { name: '⚔・𝖈𝖍𝖎𝖑𝖑-𝖛𝖈', type: 'voice' },
-    ],
-  },
-  {
-    name: '𝕾𝖚𝖕𝖕𝖔𝖗𝖙',
-    channels: [
-      { name: '⚔・𝖙𝖎𝖈𝖐𝖊𝖙-𝖕𝖆𝖓𝖊𝖑', type: 'text', access: READ_ONLY },
-      { name: '⚔・𝖋𝖆𝖖', type: 'text', access: READ_ONLY },
-    ],
-  },
-  {
-    name: '𝕾𝖙𝖆𝖋𝖋',
-    access: PRIVATE,
-    channels: [
-      { name: '⚔・𝖘𝖙𝖆𝖋𝖋-𝖈𝖍𝖆𝖙', type: 'text' },
-      { name: '⚔・𝖒𝖔𝖉-𝖑𝖔𝖌𝖘', type: 'text' },
-    ],
-  },
-];
-
-const BOT_ALLOW = [
-  P.ViewChannel,
-  P.SendMessages,
-  P.EmbedLinks,
-  P.ReadMessageHistory,
-  P.ManageChannels,
-];
-
-function overwritesFor(access, everyoneId, botId) {
-  if (access === READ_ONLY)
-    return [
-      { id: everyoneId, allow: [P.ViewChannel, P.ReadMessageHistory], deny: [P.SendMessages] },
-      { id: botId, allow: BOT_ALLOW },
-    ];
-  if (access === PRIVATE)
-    return [
-      { id: everyoneId, deny: [P.ViewChannel] },
-      { id: botId, allow: BOT_ALLOW },
-    ];
-  return undefined;
-}
 
 export function parseSetupEnv(env) {
   const id = env.TARGET_GUILD_ID?.trim();
@@ -85,47 +14,17 @@ export function parseSetupEnv(env) {
   return { targetGuildId: id || undefined };
 }
 
-/** Creates the structure; existing categories/channels (same name, type and parent) are skipped. */
+/** Creates the structure; existing categories/channels are skipped. */
 export async function buildStructure(guild, botId, log = console.log) {
-  await guild.channels.fetch();
-  const cache = guild.channels.cache;
-  const counts = { created: 0, skipped: 0 };
-  for (const group of STRUCTURE) {
-    let category = cache.find((c) => c.type === ChannelType.GuildCategory && c.name === group.name);
-    if (category) {
-      counts.skipped += 1;
-      log(`skip category ${group.name} (exists)`);
-    } else {
-      category = await guild.channels.create({
-        name: group.name,
-        type: ChannelType.GuildCategory,
-        permissionOverwrites: overwritesFor(group.access, guild.id, botId),
-      });
-      counts.created += 1;
-      log(`create category ${group.name}`);
-    }
-    for (const spec of group.channels) {
-      const type = spec.type === 'voice' ? ChannelType.GuildVoice : ChannelType.GuildText;
-      const found = cache.find(
-        (c) => c.type === type && c.name === spec.name && c.parentId === category.id,
-      );
-      if (found) {
-        counts.skipped += 1;
-        log(`skip ${spec.type} channel ${spec.name} (exists)`);
-        continue;
-      }
-      await guild.channels.create({
-        name: spec.name,
-        type,
-        parent: category.id,
-        permissionOverwrites: overwritesFor(spec.access ?? group.access, guild.id, botId),
-      });
-      counts.created += 1;
-      log(`create ${spec.type} channel ${spec.name} in ${group.name}`);
-    }
-  }
-  log(`done: ${counts.created} created, ${counts.skipped} skipped`);
-  return counts;
+  const r = await createStructure(guild, botId, 'Emika one-off structure setup');
+  for (const n of r.createdCategories) log(`create category ${n}`);
+  for (const n of r.skippedCategories) log(`skip category ${n} (exists)`);
+  for (const n of r.createdChannels) log(`create channel ${n}`);
+  for (const n of r.skippedChannels) log(`skip channel ${n} (exists)`);
+  const created = r.createdCategories.length + r.createdChannels.length;
+  const skipped = r.skippedCategories.length + r.skippedChannels.length;
+  log(`done: ${created} created, ${skipped} skipped`);
+  return { created, skipped };
 }
 
 export async function runSetup({ env = process.env, client, log = console.log } = {}) {

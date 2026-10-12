@@ -5340,6 +5340,35 @@
     "source": "src/commands/general/ping.js"
   },
   {
+    "name": "setupstructure",
+    "category": "general",
+    "syntax": "/setupstructure",
+    "description": "Create the Emika Gothic server layout; existing categories and channels are kept.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [
+      "ViewChannel",
+      "ManageChannels",
+      "ManageRoles",
+      "SendMessages",
+      "EmbedLinks",
+      "ReadMessageHistory"
+    ],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 60000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/general/setupstructure.js"
+  },
+  {
     "name": "uptime",
     "category": "general",
     "syntax": "/uptime",

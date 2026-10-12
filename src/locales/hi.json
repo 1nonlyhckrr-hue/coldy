@@ -1102,5 +1102,12 @@
   "helpNavCount": "प्रविष्टियां",
   "helpNavCommands": "कमांड",
   "helpNavDetails": "पैरामीटर और विकल्प",
-  "helpExpired": "इस निर्देशिका का समय खत्म हो गया। नया खोलने के लिए /help चलाएं।"
+  "helpExpired": "इस निर्देशिका का समय खत्म हो गया। नया खोलने के लिए /help चलाएं।",
+  "structureDone": "सर्वर लेआउट बन गया। welcome, rules और announcements सबके लिए केवल-पढ़ने योग्य हैं, और staff श्रेणी निजी है।",
+  "structureNothingNew": "Emika का पूरा लेआउट पहले से मौजूद है, इसलिए कुछ नया नहीं बना।",
+  "structurePartial": "काम पूरा होने से पहले रुक गया। अब तक बने आइटम सुरक्षित हैं और मौजूदा आइटम अछूते हैं। Emika की Manage Channels और Manage Roles अनुमतियाँ जाँचें, फिर कमांड दोबारा चलाएँ।",
+  "structureFailed": "Emika लेआउट नहीं बना सका। उसकी Manage Channels और Manage Roles अनुमतियाँ जाँचकर दोबारा कोशिश करें।",
+  "structureCategoriesField": "श्रेणियाँ",
+  "structureChannelsField": "चैनल",
+  "structureCountValue": "{created} बने, {existing} पहले से थे (कुल {total})"
 }

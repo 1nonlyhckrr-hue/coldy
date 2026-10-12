@@ -55,6 +55,7 @@ test('installed command names and option limits validate', async () => {
     'serverbanner',
     'servericon',
     'serverinfo',
+    'setupstructure',
     'slowmode',
     'stats',
     'stickerinfo',
@@ -84,6 +85,7 @@ test('foundation and utility commands execute mock replies', async () => {
     if (
       [
         'enlarge',
+        'setupstructure',
         'emojiinfo',
         'avatar',
         'serverbanner',

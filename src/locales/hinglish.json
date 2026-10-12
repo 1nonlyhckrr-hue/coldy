@@ -1102,5 +1102,12 @@
   "helpNavCount": "Entries",
   "helpNavCommands": "Commands",
   "helpNavDetails": "Parameters aur choices",
-  "helpExpired": "Directory expire ho gayi. Nayi directory ke liye /help chalao."
+  "helpExpired": "Directory expire ho gayi. Nayi directory ke liye /help chalao.",
+  "structureDone": "Server layout ban gaya. Welcome, rules aur announcements sabke liye read-only hain, aur staff category private hai.",
+  "structureNothingNew": "Emika ka poora layout pehle se maujood hai, isliye kuch naya nahi bana.",
+  "structurePartial": "Kaam poora hone se pehle ruk gaya. Ab tak bane items safe hain aur purane items touch nahi hue. Emika ki Manage Channels aur Manage Roles permissions check karke command dobara chalao.",
+  "structureFailed": "Emika layout nahi bana saka. Uski Manage Channels aur Manage Roles permissions check karke dobara try karo.",
+  "structureCategoriesField": "Categories",
+  "structureChannelsField": "Channels",
+  "structureCountValue": "{created} bane, {existing} pehle se the (total {total})"
 }

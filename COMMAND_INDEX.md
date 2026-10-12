@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-65 top-level commands, 586 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+66 top-level commands, 587 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -188,6 +188,7 @@
 | /config view | View this server configuration. | Local mock/unit only |
 | /help | Public interactive command directory with categories, pages and details. | Local mock/unit only |
 | /ping | Show Emika gateway latency. | Local mock/unit only |
+| /setupstructure | Create the Emika Gothic server layout; existing categories and channels are kept. | Local mock/unit only |
 | /uptime | Show how long this process has been running. | Local mock/unit only |
 | /giveaway cancel | Confirmed stop stored active giveaway, no native announcement/button edit. | Local mock/unit only |
 | /giveaway cancelall | Cancel all active giveaways in storage only; no native message edits or announcements. | Local mock/unit only |

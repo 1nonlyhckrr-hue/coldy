@@ -19,6 +19,6 @@ test('locale strings and command descriptions contain no old Luna brand', async 
   }
   const { loadCommands } = await import('../src/services/registry.js');
   const body = [...(await loadCommands()).values()].map((c) => c.data.toJSON());
-  assert.equal(body.length, 65);
+  assert.equal(body.length, 66);
   assert.doesNotMatch(JSON.stringify(body), /\bLuna\b/);
 });

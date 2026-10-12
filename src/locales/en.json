@@ -1102,5 +1102,12 @@
   "helpNavCount": "Entries",
   "helpNavCommands": "Commands",
   "helpNavDetails": "Parameters & choices",
-  "helpExpired": "This directory has expired. Run /help to open a new one."
+  "helpExpired": "This directory has expired. Run /help to open a new one.",
+  "structureDone": "Server layout created. Welcome, rules and announcements are read-only for everyone, and the staff category is private.",
+  "structureNothingNew": "Everything in the Emika layout already exists, so nothing new was created.",
+  "structurePartial": "Stopped before finishing. Items created so far are kept, existing items are untouched. Check Emika's Manage Channels and Manage Roles permissions, then run the command again to continue.",
+  "structureFailed": "Emika could not create the layout. Check its Manage Channels and Manage Roles permissions, then try again.",
+  "structureCategoriesField": "Categories",
+  "structureChannelsField": "Channels",
+  "structureCountValue": "{created} created, {existing} already existed (of {total})"
 }
