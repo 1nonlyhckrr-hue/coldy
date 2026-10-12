@@ -294,7 +294,7 @@
   "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nChanges restore nahi hote.",
   "antinukeIncidents": "Recent audit burst incidents (sirf alerts)",
   "antinukeEmpty": "Koi stored audit incident nahi.",
-  "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{window}s mein {count} supported administrative actions dekhe.\nAudit log check karein. Yeh legitimate kaam bhi ho sakta hai. Emika ne punishment ya changes restore nahi kiye.",
+  "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{window}s mein {count} supported administrative actions dekhe.\nAudit log check karein. Yeh legitimate kaam bhi ho sakta hai. Emika changes restore nahi karta. Auto-quarantine chala to alag notice milega.",
   "tagRoleChangeBlocked": "Doosra role chunne se pehle purani tag config reset karein. Existing assignments automatic nahi hatenge.",
   "tagUncertain": "Tag role state uncertain hai. Aage change se pehle moderator role aur stored grant check karein.",
   "tagOldRole": "Purane tag reward role ka record hai. Role badalne se pehle moderator review chahiye.",
@@ -1140,14 +1140,15 @@
   "autoStep_needsInput": "Aapka input chahiye",
   "autoReason_noInteraction": "Skip, command interaction chahiye",
   "autoNeedsInput": "Ye automatically set nahi hue kyunki inke liye aapka apna content chahiye: custom autoresponder replies, rank rewards, scheduled message text, mention guard target, event mode. Ready hone par inke commands use karein.",
-  "antinukeQuarantine_quarantined": "Quarantine: {actor} ne {window}s mein {reason} {count} baar kiye, isliye ab uske paas Quarantine role hai jo saare channels chhupa deta hai. Audit log check karein aur pakka hone par role hata dein.",
+  "antinukeQuarantine_quarantined": "Quarantine: {actor} ne {window}s mein {reason} {count} baar kiye. Uske saare roles hata diye gaye aur ab uske paas sirf Quarantine role hai jo saare channels chhupa deta hai. Hataye gaye roles (legitimate tha to haath se wapas dein): {removed}",
   "antinukeQuarantine_hierarchy": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): uska top role Emika ke barabar ya upar hai, isliye Emika action nahi le sakta.",
   "antinukeQuarantine_unavailable": "Quarantine nahi ho paya ({actor}, {window}s mein {reason} x{count}): Emika ke paas Manage Roles nahi hai.",
   "antinukeQuarantineReason_channelDelete": "channel delete",
   "antinukeQuarantineReason_ban": "ban",
   "antinukeQuarantineReason_kick": "kick",
   "autoStep_quarantine": "Antinuke quarantine",
-  "antinukeQuarantine_roleInvalid": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): chuna gaya punish role missing, managed ya Emika se upar hai. /antinuke punishrole se theek karein.",
+  "antinukeQuarantine_roleInvalid": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): chuna gaya punish role missing, managed, Emika se upar ya dangerous permissions wala hai. /antinuke punishrole se theek karein.",
   "autoVmActorPerms": "Warning: jisne ye chalaya uske paas Move Members aur Manage Channels nahi hain, aur join-to-create har join par isi user ko check karta hai. /vmjoin admin se chalwayein ya ye permissions dein.",
-  "mediaNotice": "{user} yeh channel sirf media ke liye hai. Image, video ya file bhejein. Aapka message hata diya gaya. Yeh notice 2 minute mein apne aap delete ho jayega."
+  "mediaNotice": "{user} yeh channel sirf media ke liye hai. Image, video ya file bhejein. Aapka message hata diya gaya. Yeh notice 2 minute mein apne aap delete ho jayega.",
+  "antinukeQuarantine_partial": "Quarantine aadha laga ({actor}, {window}s mein {reason} x{count}): Emika uske baaki roles nahi hata saka, sirf Quarantine role add hua. Uske purane roles aur permissions abhi bhi active hain. Abhi check karein."
 }

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AuditLogEvent, PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
 import { validateOutputChannel } from './guildConfig.js';
+import { roleHasDangerousPermissions } from './rolePanels.js';
 import { lunaPayload } from '../utils/embeds.js';
 export const WATCHED_AUDIT_ACTIONS = new Set([
   AuditLogEvent.GuildUpdate,
@@ -333,6 +334,8 @@ export function validatePunishRole(role, bot, guild) {
   if (!role || role.guild?.id !== guild.id || role.id === guild.id || role.managed)
     throw new UserError('roleInvalid');
   if (role.position >= bot.roles.highest.position) throw new UserError('roleBotHierarchy');
+  // A punish role that grants staff powers would reward the actor, so refuse it outright.
+  if (roleHasDangerousPermissions(role)) throw new UserError('roleDangerous');
 }
 function overwriteDenies(channel, role) {
   const o = channel.permissionOverwrites?.cache?.get?.(role.id);
@@ -358,6 +361,7 @@ export async function ensureQuarantineRole(guild, antinuke, { applyOverwrites = 
   let role =
     (cfg.quarantine.roleId && guild.roles.cache.get(cfg.quarantine.roleId)) ||
     guild.roles.cache.find((r) => r.name === QUARANTINE_ROLE_NAME && !r.managed);
+  if (role && roleHasDangerousPermissions(role)) throw new UserError('roleDangerous');
   let created = false;
   if (!role) {
     role = await guild.roles.create({
@@ -424,10 +428,21 @@ async function quarantineActor(c, guild, trigger) {
       throw error;
     }
     if (role.position >= bot.roles.highest.position) return { status: 'hierarchy' };
-    if (!member.roles.cache.has(role.id))
-      await member.roles.add(role, 'Emika antinuke: ' + trigger.reason + ' x' + trigger.count);
+    // Containment: drop every role the actor holds (Administrator and other powers included)
+    // and leave only the punish role. Managed roles cannot be removed by hand, so they stay.
+    const reason = 'Emika antinuke: ' + trigger.reason + ' x' + trigger.count;
+    const held = [...member.roles.cache.values()].filter((r) => r.id !== guild.id);
+    const kept = held.filter((r) => r.managed).map((r) => r.id);
+    const removed = held.filter((r) => !r.managed && r.id !== role.id).map((r) => r.id);
+    let partial = false;
+    try {
+      await member.roles.set([...new Set([...kept, role.id])], reason);
+    } catch {
+      partial = true;
+      if (!member.roles.cache.has(role.id)) await member.roles.add(role, reason);
+    }
     await hideChannels(guild, role);
-    return { status: 'quarantined' };
+    return { status: partial ? 'partial' : 'quarantined', removed: partial ? [] : removed };
   } finally {
     quarantining.delete(key);
   }
@@ -452,6 +467,11 @@ export function createAntinukeHandler(c) {
                   count: trigger.count,
                   window: trigger.window,
                   reason: c.localization.t(guild.id, 'antinukeQuarantineReason_' + trigger.reason),
+                  removed:
+                    (outcome.removed ?? [])
+                      .slice(0, 15)
+                      .map((id) => `<@&${id}>`)
+                      .join(' ') || '-',
                 }),
                 allowedMentions: { parse: [] },
               },

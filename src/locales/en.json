@@ -294,7 +294,7 @@
   "antinukeConfig": "Audit alerts: {status}\nThreshold: {count} mixed actions / {window}s\nChannel: {channel}\nTrusted user IDs: {trusted}\nAuto-quarantine role: {quarantine}\nNo restoration of changes.",
   "antinukeIncidents": "Recent audit burst incidents (alert-only)",
   "antinukeEmpty": "No stored audit incidents.",
-  "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{count} supported administrative actions observed in {window}s.\nReview the audit log. This may be legitimate work. Emika did not punish anyone or restore changes.",
+  "antinukeAlert": "Audit burst alert #{id}\nActor ID: {actor}\n{count} supported administrative actions observed in {window}s.\nReview the audit log. This may be legitimate work. Emika does not restore changes. If auto-quarantine triggers, you get a separate notice.",
   "tagRoleChangeBlocked": "Reset existing tag configuration before choosing another role. Existing assignments will not be removed automatically.",
   "tagUncertain": "Tag role state is uncertain. A moderator must review the role and stored grant before further changes.",
   "tagOldRole": "A previous tag reward role is still recorded. Moderator review is needed before changing roles.",
@@ -1140,14 +1140,15 @@
   "autoStep_needsInput": "Needs your input",
   "autoReason_noInteraction": "Skipped, needs the command interaction",
   "autoNeedsInput": "Not set automatically because they need your own content: custom autoresponder replies, rank rewards (level roles and thresholds), scheduled message text, mention guard target, event mode. Use their commands when ready.",
-  "antinukeQuarantine_quarantined": "Quarantine: actor {actor} did {reason} {count} times in {window}s and now has the Quarantine role, which hides every channel. Review the audit log and remove the role when you are sure.",
+  "antinukeQuarantine_quarantined": "Quarantine: actor {actor} did {reason} {count} times in {window}s. All their roles were removed and they now only have the Quarantine role, which hides every channel. Roles removed (restore by hand if this was legitimate): {removed}",
   "antinukeQuarantine_hierarchy": "Quarantine skipped for actor {actor} ({reason} x{count} in {window}s): their top role is at or above Emika's, so Emika cannot act on them.",
   "antinukeQuarantine_unavailable": "Quarantine could not run for actor {actor} ({reason} x{count} in {window}s): Emika is missing Manage Roles.",
   "antinukeQuarantineReason_channelDelete": "channel deletes",
   "antinukeQuarantineReason_ban": "bans",
   "antinukeQuarantineReason_kick": "kicks",
   "autoStep_quarantine": "Antinuke quarantine",
-  "antinukeQuarantine_roleInvalid": "Quarantine skipped for actor {actor} ({reason} x{count} in {window}s): the configured punish role is missing, managed or above Emika. Fix it with /antinuke punishrole.",
+  "antinukeQuarantine_roleInvalid": "Quarantine skipped for actor {actor} ({reason} x{count} in {window}s): the configured punish role is missing, managed, above Emika or grants dangerous permissions. Fix it with /antinuke punishrole.",
   "autoVmActorPerms": "Warning: the user who ran this lacks Move Members and Manage Channels, and join-to-create checks that user on every join. Run /vmjoin as an admin or give them those permissions.",
-  "mediaNotice": "{user} this channel is media only. Post an image, video or file. Your message was removed. This notice deletes itself in 2 minutes."
+  "mediaNotice": "{user} this channel is media only. Post an image, video or file. Your message was removed. This notice deletes itself in 2 minutes.",
+  "antinukeQuarantine_partial": "Quarantine partly applied to actor {actor} ({reason} x{count} in {window}s): Emika could not remove their other roles, so only the Quarantine role was added. Their existing roles and permissions are still active. Review now."
 }

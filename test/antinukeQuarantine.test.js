@@ -6,6 +6,7 @@ import {
   AntinukeAlerts,
   createAntinukeHandler,
   ensureQuarantineRole,
+  validatePunishRole,
 } from '../src/services/antinuke.js';
 const ids = {
   actor: '100000000000000001',
@@ -20,8 +21,16 @@ const entry = (action, executorId = ids.actor) => ({
   action,
   createdTimestamp: Date.now(),
 });
-function fakeGuild({ actorPosition = 1, botPosition = 10, botCanManageRoles = true } = {}) {
-  const added = [];
+function fakeGuild({
+  actorPosition = 1,
+  botPosition = 10,
+  botCanManageRoles = true,
+  failSet = false,
+} = {}) {
+  const added = [],
+    sets = [],
+    adminRole = { id: '900000000000000050', name: 'Admin', managed: false },
+    integrationRole = { id: '900000000000000051', name: 'Bot', managed: true };
   const roles = new Map();
   roles.find = (fn) => [...roles.values()].find(fn);
   const created = [];
@@ -52,8 +61,16 @@ function fakeGuild({ actorPosition = 1, botPosition = 10, botCanManageRoles = tr
         id: ids.actor,
         roles: {
           highest: { position: actorPosition },
-          cache: new Map(),
+          cache: new Map([
+            [adminRole.id, adminRole],
+            [integrationRole.id, integrationRole],
+          ]),
           add: async (r) => added.push(r.id),
+          set: async (list) => {
+            if (failSet) throw new Error('missing permissions');
+            sets.push(list);
+            for (const id of list) if (id !== integrationRole.id) added.push(id);
+          },
         },
       },
     ],
@@ -68,6 +85,9 @@ function fakeGuild({ actorPosition = 1, botPosition = 10, botCanManageRoles = tr
     ownerId: ids.owner,
     client: { user: { id: ids.bot } },
     added,
+    sets,
+    adminRole,
+    integrationRole,
     created,
     channels: { cache: channels, fetch: async () => {} },
     roles: {
@@ -228,6 +248,54 @@ test('admin-chosen punish role is used, revalidated at apply time, never replace
     assert.equal(antinuke.get('g').quarantine.punishRoleId, undefined);
     await fire(handler, g3, AuditLogEvent.ChannelDelete, 3);
     assert.equal(g3.created[0].name, 'Quarantine');
+  } finally {
+    db.close();
+  }
+});
+
+test('quarantine strips every removable role, keeps managed ones, leaves only the punish role', async () => {
+  const { db, handler } = setup();
+  try {
+    const guild = fakeGuild();
+    await fire(handler, guild, AuditLogEvent.ChannelDelete, 3);
+    assert.equal(guild.sets.length, 1);
+    assert.deepEqual(guild.sets[0], [guild.integrationRole.id, '900000000000000001']);
+    assert.ok(!guild.sets[0].includes(guild.adminRole.id));
+  } finally {
+    db.close();
+  }
+});
+test('if roles cannot be replaced the punish role is still added', async () => {
+  const { db, handler } = setup();
+  try {
+    const guild = fakeGuild({ failSet: true });
+    await fire(handler, guild, AuditLogEvent.ChannelDelete, 3);
+    assert.deepEqual(guild.added, ['900000000000000001']);
+  } finally {
+    db.close();
+  }
+});
+test('a punish role with dangerous permissions is refused at set and apply time', async () => {
+  const { db, antinuke, handler } = setup();
+  try {
+    const guild = fakeGuild();
+    const risky = {
+      id: '900000000000000088',
+      name: 'Risky',
+      position: 3,
+      managed: false,
+      guild: { id: 'g' },
+      permissions: { has: (f) => f === P.Administrator },
+    };
+    guild.roles.cache.set(risky.id, risky);
+    assert.throws(() => validatePunishRole(risky, guild.members.me, guild), {
+      message: 'roleDangerous',
+    });
+    antinuke.setPunishRole('g', risky.id);
+    await fire(handler, guild, AuditLogEvent.ChannelDelete, 3);
+    assert.equal(guild.added.length, 0);
+    assert.equal(guild.sets.length, 0);
+    assert.equal(guild.created.length, 0);
   } finally {
     db.close();
   }

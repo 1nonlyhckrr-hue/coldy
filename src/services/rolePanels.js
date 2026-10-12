@@ -31,6 +31,9 @@ const safeNames = new Set([
 const dangerous = Object.entries(P)
   .filter(([name]) => !safeNames.has(name))
   .map(([, flag]) => flag);
+export function roleHasDangerousPermissions(role) {
+  return dangerous.some((permission) => role.permissions?.has(permission) === true);
+}
 export function validateSelfRole(role, bot, actor, guild) {
   if (!role || role.guild.id !== guild.id || role.id === guild.id || role.managed)
     throw new UserError('roleInvalid');

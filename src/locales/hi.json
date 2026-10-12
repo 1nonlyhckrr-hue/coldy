@@ -294,7 +294,7 @@
   "antinukeConfig": "ऑडिट अलर्ट: {status}\nसीमा: {count} मिली-जुली कार्रवाइयां / {window}s\nचैनल: {channel}\nविश्वसनीय सदस्य IDs: {trusted}\nऑटो-क्वारंटीन रोल: {quarantine}\nबदलाव वापस नहीं किए जाते।",
   "antinukeIncidents": "हाल के ऑडिट घटनाक्रम (सिर्फ अलर्ट)",
   "antinukeEmpty": "कोई सहेजी ऑडिट घटना नहीं।",
-  "antinukeAlert": "ऑडिट अलर्ट #{id}\nकरने वाले की ID: {actor}\n{window}s में {count} समर्थित प्रशासनिक कार्रवाइयां देखीं।\nऑडिट लॉग जांचें। यह सही काम भी हो सकता है। Emika ने किसी को दंड नहीं दिया या बदलाव वापस नहीं किए।",
+  "antinukeAlert": "ऑडिट अलर्ट #{id}\nकरने वाले की ID: {actor}\n{window}s में {count} समर्थित प्रशासनिक कार्रवाइयां देखीं।\nऑडिट लॉग जांचें। यह सही काम भी हो सकता है। Emika बदलाव वापस नहीं करता। ऑटो-क्वारंटीन चला तो अलग नोटिस मिलेगा।",
   "tagRoleChangeBlocked": "दूसरी भूमिका चुनने से पहले पुरानी टैग कॉन्फिग रीसेट करें। मौजूदा भूमिकाएं अपने आप नहीं हटेंगी।",
   "tagUncertain": "टैग भूमिका की स्थिति अनिश्चित है। आगे बदलाव से पहले मॉडरेटर भूमिका और सहेजे रिकॉर्ड जांचें।",
   "tagOldRole": "पुरानी टैग भूमिका का रिकॉर्ड मौजूद है। भूमिका बदलने से पहले मॉडरेटर जांच जरूरी है।",
@@ -1140,14 +1140,15 @@
   "autoStep_needsInput": "आपका इनपुट चाहिए",
   "autoReason_noInteraction": "स्किप, कमांड इंटरैक्शन चाहिए",
   "autoNeedsInput": "ये अपने आप सेट नहीं हुए क्योंकि इनके लिए आपका अपना कंटेंट चाहिए: कस्टम ऑटोरेस्पॉन्डर जवाब, रैंक रिवॉर्ड, शेड्यूल्ड मैसेज टेक्स्ट, मेंशन गार्ड टारगेट, इवेंट मोड। तैयार होने पर इनके कमांड इस्तेमाल करें।",
-  "antinukeQuarantine_quarantined": "क्वारंटीन: {actor} ने {window}s में {reason} {count} बार किए, इसलिए अब उसके पास Quarantine रोल है जो सारे चैनल छुपा देता है। ऑडिट लॉग जांचें और पक्का होने पर रोल हटा दें।",
+  "antinukeQuarantine_quarantined": "क्वारंटीन: {actor} ने {window}s में {reason} {count} बार किए। उसके सारे रोल हटा दिए गए और अब उसके पास सिर्फ Quarantine रोल है जो सारे चैनल छुपा देता है। हटाए गए रोल (सही काम था तो हाथ से वापस दें): {removed}",
   "antinukeQuarantine_hierarchy": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): उसका सबसे ऊंचा रोल Emika के बराबर या ऊपर है, इसलिए Emika कार्रवाई नहीं कर सकता।",
   "antinukeQuarantine_unavailable": "क्वारंटीन नहीं हो सका ({actor}, {window}s में {reason} x{count}): Emika के पास Manage Roles नहीं है।",
   "antinukeQuarantineReason_channelDelete": "चैनल डिलीट",
   "antinukeQuarantineReason_ban": "बैन",
   "antinukeQuarantineReason_kick": "किक",
   "autoStep_quarantine": "एंटीन्यूक क्वारंटीन",
-  "antinukeQuarantine_roleInvalid": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): चुना गया सज़ा रोल मौजूद नहीं है, managed है या Emika से ऊपर है। /antinuke punishrole से ठीक करें।",
+  "antinukeQuarantine_roleInvalid": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): चुना गया सज़ा रोल मौजूद नहीं है, managed है, Emika से ऊपर है या खतरनाक परमिशन देता है। /antinuke punishrole से ठीक करें।",
   "autoVmActorPerms": "चेतावनी: इसे चलाने वाले के पास Move Members और Manage Channels नहीं हैं, और join-to-create हर जॉइन पर इसी यूज़र की जांच करता है। /vmjoin किसी एडमिन से चलवाएं या ये परमिशन दें।",
-  "mediaNotice": "{user} यह चैनल सिर्फ मीडिया के लिए है। इमेज, वीडियो या फ़ाइल भेजें। आपका मैसेज हटा दिया गया। यह नोटिस 2 मिनट में अपने आप हट जाएगा।"
+  "mediaNotice": "{user} यह चैनल सिर्फ मीडिया के लिए है। इमेज, वीडियो या फ़ाइल भेजें। आपका मैसेज हटा दिया गया। यह नोटिस 2 मिनट में अपने आप हट जाएगा।",
+  "antinukeQuarantine_partial": "क्वारंटीन आधा लगा ({actor}, {window}s में {reason} x{count}): Emika उसके बाकी रोल नहीं हटा सका, सिर्फ Quarantine रोल जोड़ा गया। उसके पुराने रोल और परमिशन अभी भी चालू हैं। अभी जांचें।"
 }

@@ -96,7 +96,7 @@ test('audit config validates thresholds/trust limits and cleanup preserves curre
     db.close();
   }
 });
-test('audit handler sends localized no-ping alert once without any punishment API', async () => {
+test('audit handler sends localized no-ping alert once and states that it does not restore changes', async () => {
   const { db, r } = setup(),
     sent = [];
   const g = {
@@ -128,7 +128,7 @@ test('audit handler sends localized no-ping alert once without any punishment AP
     await h(entry(2), g);
     assert.equal(sent.length, 1);
     assert.deepEqual(sent[0].allowedMentions.parse, []);
-    assert.match(sent[0].embeds[0].data.description, /दंड नहीं/);
+    assert.match(sent[0].embeds[0].data.description, /वापस नहीं/);
     assert.equal(r.incidents('g')[0].status, 'alerted');
   } finally {
     db.close();
