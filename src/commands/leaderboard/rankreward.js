@@ -96,7 +96,7 @@ export default {
           files: [
             new AttachmentBuilder(
               Buffer.from(JSON.stringify(result ?? c.rankRewards.rules(i.guildId), null, 2) + '\n'),
-              { name: 'luna-rank-rewards.json' },
+              { name: 'emika-rank-rewards.json' },
             ),
           ],
         },

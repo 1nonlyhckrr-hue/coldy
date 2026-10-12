@@ -1,6 +1,6 @@
 # automations
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## autorole bots add
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Specify roles for bot accounts.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Specify roles for bot accounts.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Check which roles are currently set to be assigned automatically.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Specify roles for human members.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Specify roles for human members.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Clear all autorole settings for both humans and bots at once.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Specify roles for bot accounts.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Specify roles for human members.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/autorole
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/configuration/roles/autorole
 
 Hide the Event Category and restore all original channel permissions.
 
-Aliases: em disable. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: em disable. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/eventmanager
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/configuration/eventmanager
 
 Hide all server channels and reveal the Event Category.
 
-Aliases: em enable. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: em enable. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/eventmanager
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/configuration/eventmanager
 
 Delete the Event Category and clear all saved configurations.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/eventmanager
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/configuration/eventmanager
 
 Initialize the event category and all required channels. Zynrax will automatically save your current channel permissions so they can be restored later.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/eventmanager
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/configuration/eventmanager
 
 Create a new trigger that will automatically react with the specified emojis.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/autoreact
 
@@ -166,7 +166,7 @@ Source: https://docs.zynrax.site/configuration/autoreact
 
 See all currently configured auto-reactions in your server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/autoreact
 
@@ -178,7 +178,7 @@ Source: https://docs.zynrax.site/configuration/autoreact
 
 Delete an existing trigger so the bot stops reacting to it.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/autoreact
 
@@ -190,9 +190,9 @@ Source: https://docs.zynrax.site/configuration/autoreact
 
 Instantly delete all configured auto-reaction triggers.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/autoreact
 
 
-Original Luna `/automation forget id confirm:true` erases stored text only for done/cancelled schedules. Pending,sending and uncertain jobs are blocked until cancelled/reconciled. Discord messages are not deleted. Schedule ID,interaction replay guard,status and timestamp metadata remain. Current ManageGuild,confirmation,guild isolation and failure gates apply. No SQL schema change required.
+Original Emika `/automation forget id confirm:true` erases stored text only for done/cancelled schedules. Pending,sending and uncertain jobs are blocked until cancelled/reconciled. Discord messages are not deleted. Schedule ID,interaction replay guard,status and timestamp metadata remain. Current ManageGuild,confirmation,guild isolation and failure gates apply. No SQL schema change required.

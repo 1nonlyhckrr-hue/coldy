@@ -352,7 +352,7 @@ test('edited pending schedule survives SQLite reopen with unchanged time and int
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-schedule-edit-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-schedule-edit-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   const now = Date.now();

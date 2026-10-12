@@ -4,13 +4,13 @@
 
 - Supported Node.js LTS22.13+ (22.x) or24.x. Local tests on22.23.3. Earlier public188test checkpoint Node22/24CIgreen,later local source still needs its own CI.
 - npm,internet for installation,writable persistent disk. Latest pinned ESLint requires22.13+;avoid obsolete unsupported tooling.
-- Separate Luna Discord application and test guild. No Koki/FortiX tokens/services.
+- Separate Emika Discord application and test guild. No Koki/FortiX tokens/services.
 
 Use `npm ci` from reviewed lockfile. better-sqlite3 may need compiler/Python toolchain if platform prebuilt unavailable. SQLite storage must persist across restarts;ephemeral containers lose state. No deployment verified yet.
 
 ## Discord setup after release readiness
 
-1. Create separate Luna application in Discord Developer Portal. Store token privately using environment variables,never code/commits.
+1. Create separate Emika application in Discord Developer Portal. Store token privately using environment variables,never code/commits.
 2. Set DISCORD_CLIENT_ID and test DISCORD_GUILD_ID. `.env.example` has placeholders only.
 3. Invite with bot and applications.commands scopes. No blanket Administrator permission. Enable only per-module native rights needed by configured features. Private channel/role/poll/moderation rights differ;read module guides.
 4. Defaults use Guilds only. ENABLE_MEMBER_EVENTS enables GuildMembers for welcome/member logs and requires Server Members approval. ENABLE_MESSAGE_EVENTS enables GuildMessages+MessageContent for configured autoresponders/AutoMod/AFK/message metrics and requires Message Content approval. ENABLE_AUDIT_EVENTS enables GuildModeration for native audit alerts,plus ViewAuditLog. ENABLE_VOICE_EVENTS enables non-privileged GuildVoiceStates required by voice utilities and VoiceMaster occupancy checks. Defaults false;those effects fail closed when disabled. No presence tracking. Music remains unactivated.

@@ -13,7 +13,7 @@ Sources: https://docs.zynrax.site/intro/whatiszynrax.md and https://docs.zynrax.
 - Permit role-based control: additive per-command subject/channel denies only. Native permissions remain required. No blanket whitelist immunity, privileged role assignment or authority delegated merely by holding a custom gate.
 - Flawless giveaways, complete logging, instantaneous join-to-create, complete threat prevention, automatic privilege-blocking and Anti-Betray: not claimed. Module-specific caps, event gaps, uncertainty/manual review, opt-ins, owned snapshots and explicit omissions apply. Antinuke trusted users are excluded from alert thresholds; no claim trusted users are monitored and automatically punished under an Anti-Betray policy.
 - Zero-latency, fairness guarantees, scale guarantees, highest speed, superior quality, uninterrupted24/7 protection and no-workaround marketing claims: unverified and omitted native-limit. No bot can promise zero native API/gateway failures or override administrators.
-- Zynrax's Python implementation, staff names and brand assets are reference identity facts, not Luna features. Luna is original Node/discord.js code; no source, image, brand or private API extraction/copy is used.
+- Zynrax's Python implementation, staff names and brand assets are reference identity facts, not Emika features. Emika is original Node/discord.js code; no source, image, brand or private API extraction/copy is used.
 
 ## Premium and payments
 
@@ -29,16 +29,16 @@ Source: https://docs.zynrax.site/intro/premium.md
 
 Source: https://docs.zynrax.site/legal/terms.md
 
-Razorpay/Cryptomus checkout, automatic paid activation, final-sale/no-refund policy, chargeback bans and commercial account blacklists are omitted for safety. No payment, invoice, subscription, refund decision or paid-account punishment integration exists. Zynrax's commercial terms and intellectual-property policy are not copied into Luna as its own terms. Discord compliance is an operator responsibility; no automatic legal-enforcement promise is made. Reference documentation is public behavior evidence, not permission to copy its code/assets.
+Razorpay/Cryptomus checkout, automatic paid activation, final-sale/no-refund policy, chargeback bans and commercial account blacklists are omitted for safety. No payment, invoice, subscription, refund decision or paid-account punishment integration exists. Zynrax's commercial terms and intellectual-property policy are not copied into Emika as its own terms. Discord compliance is an operator responsibility; no automatic legal-enforcement promise is made. Reference documentation is public behavior evidence, not permission to copy its code/assets.
 
 ## Privacy and deletion
 
 Source: https://docs.zynrax.site/legal/privacy.md
 
 - Automatic data wipe after bot removal and complete user-ID wipe on request: omitted pending a verified server-removal ownership/recovery policy and a full cross-table erasure/retention specification. Current scoped erase/export tools and retention windows remain documented. No all-data/backup/secure-erasure claim.
-- No personal-message storage claim is not adopted: Luna ticket snapshots include private message text in protected SQLite. AFK reasons, authored templates, keywords/prizes and moderation reasons also persist where documented. Logging avoids deleted-message content, but that is not a whole-bot no-content guarantee.
+- No personal-message storage claim is not adopted: Emika ticket snapshots include private message text in protected SQLite. AFK reasons, authored templates, keywords/prizes and moderation reasons also persist where documented. Logging avoids deleted-message content, but that is not a whole-bot no-content guarantee.
 - Premium transaction-ID collection and payment processor integration: absent, explicitly omitted as above. Credentials are supplied by operators in environment configuration, not ticket/log/command content.
-- No advertiser integration exists; this is not a legal privacy certification or third-party contractual promise. Music providers receive necessary voice-session data only under explicit music setup; configured public embed assets are fetched by Discord, not privately proxied by Luna.
+- No advertiser integration exists; this is not a legal privacy certification or third-party contractual promise. Music providers receive necessary voice-session data only under explicit music setup; configured public embed assets are fetched by Discord, not privately proxied by Emika.
 
 ## Scope and acceptance
 

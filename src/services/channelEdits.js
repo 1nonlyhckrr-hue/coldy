@@ -94,11 +94,11 @@ export async function editTextChannel(i, c, { channelId, action, value, confirm 
     if (setting)
       await channel.edit({
         [property]: desired,
-        reason: `Luna | actor ${actor.id} | confirmed channel setting`,
+        reason: `Emika | actor ${actor.id} | confirmed channel setting`,
       });
     else if (name)
-      await channel.setName(desired, `Luna | actor ${actor.id} | confirmed channel rename`);
-    else await channel.setTopic(desired, `Luna | actor ${actor.id} | confirmed channel topic`);
+      await channel.setName(desired, `Emika | actor ${actor.id} | confirmed channel rename`);
+    else await channel.setTopic(desired, `Emika | actor ${actor.id} | confirmed channel topic`);
     accepted = true;
     const latest = await i.guild.channels.fetch(channelId, { force: true });
     if (

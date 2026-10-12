@@ -10,7 +10,7 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('casehistory')
-  .setDescription('Private stored Luna case audit,no native effects or recovery.')
+  .setDescription('Private stored Emika case audit,no native effects or recovery.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
@@ -107,7 +107,7 @@ export default {
           : c.cases.exportCaseMetadata(i.guildId, sub === 'exportunresolved');
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-case-' + sub + '.json',
+          name: 'emika-case-' + sub + '.json',
         }),
       ];
       text = t('caseMinimalMetadata');
@@ -150,7 +150,7 @@ export default {
       const r = c.cases.exportCases(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(r, null, 2) + '\n', 'utf8'), {
-          name: 'luna-case-history.json',
+          name: 'emika-case-history.json',
         }),
       ];
       text = t('caseHistoryExported', { count: r.cases.length, total: r.total });

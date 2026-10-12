@@ -1,6 +1,6 @@
 # automod
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## antibot add
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Add a channel to the auto-purge list. Zynrax will delete all bot messages sent in this channel (unless the bot is whitelisted).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/antibot
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/antibot
 
 See all channels currently configured for auto-purge and the list of whitelisted bots.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/antibot
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/antibot
 
 Stop auto-purging bot messages in a specific channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/antibot
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/antibot
 
 Clear all channels and whitelisted bots from the AntiBot configuration.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/antibot
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/configuration/antibot
 
 Add a bot to the whitelist to prevent its messages from being deleted in auto-purge channels.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/antibot
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/configuration/antibot
 
 Remove a bot from the whitelist.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/antibot
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/configuration/antibot
 
 Stay informed about Automod actions by setting a dedicated logging channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/security/automod
 
 To begin setting up Automod, use the `automod enable` command. This will open an interactive setup where you can choose which security events to activate.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/security/automod
 
 To begin setting up Automod, use the `automod enable` command. This will open an interactive setup where you can choose which security events to activate.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/security/automod
 
 You can exempt specific channels or roles from being affected by Automod.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/security/automod
 
 You can exempt specific channels or roles from being affected by Automod.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/security/automod
 
 You can exempt specific channels or roles from being affected by Automod.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/security/automod
 
 Stay informed about Automod actions by setting a dedicated logging channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -166,7 +166,7 @@ Source: https://docs.zynrax.site/security/automod
 
 You can customize the punishment for each event (except Anti NSFW). Available actions are **Mute**, **Kick**, and **Ban**.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/automod
 
@@ -178,7 +178,7 @@ Source: https://docs.zynrax.site/security/automod
 
 Grant a user permission to bypass the media-only restriction.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/media
 
@@ -190,7 +190,7 @@ Source: https://docs.zynrax.site/configuration/media
 
 Revoke a user's bypass permission.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/media
 
@@ -202,7 +202,7 @@ Source: https://docs.zynrax.site/configuration/media
 
 View all members who currently have bypass permissions.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/media
 
@@ -214,7 +214,7 @@ Source: https://docs.zynrax.site/configuration/media
 
 Check which channel is currently set as media-only.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/media
 
@@ -226,7 +226,7 @@ Source: https://docs.zynrax.site/configuration/media
 
 Disable the media-only restriction for the server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/media
 
@@ -238,7 +238,7 @@ Source: https://docs.zynrax.site/configuration/media
 
 Designate a text channel as media-only.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/media
 

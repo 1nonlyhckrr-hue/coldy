@@ -97,7 +97,7 @@ export default {
                 .join('\n') || translate(locale, 'listMetadataEmpty')),
             files: [
               new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n'), {
-                name: 'luna-ban-page.json',
+                name: 'emika-ban-page.json',
               }),
             ],
             allowedMentions: { parse: [], repliedUser: false },

@@ -1,6 +1,6 @@
 # voicemaster
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## voicemaster buttons
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Select which buttons (like Lock, Hide, Ban, Mute, Limits) are available in the control interface.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/voicemaster
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/voicemaster
 
 See your active primary setup alongside current temporary channels.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/voicemaster
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/voicemaster
 
 Disable and instantly remove the entire Voice Master system.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/voicemaster
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/voicemaster
 
 Initialize the Voice Master category and join-to-create channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/voicemaster
 

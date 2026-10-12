@@ -101,7 +101,7 @@ test('3matrixcofactorpaths private3locale exact JSONbytes branding noping no nat
       assert.equal(reply.flags, 64);
       assert.deepEqual(reply.allowedMentions.parse, []);
       assert.equal(reply.embeds[0].data.description, translate(language, 'matrixResult'));
-      assert.equal(reply.files[0].name, 'luna-matrix-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-matrix-' + sub + '.json');
       assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), fn('[[1,2],[3,4]]'));
     }
 });

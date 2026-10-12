@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { lunaEmbed, lunaPayload, LUNA_COLOR } from '../src/utils/embeds.js';
-test('Luna brand and polished error styles apply with Discord length bounds', () => {
+test('Emika brand and polished error styles apply with Discord length bounds', () => {
   const e = lunaEmbed({
     title: 'x'.repeat(300),
     description: 'd'.repeat(5000),
@@ -12,7 +12,7 @@ test('Luna brand and polished error styles apply with Discord length bounds', ()
   assert.equal(e.title.length, 256);
   assert.equal(e.description.length, 4096);
   assert.equal(e.fields[0].value.length, 1024);
-  assert(e.footer.text.includes('Luna'));
+  assert(e.footer.text.includes('Emika'));
   assert(e.timestamp);
   const p = lunaPayload(
     { content: 'Denied', flags: 64, allowedMentions: { parse: [] } },

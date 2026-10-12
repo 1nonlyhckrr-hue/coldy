@@ -1,6 +1,6 @@
 # vanityroles
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## guildtag reset
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Clear the guild tag configuration for your server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/guildtag
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/roles/guildtag
 
 Configure the role to award and the channel for congratulatory messages.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/guildtag
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/roles/guildtag
 
 Check the current tag and role being used.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/guildtag
 

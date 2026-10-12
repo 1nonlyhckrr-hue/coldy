@@ -279,10 +279,10 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'exportrecords'
-              ? 'luna-ticket-records.json'
+              ? 'emika-ticket-records.json'
               : sub === 'transcriptmetadata'
-                ? 'luna-ticket-snapshot-metadata.json'
-                : 'luna-ticket-claim-summary.json',
+                ? 'emika-ticket-snapshot-metadata.json'
+                : 'emika-ticket-claim-summary.json',
         }),
       ];
       content = t('ticketMetadataExport');
@@ -306,7 +306,8 @@ export default {
           : c.tickets.exportOwn(i.guildId, i.user.id);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: sub === 'exportconfig' ? 'luna-ticket-config.json' : 'luna-own-ticket-records.json',
+          name:
+            sub === 'exportconfig' ? 'emika-ticket-config.json' : 'emika-own-ticket-records.json',
         }),
       ];
       content = t(sub === 'exportconfig' ? 'ticketConfigExported' : 'ticketOwnExported');

@@ -4,7 +4,7 @@ Every34leaderboard and4VoiceMaster reference inventory row mapped below. Adapted
 
 Sources:https://docs.zynrax.site/configuration/leaderboard and https://docs.zynrax.site/configuration/voicemaster
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | addvctime | omitted (safety) | Manual fabricated voice-time adjustments omitted safety:counts are observed settled samples,not administrator-assigned reward credit;avoid misrepresenting tracked activity. Own erasure remains. |
 | blacklistcategory | adapted | /leaderboard exclude - Explicit current manager category exclusion;applies futurecounts,no historical erasure. |

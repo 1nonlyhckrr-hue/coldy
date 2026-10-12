@@ -1,6 +1,6 @@
 # leaderboard
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## addvctime
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Manually add voice calling time to a specific member.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Prevent messages sent in an entire category from counting towards the leaderboard.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Prevent messages sent in a specific channel from counting towards the leaderboard.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Reset invite statistics for everyone in the server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -59,7 +59,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Reset message statistics for every single member in the server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -71,7 +71,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Reset the voice statistics for every member in the server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -83,7 +83,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check who spent the most time in voice today.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -95,7 +95,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 View a paginated list of every user invited by a specific member.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -107,7 +107,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Display the active invite codes owned by a member and their usage count.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -119,7 +119,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Disable the invite tracking and leaderboard system.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -131,7 +131,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Enable the invite tracking and leaderboard system.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -143,7 +143,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Display the top inviters in your server based on total successful joins.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -155,7 +155,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 View who has the most fake/alt-account invites.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -167,7 +167,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check the leaderboard based solely on regular join counts.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -179,7 +179,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Identify exactly who invited a specific member.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -191,7 +191,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check a user's detailed invites (Joins, Leaves, Fakes, Rejoins).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -203,7 +203,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 See who has been the most active in the last 24 hours.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -215,7 +215,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Display the top active members of all time in the server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -227,7 +227,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check the most active members of the current week.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -239,7 +239,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Disable message tracking for the entire server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -251,7 +251,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Enable message tracking for the entire server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -263,7 +263,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check your own or another member's detailed message count.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -275,7 +275,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Manually remove voice calling time from a specific member.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -287,7 +287,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Instantly clear your own personal invite statistics.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -299,7 +299,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Instantly clear your own message statistics.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -311,7 +311,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Instantly reset your own recorded voice time.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -323,7 +323,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Set the account age required to count as a regular invite rather than a "Fake".
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -335,7 +335,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Automatically assign a role to members when they reach an invite milestone.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -347,7 +347,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Set up roles that are automatically granted when a member reaches a message milestone.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -359,7 +359,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check a member's total, daily, and weekly time spent in voice calls.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -371,7 +371,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Disable voice time tracking for this guild.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -383,7 +383,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Enable voice time tracking for this guild.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -395,7 +395,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Display the server's top voice talkers of all time.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 
@@ -407,7 +407,7 @@ Source: https://docs.zynrax.site/configuration/leaderboard
 
 Check the top voice active members of the week.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/leaderboard
 

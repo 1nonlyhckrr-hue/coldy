@@ -156,7 +156,7 @@ export async function claimRankReward(i, c, { roleId, confirm }) {
         current.roles.cache.has(roleId)
       )
         throw Error('Policy/member state changed');
-      await current.roles.add(roleId, 'Luna member confirmed retained activity reward');
+      await current.roles.add(roleId, 'Emika member confirmed retained activity reward');
       const observed = await i.guild.members.fetch({ user: u, force: true });
       if (observed?.id !== u || observed.guild?.id !== g || !observed.roles.cache.has(roleId))
         throw Error('Role grant not observed');

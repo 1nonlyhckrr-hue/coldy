@@ -186,8 +186,8 @@ export async function refreshGuildTag(i, c) {
     });
     c.guildTags.reserve(i.guildId, i.user.id, role.id);
     try {
-      if (claim) await member.roles.add(role, 'Luna verified server tag reward');
-      else await member.roles.remove(role, 'Luna server tag reward removed');
+      if (claim) await member.roles.add(role, 'Emika verified server tag reward');
+      else await member.roles.remove(role, 'Emika server tag reward removed');
     } catch {
       c.guildTags.finish(i.guildId, i.user.id, 'uncertain');
       c.cases.finish(caseId, 'uncertain');

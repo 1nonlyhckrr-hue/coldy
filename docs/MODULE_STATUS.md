@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-65 top-level slash commands,586 executable paths,1294 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+65 top-level slash commands,586 executable paths,1296 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Emika paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -93,7 +93,7 @@ VoiceMaster reconcile verifies current exact owner/appbot/guild and ManageChanne
 
 `/voicemaster status` privately inspects caller-only stored unresolved ownership,record/channel ID and localized state. Explicitly not live existence/access/occupancy;no native lookup,mutation,case or readiness dependency.483 local tests,38 top-level/177 paths.
 
-`/welcome title kind [text]` sets independent static welcome/goodbye embed titles1-120chars,no @/control characters. Omit text resets selected title;body templates,color,destination,enabled consent unchanged. Preview/test/member events apply kind title verbatim,default Luna footer retained.483 local tests,38 top-level/177 paths;native pixels pending.
+`/welcome title kind [text]` sets independent static welcome/goodbye embed titles1-120chars,no @/control characters. Omit text resets selected title;body templates,color,destination,enabled consent unchanged. Preview/test/member events apply kind title verbatim,default Emika footer retained.483 local tests,38 top-level/177 paths;native pixels pending.
 
 `/autoresponder cooldown trigger seconds` edits only elapsed cooldown10-3600seconds for exact normalized stored trigger. Current manager required;response/mode/enabled/last-send/replay history preserved,no native send.483 local tests,38 top-level/177 paths.
 
@@ -141,10 +141,10 @@ SQLite26 stores role click action direction before native effect. New native cli
 
 Music operator must explicitly configure ENABLE_MUSIC,MUSIC_RISK_ACCEPTED,LAVALINK_URL,LAVALINK_AUTH and ENABLE_VOICE_EVENTS. Public source terms/availability risk accepted by owner;no every-song or24/7 guarantee. First provider snapshot version cannot satisfy stable4.2+DAVE guard;do not bypass. Local526 tests pass,41top-level/193paths,not live verification.
 
-526/193 PUBLIC publication verified at9dcd6f64d3e62e014803387ecc186f61f786ba80;exact-headNode22/24CI38129406406green,temp source release/asset/tag removed. No deployment.
+526/193 PUBLIC publication verified at9dcd6f64d3e62e014803387ecc186f61f786ba80;exact-headNode22/24CI38129606406green,temp source release/asset/tag removed. No deployment.
 
 Music waiting queue batch adds remove/clear/shuffle plus paginated ten-track queue with exact global positions. Current track,paused/stay state and provider unchanged;same-channel authority and bounded indices enforced. Random copy commits atomically;session lock/uncertain gates preserved. Late finished event cannot advance an uncertain session (regression fixed).533 local tests,41top-level/196paths,SQLite26;new batch local only,not live or published. Experimental music remains off with compatible free-node gap.
-Exact526published-head CI evidence:https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38129406406 . This is not533CI evidence.
+Exact526published-head CI evidence:https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38129606406 . This is not533CI evidence.
 
 Music safety batch:strict integer stable4.2minor/source-array metadata refuses malformed node declarations;exact video-ID requests reject provider substitutions. Play refreshes exact voice readiness/channel/rights after delayed resolve and again after join before initial playback. Lost authority before join releases reservation;after join freezes for explicit stop with no play or automatic disconnect. Captured channel ID is immutable despite native object changes.540local tests,196paths unchanged;no token/live verification or node-guard bypass.
 
@@ -588,7 +588,7 @@ Feature1192media:6newsetup/remove/config/bypassadd/bypassremove/bypassshow verif
 
 Feature1198autoreact:4newreactadd/remove/list/reset verifiedreference https://docs.zynrax.site/configuration/autoreact . Max10singlewordNFKClowercasetriggers/10distinctemojiJSON/graphemes/currentguildcustomIDs,futurehumanfreshnormaltextonly,forcednativebotchannelmessageemoji/policy/wordguards/peremojipersistentreceipt/exactnativepostreactionmeproof/ambiguitynoretry.6tests bounds/unicode/persistence/guild/replay/ignore/nativeguards/races/unknown/private3locale.32migrations53tables,new2tables. Published1132/505unchanged;549localpathsnotyetpublished,nativeunverified;541equivalenceunknown.
 
-Feature1205antibot:6newadd/remove/config/reset/wladd/wlremove verifiedreference https://docs.zynrax.site/configuration/antibot .25normaltextchannels/100currentbotwhitelist,explicitconfirm/futurefreshbotmessagesonly/Luna+webhook+edit+system+staleexcluded/nativeactorbotchannelmessage2passidentitypermissions/policywhitelistguards/persistentdeletionreceipts/exact10008+404absenceproof/uncertainnoretry.7tests bounds/guild/persistence/reset/replay/nativeguards/races/3locale.33migrations56tables.555paths/58top/1205localtests;published1132/505unchanged;50localnewpaths,readyfornextsourcepublicationreview. Nativeunverified,541equivalenceunknown.
+Feature1205antibot:6newadd/remove/config/reset/wladd/wlremove verifiedreference https://docs.zynrax.site/configuration/antibot .25normaltextchannels/100currentbotwhitelist,explicitconfirm/futurefreshbotmessagesonly/Emika+webhook+edit+system+staleexcluded/nativeactorbotchannelmessage2passidentitypermissions/policywhitelistguards/persistentdeletionreceipts/exact10008+404absenceproof/uncertainnoretry.7tests bounds/guild/persistence/reset/replay/nativeguards/races/3locale.33migrations56tables.555paths/58top/1205localtests;published1132/505unchanged;50localnewpaths,readyfornextsourcepublicationreview. Nativeunverified,541equivalenceunknown.
 
 Feature1212voicelb:8newenable/disable/config/stats/top/resetmine/optout/optin verifiedreference https://docs.zynrax.site/configuration/leaderboard . Opt-in human normalvoice futurejoin60ssampling,forcednativevoice/member/channelAFK/bot/stageexclusion,90UTCdayssettledcounts/privacy/retention/sessionrestartdrop/no guessedtails/overlapguards/policyrevision.100sessions/guild1000globalcap.7tests offdefault/persistence/replay/races/nativeguards/retention/daywindow/3locale.34migrations59applicationtables.59top563paths1212localtests;published1205/555unchanged,8localnewpaths,nativeunverified. Samplingisnotexactcallspeakingtime/fullall-time/rewards;remainingreferencegapsnotclosedbynumericalcounts.
 
@@ -628,4 +628,4 @@ Checkpoint1281entertainmentclosure:55exactrowsFun35/Music20 in data/entertainmen
 
 Checkpoint1284aggregateclosure:all319exactrows and34officialindex contentpages source-covered,data/source-closure.json/docs/SUPPLEMENTAL_CLOSURE.md,3aggregate tests. Premium3commands outsideoriginal319registry explicitlyomitted;Dating/Pfp/Vanity/goodbye/AntiBetray/payment/privacy/removal/legal claims accounted. Top-level reference maps replaced to remove stale pendingfamily/ETA wording.1284localtests,65top586paths,no full541/native/audio/visual/production claim. Public feature/ledger milestone stillpending,parentdecision;no token/deploy/Koki/historyrewrite.
 
-Registration1294hotfix:required jail.apply duration nowbeforeoptionalreason. Recursive required-before-optional validator runs before preview/apply;3tests full65commandpayload/root/sub/groupreject/realpreview. Full1294localtests pass.65top586paths unchanged,no native registration/deploy/musicguard changes.
+Registration1296hotfix:required jail.apply duration nowbeforeoptionalreason. Recursive required-before-optional validator runs before preview/apply;3tests full65commandpayload/root/sub/groupreject/realpreview. Full1296localtests pass.65top586paths unchanged,no native registration/deploy/musicguard changes.

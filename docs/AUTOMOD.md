@@ -1,6 +1,6 @@
 # AutoMod
 
-Seventeen Luna paths under `/automod`: enable,disable,rule,wordadd,wordremove,exempt,config,incidents,timeoutminutes,ignorechannel,thresholds,testtext,spamthresholds,removepolicy,wordlist,unresolved,stats. Manage Server is refreshed for management actions. Message Content intent/runtime opt-in is required. Rules and automatic moderation start disabled. Enable selects warning-record or single-message-delete mode; bounded explicitly confirmed timeout is available;no auto-kick/ban.
+Seventeen Emika paths under `/automod`: enable,disable,rule,wordadd,wordremove,exempt,config,incidents,timeoutminutes,ignorechannel,thresholds,testtext,spamthresholds,removepolicy,wordlist,unresolved,stats. Manage Server is refreshed for management actions. Message Content intent/runtime opt-in is required. Rules and automatic moderation start disabled. Enable selects warning-record or single-message-delete mode; bounded explicitly confirmed timeout is available;no auto-kick/ban.
 
 Rules: literal bad-word/phrase boundaries, Discord invites, HTTP(S) links, five-or-more mentions (everyone counts as five), more than 80% uppercase after at least 20 letters, or spam (six messages or three identical normalized messages within ten seconds). Unicode normalization is used; phrase matching never executes user regex. Thresholds may have false positives; choose rules cautiously. Other link schemes, obfuscation/evasion and historical edit scanning are not handled.
 

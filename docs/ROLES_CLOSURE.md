@@ -2,7 +2,7 @@
 
 Every33reference row acrossAutorole8/Custom15/Reaction4/GuildTag3/VCRole3mapped.28adaptations,5thirdparty customtoggles explicitlyomitted safety. No pathcount/prefix/native equivalence claim.
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | autorole bots add | adapted | /autorole add - Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation. |
 | autorole bots remove | adapted | /autorole remove - Explicit kind humans/bots/all selects bounded safe-role futurejoinpolicy,max10roles/group. Freshconfiguring-manager/bot/role/target authority and persistent one-shot nativepostproof. No instantguarantee/backfill/preexistingroleadoption/resetrevocation. |
@@ -47,7 +47,7 @@ Every33reference row acrossAutorole8/Custom15/Reaction4/GuildTag3/VCRole3mapped.
 - Reaction emoji bindings on existingmessages:omitted native-limit/safety. Old/unowned messagepartialreactions can mismatch policy/identity. NewLuna-ownedbutton panels provide explicitpersistent binding/proof/no-retry instead.
 - Reaction bindingediting/exclusivegroups/autorevoke:omitted safety. Disablewholepanel freezesfutureclicks,keeps native assignments/messages/history.
 - Custom dynamicnamedcommands and required-role thirdparty toggles:omitted safety. Gate means eligible self-service only,not broad manager authority. No automaticgender/status categorization or unrelatedmember role changes. Existing safe explicit `/role add/remove` require actualnativeManageRoles,not this gate.
-- Custom create/delete reference means storedmapping,not native role lifecycle. Luna ownzero-permission createdroles are an extension,separateconsent/gate/receipt workflow. No mappingdelete silently deletes native roles.
+- Custom create/delete reference means storedmapping,not native role lifecycle. Emika ownzero-permission createdroles are an extension,separateconsent/gate/receipt workflow. No mappingdelete silently deletes native roles.
 
 Sources:
 - https://docs.zynrax.site/configuration/roles/autorole

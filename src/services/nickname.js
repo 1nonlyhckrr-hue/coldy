@@ -56,7 +56,7 @@ export async function setNickname(i, c, { targetId, nickname, confirm }) {
   });
   let accepted = false;
   try {
-    await target.setNickname(nickname, `Luna | actor ${actor.id} | explicit nickname`);
+    await target.setNickname(nickname, `Emika | actor ${actor.id} | explicit nickname`);
     accepted = true;
     const latest = await i.guild.members.fetch({ user: targetId, force: true });
     if (latest?.id !== targetId || latest.guild?.id !== i.guildId || latest.nickname !== nickname)

@@ -148,7 +148,7 @@ export default {
               : c.guildTags.inspectUser(i.guildId, i.options.getString('user-id', true));
         files = [
           new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-            name: 'luna-tag-' + sub + '.json',
+            name: 'emika-tag-' + sub + '.json',
           }),
         ];
         text = t('tagMetadataExported');
@@ -160,7 +160,7 @@ export default {
               JSON.stringify(c.guildTags.exportConfig(i.guildId), null, 2) + '\n',
               'utf8',
             ),
-            { name: 'luna-tag-config.json' },
+            { name: 'emika-tag-config.json' },
           ),
         ];
         text = t('tagConfigExported');
@@ -202,7 +202,7 @@ export default {
             JSON.stringify(c.guildTags.exportMine(i.guildId, i.user.id), null, 2) + '\n',
             'utf8',
           ),
-          { name: 'luna-own-tag-grant.json' },
+          { name: 'emika-own-tag-grant.json' },
         ),
       ];
       text = t('tagOwnExported');

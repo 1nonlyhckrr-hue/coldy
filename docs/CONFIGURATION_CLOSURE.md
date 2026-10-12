@@ -2,7 +2,7 @@
 
 Every33reference row Media6/Autoresponder4/Ignore10/Welcomer7/Logging6 mapped.26adaptations,7explicit safetyomissions. No prefix/native/fullscope equivalence.
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | media bypass add | adapted | /media bypassadd - Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention. |
 | media bypass remove | adapted | /media bypassremove - Confirmedoneexistingnormaltext attachment-only futuremessagepolicy;staff/bots/webhooks/edits/stale exempt,savedhumanbypass100,exactnative message/permission/revision/absenceproof,no historicalpurge/contentretention. |
@@ -44,7 +44,7 @@ Every33reference row Media6/Autoresponder4/Ignore10/Welcomer7/Logging6 mapped.26
 - Ignore anywhere/allcommands/bypass:omitted blanketimmunity/universaldisable. Explicit per-command additive denials apply slashdispatch,not backgroundjobs or unrelatedbuttonmessages. Nativepermissions and recovery remain.
 - Welcomer webdashboard:omitted native-limit;no dashboardbackend/accountauth/hostedmanagement exists. Explicitslash template/style setup/preview/test instead.
 - Welcomer freeplainmessage/arbitraryembed:adapted to sharedprofessionalLuna embeds withbounded title/color/publicimage/thumbnail/templatefields,not arbitraryrawembedJSON or plainunbranded automation.
-- Welcomer reference placeholders:user/user_name/user_nick/user_id/user_avatar/user_joindate/user_createdate/server_name/server_id/server_membercount/server_icon/timestamp are not all literalLuna keys. Supported Luna keys are `{user}`, `{username}`, `{server}`, and `{count}` in the current guildConfig renderer only;profile/date/avatar/icon/exactmembercensus/referencealias expansion omitted native-limit/privacy. Unsupportedplaceholders remain literal rather than inventeduserdata.
+- Welcomer reference placeholders:user/user_name/user_nick/user_id/user_avatar/user_joindate/user_createdate/server_name/server_id/server_membercount/server_icon/timestamp are not all literalLuna keys. Supported Emika keys are `{user}`, `{username}`, `{server}`, and `{count}` in the current guildConfig renderer only;profile/date/avatar/icon/exactmembercensus/referencealias expansion omitted native-limit/privacy. Unsupportedplaceholders remain literal rather than inventeduserdata.
 - Welcomeautodelete:explicit safetyomission,no pretendtimer. Pingonly arrivingmember withstored optout;no otherperson/role/everyone ping. Inflightdelivery cannot be atomically recalled.
 - Logging70events/nevermissanything:omitted native-limit/privacy. OnlyreviewedID/kind metadataevents andLunacase summaries,20events/min deliberate drops. No completeness/real-time guarantee.
 - Logging messageedit/delete/pins/bulkcontent,voiceattendance/mute/stream,invite/emoji/schedule/serverfullchanges/nickname/memberroleaudit/permissionoverwritebodies:omitted privacy/native-limit. No privatecontentretention/guessedactor replay or generalhistorydisclosure. Existingreviewed roleupdate/channelupdate metadata is not fullchangecontent audit.

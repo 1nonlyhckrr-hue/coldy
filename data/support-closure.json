@@ -20,7 +20,7 @@
     "limitKind": "safety",
     "lunaPaths": [],
     "evidenceDoc": "docs/GIVEAWAYS.md",
-    "reason": "Global banner reset omitted with safety-limited unsupported custom banner state; must not overwrite all native announcements under guessed ownership. Existing fixed Luna presentation remains.",
+    "reason": "Global banner reset omitted with safety-limited unsupported custom banner state; must not overwrite all native announcements under guessed ownership. Existing fixed Emika presentation remains.",
     "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
   },
   {
@@ -31,7 +31,7 @@
     "limitKind": "safety",
     "lunaPaths": [],
     "evidenceDoc": "docs/GIVEAWAYS.md",
-    "reason": "Giveaway global URL/upload banner customization omitted for safety: no reviewed remote-image audience/privacy policy, byte validation or durable owned-message update proof. Fixed branded Luna embeds only.",
+    "reason": "Giveaway global URL/upload banner customization omitted for safety: no reviewed remote-image audience/privacy policy, byte validation or durable owned-message update proof. Fixed branded Emika embeds only.",
     "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
   },
   {
@@ -247,7 +247,7 @@
       "ticket setup"
     ],
     "evidenceDoc": "docs/TICKETS.md",
-    "reason": "Existing category and unmanaged support role selected explicitly for future tickets; one configuration, fixed localized Luna embed, no interactive Simple/Embed/customwelcome wizard.",
+    "reason": "Existing category and unmanaged support role selected explicitly for future tickets; one configuration, fixed localized Emika embed, no interactive Simple/Embed/customwelcome wizard.",
     "verification": "local mocks only;native Discord buttons/privacy/effects/visual acceptance unverified"
   },
   {

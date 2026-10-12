@@ -476,8 +476,8 @@ export function createRoleButtonHandler(c) {
       const has = member.roles.cache.has(role.id);
       c.rolePanels.reserveClick(i.id, i.guildId, i.user.id, role.id, has ? 'remove' : 'add');
       try {
-        if (has) await member.roles.remove(role, 'Luna self-service role');
-        else await member.roles.add(role, 'Luna self-service role');
+        if (has) await member.roles.remove(role, 'Emika self-service role');
+        else await member.roles.add(role, 'Emika self-service role');
       } catch (error) {
         const rejected =
           typeof error.code === 'number' && error.status >= 400 && error.status < 500;

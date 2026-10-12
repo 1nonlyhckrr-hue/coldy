@@ -1,6 +1,6 @@
 # ticket
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## ticket addcategory
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Start the interactive setup to add a new ticket type (max 3 categories).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Add or remove users from a specific ticket.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 List all configured ticket categories.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Closes the ticket, generates a transcript, and restricts access.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Shows the current ticket configuration, including staff role and active channels.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Instantly deletes the ticket channel (use after closing).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Modify the ticket welcome message or panel message interactively.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Post the interactive button panel that users click to open tickets.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Delete an existing ticket category by its ID.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Add or remove users from a specific ticket.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Resets the entire ticket system configuration (prompts for confirmation).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Configure the base settings including the ticket category and welcome messages.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Define which role can view and manage all tickets.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
@@ -167,9 +167,9 @@ Source: https://docs.zynrax.site/configuration/tickets
 
 Set a channel where HTML transcripts will be sent after a ticket is closed.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/tickets
 
 
-Original Luna `/ticket unclaim` releases only the invoking current staff member's own claim on the current open ticket. No other member claim can be released,even by a manager. Channel access,roles,messages and transcripts are unchanged. Current staff access and exact actor ID are refetched;DB update is guild/status/claimant-conditional.
+Original Emika `/ticket unclaim` releases only the invoking current staff member's own claim on the current open ticket. No other member claim can be released,even by a manager. Channel access,roles,messages and transcripts are unchanged. Current staff access and exact actor ID are refetched;DB update is guild/status/claimant-conditional.

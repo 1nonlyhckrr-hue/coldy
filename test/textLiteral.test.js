@@ -78,6 +78,6 @@ test('replace/findlines/slice private3locale exactUTF8 literalJSONorTXT branding
         assert.deepEqual(JSON.parse(actual), { count: 1, text: '@everyone😀\n' });
       else if (sub === 'findlines') assert.deepEqual(JSON.parse(actual), [{ line: 2, text: 'x' }]);
       else assert.equal(actual, '@e');
-      assert.equal(reply.files[0].name, 'luna-' + sub + '.txt');
+      assert.equal(reply.files[0].name, 'emika-' + sub + '.txt');
     }
 });

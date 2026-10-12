@@ -165,7 +165,7 @@ export function createAutoRoleHandler(c) {
         key = guildId + ':' + event.id + ':' + event.joinedTimestamp + ':' + row.role_id;
         reserved = c.autoroles.reserve(key, guildId);
         if (!reserved) continue;
-        await current.roles.add(currentRole, 'Luna AutoRole configured by ' + row.actor_id);
+        await current.roles.add(currentRole, 'Emika AutoRole configured by ' + row.actor_id);
         const observed = await event.guild.members.fetch({ user: event.id, force: true });
         c.autoroles.finish(
           key,

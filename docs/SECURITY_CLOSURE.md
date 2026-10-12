@@ -2,7 +2,7 @@
 
 Every41inventoryrow acrossAntinuke8/AutoMod8/Mainrole5/Jail6/Event4/AutoReact4/AntiBot6mapped. Adapted is narrowerbehavior,not literalprefixparity/nativeverification.
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | anticonfig | adapted | /antinuke config - Stored alert-only policy,not protection/prevention/recovery proof. |
 | antilimit | adapted | /antinuke threshold - Mixed supported auditactions/actor rolling10-300s threshold2-20,not daily per-event quotas or preventive punishment. |
@@ -20,7 +20,7 @@ Every41inventoryrow acrossAntinuke8/AutoMod8/Mainrole5/Jail6/Event4/AutoReact4/A
 | react list | adapted | /react list - Private storedliteral trigger/emoji policy,not nativecurrentavailability proof. |
 | react remove | adapted | /react remove - Forgetone trigger,existingreactions/receipts untouched. |
 | react reset | adapted | /react reset - Forgetrules only,existingreactions/replayguards unchanged. |
-| antibot add | adapted | /antibot add - Confirmedselectednormaltext futurebotmessage deletion,max25channels,no webhook/Luna/history/raidban actions. |
+| antibot add | adapted | /antibot add - Confirmedselectednormaltext futurebotmessage deletion,max25channels,no webhook/Emika/history/raidban actions. |
 | antibot config | adapted | /antibot config - Private storedchannel/whitelistIDs,not nativeeffectproof. |
 | antibot remove | adapted | /antibot remove - Stopsfuturedeletion in selectedchannel,submitteddelete mayfinish. |
 | antibot reset | adapted | /antibot reset - Clearschannels+whitelist,not messages/receipts/nativeeffects. |
@@ -48,7 +48,7 @@ Every41inventoryrow acrossAntinuke8/AutoMod8/Mainrole5/Jail6/Event4/AutoReact4/A
 
 ## Source behaviors beyond command rows
 
-- Antinuke prevention/punishment/recovery/blankprotective role/manual hierarchywall:omitted safety. Luna does not block nativeactions or certify unbypassable protection. No recoveryrole creation/everyonemembership/hierarchy restructuring.
+- Antinuke prevention/punishment/recovery/blankprotective role/manual hierarchywall:omitted safety. Emika does not block nativeactions or certify unbypassable protection. No recoveryrole creation/everyonemembership/hierarchy restructuring.
 - Antinuke modules:supported native auditalerts only(guild/channel/role/webhookupdatecreate/delete,banadd,kick). Unban/prune/botadd/memberupdate/emoji/sticker/integration/invite-role/link-role/roleping/massping/vanity-specific prevention and unsupported eventattribution omitted native-limit/safety. Generalguildupdatealert is not vanity protection. No historicalaudit scrape.
 - Antinuke shortcuts/dailyper-eventlimit:disablebuttons are not extraimplemented modules;direct mixedrollingthreshold alertpolicy only. Native manager configuration is an explicit authoritydifference from owner/ExtraOwner reference.
 - AutoMod anti-spam:configurable3-10messages/2-10repeats/5-30s;default6messages/3repeats10s,not literalreference5/10. Short-livednormalized spamtextmemory <=30s;no SQLitecontent.

@@ -141,7 +141,7 @@ data
     s
       .setName('clearall')
       .setDescription(
-        'Confirmed remove all guild Luna denies,user/role/channel;native permissions unchanged.',
+        'Confirmed remove all guild Emika denies,user/role/channel;native permissions unchanged.',
       )
       .addBooleanOption((o) =>
         o
@@ -289,8 +289,8 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'commandcounts'
-              ? 'luna-permit-command-counts.json'
-              : 'luna-permit-command-denies.json',
+              ? 'emika-permit-command-counts.json'
+              : 'emika-permit-command-denies.json',
         }),
       ];
       text = t('permitCommandAudit');
@@ -308,8 +308,8 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(rules, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'searchid'
-              ? 'luna-permit-id-matches.json'
-              : 'luna-permit-obsolete-commands.json',
+              ? 'emika-permit-id-matches.json'
+              : 'emika-permit-obsolete-commands.json',
         }),
       ];
       text = t(sub === 'searchid' ? 'permitMatchesExported' : 'permitObsoleteExported', {
@@ -327,7 +327,7 @@ export default {
       const rules = c.commandRestrictions.exportRules(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(rules, null, 2) + '\n', 'utf8'), {
-          name: 'luna-permit-denies.json',
+          name: 'emika-permit-denies.json',
         }),
       ];
       text = t('permitExported', {

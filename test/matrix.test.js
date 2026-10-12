@@ -78,7 +78,7 @@ test('3matrixpaths private3locale exact JSON branded decimalstring outputs nopin
       assert.equal(reply.flags, 64);
       assert.deepEqual(reply.allowedMentions.parse, []);
       assert.equal(reply.embeds[0].data.description, translate(language, 'matrixResult'));
-      assert.equal(reply.files[0].name, 'luna-matrix-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-matrix-' + sub + '.json');
       assert.deepEqual(
         JSON.parse(reply.files[0].attachment.toString()),
         sub === 'transpose'

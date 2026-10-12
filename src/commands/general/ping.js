@@ -4,7 +4,7 @@ export default {
   category: 'general',
   data: new SlashCommandBuilder()
     .setName('ping')
-    .setDescription('Show Luna gateway latency.')
+    .setDescription('Show Emika gateway latency.')
     .setContexts(InteractionContextType.Guild),
   async execute(i, c) {
     const latency = i.client.ws.ping;

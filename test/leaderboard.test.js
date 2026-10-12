@@ -243,7 +243,7 @@ test('message counts and opt-in config survive restart with duplicate protection
   const { mkdtempSync, rmSync } = await import('node:fs'),
     { tmpdir } = await import('node:os'),
     { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-ranks-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-ranks-')),
     path = join(dir, 'db');
   try {
     let db = openDatabase(path),
@@ -360,7 +360,7 @@ test('persistent personal privacy preference survives reopening', async () => {
   const { mkdtempSync, rmSync } = await import('node:fs'),
     { tmpdir } = await import('node:os'),
     { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-privacy-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-privacy-')),
     path = join(dir, 'db');
   try {
     let db = openDatabase(path);
@@ -784,7 +784,7 @@ test('activity and privacy slash output own data only privately in three locales
         assert(!r.optedOut('g', user));
         assert.deepEqual(reply.allowedMentions.parse, []);
         assert(reply.embeds[0].data.description.length < 2000);
-        assert(reply.embeds[0].data.footer.text.includes('Luna'));
+        assert(reply.embeds[0].data.footer.text.includes('Emika'));
         assert(!reply.embeds[0].data.description.includes(user));
       } finally {
         db.close();

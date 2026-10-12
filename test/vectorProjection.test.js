@@ -74,7 +74,7 @@ test('3vectorgeometrypaths private3locale exactJSON precisionnotice noping no st
         reply.embeds[0].data.description,
         translate(language, sub === 'distancesquared' ? 'vectorResult' : 'vectorRationalResult'),
       );
-      assert.equal(reply.files[0].name, 'luna-vector-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-vector-' + sub + '.json');
       assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), fn('[1,0]', '[1,2]'));
     }
 });

@@ -393,7 +393,7 @@ test('v16 migrates existing single-role button mappings without changing old cus
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-panels-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-panels-')),
     path = join(dir, 'db');
   try {
     let db = openDatabase(path);
@@ -479,7 +479,7 @@ test('role click receipt state survives actual SQLite reopen and pending recover
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-click-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-click-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -531,7 +531,7 @@ test('schema24 role panel and button mappings survive migration25 click receipt 
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-panel-upgrade-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-panel-upgrade-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -832,7 +832,7 @@ test('schema25 undirected click receipts migrate to unknown with terminal and un
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-click-intent-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-click-intent-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {

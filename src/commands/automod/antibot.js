@@ -23,7 +23,7 @@ async function manager(i) {
 }
 const data = new SlashCommandBuilder()
   .setName('antibot')
-  .setDescription('Opt-in bot-message deletion in selected text channels;Luna/webhooks excluded.')
+  .setDescription('Opt-in bot-message deletion in selected text channels;Emika/webhooks excluded.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild);
 for (const sub of ['add', 'remove', 'config', 'reset', 'wladd', 'wlremove'])
@@ -34,7 +34,7 @@ for (const sub of ['add', 'remove', 'config', 'reset', 'wladd', 'wlremove'])
         remove: 'Stop future bot-message deletion in one channel;submitted effects may finish.',
         config: 'Private saved channel and bot whitelist IDs;not live deletion proof.',
         reset: 'Clear channels and whitelist;existing receipts/messages untouched.',
-        wladd: 'Whitelist one current bot member,max100;Luna always exempt.',
+        wladd: 'Whitelist one current bot member,max100;Emika always exempt.',
         wlremove: 'Remove one exact stored bot ID,including departed bots.',
       }[sub],
     );
@@ -119,7 +119,7 @@ export default {
           flags: MessageFlags.Ephemeral,
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n'), {
-              name: 'luna-antibot-policy.json',
+              name: 'emika-antibot-policy.json',
             }),
           ],
           allowedMentions: { parse: [], repliedUser: false },

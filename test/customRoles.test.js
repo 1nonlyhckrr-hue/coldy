@@ -66,7 +66,7 @@ function setup() {
   return { db, c, i, role, gate, member, bot, calls };
 }
 test('custom mappings/gate persist and isolate guilds', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-custom-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-custom-')),
     path = join(dir, 'db');
   try {
     let db = openDatabase(path),
@@ -559,7 +559,7 @@ test('creation policy and createown slash execute privately across locales with 
   }
 });
 test('created-role records and opt-in survive restart;in-flight creation recovers uncertain', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-create-role-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-create-role-')),
     path = join(dir, 'db');
   let db;
   try {
@@ -889,7 +889,7 @@ test('created role slash self actions use private locale payloads and replay-saf
 });
 test('created-role uncertain self action blocks after real SQLite reopen,other guild remains separate', async () => {
   const { ownRoleEffect } = await import('../src/services/customRoles.js');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-own-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-own-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -1054,7 +1054,7 @@ test('creation reconcile slash is private in all locales and does not change nat
 });
 test('creation reconciliation status survives SQLite reopen without replay or role assignment', async () => {
   const { reconcileCreation } = await import('../src/services/customRoles.js');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-reconcile-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-reconcile-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -1373,7 +1373,7 @@ test('late custom creation uncertainty never rewrites created or reconciled rece
   }
 });
 test('guarded completed custom role receipt survives actualSQLite reopen and late failure without reassignment', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-custom-receipt-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-custom-receipt-')),
     path = join(dir, 'db');
   let db;
   try {

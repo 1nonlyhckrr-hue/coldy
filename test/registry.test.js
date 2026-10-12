@@ -180,7 +180,7 @@ test('registry rejects invalid cooldown metadata at load rather than breaking fi
   const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const root = await mkdtemp(join(tmpdir(), 'luna-cooldown-registry-'));
+  const root = await mkdtemp(join(tmpdir(), 'emika-cooldown-registry-'));
   try {
     for (const [n, value] of [
       '0',
@@ -208,7 +208,7 @@ test('registry accepts default and inclusive valid cooldown bounds without chang
   const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const root = await mkdtemp(join(tmpdir(), 'luna-valid-cooldown-'));
+  const root = await mkdtemp(join(tmpdir(), 'emika-valid-cooldown-'));
   try {
     for (const [n, value] of [undefined, 1, 86400000].entries()) {
       const dir = join(root, String(n), 'test');

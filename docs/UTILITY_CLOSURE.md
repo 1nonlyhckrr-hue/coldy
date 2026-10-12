@@ -2,22 +2,22 @@
 
 All37documented rows mapped:28utility,6customization,1setup,1overview prefix,1embed.19adaptations,18explicit safety/native-limit omissions. No prefix/native/fullscope equivalence.
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | customize avatar | omitted (safety) | Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so. |
 | customize banner | omitted (safety) | Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so. |
 | customize reset | omitted (safety) | Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so. |
 | customize resetavatar | omitted (safety) | Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so. |
 | customize resetbanner | omitted (safety) | Bot appearance mutation/reset omitted without verified guild-scoped native support,owned original profile snapshot and reviewed remote-image content/audience policy. Must not change global application identity for other guilds;owner-only reference is not permission to do so. |
-| prefix | omitted (native-limit) | Luna uses registered native slash commands only;no prefix parser/runtime exists. Changing prefix cannot affect slash naming or command routing. |
+| prefix | omitted (native-limit) | Emika uses registered native slash commands only;no prefix parser/runtime exists. Changing prefix cannot affect slash naming or command routing. |
 | prefixset | omitted (native-limit) | Overview prefix alias omitted with slash-only native command surface;no invented configurable prefix behavior. |
 | security | adapted | /antinuke config, /antinuke enable - Adapted manual configuration/enable of opt-in audit alerts only,not automatic Administrator invitation/extraowner/fullprotection wizard. No punishment/prevention/recovery or top-role hierarchy bypass. |
 | afk | adapted | /afk set, /afk status, /afk clear - Explicit own reason share:true,server-scoped7day status and exact-channel notices only. Eligible new message in same guild clears; no nickname edits/global cross-server disclosure or mention-count report. |
 | avatar | adapted | /avatar - Force-fetched selected public user profile avatar URL1024size privately; not a native inline photo preview or guild-avatar/membership inference. |
 | banner | adapted | /banner - Force-fetched public user profile banner link or honest missing result privately; not guild banner/profile edits or membership inference. |
 | boostcount | adapted | /boostcount - Force-fetched exactguild current boost subscription count and tier0-3,private localized output; malformed provider fields fail closed. |
-| embed | omitted (safety) | General interactive embed builder/public send omitted without durable session-bound recipient+final-content review and native message ownership proof. Shared Luna embeds and scoped welcome style are not arbitrary rich-message publishing. |
-| invite | omitted (native-limit) | No verified deployed application OAuth invite/support destination is configured for this source package. Never invent Zynrax or Luna invite/support links; operators register their own Discord application using documented setup. |
+| embed | omitted (safety) | General interactive embed builder/public send omitted without durable session-bound recipient+final-content review and native message ownership proof. Shared Emika embeds and scoped welcome style are not arbitrary rich-message publishing. |
+| invite | omitted (native-limit) | No verified deployed application OAuth invite/support destination is configured for this source package. Never invent Zynrax or Emika invite/support links; operators register their own Discord application using documented setup. |
 | list admins | adapted | /list admins - Private fresh manager-only guild member snapshot10/page,explicit member-runtime opt-in,without presences/storage. Current membership can change after snapshot;not complete live universal census. |
 | list bans | adapted | /list bans - Fresh manager+BanMembers and currentbot/nativepermission checks. Max100 ban IDs/names fetched per cursor page,JSONattachment/private,not reasons/history or unban effect. |
 | list boosters | adapted | /list boosters - Private fresh manager-only guild member snapshot10/page,explicit member-runtime opt-in,without presences/storage. Current membership can change after snapshot;not complete live universal census. |
@@ -44,12 +44,12 @@ All37documented rows mapped:28utility,6customization,1setup,1overview prefix,1em
 
 ## Additional described behavior closure
 
-- Aliases si/ui/av/ri/bc/mc:reference aliases are not separate registered Luna paths. Slash-only canonical names,no prefix parser or custom prefix.
+- Aliases si/ui/av/ri/bc/mc:reference aliases are not separate registered Emika paths. Slash-only canonical names,no prefix parser or custom prefix.
 - Userinformation full member roles/permissions/join date and membercount human/bot/exactonline breakdown:omitted privacy/native-context limit;public user profile and approximate guild counts remain honestly labelled.
 - Stats shard info/command usage:omitted native-limit/privacy,no analytics collection or complete shard inventory. Process uptime is not deployment continuity.
 - Urban/translation/weather:external lookup omitted with the provider/privacy limits above. Stored bot locale does not translate user-authored text;replied messages never silently leave Discord.
 - AFK global cross-server status/nickname mutation/return mention counts:omitted privacy/safety. Explicit same-server/selected-channel sharing,7dayexpiry,bounded no-ping notices and eligible same-guild message clear only. No default cross-channel disclosure or presence tracking.
-- Poll pipe-delimited answers/replied context:separate native slash answer options instead. Native client owns votes/expiry;Luna does not enumerate voters. Unfinalized counts are approximate;live/client visuals pending.
+- Poll pipe-delimited answers/replied context:separate native slash answer options instead. Native client owns votes/expiry;Emika does not enumerate voters. Unfinalized counts are approximate;live/client visuals pending.
 - Embed dropdown/title/description/hexcolor/up-to25fields/thumbnail/image/footericon/authortexticon/sendbutton/channelmention workflow:general public builder omitted safety pending durable recipient/content review,remote media policy and owned-message binding. Fixed shared branded module output is not full builder equivalence.
 - Avatar/banner/bio customization,individual/global reset,owner-only review/monitoring/inappropriate-content bot removal:profile mutation and enforcement workflow omitted safety. No bio command row fabricated;no claim content moderation monitors uploads or automatically leaves a guild.
 - Initial setup Administrator invite/top-role/extraowner/unbypassable fullyprotected promises:explicitly omitted safety/native-limit. Least needed permissions,module opt-ins and manual operator role placement;no top-role change,blanket Administrator request or extraowner authority grant. Antinuke is audit alerts,not prevention/recovery.

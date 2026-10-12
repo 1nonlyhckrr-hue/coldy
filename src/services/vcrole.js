@@ -112,7 +112,7 @@ export function createVoiceRoleHandler(c) {
     if (c.voiceRoles.active.has(key)) return;
     c.voiceRoles.active.add(key);
     try {
-      // Only remove membership whose successful grant Luna owns;pre-existing roles never recorded.
+      // Only remove membership whose successful grant Emika owns;pre-existing roles never recorded.
       if (state.channelId === null) {
         for (const record of c.voiceRoles.grants(guildId, state.id)) {
           if (record.status !== 'granted') continue;
@@ -132,7 +132,7 @@ export function createVoiceRoleHandler(c) {
               continue;
             c.voiceRoles.state(guildId, state.id, record.role_id, 'removing');
             started = true;
-            await snapshot.member.roles.remove(snapshot.role, 'Luna VC role disconnect cleanup');
+            await snapshot.member.roles.remove(snapshot.role, 'Emika VC role disconnect cleanup');
             const observed = await state.guild.members.fetch({ user: state.id, force: true });
             if (
               observed?.id === state.id &&
@@ -164,7 +164,7 @@ export function createVoiceRoleHandler(c) {
         if (!started) return;
         await snapshot.member.roles.add(
           snapshot.role,
-          'Luna VC role configured by ' + policy.actor_id,
+          'Emika VC role configured by ' + policy.actor_id,
         );
         const observed = await state.guild.members.fetch({ user: state.id, force: true });
         c.voiceRoles.state(

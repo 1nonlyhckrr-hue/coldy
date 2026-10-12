@@ -54,6 +54,6 @@ test('3hexJSONdecodepaths private3locale exactliteralTXT branding noping no nati
       assert.equal(reply.embeds[0].data.description, translate(language, 'textTransform_' + sub));
       assert.deepEqual(reply.allowedMentions.parse, []);
       assert.equal(reply.files[0].attachment.toString(), fn(value));
-      assert.equal(reply.files[0].name, 'luna-' + sub + '.txt');
+      assert.equal(reply.files[0].name, 'emika-' + sub + '.txt');
     }
 });

@@ -75,7 +75,7 @@ test('3vectorpaths private3locale exactJSON branding keyednotice noping no stora
       assert.equal(reply.flags, 64);
       assert.deepEqual(reply.allowedMentions.parse, []);
       assert.equal(reply.embeds[0].data.description, translate(language, 'vectorResult'));
-      assert.equal(reply.files[0].name, 'luna-vector-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-vector-' + sub + '.json');
       assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), fn('[1,2,3]'));
     }
 });

@@ -54,7 +54,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('title')
-      .setDescription('Set static welcome/goodbye title;omit text to restore Luna title.')
+      .setDescription('Set static welcome/goodbye title;omit text to restore Emika title.')
       .addStringOption((o) =>
         o
           .setName('kind')
@@ -73,7 +73,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('color')
-      .setDescription('Set welcome/goodbye embed color,or reset to Luna default.')
+      .setDescription('Set welcome/goodbye embed color,or reset to Emika default.')
       .addStringOption((o) =>
         o
           .setName('hex')
@@ -290,7 +290,7 @@ export default {
       files = [
         new AttachmentBuilder(
           Buffer.from(JSON.stringify(c.guildConfig.get(i.guildId).welcome, null, 2) + '\n', 'utf8'),
-          { name: 'luna-welcome-config.json' },
+          { name: 'emika-welcome-config.json' },
         ),
       ];
       text = t('welcomeFullConfigExport');
@@ -320,7 +320,7 @@ export default {
             JSON.stringify(exportWelcome(c.guildConfig, i.guildId), null, 2) + '\n',
             'utf8',
           ),
-          { name: 'luna-welcome-library.json' },
+          { name: 'emika-welcome-library.json' },
         ),
       ];
       text = t('welcomeLibraryExported');

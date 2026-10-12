@@ -1,6 +1,6 @@
 # Existing-lobby join-to-create
 
-Reference: https://docs.zynrax.site/configuration/voicemaster . Original Luna safety-adapted subset,not full reference behavior. Native Discord acceptance pending.
+Reference: https://docs.zynrax.site/configuration/voicemaster . Original Emika safety-adapted subset,not full reference behavior. Native Discord acceptance pending.
 
 First configure `/voicemaster setup category`,then `/vmjoin setup channel confirm` with an existing normalvoice lobby. Setup requires fresh ManageChannels+MoveMembers,bot native permissions,voice runtime/readiness,noAFK/noLuna-managed lobby and explicit confirmation of future channel creation+move. `off` disables future joins,not existing channels or receipts;`config` exports saved lobby/actor metadata privately. This is3paths. The category/lobby are selected existing channels rather than automatically created structures.
 

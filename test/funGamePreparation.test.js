@@ -80,7 +80,7 @@ test('3gamepreparationpaths private3locale branded JSON noping no nativecalls st
       assert.equal(reply.flags, 64);
       assert.deepEqual(reply.allowedMentions.parse, []);
       assert.equal(reply.embeds[0].data.description, translate(locale, 'funGame_' + sub));
-      assert.equal(reply.files[0].name, 'luna-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-' + sub + '.json');
       const report = JSON.parse(reply.files[0].attachment.toString());
       if (sub === 'bracket') assert.equal(report.participants, 2);
       else if (sub === 'bingo') assert.equal(report.columns[2].values[2], null);

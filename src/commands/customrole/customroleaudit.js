@@ -60,7 +60,9 @@ export default {
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
-            sub === 'exportpolicy' ? 'luna-custom-role-policy.json' : 'luna-own-role-creation.json',
+            sub === 'exportpolicy'
+              ? 'emika-custom-role-policy.json'
+              : 'emika-own-role-creation.json',
         }),
       ];
       text = t(sub === 'exportpolicy' ? 'customAuditPolicy' : 'customAuditOwn');

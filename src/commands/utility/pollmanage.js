@@ -155,7 +155,7 @@ export default {
       );
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-poll-' + sub + '.json',
+          name: 'emika-poll-' + sub + '.json',
         }),
       ];
       text = t('pollScopedMetadata');
@@ -168,7 +168,7 @@ export default {
             : c.polls.inspectReceipt(i.guildId, i.options.getInteger('id', true));
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-poll-' + sub + '.json',
+          name: 'emika-poll-' + sub + '.json',
         }),
       ];
       text = t('pollMinimalMetadata');
@@ -185,7 +185,7 @@ export default {
       );
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(r, null, 2) + '\n', 'utf8'), {
-          name: 'luna-poll-send-receipts.json',
+          name: 'emika-poll-send-receipts.json',
         }),
       ];
       text = t('pollReceiptExport', { count: r.receipts.length, total: r.total });

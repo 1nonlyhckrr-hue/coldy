@@ -187,7 +187,7 @@ export async function changeEventMode(i, c, { enable, confirm }) {
           await ch.permissionOverwrites.edit(
             g,
             { ViewChannel: s.desired },
-            { type: 0, reason: 'Luna owner confirmed bounded event mode' },
+            { type: 0, reason: 'Emika owner confirmed bounded event mode' },
           );
           const observed = await native(i, s.id, s.type),
             after = eventSnapshot(observed);
@@ -230,12 +230,12 @@ export async function changeEventMode(i, c, { enable, confirm }) {
           e.mark(g, r.channel_id, 'restoring');
           const original = JSON.parse(r.before_json).find((x) => x.id === g);
           if (!original)
-            await ch.permissionOverwrites.delete(g, 'Luna restore owned event overwrite');
+            await ch.permissionOverwrites.delete(g, 'Emika restore owned event overwrite');
           else
             await ch.permissionOverwrites.edit(
               g,
               { ViewChannel: view(r.before_json, g) },
-              { type: 0, reason: 'Luna restore owned event view bit' },
+              { type: 0, reason: 'Emika restore owned event view bit' },
             );
           const observed = await native(i, r.channel_id, type);
           if (eventSnapshot(observed) !== r.before_json) throw Error('Restore not observed');

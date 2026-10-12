@@ -29,7 +29,7 @@ function fixture(db) {
   return { r, member, guild };
 }
 test('restrictions persist after restart and isolate guilds', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-permit-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-permit-')),
     path = join(dir, 'test.db');
   try {
     let db = openDatabase(path);
@@ -552,7 +552,7 @@ test('filtered permit empty results use page one and never imply command/Discord
 });
 
 test('channel deny is exact scope,persistent/idempotent/additive with owner/recovery exemptions', async () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-channel-deny-'));
+  const dir = mkdtempSync(join(tmpdir(), 'emika-channel-deny-'));
   let db = openDatabase(join(dir, 'db'));
   try {
     let { r, guild } = fixture(db);

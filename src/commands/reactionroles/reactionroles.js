@@ -310,7 +310,7 @@ export default {
       );
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-role-' + sub + '.json',
+          name: 'emika-role-' + sub + '.json',
         }),
       ];
       content = t('panelScopedMetadata');
@@ -324,7 +324,7 @@ export default {
             : c.rolePanels.channelCounts(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-role-' + sub + '.json',
+          name: 'emika-role-' + sub + '.json',
         }),
       ];
       content = t('panelMinimalMetadata');
@@ -340,10 +340,10 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'summary'
-              ? 'luna-panel-summary.json'
+              ? 'emika-panel-summary.json'
               : sub === 'clicksummary'
-                ? 'luna-role-click-summary.json'
-                : 'luna-channel-panels.json',
+                ? 'emika-role-click-summary.json'
+                : 'emika-channel-panels.json',
         }),
       ];
       content = t(
@@ -358,7 +358,7 @@ export default {
       const report = c.rolePanels.exportMappings(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-role-panels.json',
+          name: 'emika-role-panels.json',
         }),
       ];
       content = t('rolePanelExported', {

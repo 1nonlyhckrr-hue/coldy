@@ -1,6 +1,6 @@
 # Confirmed safe role assignments
 
-Reference-led role/create scope: https://docs.zynrax.site/security/moderation . Original Luna behavior is deliberately narrower than arbitrary privileged/bulk role grants.
+Reference-led role/create scope: https://docs.zynrax.site/security/moderation . Original Emika behavior is deliberately narrower than arbitrary privileged/bulk role grants.
 
 `/role add member role confirm:true` and `remove` change exactly one human membership. Fresh forced actor,bot,target and role identities and guilds are checked twice;actor and bot Manage Roles,app permission,safe role permission allowlist,unmanaged/non-everyone and hierarchy required. Target owner/self/bot and roles owned by panel/autorole/custom-creation workflows are rejected. Unknown prior target role membership effects freeze further add/remove until reviewed separately. A native no-op stores no case. Effect has one pre-reserved case and forced exact post-membership observation. Any submitted ambiguous outcome is uncertain,no retry.
 

@@ -418,8 +418,8 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'channelrecords'
-              ? 'luna-channel-schedules.json'
-              : 'luna-schedule-metadata.json',
+              ? 'emika-channel-schedules.json'
+              : 'emika-schedule-metadata.json',
         }),
       ];
       content = t('automationMetadataExport');
@@ -438,7 +438,7 @@ export default {
       const rows = c.messageSchedules.exportRecords(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(rows, null, 2) + '\n', 'utf8'), {
-          name: 'luna-schedules.json',
+          name: 'emika-schedules.json',
         }),
       ];
       content = t('automationExported', { count: rows.length });

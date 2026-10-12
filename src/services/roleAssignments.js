@@ -87,7 +87,7 @@ export async function assignSafeRole(i, c, { targetId, roleId, remove = false, c
   try {
     await state.target.roles[action](
       state.role,
-      'Luna | actor ' + state.actor.id + ' | safe role ' + action,
+      'Emika | actor ' + state.actor.id + ' | safe role ' + action,
     );
     const observed = await i.guild.members.fetch({ user: targetId, force: true });
     if (
@@ -156,7 +156,7 @@ export async function createSafeRole(i, c, { name, confirm }) {
       permissions: [],
       hoist: false,
       mentionable: false,
-      reason: 'Luna | actor ' + actor.id + ' | safe role create',
+      reason: 'Emika | actor ' + actor.id + ' | safe role create',
     });
     if (typeof created?.id !== 'string' || !/^\d{17,20}$/.test(created.id))
       throw Error('Missing role identity');

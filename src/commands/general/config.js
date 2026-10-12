@@ -9,7 +9,7 @@ import { UserError } from '../../utils/errors.js';
 import { lunaEmbed } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('config')
-  .setDescription('View per-server setup and set Luna language.')
+  .setDescription('View per-server setup and set Emika language.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
@@ -84,7 +84,7 @@ export default {
       files = [
         new AttachmentBuilder(
           Buffer.from(JSON.stringify(c.guildConfig.get(i.guildId), null, 2) + '\n', 'utf8'),
-          { name: 'luna-guild-delivery-config.json' },
+          { name: 'emika-guild-delivery-config.json' },
         ),
       ];
       description = c.localization.t(i.guildId, 'configExported');

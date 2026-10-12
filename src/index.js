@@ -218,7 +218,7 @@ if (config.memberEventsEnabled) {
 
 client.once(Events.ClientReady, (ready) => {
   context.voiceReadiness.initialReady();
-  logger.info({ botId: ready.user.id, commands: commands.size }, 'Luna ready');
+  logger.info({ botId: ready.user.id, commands: commands.size }, 'Emika ready');
   context.giveawayRunner.start();
   context.automationRunner.start();
 });

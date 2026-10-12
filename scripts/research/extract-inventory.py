@@ -16,7 +16,7 @@ def add(line,cat,desc,url,tag):
  if name.startswith('voice '):cat='voice'
  key=(cat,name)
  params=[{'name':m.group(2),'required':m.group(1) in ('(', '<'),'referenceNotation':m.group(0)} for m in re.finditer(r'(\(|\[|<)([^)\]>]+)[)\]>]',line)]
- note='Documented reference syntax, not a live-tested Zynrax command. Permissions and aliases not stated are unknown; empty arrays do not mean none. Category is Luna planning mapping. Prefix differs across Zynrax documentation. '+tag
+ note='Documented reference syntax, not a live-tested Zynrax command. Permissions and aliases not stated are unknown; empty arrays do not mean none. Category is Emika planning mapping. Prefix differs across Zynrax documentation. '+tag
  if key not in rows:rows[key]={'name':name,'category':cat,'syntax':line,'description':desc,'parameters':params,'userPermissions':[],'botPermissions':[],'aliases':[],'referenceVerified':True,'implemented':False,'tested':False,'notes':note,'source':url}
  elif line not in rows[key]['syntax'].split('\n'):rows[key]['syntax']+='\n'+line;rows[key]['notes']+=' Multiple documented variants; do not split these into fake command counts.'
  evidence.append({'category':cat,'name':name,'syntax':line,'source':url,'evidenceType':tag})

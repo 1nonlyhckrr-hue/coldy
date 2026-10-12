@@ -1,6 +1,6 @@
 # antinuke
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## anticonfig
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 You can use the `,anticonfig` command to view the current antinuke configuration.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/security/antinuke
 
 The following flags can be used to define the Anti-Nuke module. Set a strict daily limit on the number of actions a moderator can perform. Once that limit is hit within the day, Zynrax instantly steps in and takes action — no second chances. It's recommended to keep the threshold between `5` and `10` to stay safe.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/security/antinuke
 
 Available Flags (see source for full description).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/security/antinuke
 
 Initially, only the **Server Owner** can configure the antinuke. However, you can allow other users to configure the antinuke with the `extraowner set` command. This is a dangerous command and will allow the user to entirely alter the antinuke configuration.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/security/antinuke
 
 You can exempt users from the antinuke with the `whitelist add` command. This is a dangerous command and will allow the user to bypass the antinuke entirely.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/security/antinuke
 
 You can remove users from the antinuke whitelist with the `whitelist remove` command.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/security/antinuke
 
 You can use the `whitelist show` command to view the whitelisted users.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/antinuke
 

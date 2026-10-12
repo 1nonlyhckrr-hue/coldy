@@ -277,7 +277,7 @@ export default {
         files = [
           new AttachmentBuilder(
             Buffer.from(JSON.stringify(c.messageRanks.config(i.guildId), null, 2) + '\n', 'utf8'),
-            { name: 'luna-message-rank-config.json' },
+            { name: 'emika-message-rank-config.json' },
           ),
         ];
         text = t('rankConfigExported');
@@ -368,7 +368,7 @@ export default {
             allowedMentions: { parse: [] },
             files: [
               new AttachmentBuilder(Buffer.from(csv, 'utf8'), {
-                name: 'luna-own-message-counts.csv',
+                name: 'emika-own-message-counts.csv',
               }),
             ],
           },

@@ -219,7 +219,7 @@ test('slowmode pending native outcome remains blocked after SQLite reopen', asyn
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-slow-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-slow-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {

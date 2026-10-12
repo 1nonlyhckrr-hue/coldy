@@ -296,7 +296,7 @@ test('created channel ID retained for privacy failure and ownership survives res
   } finally {
     s.db.close();
   }
-  const dir = mkdtempSync(join(tmpdir(), 'luna-vm-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-vm-')),
     path = join(dir, 'db');
   try {
     let db = openDatabase(path),

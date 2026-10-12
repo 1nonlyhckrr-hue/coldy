@@ -3,8 +3,8 @@
 | Problem | Check |
 | --- | --- |
 | Invalid configuration fields | Fill only the named fields; do not print the full environment |
-| Invalid token or login failure | Confirm Luna's token and outbound network; reset leaked credentials |
-| Commands missing | Preview then register to the same test guild using Luna's Application ID |
+| Invalid token or login failure | Confirm Emika's token and outbound network; reset leaked credentials |
+| Commands missing | Preview then register to the same test guild using Emika's Application ID |
 | Permission failure | Check both caller and bot permissions, channel overwrites and role hierarchy |
 | SQLite readonly/cannot open | Confirm mount path, parent-directory write access and one writer |
 | Native module build failure | Use a supported LTS, reinstall with npm ci on target OS; review native build prerequisites |

@@ -70,7 +70,7 @@ test('3rationalmatrixpaths private3locale exactJSON branded localizedprecisionno
         reply.embeds[0].data.description,
         translate(language, sub === 'rank' ? 'matrixResult' : 'matrixRationalResult'),
       );
-      assert.equal(reply.files[0].name, 'luna-matrix-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-matrix-' + sub + '.json');
       assert.deepEqual(
         JSON.parse(reply.files[0].attachment.toString()),
         sub === 'rank'

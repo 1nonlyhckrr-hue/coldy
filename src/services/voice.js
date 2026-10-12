@@ -154,7 +154,7 @@ export async function voiceAction(i, c, { action, targetId, channelId, reason })
     interactionId: i.id,
   });
   try {
-    const audit = `Luna | actor ${actor.id} | ${auditReason}`;
+    const audit = `Emika | actor ${actor.id} | ${auditReason}`;
     if (['mute', 'unmute'].includes(action)) await current.voice.setMute(action === 'mute', audit);
     else if (['deafen', 'undeafen'].includes(action))
       await current.voice.setDeaf(action === 'deafen', audit);

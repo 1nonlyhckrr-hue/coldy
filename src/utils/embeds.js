@@ -2,9 +2,9 @@ import { translate } from '../services/localization.js';
 import { EmbedBuilder } from 'discord.js';
 export const LUNA_COLOR = 0x9b87f5;
 const styles = {
-  error: { title: 'Luna | Unable to complete', color: 0xed6a78 },
-  success: { title: 'Luna | Complete', color: 0x74c69d },
-  info: { title: 'Luna', color: LUNA_COLOR },
+  error: { title: 'Emika | Unable to complete', color: 0xed6a78 },
+  success: { title: 'Emika | Complete', color: 0x74c69d },
+  info: { title: 'Emika', color: LUNA_COLOR },
 };
 export function lunaEmbed({
   title,

@@ -1,6 +1,6 @@
 # Discord helpers
 
-Three original paths under `/tools`,all private localized Luna embeds,no mentions/storage/native API reads or changes.
+Three original paths under `/tools`,all private localized Emika embeds,no mentions/storage/native API reads or changes.
 
 - `snowflake id`: accepts positive decimal unsigned64bit string,uses BigInt to decode timestamp/internal worker/process/increment fields. Reports encoded UTC/client timestamp,not proof of existence,object type,owner or current state. Never treats suppliedID as a member/contact.
 - `timestamp seconds [style]`: explicit Unix seconds0-253402300799,not milliseconds or inferred local dates. Styles t,T,d,D,f,F,s,S,R,defaultf. Shows UTC,rendered timestamp and copyable syntax. Each viewer uses their client timezone/locale. No scheduling/reminder.

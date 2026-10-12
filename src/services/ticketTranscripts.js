@@ -66,7 +66,7 @@ export async function collectTicketTranscript(channel, { limit = 1000, maxBytes 
     truncated = true;
   }
   return {
-    body: `Luna ticket transcript | channel ${channel.id}\nJSON lines; attachment URLs may expire. Embed contents are not exported.\n${truncated ? 'PARTIAL export: older messages were omitted.' : 'Complete fetched history at export time.'}\n\n${body}`,
+    body: `Emika ticket transcript | channel ${channel.id}\nJSON lines; attachment URLs may expire. Embed contents are not exported.\n${truncated ? 'PARTIAL export: older messages were omitted.' : 'Complete fetched history at export time.'}\n\n${body}`,
     count: lines.length,
     truncated,
   };

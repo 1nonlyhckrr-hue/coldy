@@ -45,9 +45,9 @@ export async function openTicket(i, c) {
       name: `ticket-${id}`,
       type: ChannelType.GuildText,
       parent: config.category_id,
-      topic: `Luna ticket ${id}`,
+      topic: `Emika ticket ${id}`,
       permissionOverwrites: ticketOverwrites(i.guildId, bot.id, i.user.id, config.support_role_id),
-      reason: 'Luna private support ticket',
+      reason: 'Emika private support ticket',
     });
   } catch {
     c.tickets.uncertain(id, 'creating');
@@ -138,7 +138,7 @@ export async function changeTicketState(i, c, close) {
   try {
     await channel.permissionOverwrites.set(
       ticketOverwrites(i.guildId, bot.id, ticket.owner_id, ticket.support_role_id, close),
-      'Luna ticket access change',
+      'Emika ticket access change',
     );
     requireTicketBot(i.guild, bot);
     await verifyTicketPrivacy(channel, { ...ticket, status: close ? 'closed' : 'open' }, bot.id);
@@ -166,7 +166,7 @@ export async function exportTicketTranscript(i, c) {
   await recheckTicketSnapshot(i, c, ticket);
   return {
     file: new AttachmentBuilder(Buffer.from(transcript.body, 'utf8'), {
-      name: `luna-ticket-${ticket.id}.txt`,
+      name: `emika-ticket-${ticket.id}.txt`,
     }),
     count: transcript.count ?? transcript.message_count,
     truncated: !!transcript.truncated,

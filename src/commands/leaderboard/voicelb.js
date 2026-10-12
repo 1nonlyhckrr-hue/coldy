@@ -79,7 +79,7 @@ export default {
           allowedMentions: { parse: [], repliedUser: false },
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n'), {
-              name: 'luna-voice-ranks.json',
+              name: 'emika-voice-ranks.json',
             }),
           ],
         },

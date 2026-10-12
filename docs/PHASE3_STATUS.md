@@ -112,7 +112,7 @@ Original public checkpoint passed Node 22/24 GitHub CI. This newer consolidated 
 
 ## Dual inventories
 
-32 top-level/131 actual paths/250tests. Separate installed Luna JSON/CSV generated and regression checked,319reference rows still separate. No claim of live acceptance or full541help parity.
+32 top-level/131 actual paths/250tests. Separate installed Emika JSON/CSV generated and regression checked,319reference rows still separate. No claim of live acceptance or full541help parity.
 
 ## Formatting and current security guidance
 

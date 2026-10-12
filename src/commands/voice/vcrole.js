@@ -15,7 +15,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('vcrole')
     .setDescription(
-      'Future voice-event safe role policy;only Luna-owned grants cleaned on disconnect.',
+      'Future voice-event safe role policy;only Emika-owned grants cleaned on disconnect.',
     )
     .setContexts(InteractionContextType.Guild)
     .setDefaultMemberPermissions(P.ManageGuild | P.ManageRoles)
@@ -33,7 +33,7 @@ export default {
       s
         .setName('remove')
         .setDescription(
-          'Disable future grants;existing Luna-owned grants retain future-disconnect cleanup.',
+          'Disable future grants;existing Emika-owned grants retain future-disconnect cleanup.',
         ),
     )
     .addSubcommand((s) =>
@@ -76,7 +76,7 @@ export default {
           flags: MessageFlags.Ephemeral,
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n'), {
-              name: 'luna-vcrole-policy.json',
+              name: 'emika-vcrole-policy.json',
             }),
           ],
           allowedMentions: { parse: [], repliedUser: false },

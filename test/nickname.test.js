@@ -216,7 +216,7 @@ test('nickname pending operation remains blocked after actual SQLite reopen', as
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-nick-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-nick-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {

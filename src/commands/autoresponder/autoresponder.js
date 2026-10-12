@@ -393,8 +393,8 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'deliveryoverview'
-              ? 'luna-responder-delivery-overview.json'
-              : 'luna-responder-receipts.json',
+              ? 'emika-responder-delivery-overview.json'
+              : 'emika-responder-receipts.json',
         }),
       ];
       text = t(
@@ -430,7 +430,7 @@ export default {
       const rows = c.autoresponders.exportRules(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(rows, null, 2) + '\n', 'utf8'), {
-          name: 'luna-autoresponders.json',
+          name: 'emika-autoresponders.json',
         }),
       ];
       text = t('responderExported', { count: rows.length });

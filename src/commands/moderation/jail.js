@@ -99,7 +99,7 @@ export default {
                   2,
                 ) + '\n',
               ),
-              { name: 'luna-jail.json' },
+              { name: 'emika-jail.json' },
             ),
           ],
         },

@@ -1,6 +1,6 @@
 # AutoReact
 
-Reference-led behavior: https://docs.zynrax.site/configuration/autoreact . Original Luna implementation. Native Discord acceptance pending.
+Reference-led behavior: https://docs.zynrax.site/configuration/autoreact . Original Emika implementation. Native Discord acceptance pending.
 
 `/react add trigger emojis`:one word1-50letters/digits/underscore,NFKC+lowercase,JSONarray1-10distinct emoji strings. Up to10triggers/guild. Unicode accepts one emoji grapheme sequence from bounded reviewed syntax;custom strings must be exact current-guild emoji IDs forced native validated. Existing trigger replaced;not an additional path. Requires current Manage Server/message events. `remove trigger`,`list`,`reset`:private saved policy changes,existing reactions untouched.
 

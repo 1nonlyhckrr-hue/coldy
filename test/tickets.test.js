@@ -232,7 +232,7 @@ test('private transcript denies unrelated users and does not use public channel 
   try {
     await openTicket(x.i, x.c);
     const r = await exportTicketTranscript(x.i, x.c);
-    assert.match(r.file.name, /luna-ticket-1.txt/);
+    assert.match(r.file.name, /emika-ticket-1.txt/);
     assert.equal(x.sent.length, 0);
     x.i.user.id = 'outsider';
     await assert.rejects(() => exportTicketTranscript(x.i, x.c), /ticketAccessDenied/);
@@ -481,7 +481,7 @@ test('ticket own-claim release is isolated,current-staff-only and does not modif
 });
 
 test('released ticket claim remains unclaimed across database restart', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-unclaim-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-unclaim-')),
     path = join(dir, 'db');
   let db;
   try {
@@ -980,7 +980,7 @@ test('late ticket panel fault cannot invalidate active delivery identity or resu
   }
 });
 test('ticket receipt guarded storage writes remain guarded after actual SQLite restart', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-ticket-receipts-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-ticket-receipts-')),
     path = join(dir, 'db');
   let db;
   try {

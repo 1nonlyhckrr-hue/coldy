@@ -181,7 +181,7 @@ export default {
             }),
             files: [
               new AttachmentBuilder(Buffer.from(JSON.stringify(r, null, 2) + '\n', 'utf8'), {
-                name: 'luna-active-warnings.json',
+                name: 'emika-active-warnings.json',
               }),
             ],
             allowedMentions: { parse: [] },

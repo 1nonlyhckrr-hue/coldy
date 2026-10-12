@@ -464,7 +464,7 @@ test('AutoMod legacy JSON defaults empty exclusions and channel policy survives 
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-ignore-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-ignore-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -567,7 +567,7 @@ test('AutoMod tuned thresholds persist across SQLite reopen and legacy settings 
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-threshold-restart-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-threshold-restart-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -1167,7 +1167,7 @@ test('spam threshold config and unresolved recovery survive actual SQLite reopen
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-spam-recovery-'));
+  const dir = mkdtempSync(join(tmpdir(), 'emika-spam-recovery-'));
   let db = openDatabase(join(dir, 'db'));
   try {
     let a = new AutoMod(db);

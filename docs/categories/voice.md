@@ -1,6 +1,6 @@
 # voice
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## vcrole add
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Configure the role that will be automatically added.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/vcrole
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/roles/vcrole
 
 Clear the Voice role setting for your server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/vcrole
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/roles/vcrole
 
 Check your current Voice Role configuration.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/vcrole
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/roles/vcrole
 
 Deafen a member so they cannot hear in the voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Deafen all members in your current voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Remove a member from their current voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Disconnect every member from your current voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Restrict access to your current channel so no more users can join.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Move a member to a different voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Move every member in your current channel to another specified channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Mute a specific member in their voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Mute every member in your current voice channel simultaneously.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Make your current channel invisible and non-joinable for @everyone.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -166,7 +166,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Instantly pull a member from any channel to your current voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -178,7 +178,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Pull every member from all voice channels in the server to yours.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -190,7 +190,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Restore a member's ability to hear in the voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -202,7 +202,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Undeafen all members in your current voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -214,7 +214,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Remove the join restriction from your voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -226,7 +226,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Restore a member's ability to speak in their voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -238,7 +238,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Unmute every member in your current voice channel simultaneously.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 
@@ -250,7 +250,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 Make your channel visible and joinable for the entire server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/moderation
 

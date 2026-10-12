@@ -1,6 +1,6 @@
 # music
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## 247
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Keep the bot in the voice channel even when no music is playing. It will automatically reconnect after a restart.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Toggle autoplay to have the bot automatically play similar songs when the queue ends.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Empty all upcoming tracks from the queue at once.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Remove the bot from the voice channel and clear the current session.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Apply professional-grade audio filters to the current track.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Apply professional-grade audio filters to the current track.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Summon the bot to your current voice channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Toggle loop mode to repeat the current track indefinitely.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 View detailed information about the song that is currently playing.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Halt the current playback temporarily.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Play a song or playlist by name, keyword, or URL.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Display a list of all upcoming songs in the current session.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Start the currently playing track from the very beginning.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -166,7 +166,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Continue playing a song that was previously paused.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -178,7 +178,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Search for a specific track across multiple platforms and choose from the results.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -190,7 +190,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Jump to a specific point in the song using a percentage.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -202,7 +202,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Randomize the order of all songs currently in the queue.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -214,7 +214,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Skip the current song and move to the next one in the queue.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -226,7 +226,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Stop the music and clear the music queue entirely.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 
@@ -238,7 +238,7 @@ Source: https://docs.zynrax.site/miscellaneous/music
 
 Adjust the player volume to your preference (1-150%).
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/music
 

@@ -4,7 +4,7 @@ This ledger maps every59documented moderation inventory row. Adapted does not me
 
 Source: https://docs.zynrax.site/security/moderation
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | ban | adapted | /moderation ban - One current target,permissions/hierarchy/case guards;keeps message history,not a bulk ban. |
 | clearwarns | adapted | /moderation clearwarns - Marks warnings cleared,keeps audit cases;does not lift a native timeout. |
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/security/moderation
 
 - Warning auto4+timeout:explicitly omitted for safety;historical/edited/reset warning counts are not permission for another native punishment.
 - Purge images/embeds/files/customemoji/contains/reactions:explicitly omitted for safety. Content-selection races,reaction removal semantics and broad irreversible deletion need a separate exact preview design. Current unfiltered10message deletion is not proof those filters work.
-- Purge999messages:omitted for native/safety bounds. Discord bulk delete has per-call bounds and old-message restrictions;Luna uses recent13day1-10exact IDs,skips pinned/system and requires120sconfirm. No quantity silently increased.
+- Purge999messages:omitted for native/safety bounds. Discord bulk delete has per-call bounds and old-message restrictions;Emika uses recent13day1-10exact IDs,skips pinned/system and requires120sconfirm. No quantity silently increased.
 - Lock/hide bypasses:everyone denials are not confidentiality or complete isolation because roles/member allows/admins can bypass;general lock/hide is omitted,not sold as secured.
 - Generalvoice privacy/lock is not own VoiceMaster control. Existing own-room access controls remain documented separately.
 - Group roleunverified based on no avatar:classification omitted safety;avatar absence proves neither verification nor trust.

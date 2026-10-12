@@ -241,7 +241,7 @@ export default {
             );
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-audit-' + sub + '.json',
+          name: 'emika-audit-' + sub + '.json',
         }),
       ];
       text = t('antinukeScopedMetadata');
@@ -256,10 +256,10 @@ export default {
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
             sub === 'summary'
-              ? 'luna-audit-alert-summary.json'
+              ? 'emika-audit-alert-summary.json'
               : sub === 'actioncounts'
-                ? 'luna-audit-action-counts.json'
-                : 'luna-audit-incidents.json',
+                ? 'emika-audit-action-counts.json'
+                : 'emika-audit-incidents.json',
         }),
       ];
       text = t('antinukeIncidentExport');
@@ -280,7 +280,7 @@ export default {
       files = [
         new AttachmentBuilder(
           Buffer.from(JSON.stringify({ trustedUserIds: ids }, null, 2) + '\n', 'utf8'),
-          { name: 'luna-antinuke-trusted-ids.json' },
+          { name: 'emika-antinuke-trusted-ids.json' },
         ),
       ];
       text = t('antinukeTrustExported', { count: ids.length });
@@ -288,7 +288,7 @@ export default {
       files = [
         new AttachmentBuilder(
           Buffer.from(JSON.stringify(c.antinuke.get(i.guildId), null, 2) + '\n', 'utf8'),
-          { name: 'luna-audit-alert-policy.json' },
+          { name: 'emika-audit-alert-policy.json' },
         ),
       ];
       text = t('antinukePolicyExported');

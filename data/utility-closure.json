@@ -62,7 +62,7 @@
     "limitKind": "native-limit",
     "lunaPaths": [],
     "evidenceDoc": "docs/UTILITY_CLOSURE.md",
-    "reason": "Luna uses registered native slash commands only;no prefix parser/runtime exists. Changing prefix cannot affect slash naming or command routing.",
+    "reason": "Emika uses registered native slash commands only;no prefix parser/runtime exists. Changing prefix cannot affect slash naming or command routing.",
     "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
   },
   {
@@ -152,7 +152,7 @@
     "limitKind": "safety",
     "lunaPaths": [],
     "evidenceDoc": "docs/UTILITY_CLOSURE.md",
-    "reason": "General interactive embed builder/public send omitted without durable session-bound recipient+final-content review and native message ownership proof. Shared Luna embeds and scoped welcome style are not arbitrary rich-message publishing.",
+    "reason": "General interactive embed builder/public send omitted without durable session-bound recipient+final-content review and native message ownership proof. Shared Emika embeds and scoped welcome style are not arbitrary rich-message publishing.",
     "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
   },
   {
@@ -163,7 +163,7 @@
     "limitKind": "native-limit",
     "lunaPaths": [],
     "evidenceDoc": "docs/UTILITY_CLOSURE.md",
-    "reason": "No verified deployed application OAuth invite/support destination is configured for this source package. Never invent Zynrax or Luna invite/support links; operators register their own Discord application using documented setup.",
+    "reason": "No verified deployed application OAuth invite/support destination is configured for this source package. Never invent Zynrax or Emika invite/support links; operators register their own Discord application using documented setup.",
     "verification": "local mocks only;native Discord/provider/visual acceptance unverified"
   },
   {

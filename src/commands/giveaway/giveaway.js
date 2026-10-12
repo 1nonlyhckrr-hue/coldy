@@ -32,7 +32,7 @@ const data = new SlashCommandBuilder()
       .addStringOption((o) =>
         o
           .setName('prize')
-          .setDescription('Prize description; Luna does not transfer prizes')
+          .setDescription('Prize description; Emika does not transfer prizes')
           .setRequired(true)
           .setMinLength(1)
           .setMaxLength(250),
@@ -247,7 +247,7 @@ export default {
       );
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-giveaway-' + sub + '.json',
+          name: 'emika-giveaway-' + sub + '.json',
         }),
       ];
       content = t('giveawayScopedMetadata');
@@ -261,7 +261,7 @@ export default {
             : c.giveaways.channelCounts(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-giveaway-' + sub + '.json',
+          name: 'emika-giveaway-' + sub + '.json',
         }),
       ];
       content = t('giveawayMetadataExported');
@@ -277,7 +277,7 @@ export default {
       const report = c.giveaways.channelRecords(i.guildId, i.options.getString('channel-id', true));
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-channel-giveaway-records.json',
+          name: 'emika-channel-giveaway-records.json',
         }),
       ];
       content = t('giveawayRecordsExported', { count: report.records.length, total: report.total });
@@ -293,7 +293,7 @@ export default {
       const report = c.giveaways.exportRecords(i.guildId);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-giveaway-records.json',
+          name: 'emika-giveaway-records.json',
         }),
       ];
       content = t('giveawayRecordsExported', { count: report.records.length, total: report.total });

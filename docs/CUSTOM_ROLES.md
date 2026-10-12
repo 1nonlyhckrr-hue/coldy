@@ -1,6 +1,6 @@
 # CustomRole: local checkpoint
 
-Fourteen original Luna paths:map,unmap,required,clear,list,claim,release,creation,createown,created,creations,claimown,releaseown,reconcile. These are not claimed exact reference equivalents. Local tests are not live Discord acceptance.
+Fourteen original Emika paths:map,unmap,required,clear,list,claim,release,creation,createown,created,creations,claimown,releaseown,reconcile. These are not claimed exact reference equivalents. Local tests are not live Discord acceptance.
 
 ## Existing-role mappings
 
@@ -20,7 +20,7 @@ Default disabled. Fresh manager `/customrole creation enabled confirm:true` opts
 
 Created-role customization and assignment-case reconciliation still absent. No role delete,other-member assignment,automatic uncertainty repair or reference parity claim. Current safety checks may block release of a role edited by managers into an unsafe state;manager must inspect/remove it. All payloads private,mentions disabled,shared EN/HI/Hinglish embeds;slash metadata English.358 distinct project tests pass,37 top-level156 installed paths,SQLite24. Native permissions/hierarchy/gateway/rate limits and actual embed pixels remain unverified. No deployment.
 
-Native source: https://docs.discord.com/developers/resources/guild . Create-role omitted permissions inherit @everyone,so Luna passes explicit0n. Add/remove member role requires ManageRoles.
+Native source: https://docs.discord.com/developers/resources/guild . Create-role omitted permissions inherit @everyone,so Emika passes explicit0n. Add/remove member role requires ManageRoles.
 
 ## Observed creation reconciliation
 

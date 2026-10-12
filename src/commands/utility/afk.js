@@ -200,7 +200,7 @@ export default {
               );
         files = [
           new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-            name: 'luna-afk-' + sub + '.json',
+            name: 'emika-afk-' + sub + '.json',
           }),
         ];
         text = t('afkStatusMetadata');
@@ -215,10 +215,10 @@ export default {
           new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
             name:
               sub === 'summary'
-                ? 'luna-afk-summary.json'
+                ? 'emika-afk-summary.json'
                 : sub === 'channelcounts'
-                  ? 'luna-afk-channel-counts.json'
-                  : 'luna-afk-notices.json',
+                  ? 'emika-afk-channel-counts.json'
+                  : 'emika-afk-notices.json',
           }),
         ];
         text = t(sub === 'exportnotices' ? 'afkNoticesExport' : 'afkCountsExport');
@@ -234,7 +234,7 @@ export default {
             : null;
         files = [
           new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-            name: 'luna-own-afk.json',
+            name: 'emika-own-afk.json',
           }),
         ];
         text = t('afkOwnExported');

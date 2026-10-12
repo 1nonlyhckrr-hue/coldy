@@ -124,7 +124,7 @@ export function createVoiceJoinHandler(c) {
         throw new UserError('vmJoinUnavailable');
       reserved = c.voiceJoin.reserve(state.guild.id, state.id, created.channelId);
       if (!reserved) return;
-      await current.member.voice.setChannel(channel, 'Luna configured join-to-create');
+      await current.member.voice.setChannel(channel, 'Emika configured join-to-create');
       const observed = await state.guild.voiceStates.fetch(state.id, { force: true });
       c.voiceJoin.finish(
         state.guild.id,

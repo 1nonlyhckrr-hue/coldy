@@ -100,7 +100,7 @@ export default {
           files: [
             new AttachmentBuilder(
               Buffer.from(JSON.stringify(c.voiceJoin.get(i.guildId), null, 2) + '\n'),
-              { name: 'luna-voice-join-policy.json' },
+              { name: 'emika-voice-join-policy.json' },
             ),
           ],
         },

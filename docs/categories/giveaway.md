@@ -1,6 +1,6 @@
 # giveaway
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## gconfig
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Check your server's giveaway settings.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Set a custom banner image that will appear at the bottom of all giveaway messages.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Set a custom banner image that will appear at the bottom of all giveaway messages.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Instantly end a currently running giveaway and pick winners.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 View all active giveaways in your server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Pick a new winner for an already ended giveaway.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Allow specific roles to manage giveaways without needing administrator permissions.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Allow specific roles to manage giveaways without needing administrator permissions.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
@@ -106,9 +106,9 @@ Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 Launch a giveaway with a specified duration, number of winners, and prize.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/giveaway
 
 
-Original Luna `/giveawayleave id` withdraws only your own current-server entry before an active giveaway deadline. No management permission is required. Wrong actor identity,foreign records,ending/ended/expired records are blocked. No winner reroll or public announcement occurs;reentry before deadline is allowed. This path is separate because management-only `/giveaway` access stays unchanged.
+Original Emika `/giveawayleave id` withdraws only your own current-server entry before an active giveaway deadline. No management permission is required. Wrong actor identity,foreign records,ending/ended/expired records are blocked. No winner reroll or public announcement occurs;reentry before deadline is allowed. This path is separate because management-only `/giveaway` access stays unchanged.

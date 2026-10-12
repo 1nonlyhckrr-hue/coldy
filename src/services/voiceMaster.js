@@ -270,12 +270,12 @@ export async function openPrivateVoice(i, c, { beforeCreate = null } = {}) {
     let channel;
     try {
       channel = await i.guild.channels.create({
-        name: `luna-voice-${id}`,
+        name: `emika-voice-${id}`,
         type: ChannelType.GuildVoice,
         parent: category.id,
         userLimit: 1,
         permissionOverwrites: privateVoiceOverwrites(i.guildId, bot.id, i.user.id),
-        reason: 'Luna private temporary voice channel',
+        reason: 'Emika private temporary voice channel',
       });
     } catch {
       c.voiceMaster.creationUncertain(id);
@@ -359,11 +359,11 @@ export async function editPrivateVoice(i, c, { action, name, limit, share, bitra
     if (['lock', 'unlock', 'bitrate', 'regionauto'].includes(action))
       c.voiceMaster.transition(row.id, 'active', 'uncertain');
     try {
-      if (action === 'rename') await channel.setName(name.trim(), 'Luna owner voice rename');
-      else if (action === 'limit') await channel.setUserLimit(limit, 'Luna owner voice limit');
+      if (action === 'rename') await channel.setName(name.trim(), 'Emika owner voice rename');
+      else if (action === 'limit') await channel.setUserLimit(limit, 'Emika owner voice limit');
       else if (action === 'bitrate' || action === 'regionauto') {
-        if (action === 'bitrate') await channel.setBitrate(bitrate, 'Luna owner voice bitrate');
-        else await channel.setRTCRegion(null, 'Luna owner automatic voice region');
+        if (action === 'bitrate') await channel.setBitrate(bitrate, 'Emika owner voice bitrate');
+        else await channel.setRTCRegion(null, 'Emika owner automatic voice region');
         const current = await i.guild.channels.fetch(row.channel_id, { force: true });
         verifyPrivateVoice(current, row, bot.id);
         if (action === 'bitrate' ? current.bitrate !== bitrate : current.rtcRegion !== null)
@@ -371,11 +371,11 @@ export async function editPrivateVoice(i, c, { action, name, limit, share, bitra
       } else if (['lock', 'unlock'].includes(action)) {
         await channel.permissionOverwrites.set(
           privateVoiceOverwrites(i.guildId, bot.id, i.user.id, action === 'unlock'),
-          'Luna owner confirmed voice access change',
+          'Emika owner confirmed voice access change',
         );
         const current = await i.guild.channels.fetch(row.channel_id, { force: true });
         verifyPrivateVoice(current, { ...row, public_access: action === 'unlock' ? 1 : 0 }, bot.id);
-      } else await channel.delete('Luna owner closed empty private voice channel');
+      } else await channel.delete('Emika owner closed empty private voice channel');
     } catch {
       if (action === 'close') {
         try {

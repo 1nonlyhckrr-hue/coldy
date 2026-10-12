@@ -2,11 +2,11 @@
 
 All 23 documented command rows mapped:14 tickets and9 giveaways.12 adaptations and11 explicit safety omissions. Slash paths are not prefix or full-scope equivalence.
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | gconfig | adapted | /giveaway config - Private current manager view of runtime policy/limits, not nonexistent staff-role/banner settings. |
-| gembed reset | omitted | Global banner reset omitted with safety-limited unsupported custom banner state; must not overwrite all native announcements under guessed ownership. Existing fixed Luna presentation remains. |
-| gembed set | omitted | Giveaway global URL/upload banner customization omitted for safety: no reviewed remote-image audience/privacy policy, byte validation or durable owned-message update proof. Fixed branded Luna embeds only. |
+| gembed reset | omitted | Global banner reset omitted with safety-limited unsupported custom banner state; must not overwrite all native announcements under guessed ownership. Existing fixed Emika presentation remains. |
+| gembed set | omitted | Giveaway global URL/upload banner customization omitted for safety: no reviewed remote-image audience/privacy policy, byte validation or durable owned-message update proof. Fixed branded Emika embeds only. |
 | gend | adapted | /giveaway end - Explicit positive stored record ID in this guild, not replied/guessed message. Current eligibility checked; bounded stored draw saved before original-message edit. Early end supported, unknown/newdraw failures fail closed. |
 | glist | adapted | /giveaway list - Private manager view, two full-prize records per page from latest100 stored records with scope/truncation labels. Not every live active giveaway or proof of eligibility/delivery. |
 | greroll | adapted | /giveaway reroll - Explicit ended stored record ID, not reply inference. Fresh eligibility, cryptographic unique selection excludes immediately previous winners only. Persisted draw version reused on publish retry. |
@@ -24,7 +24,7 @@ All 23 documented command rows mapped:14 tickets and9 giveaways.12 adaptations a
 | ticket removecategory | omitted | Multi-type removal omitted for safety: no durable per-type configuration/ownership exists. Resetsetup stops future opens without deleting a Discord category or existing tickets. |
 | ticket removeuser | omitted | Guest access removal omitted for safety because guest grants are not supported and arbitrary overwrite edits must not override operator privacy changes. |
 | ticket reset | adapted | /ticket resetsetup - Confirmed manager forgets future setup only. Existing channels, staff access, panel records and transcripts remain; in-flight opens may finish. No whole-system destructive reset. |
-| ticket setup | adapted | /ticket setup - Existing category and unmanaged support role selected explicitly for future tickets; one configuration, fixed localized Luna embed, no interactive Simple/Embed/customwelcome wizard. |
+| ticket setup | adapted | /ticket setup - Existing category and unmanaged support role selected explicitly for future tickets; one configuration, fixed localized Emika embed, no interactive Simple/Embed/customwelcome wizard. |
 | ticket staff | adapted | /ticket setup - Support role selected alongside category for future tickets only. Existing records keep their recorded role; no retroactive disclosure to a newly chosen staff audience. |
 | ticket transcript | adapted | /ticket transcript - Private authorized ephemeral UTF-8 JSON-lines snapshot, latest1000 messages/about1MB with partial label, attachment names/URLs and embed counts. No public transcript destination, executable HTML, embed bodies or attachment byte archive. |
 
@@ -34,7 +34,7 @@ All 23 documented command rows mapped:14 tickets and9 giveaways.12 adaptations a
 - Ticket full Discord-like HTML with attachments/embeds: executable HTML and full-content embed/attachment archival omitted for privacy/safety. Bounded JSON-lines text, IDs/dates, attachment names/URLs, embed counts; URLs may expire. Transcripts are private ephemeral attachments, not auto-posted to staff log destinations. No direct channel-argument export of unrelated chat.
 - Ticket transcript destination variant: omitted safety because automatically posting private history to a new channel widens audience. Close stores privately; manual access follows exact owned channel/privacy checks.
 - Ticket close access restriction: owner read-only, staff continue reading/writing; administrators bypass native channel restrictions. Close cannot promise privacy from admins or global isolation. Snapshot30daydefault,config1-30days,pruned startup/access/save rather than continuous secure erasure. Backups/exports remain.
-- Ticket reset: setup-only forget, not all tickets/content/permission deletion. Claim/reopen/erasure/retention tools are Luna extensions, not substitute guest management or full reset parity.
+- Ticket reset: setup-only forget, not all tickets/content/permission deletion. Claim/reopen/erasure/retention tools are Emika extensions, not substitute guest management or full reset parity.
 - Giveaway time syntax s/m/h/d: slash integer minutes1-43200 only. Seconds/subminute and prefix/reply-context parsers omitted native slash-shape limit, not invented support. No instant-ending availability promise.
 - Giveaway reply-to-end/reroll: explicit stored ID required, no inferred message/context or cross-server action. Crypto sample without replacement,current membership/required-role rechecked,no prize payment/fulfilment. Fewer/no eligible entrants reported honestly.
 - Giveaway automated deadline draw: online minute scan and restart catch-up, not precise deadline/offline service guarantee. Winners persisted before native edit; failed edit reuses same draw. Pending create uncertainty needs operator review,no blind resend.

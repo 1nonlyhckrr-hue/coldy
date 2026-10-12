@@ -154,7 +154,7 @@ test('mention policy survives actual SQLite reopen and old JSON receives default
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-welcome-'));
+  const dir = mkdtempSync(join(tmpdir(), 'emika-welcome-'));
   let db = openDatabase(join(dir, 'db'));
   try {
     let c = new GuildConfig(new GuildSettings(db));
@@ -295,7 +295,7 @@ test('welcome asset schema persists across SQLite reopen and rejects invalid wri
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const dir = mkdtempSync(join(tmpdir(), 'luna-assets-'));
+  const dir = mkdtempSync(join(tmpdir(), 'emika-assets-'));
   let db = openDatabase(join(dir, 'db'));
   try {
     let c = new GuildConfig(new GuildSettings(db));

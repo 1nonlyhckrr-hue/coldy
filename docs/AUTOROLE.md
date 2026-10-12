@@ -1,6 +1,6 @@
 # AutoRole
 
-Verified reference-led feature: https://docs.zynrax.site/configuration/roles/autorole . Original Luna implementation,not exact full benchmark equivalence. Native Discord acceptance pending.
+Verified reference-led feature: https://docs.zynrax.site/configuration/roles/autorole . Original Emika implementation,not exact full benchmark equivalence. Native Discord acceptance pending.
 
 - `/autorole add kind role`: future-join policy for humans/bots;up to10roles per group. Requires member events and fresh manager Manage Server + Manage Roles. Uses reviewed safe community permission allowlist,unmanaged/non-everyone roles below both manager and bot. Does not assign roles to existing members.
 - `/autorole remove kind role-id`: exact saved policy removal including deleted role ID. Existing roles untouched.

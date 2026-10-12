@@ -340,7 +340,7 @@ export async function moderate(interaction, context, input) {
   if (action === 'warn') return { id: context.cases.warn(record) };
   if (action === 'clearwarns') return context.cases.clearWarnings(record);
   const duration = action === 'timeout' ? parseDuration(input.duration) : undefined;
-  const auditReason = `Luna | actor ${actor.id} | ${reason}`;
+  const auditReason = `Emika | actor ${actor.id} | ${reason}`;
   const id = context.cases.begin(record); // Persistence must succeed before any external action.
   try {
     if (action === 'timeout') await input.target.timeout(duration, auditReason);

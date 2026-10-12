@@ -102,7 +102,7 @@ export default {
                   2,
                 ) + '\n',
               ),
-              { name: 'luna-event-mode.json' },
+              { name: 'emika-event-mode.json' },
             ),
           ],
         },

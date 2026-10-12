@@ -308,7 +308,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('rpsseries')
-      .setDescription('Play2-10 preselected RPS rounds against Luna;private score,no stakes.')
+      .setDescription('Play2-10 preselected RPS rounds against Emika;private score,no stakes.')
       .addStringOption((o) =>
         o
           .setName('moves')
@@ -321,7 +321,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('rps')
-      .setDescription('Play one round of rock, paper, scissors against Luna.')
+      .setDescription('Play one round of rock, paper, scissors against Emika.')
       .addStringOption((o) =>
         o
           .setName('move')
@@ -427,7 +427,7 @@ export default {
             flags: MessageFlags.Ephemeral,
             files: [
               new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-                name: 'luna-' + sub + '.json',
+                name: 'emika-' + sub + '.json',
               }),
             ],
             allowedMentions: { parse: [], repliedUser: false },

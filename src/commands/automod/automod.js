@@ -394,7 +394,7 @@ export default {
       files = [
         new AttachmentBuilder(
           Buffer.from(JSON.stringify(c.automod.get(i.guildId), null, 2) + '\n', 'utf8'),
-          { name: 'luna-automod-policy.json' },
+          { name: 'emika-automod-policy.json' },
         ),
       ];
       content = t('automodPolicyExported');

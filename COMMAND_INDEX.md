@@ -1,8 +1,8 @@
 # Command index
 
-## Installed Luna commands
+## Installed Emika commands
 
-65 top-level commands, 586 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+65 top-level commands, 586 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -70,7 +70,7 @@
 | /antibot config | Private saved channel and bot whitelist IDs;not live deletion proof. | Local mock/unit only |
 | /antibot remove | Stop future bot-message deletion in one channel;submitted effects may finish. | Local mock/unit only |
 | /antibot reset | Clear channels and whitelist;existing receipts/messages untouched. | Local mock/unit only |
-| /antibot wladd | Whitelist one current bot member,max100;Luna always exempt. | Local mock/unit only |
+| /antibot wladd | Whitelist one current bot member,max100;Emika always exempt. | Local mock/unit only |
 | /antibot wlremove | Remove one exact stored bot ID,including departed bots. | Local mock/unit only |
 | /automod clearexempt | Clear role exemptions;if enabled,future messages by these roles may be moderated. | Local mock/unit only |
 | /automod clearignored | Clear ignored channels;if enabled,future messages there may be moderated. | Local mock/unit only |
@@ -172,22 +172,22 @@
 | /fun number | One uniform integer in an inclusive bounded range;not advice. | Local mock/unit only |
 | /fun pairs | Private random pairings of2-20 labels,odd label gets bye;no member assignment. | Local mock/unit only |
 | /fun roundrobin | Private complete pair schedule for2-10 labels,no dates/member assignments. | Local mock/unit only |
-| /fun rps | Play one round of rock, paper, scissors against Luna. | Local mock/unit only |
-| /fun rpsseries | Play2-10 preselected RPS rounds against Luna;private score,no stakes. | Local mock/unit only |
+| /fun rps | Play one round of rock, paper, scissors against Emika. | Local mock/unit only |
+| /fun rpsseries | Play2-10 preselected RPS rounds against Emika;private score,no stakes. | Local mock/unit only |
 | /fun sample | Pick1-20 distinct waiting labels without replacement;no assignments. | Local mock/unit only |
 | /fun shuffle | Privately randomize all 2-20 distinct choices,no assignments. | Local mock/unit only |
 | /fun teams | Privately split 2-20 distinct labels into balanced random groups,no invites. | Local mock/unit only |
 | /fun truth | Get an optional, low-pressure reflection prompt. | Local mock/unit only |
 | /fun weightedchoice | Private weighted draw from explicit labels/positive integer weights,not advice. | Local mock/unit only |
 | /fun wordscramble | Scramble your supplied ASCII word,answer in spoiler;no dictionary/guess tracking. | Local mock/unit only |
-| /about | Show Luna version and implementation status. | Local mock/unit only |
+| /about | Show Emika version and implementation status. | Local mock/unit only |
 | /config export | Private stored language/welcome/logging JSON,includes templates/channel IDs,no token/runtime. | Local mock/unit only |
 | /config language | Set English, Hindi or Hinglish for this server. | Local mock/unit only |
 | /config pause | Stop welcome/goodbye/logging delivery;keep destination/templates/options/language. | Local mock/unit only |
 | /config resetdelivery | Stop and forget welcome/goodbye/logging settings;keep language/other modules/history. | Local mock/unit only |
 | /config view | View this server configuration. | Local mock/unit only |
 | /help | Privately browse installed paths by page,category or literal search. | Local mock/unit only |
-| /ping | Show Luna gateway latency. | Local mock/unit only |
+| /ping | Show Emika gateway latency. | Local mock/unit only |
 | /uptime | Show how long this process has been running. | Local mock/unit only |
 | /giveaway cancel | Confirmed stop stored activegiveaway,no native announcement/button edit. | Local mock/unit only |
 | /giveaway cancelall | Cancel all active giveaways in storage only;no native message edits or announcements. | Local mock/unit only |
@@ -327,7 +327,7 @@
 | /permit blockuser | Block a user for one entire command. | Local mock/unit only |
 | /permit channelrules | Private stored channel denies,ten perpage;not Discord permissions. | Local mock/unit only |
 | /permit clear | Remove all restrictions for one command. | Local mock/unit only |
-| /permit clearall | Confirmed remove all guild Luna denies,user/role/channel;native permissions unchanged. | Local mock/unit only |
+| /permit clearall | Confirmed remove all guild Emika denies,user/role/channel;native permissions unchanged. | Local mock/unit only |
 | /permit clearchannel | Remove all stored channel denies across commands;no Discord permission grants. | Local mock/unit only |
 | /permit clearcommand | Confirmed remove bothsubject/channel denies for one storedcommand,including removed ones. | Local mock/unit only |
 | /permit clearobsolete | Erase denies for registry-absent commands,may affect them if reinstalled later. | Local mock/unit only |
@@ -536,7 +536,7 @@
 | /guildtag status | Privately inspect only your stored tag-grant state;no live identity claim. | Local mock/unit only |
 | /guildtag summary | ManageRoles:private stored grant counts bystate,no identities/native access claims. | Local mock/unit only |
 | /vcrole add | Configure one safe role for future human voice joins;existing memberships untouched. | Local mock/unit only |
-| /vcrole remove | Disable future grants;existing Luna-owned grants retain future-disconnect cleanup. | Local mock/unit only |
+| /vcrole remove | Disable future grants;existing Emika-owned grants retain future-disconnect cleanup. | Local mock/unit only |
 | /vcrole show | Private saved policy and retained grant counts,not native voice/membership proof. | Local mock/unit only |
 | /voice deafen | deafen: one current voice member. | Local mock/unit only |
 | /voice disconnect | disconnect: one current voice member. | Local mock/unit only |
@@ -573,7 +573,7 @@
 | /welcome channel | Choose the destination. | Local mock/unit only |
 | /welcome clearassets | Clear welcome or goodbye image/thumbnail only;title/color/template/delivery kept. | Local mock/unit only |
 | /welcome clearchannel | Disable welcome/goodbye and remove stored destination;templates kept. | Local mock/unit only |
-| /welcome color | Set welcome/goodbye embed color,or reset to Luna default. | Local mock/unit only |
+| /welcome color | Set welcome/goodbye embed color,or reset to Emika default. | Local mock/unit only |
 | /welcome config | Show current settings. | Local mock/unit only |
 | /welcome disable | Disable welcome messages. | Local mock/unit only |
 | /welcome enable | Enable welcome messages. | Local mock/unit only |
@@ -591,11 +591,11 @@
 | /welcome resettemplate | Restore one localized default template,leaving delivery settings unchanged. | Local mock/unit only |
 | /welcome test | Send one welcome message for yourself. | Local mock/unit only |
 | /welcome thumbnail | Set HTTPS embed thumbnail for welcome/goodbye;omit URL to clear. | Local mock/unit only |
-| /welcome title | Set static welcome/goodbye title;omit text to restore Luna title. | Local mock/unit only |
+| /welcome title | Set static welcome/goodbye title;omit text to restore Emika title. | Local mock/unit only |
 
 ## Zynrax reference inventory
 
-`data/commands.json` and `data/commands.csv` contain **319 documented command paths**, not 319 Luna commands. Documented shortcuts live in aliases and are not counted as commands. Each row preserves source URL, original syntax, description and verification flags. Parameters preserve documented brackets, not invented types. `referenceVerified` means the named syntax exists in fetched public docs, not that Zynrax behavior was tested. `implemented` and `tested` are false for all reference rows until an equivalent Luna implementation and relevant tests exist. `/serverinfo` is a foundation implementation with narrower behavior, so its richer reference row remains false.
+`data/commands.json` and `data/commands.csv` contain **319 documented command paths**, not 319 Emika commands. Documented shortcuts live in aliases and are not counted as commands. Each row preserves source URL, original syntax, description and verification flags. Parameters preserve documented brackets, not invented types. `referenceVerified` means the named syntax exists in fetched public docs, not that Zynrax behavior was tested. `implemented` and `tested` are false for all reference rows until an equivalent Emika implementation and relevant tests exist. `/serverinfo` is a foundation implementation with narrower behavior, so its richer reference row remains false.
 
 | Category | Documented paths |
 | --- | --- |
@@ -620,7 +620,7 @@
 | voicemaster | 4 |
 | welcomer | 7 |
 
-The official homepage settles at a 541+ marketing count. These docs do not establish all 541 paths. No padding was added. Prefix differences (`?` vs `,`), undeclared permissions, conflicting fun/moderation `kick`, and overloaded ticket transcript syntax need reconciliation with live help or owner screenshots. Empty permission/alias arrays mean not documented, never unrestricted. Luna category labels are planning mappings rather than claims of Zynrax's exact help taxonomy.
+The official homepage settles at a 541+ marketing count. These docs do not establish all 541 paths. No padding was added. Prefix differences (`?` vs `,`), undeclared permissions, conflicting fun/moderation `kick`, and overloaded ticket transcript syntax need reconciliation with live help or owner screenshots. Empty permission/alias arrays mean not documented, never unrestricted. Emika category labels are planning mappings rather than claims of Zynrax's exact help taxonomy.
 
 Regenerate CSV using `npm run inventory`. Keep arbitrary parameter values, aliases and option combinations out of command totals. Spreadsheet formula prefixes are neutralized by the CSV exporter.
 

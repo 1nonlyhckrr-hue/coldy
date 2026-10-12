@@ -47,7 +47,7 @@ test('50 trigger limit does not create partial extra rows', () => {
   }
 });
 test('claims prefer exact matches, persist cooldown and block replay after restart', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-responder-'));
+  const dir = mkdtempSync(join(tmpdir(), 'emika-responder-'));
   const path = join(dir, 'db.sqlite');
   let db = openDatabase(path);
   let now = 100000;
@@ -465,7 +465,7 @@ test('responder pause/resume preserves response,cooldown and replay history with
   }
 });
 test('paused responder state survives SQLite reopen,new rows default active', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-responder-pause-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-responder-pause-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -520,7 +520,7 @@ test('responder toggle slash is private localized and pause during native valida
   }
 });
 test('schema23 responder row upgrades enabled without losing response,cooldown or replay receipt', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-responder-upgrade-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-responder-upgrade-')),
     path = join(dir, 'db');
   let db = openDatabase(path);
   try {
@@ -829,7 +829,7 @@ test('disableall command requires exact current manager explicit confirm and pri
   }
 });
 test('bulk paused autoresponders and their retained cooldown/receipt survive realSQLite reopen without reenable', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-responder-bulk-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-responder-bulk-')),
     path = join(dir, 'db');
   let db;
   try {
@@ -886,7 +886,7 @@ test('create rejects normalized control characters while legitimate whitespace n
   }
 });
 test('create and rename share normalized limits and collision rules preserving metadata/receipts across SQLite reopen', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-trigger-normal-')),
+  const dir = mkdtempSync(join(tmpdir(), 'emika-trigger-normal-')),
     path = join(dir, 'db');
   let db;
   try {

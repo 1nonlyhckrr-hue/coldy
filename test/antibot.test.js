@@ -126,7 +126,7 @@ test('antibot freshbot includingattachments deletion exactnativeabsence complete
     s.db.close();
   }
 });
-test('antibot humans Luna webhooks edits whitelist stale foreign permissionfail no effects', async () => {
+test('antibot humans Emika webhooks edits whitelist stale foreign permissionfail no effects', async () => {
   for (const change of [
     (s) => (s.message.author.bot = false),
     (s) => (s.message.system = true),

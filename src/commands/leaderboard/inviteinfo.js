@@ -90,7 +90,7 @@ export default {
                   2,
                 ) + '\n',
               ),
-              { name: 'luna-own-invites.json' },
+              { name: 'emika-own-invites.json' },
             ),
           ],
         },

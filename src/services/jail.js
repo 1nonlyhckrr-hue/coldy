@@ -178,7 +178,7 @@ export async function changeJail(
       if (until !== null && until <= Date.now()) throw Error('Deadline elapsed');
       await current.disableCommunicationUntil(
         until,
-        `Luna | ${i.user.id} | ${release ? 'release' : 'bounded jail'}`,
+        `Emika | ${i.user.id} | ${release ? 'release' : 'bounded jail'}`,
       );
       const observed = await target(i, userId);
       if ((observed.communicationDisabledUntilTimestamp ?? 0) !== (until ?? 0))

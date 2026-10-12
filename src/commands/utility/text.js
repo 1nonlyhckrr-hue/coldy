@@ -383,7 +383,7 @@ export default {
           content: translate(locale, 'textTransform_' + sub),
           flags: MessageFlags.Ephemeral,
           files: [
-            new AttachmentBuilder(Buffer.from(text, 'utf8'), { name: 'luna-' + sub + '.txt' }),
+            new AttachmentBuilder(Buffer.from(text, 'utf8'), { name: 'emika-' + sub + '.txt' }),
           ],
           allowedMentions: { parse: [], repliedUser: false },
         },

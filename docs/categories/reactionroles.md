@@ -1,6 +1,6 @@
 # reactionroles
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## reactionrole add
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Add a new reaction role to an existing message.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/reaction
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/roles/reaction
 
 View all active reaction roles configured in your server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/reaction
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/roles/reaction
 
 Remove a specific reaction binding from a message.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/reaction
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/roles/reaction
 
 Wipe all reaction role configurations from your server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/roles/reaction
 

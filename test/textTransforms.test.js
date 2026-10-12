@@ -55,7 +55,7 @@ test('3 text paths private literalTXT all3locales embedbranding mentionsblocked 
         result.files[0].attachment.toString(),
         { htmlencode: htmlEncode, htmldecode: htmlDecode, numberlines: numberLines }[sub](value),
       );
-      assert.equal(result.files[0].name, 'luna-' + sub + '.txt');
+      assert.equal(result.files[0].name, 'emika-' + sub + '.txt');
     }
   await assert.rejects(
     () => command.execute({ options: { getSubcommand: () => 'missing' } }, {}),

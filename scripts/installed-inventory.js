@@ -44,7 +44,7 @@ for (const command of commands.values()) {
       testStatus: 'Local unit/mock coverage only. Live gateway/API/visual test unverified.',
       cooldownMs: command.cooldownMs ?? 3000,
       notes:
-        'Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.',
+        'Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.',
       source: 'src/commands/' + command.category + '/' + d.name + '.js',
     });
   }
@@ -70,12 +70,12 @@ console.log(
 // The human-readable index is generated from the same registry as JSON/CSV.
 const { readFile } = await import('node:fs/promises');
 const index = await readFile('COMMAND_INDEX.md', 'utf8');
-const start = index.indexOf('## Installed Luna commands');
+const start = index.indexOf('## Installed Emika commands');
 const end = index.indexOf('## Zynrax reference inventory');
 if (start < 0 || end < start) throw new Error('Command index section boundaries missing');
 const cell = (value) => String(value).replaceAll('|', '\\|').replaceAll('\n', ' ');
 const installed =
-  `## Installed Luna commands\n\n${commands.size} top-level commands, ${rows.length} executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.\n\n| Slash path | Behavior | Tested |\n| --- | --- | --- |\n` +
+  `## Installed Emika commands\n\n${commands.size} top-level commands, ${rows.length} executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.\n\n| Slash path | Behavior | Tested |\n| --- | --- | --- |\n` +
   rows
     .map((r) => `| /${cell(r.name)} | ${cell(r.description)} | Local mock/unit only |`)
     .join('\n') +

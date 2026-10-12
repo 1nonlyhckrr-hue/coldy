@@ -348,7 +348,7 @@ export function createAutoModHandler(c) {
           targetId: message.author.id,
           actorId: message.client.user.id,
           action: 'automod:' + rule,
-          reason: 'Luna AutoMod: ' + rule,
+          reason: 'Emika AutoMod: ' + rule,
           interactionId: 'automod:' + message.id,
         });
       } else if (settings.action === 'timeout') {
@@ -405,7 +405,7 @@ export function createAutoModHandler(c) {
           c.automod.finish(message.id, 'completed');
           return true;
         }
-        await target.disableCommunicationUntil(until, 'Luna AutoMod: ' + rule);
+        await target.disableCommunicationUntil(until, 'Emika AutoMod: ' + rule);
       } else {
         const bot = await message.guild.members.fetchMe({ force: true });
         if (

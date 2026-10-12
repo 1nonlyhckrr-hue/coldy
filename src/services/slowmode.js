@@ -57,7 +57,7 @@ export async function setSlowmode(i, c, { channelId, seconds, confirm }) {
   });
   let accepted = false;
   try {
-    await channel.setRateLimitPerUser(seconds, `Luna | actor ${actor.id} | explicit slowmode`);
+    await channel.setRateLimitPerUser(seconds, `Emika | actor ${actor.id} | explicit slowmode`);
     accepted = true;
     const latest = await i.guild.channels.fetch(channelId, { force: true });
     if (

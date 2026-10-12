@@ -80,7 +80,7 @@ export default {
           flags: MessageFlags.Ephemeral,
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n', 'utf8'), {
-              name: 'luna-vector-' + sub + '.json',
+              name: 'emika-vector-' + sub + '.json',
             }),
           ],
           allowedMentions: { parse: [], repliedUser: false },

@@ -1,6 +1,6 @@
 # Attachment-only channel policy
 
-Reference-led feature: https://docs.zynrax.site/configuration/media . Original Luna safety adaptation. Native Discord acceptance remains pending.
+Reference-led feature: https://docs.zynrax.site/configuration/media . Original Emika safety adaptation. Native Discord acceptance remains pending.
 
 `/media setup channel confirm:true` opts in one normal text channel for future automatic deletion of messages without attachments. Requires fresh Manage Server manager,message events,and freshly fetched exact bot/channel View+ReadHistory+ManageMessages. No automatic channel creation,no retrospective purge.
 

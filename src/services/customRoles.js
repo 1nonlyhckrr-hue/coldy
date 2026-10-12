@@ -253,8 +253,8 @@ export async function customRoleEffect(i, c, { name, claim }) {
       interactionId: i.id,
     });
     try {
-      if (claim) await member.roles.add(role, 'Luna configured self-service role');
-      else await member.roles.remove(role, 'Luna self-service role release');
+      if (claim) await member.roles.add(role, 'Emika configured self-service role');
+      else await member.roles.remove(role, 'Emika self-service role release');
     } catch (error) {
       const rejected = typeof error.code === 'number' && error.status >= 400 && error.status < 500;
       c.cases.finish(id, rejected ? 'failed' : 'uncertain');
@@ -339,7 +339,7 @@ export async function createOwnRole(i, c, { name, color = 0 }) {
         colors: { primaryColor: color },
         hoist: false,
         mentionable: false,
-        reason: 'Luna opt-in member role creation;unassigned',
+        reason: 'Emika opt-in member role creation;unassigned',
       });
       if (!result || !/^\d{17,20}$/.test(result.id)) throw new Error('Invalid created role');
       // Preserve the observed ID even if subsequent shape checks or finalization fail.
@@ -453,8 +453,8 @@ export async function ownRoleEffect(i, c, { claim }) {
       interactionId: i.id,
     });
     try {
-      if (claim) await member.roles.add(role, 'Luna zero-permission created role self claim');
-      else await member.roles.remove(role, 'Luna created role self release');
+      if (claim) await member.roles.add(role, 'Emika zero-permission created role self claim');
+      else await member.roles.remove(role, 'Emika created role self release');
     } catch (error) {
       const rejected = typeof error.code === 'number' && error.status >= 400 && error.status < 500;
       c.cases.finish(id, rejected ? 'failed' : 'uncertain');
@@ -640,7 +640,7 @@ export async function styleOwnRole(i, c, { name, color, confirm }) {
       await role.edit({
         ...(name !== undefined ? { name: wantedName } : {}),
         ...(color !== undefined ? { colors: { primaryColor: wantedColor } } : {}),
-        reason: 'Luna explicit self cosmetic update',
+        reason: 'Emika explicit self cosmetic update',
       });
       const observed = await i.guild.roles.fetch(row.role_id, { force: true });
       if (

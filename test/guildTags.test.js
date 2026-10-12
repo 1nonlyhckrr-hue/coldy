@@ -72,7 +72,7 @@ test('primary guild identity is exact ID, tri-state unknown fails safe', () => {
     'notMatching',
   );
 });
-test('grant then verified tag change removes only Luna-owned role', async () => {
+test('grant then verified tag change removes only Emika-owned role', async () => {
   const s = setup();
   try {
     assert.equal(await refreshGuildTag(s.i, s.c), 'claimed');

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { loadCommands } from '../src/services/registry.js';
-test('installed Luna inventory exact registry paths are separate from reference claims/live acceptance', async () => {
+test('installed Emika inventory exact registry paths are separate from reference claims/live acceptance', async () => {
   const commands = await loadCommands(),
     actual = [];
   for (const command of commands.values()) {
@@ -23,7 +23,7 @@ test('installed Luna inventory exact registry paths are separate from reference 
     assert(row.cooldownMs > 0);
   }
 });
-test('Luna CSV preserves formula-safe quoted syntax and structured native parameters', async () => {
+test('Emika CSV preserves formula-safe quoted syntax and structured native parameters', async () => {
   const rows = JSON.parse(await readFile('data/luna-commands.json', 'utf8')),
     csv = await readFile('data/luna-commands.csv', 'utf8');
   assert.equal(csv.split('\n').filter(Boolean).length, 587);
@@ -38,7 +38,7 @@ test('human-readable installed command index matches every registry path exactly
   const rows = JSON.parse(await readFile('data/luna-commands.json', 'utf8')),
     index = await readFile('COMMAND_INDEX.md', 'utf8');
   const section = index
-    .split('## Installed Luna commands')[1]
+    .split('## Installed Emika commands')[1]
     .split('## Zynrax reference inventory')[0];
   const paths = section
     .split('\n')

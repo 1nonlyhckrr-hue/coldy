@@ -2,7 +2,7 @@
 
 `roleinfo role` fetches selected server role and shows name/ID/color/position/managed state and reviewed native permission flag names. Not a member's effective channel permissions. No roles edited or member enumeration. `banner user` fetches public user profile banner,not guild-specific member banner. Defaults self;no banner means explicit absence,not avatar substitution. `boostcount` fetches current server boost count and premium tier;unknown fields fail instead of assuming zero.
 
-All force source fetch and reject wrong identities. Private shared EN/Hindi/Hinglish embeds,mentions disabled,native API error contained by shared dispatcher. No persistent data/API keys/external media service.29 top-level124paths228project tests pass;four new tests for utilities. No actual live fetch/render verified. Reference leads: https://docs.zynrax.site/miscellaneous/utility. Luna implementation is original slash command syntax,not claim of prefix aliases.
+All force source fetch and reject wrong identities. Private shared EN/Hindi/Hinglish embeds,mentions disabled,native API error contained by shared dispatcher. No persistent data/API keys/external media service.29 top-level124paths228project tests pass;four new tests for utilities. No actual live fetch/render verified. Reference leads: https://docs.zynrax.site/miscellaneous/utility. Emika implementation is original slash command syntax,not claim of prefix aliases.
 
 ## Current metadata lists
 

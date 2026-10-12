@@ -3,7 +3,7 @@ export function createLogger(level = 'info', destination) {
   return pino(
     {
       level,
-      base: { app: 'luna' },
+      base: { app: 'emika' },
       redact: {
         paths: [
           'token',

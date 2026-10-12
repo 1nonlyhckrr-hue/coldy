@@ -100,7 +100,7 @@ export default {
           flags: MessageFlags.Ephemeral,
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify({ records: rows }, null, 2) + '\n'), {
-              name: 'luna-autorole-policy.json',
+              name: 'emika-autorole-policy.json',
             }),
           ],
           allowedMentions: { parse: [], repliedUser: false },

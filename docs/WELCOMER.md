@@ -4,7 +4,7 @@
 
 ## Image styles
 
-`/welcome image kind [url]` and `/welcome thumbnail kind [url]` store separate welcome/goodbye HTTPS URLs. Omit URL to clear that one asset. Public-host syntax only,no credentials/custom ports/IP literals/private-host names. Luna does not fetch/validate bytes,DNS,MIME,reachability or visibility;Discord fetches the URL when rendering. Use public images you control,never signed/private links or secrets. Images are third-party requests and may fail to load. This does not enable delivery or send a test automatically. Existing private preview,explicit test and configured events include assets.
+`/welcome image kind [url]` and `/welcome thumbnail kind [url]` store separate welcome/goodbye HTTPS URLs. Omit URL to clear that one asset. Public-host syntax only,no credentials/custom ports/IP literals/private-host names. Emika does not fetch/validate bytes,DNS,MIME,reachability or visibility;Discord fetches the URL when rendering. Use public images you control,never signed/private links or secrets. Images are third-party requests and may fail to load. This does not enable delivery or send a test automatically. Existing private preview,explicit test and configured events include assets.
 
 `/welcome resetstyle confirm:true` clears both titles/images/thumbnails/shared color while keeping templates,destination,enabled status and ping policy. Allthree require current ManageGuild,private localized no-ping replies. URLs persist in SQLite,old config defaults no assets. No live pixel rendering acceptance yet.
 

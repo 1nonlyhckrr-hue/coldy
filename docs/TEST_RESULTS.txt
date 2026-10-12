@@ -183,8 +183,8 @@ ok 30 - antibot freshbot includingattachments deletion exactnativeabsence comple
   duration_ms: 7.849829
   type: 'test'
   ...
-# Subtest: antibot humans Luna webhooks edits whitelist stale foreign permissionfail no effects
-ok 31 - antibot humans Luna webhooks edits whitelist stale foreign permissionfail no effects
+# Subtest: antibot humans Emika webhooks edits whitelist stale foreign permissionfail no effects
+ok 31 - antibot humans Emika webhooks edits whitelist stale foreign permissionfail no effects
   ---
   duration_ms: 61.390328
   type: 'test'
@@ -2427,8 +2427,8 @@ ok 404 - checkpoint documentation preserves verified external run and reference 
   duration_ms: 3.272632
   type: 'test'
   ...
-# Subtest: Luna brand and polished error styles apply with Discord length bounds
-ok 405 - Luna brand and polished error styles apply with Discord length bounds
+# Subtest: Emika brand and polished error styles apply with Discord length bounds
+ok 405 - Emika brand and polished error styles apply with Discord length bounds
   ---
   duration_ms: 3.843865
   type: 'test'
@@ -3183,8 +3183,8 @@ ok 530 - primary guild identity is exact ID, tri-state unknown fails safe
   duration_ms: 1.110279
   type: 'test'
   ...
-# Subtest: grant then verified tag change removes only Luna-owned role
-ok 531 - grant then verified tag change removes only Luna-owned role
+# Subtest: grant then verified tag change removes only Emika-owned role
+ok 531 - grant then verified tag change removes only Emika-owned role
   ---
   duration_ms: 14.518155
   type: 'test'
@@ -3357,14 +3357,14 @@ ok 559 - help detail rejects mixed filter modes before response instead of silen
   duration_ms: 0.785035
   type: 'test'
   ...
-# Subtest: installed Luna inventory exact registry paths are separate from reference claims/live acceptance
-ok 560 - installed Luna inventory exact registry paths are separate from reference claims/live acceptance
+# Subtest: installed Emika inventory exact registry paths are separate from reference claims/live acceptance
+ok 560 - installed Emika inventory exact registry paths are separate from reference claims/live acceptance
   ---
   duration_ms: 635.87949
   type: 'test'
   ...
-# Subtest: Luna CSV preserves formula-safe quoted syntax and structured native parameters
-ok 561 - Luna CSV preserves formula-safe quoted syntax and structured native parameters
+# Subtest: Emika CSV preserves formula-safe quoted syntax and structured native parameters
+ok 561 - Emika CSV preserves formula-safe quoted syntax and structured native parameters
   ---
   duration_ms: 9.643837
   type: 'test'

@@ -18,7 +18,7 @@ Case before effect,forcedexactnative desiredproperty observation and safe-role r
 
 ## Private case audit history
 
-`/casehistory inspect id` reads one exact stored Luna case in this server,including action,actor/target IDs,reason and stored status. `list [page] [state]` pages ten metadata records,newestfirst,optional exact pending/completed/failed/uncertain filter,page1-1000. `export` attaches latest100wholecase metadata/reasons,total/truncated. Export includes staff/target IDs and reasons;keep private. Source interaction IDs and other servers excluded. Not full backup or evidence of current native state.
+`/casehistory inspect id` reads one exact stored Emika case in this server,including action,actor/target IDs,reason and stored status. `list [page] [state]` pages ten metadata records,newestfirst,optional exact pending/completed/failed/uncertain filter,page1-1000. `export` attaches latest100wholecase metadata/reasons,total/truncated. Export includes staff/target IDs and reasons;keep private. Source interaction IDs and other servers excluded. Not full backup or evidence of current native state.
 
 These read-only paths require fresh native Manage Server,private3locale/no-ping,no native effects,uncertainty clearing,retry or permission grants. Three tests exactID/guild/pagination/filter/bounds/no mutation/exportcontent and currentmanager/localized attachmentbytes. Actual native/client pixels remain unverified.
 

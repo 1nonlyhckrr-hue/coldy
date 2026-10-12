@@ -150,7 +150,7 @@ export async function confirmBulkTimeout(i, c, { id, confirm }) {
         try {
           const fresh = await member(i, r.userId);
           if (fresh.communicationDisabledUntilTimestamp !== r.until) throw Error('Deadline drift');
-          await fresh.disableCommunicationUntil(null, 'Luna exact confirmed bulk timeout clear');
+          await fresh.disableCommunicationUntil(null, 'Emika exact confirmed bulk timeout clear');
           const observed = await member(i, r.userId);
           if ((observed.communicationDisabledUntilTimestamp ?? 0) !== 0)
             throw Error('Clear not observed');

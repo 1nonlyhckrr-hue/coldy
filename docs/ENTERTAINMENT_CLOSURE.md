@@ -2,7 +2,7 @@
 
 All55documented rows mapped:35Fun/20Music.14adaptations,41explicit safety/native-limit omissions. No prefix/native/fullscope equivalence.
 
-| Reference | Disposition | Luna paths / reason |
+| Reference | Disposition | Emika paths / reason |
 | --- | --- | --- |
 | 8ball | adapted | /fun 8ball - Private localized safe fixed optional prompts/cryptographic8ball selection;question validated but not echoed/stored,no multiplayer/physical coercion or external provider. No public targetperson disclosure. |
 | bonk | omitted (safety) | Person-targeted animated roleplay omitted without participant consent and safe media/provider policy,including sexualized or violent gestures. Emotion-only GIF actions omitted with same reviewed media gap;no target member pings or forced contact. |

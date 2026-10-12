@@ -1,7 +1,7 @@
 {
   "name": "coldy",
   "version": "0.1.0",
-  "description": "Luna: modular multipurpose Discord bot, phased implementation",
+  "description": "Emika: modular multipurpose Discord bot, phased implementation",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",

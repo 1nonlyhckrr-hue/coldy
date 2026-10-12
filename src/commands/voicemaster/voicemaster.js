@@ -281,7 +281,7 @@ export default {
               );
         files = [
           new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-            name: 'luna-voice-' + sub + '.json',
+            name: 'emika-voice-' + sub + '.json',
           }),
         ];
         text = t('vmScopedMetadata');
@@ -295,7 +295,7 @@ export default {
         const report = c.voiceMaster.exportRecords(i.guildId);
         files = [
           new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-            name: 'luna-voice-records.json',
+            name: 'emika-voice-records.json',
           }),
         ];
         text = t('vmMetadataExported', { count: report.records.length, total: report.total });
@@ -311,7 +311,7 @@ export default {
               JSON.stringify(c.voiceMaster.config(i.guildId) ?? null, null, 2) + '\n',
               'utf8',
             ),
-            { name: 'luna-voice-master-config.json' },
+            { name: 'emika-voice-master-config.json' },
           ),
         ];
         text = t('vmConfigExported');
@@ -338,7 +338,7 @@ export default {
       const report = c.voiceMaster.exportRecords(i.guildId, i.user.id);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-own-voice-records.json',
+          name: 'emika-own-voice-records.json',
         }),
       ];
       text = t('vmOwnMetadataExported', { count: report.records.length, total: report.total });

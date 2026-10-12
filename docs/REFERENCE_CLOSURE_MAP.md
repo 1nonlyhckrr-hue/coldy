@@ -2,7 +2,7 @@
 
 The documented source milestone maps every319 row in the existing verified command registry to an implemented bounded adaptation or an explicit safety/native-limit omission. It also records supplemental prose and the five non-registry introduction/premium/legal/privacy pages. This is documented-scope closure, not full541+ numeric parity, live acceptance, or production readiness.
 
-65top-level slash commands and586 executable Luna paths include original tools and management extensions;these counts are not reference equivalence. All local behavior claims carry caps,permission/privacy/retention/uncertainty limits in the linked implementation docs.
+65top-level slash commands and586 executable Emika paths include original tools and management extensions;these counts are not reference equivalence. All local behavior claims carry caps,permission/privacy/retention/uncertainty limits in the linked implementation docs.
 
 ## Exact row ledgers
 

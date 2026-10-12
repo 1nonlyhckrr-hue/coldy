@@ -13,7 +13,7 @@ import { validateOutputChannel } from '../../services/guildConfig.js';
 import { UserError } from '../../utils/errors.js';
 const data = new SlashCommandBuilder()
   .setName('logging')
-  .setDescription('Configure Luna case and opt-in metadata event logs.')
+  .setDescription('Configure Emika case and opt-in metadata event logs.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
@@ -249,7 +249,7 @@ export default {
       const report = c.eventLogs.scopedReceipts(i.guildId, scope, options);
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
-          name: 'luna-log-' + sub + '.json',
+          name: 'emika-log-' + sub + '.json',
         }),
       ];
       text = t('logScopedReceipts');
@@ -262,7 +262,9 @@ export default {
       files = [
         new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
           name:
-            sub === 'deliverysummary' ? 'luna-log-delivery-summary.json' : 'luna-log-receipts.json',
+            sub === 'deliverysummary'
+              ? 'emika-log-delivery-summary.json'
+              : 'emika-log-receipts.json',
         }),
       ];
       text = t('logReceiptExport');
@@ -280,7 +282,7 @@ export default {
       files = [
         new AttachmentBuilder(
           Buffer.from(JSON.stringify(c.guildConfig.get(i.guildId).logging, null, 2) + '\n', 'utf8'),
-          { name: 'luna-logging-policy.json' },
+          { name: 'emika-logging-policy.json' },
         ),
       ];
       text = t('logPolicyExported');

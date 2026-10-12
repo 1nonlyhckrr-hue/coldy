@@ -1,6 +1,6 @@
 # Reference research - 2026-10-10
 
-Zynrax's own website links to https://docs.zynrax.site/. Its public documentation index lists 34 markdown pages. Downloaded these public pages, extracting explicitly documented syntax and command tables. After discarding examples, treating explicit shortcuts as aliases and excluding arbitrary parameter values, the inventory contains 318 command paths across Luna's 20 requested planning categories.
+Zynrax's own website links to https://docs.zynrax.site/. Its public documentation index lists 34 markdown pages. Downloaded these public pages, extracting explicitly documented syntax and command tables. After discarding examples, treating explicit shortcuts as aliases and excluding arbitrary parameter values, the inventory contains 318 command paths across Emika's 20 requested planning categories.
 
 Sources cover official docs, bot directories, a community listing, and primary runtime/storage/platform documentation. Product behavior is established only by the official docs; directories support identity/features, not command syntax.
 

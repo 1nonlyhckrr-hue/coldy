@@ -215,7 +215,7 @@
       "antibot add"
     ],
     "evidenceDoc": "docs/ANTIBOT.md",
-    "reason": "Confirmedselectednormaltext futurebotmessage deletion,max25channels,no webhook/Luna/history/raidban actions.",
+    "reason": "Confirmedselectednormaltext futurebotmessage deletion,max25channels,no webhook/Emika/history/raidban actions.",
     "verification": "local mocks only;native Discord/permissions/visual acceptance unverified"
   },
   {

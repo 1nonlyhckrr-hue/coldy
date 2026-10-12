@@ -1,6 +1,6 @@
 # utility
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## afk
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 When you set an AFK status, Zynrax will: 1. Change your nickname to include `[AFK]` (if it has permissions). 2. Respond to any mentions with your reason and how long you've been away. 3. Automatically remove your AFK status once you send a message.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Get the full-size profile picture of a member.
 
-Aliases: av. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: av. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 View the profile banner of a member.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Check the current boost level and total number of boosts in the server.
 
-Aliases: bc. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: bc. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Start the process by using the `,embed` command.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/embed
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/miscellaneous/embed
 
 Get the official invite and support server links for Zynrax.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Member Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Asset & Security Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Member Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Member Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Asset & Security Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Member Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Asset & Security Lists
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -167,7 +167,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Once your slots are set up, you can generate a QR code instantly.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -179,7 +179,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Get a detailed breakdown of total members, humans, bots, and online status.
 
-Aliases: mc. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: mc. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -191,7 +191,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Create a native Discord poll with custom answers.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -203,7 +203,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Setup & Management
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -215,7 +215,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Get details about a specific role, such as its ID, color, position, and permissions.
 
-Aliases: ri. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: ri. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -227,7 +227,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Send a custom message to any channel (text, voice, or thread) as the bot.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -239,7 +239,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 View detailed statistics and configuration for the current server.
 
-Aliases: si. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: si. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -251,7 +251,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Setup & Management
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -263,7 +263,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Setup & Management
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -275,7 +275,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 View detailed bot statistics, including system usage, shard info, and command usage.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -287,7 +287,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Quickly add an emoji from another server to your own by providing its link or using it.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -299,7 +299,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Translate text or a replied message into another language.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -311,7 +311,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Check how long Zynrax has been online since its last restart.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -323,7 +323,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Look up the definition of a phrase on Urban Dictionary.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -335,7 +335,7 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Displays detailed information about a member, including their account age, server join date, roles, and permissions.
 
-Aliases: ui. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: ui. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
@@ -347,9 +347,9 @@ Source: https://docs.zynrax.site/miscellaneous/utility
 
 Check the current weather conditions for any city.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/utility
 
 
-Luna `/list stickers [page]` fetches current guild stickers,ten per page,with name and ID only. It never lists uploader identity,description,tags or image URL. The list is ephemeral,localized and mention-suppressed. Native API failures do not fall back to cached lists. This original Luna path is not a new verified Zynrax reference row. Source: https://docs.discord.com/developers/resources/sticker .
+Emika `/list stickers [page]` fetches current guild stickers,ten per page,with name and ID only. It never lists uploader identity,description,tags or image URL. The list is ephemeral,localized and mention-suppressed. Native API failures do not fall back to cached lists. This original Emika path is not a new verified Zynrax reference row. Source: https://docs.discord.com/developers/resources/sticker .

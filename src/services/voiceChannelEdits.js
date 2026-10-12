@@ -67,7 +67,7 @@ export async function editEmptyVoiceChannel(i, c, { channelId, action, value, co
   });
   let accepted = false;
   try {
-    const reason = `Luna | actor ${actor.id} | empty voice-channel setting`;
+    const reason = `Emika | actor ${actor.id} | empty voice-channel setting`;
     if (action === 'voicelimit') await channel.setUserLimit(desired, reason);
     else if (action === 'voicebitrate') await channel.setBitrate(desired, reason);
     else await channel.setRTCRegion(null, reason);

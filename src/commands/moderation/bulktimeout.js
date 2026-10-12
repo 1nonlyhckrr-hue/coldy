@@ -73,7 +73,7 @@ export default {
           allowedMentions: { parse: [], repliedUser: false },
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n'), {
-              name: 'luna-bulk-timeout.json',
+              name: 'emika-bulk-timeout.json',
             }),
           ],
         },

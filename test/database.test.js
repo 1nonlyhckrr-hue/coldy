@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { openDatabase, GuildSettings } from '../src/database/index.js';
 test('migrations are idempotent and guild data survives reopening', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'luna-test-'));
+  const dir = mkdtempSync(join(tmpdir(), 'emika-test-'));
   try {
     const path = join(dir, 'test.sqlite');
     const db = openDatabase(path);

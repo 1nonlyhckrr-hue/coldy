@@ -165,7 +165,7 @@ export default {
           flags: MessageFlags.Ephemeral,
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n', 'utf8'), {
-              name: 'luna-matrix-' + sub + '.json',
+              name: 'emika-matrix-' + sub + '.json',
             }),
           ],
           allowedMentions: { parse: [], repliedUser: false },

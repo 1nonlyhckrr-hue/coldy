@@ -1,6 +1,6 @@
 # permit
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## ignore bypass add
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Allow a user to bypass all ignore restrictions.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Remove a user from the bypass list.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 View all members who currently have bypass permissions.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Make Zynrax ignore all commands sent in a specific channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Allow Zynrax to respond in a previously ignored channel.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Disable a specific command server-wide.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Re-enable a previously ignored command.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Display all commands currently restricted in the server.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Block a specific user from interacting with the bot.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 Unblock a user so they can use Zynrax commands again.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/configuration/ignore
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/configuration/ignore
 
 To begin protecting your roles, you can use the `mainrole add` command.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/mainrole
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/security/mainrole
 
 See exactly which roles are currently under Zynrax's instant-ban protection.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/mainrole
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/security/mainrole
 
 If you no longer wish to protect a specific role, you can remove it from the configuration.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/mainrole
 
@@ -166,7 +166,7 @@ Source: https://docs.zynrax.site/security/mainrole
 
 If you need to disable role protection entirely, you can reset the configuration.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/mainrole
 
@@ -178,7 +178,7 @@ Source: https://docs.zynrax.site/security/mainrole
 
 If you want a specific user to be able to mention protected roles without being banned, you must add them to the security whitelist.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/security/mainrole
 

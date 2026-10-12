@@ -24,4 +24,4 @@ Automod, cautious antinuke report-only rollout, permit/ignore, automation, leade
 
 Select a lawful source/backend, Lavalink compatibility and hosting cost with the owner. Test Discord voice encryption support, unavailable backend, reconnects and queue/session persistence. No dependence on unspecified free public nodes or promise of 24/7 uptime.
 
-Release only after separate Luna token/application, test guild and integration test results. Confirm public repo authority and write access; choose a public code license. Do not promise a full completion date before reference gaps and live test prerequisites are resolved.
+Release only after separate Emika token/application, test guild and integration test results. Confirm public repo authority and write access; choose a public code license. Do not promise a full completion date before reference gaps and live test prerequisites are resolved.

@@ -53,7 +53,7 @@ export function runWatchdog({
       startedAt = NaN;
     }
     if (!Number.isSafeInteger(startedAt)) {
-      report('Luna process clock unavailable. Operator review required.');
+      report('Emika process clock unavailable. Operator review required.');
       stopping = true;
       exit(1);
       return;
@@ -71,19 +71,19 @@ export function runWatchdog({
         delay = null;
       }
       if (!Number.isSafeInteger(delay) || delay < 1 || delay > 60000) {
-        report('Luna restart circuit opened after repeated failures. Operator review required.');
+        report('Emika restart circuit opened after repeated failures. Operator review required.');
         stopping = true;
         exit(1);
         return;
       }
-      report(`Luna process stopped. Restarting in ${delay} ms.`);
+      report(`Emika process stopped. Restarting in ${delay} ms.`);
       try {
         timer = setTimer(() => {
           timer = null;
           start();
         }, delay);
       } catch {
-        report('Luna restart timer unavailable. Operator review required.');
+        report('Emika restart timer unavailable. Operator review required.');
         stopping = true;
         exit(1);
       }
@@ -105,7 +105,7 @@ export function runWatchdog({
       try {
         clearTimer(timer);
       } catch {
-        report('Luna restart timer cancellation unavailable. Operator review required.');
+        report('Emika restart timer cancellation unavailable. Operator review required.');
         exit(1);
       }
     }
@@ -113,11 +113,11 @@ export function runWatchdog({
     if (child) {
       try {
         if (child.kill(signal ?? 'SIGTERM') === false) {
-          report('Luna child shutdown signal was not accepted. Operator review required.');
+          report('Emika child shutdown signal was not accepted. Operator review required.');
           exit(1);
         }
       } catch {
-        report('Luna child shutdown signal unavailable. Operator review required.');
+        report('Emika child shutdown signal unavailable. Operator review required.');
         exit(1);
       }
     }

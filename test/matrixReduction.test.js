@@ -98,7 +98,7 @@ test('3matrixreductionpaths private3locale exactJSON localized rational notice b
         reply.embeds[0].data.description,
         translate(language, sub === 'trace' ? 'matrixResult' : 'matrixRationalResult'),
       );
-      assert.equal(reply.files[0].name, 'luna-matrix-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-matrix-' + sub + '.json');
       assert.deepEqual(JSON.parse(reply.files[0].attachment.toString()), fn('[[2,1],[4,2]]'));
     }
 });

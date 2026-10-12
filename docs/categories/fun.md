@@ -1,6 +1,6 @@
 # fun
 
-Reference-only inventory, not installed Luna functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
+Reference-only inventory, not installed Emika functionality. Permissions not stated in sources remain unknown. Search by command name using your editor or filter the JSON/CSV.
 
 ## 8ball
 
@@ -10,7 +10,7 @@ Reference-only inventory, not installed Luna functionality. Permissions not stat
 
 Ask a question and get a mysterious answer from the 8ball.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -22,7 +22,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -34,7 +34,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -46,7 +46,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -58,7 +58,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Affection & Care
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -70,7 +70,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -82,7 +82,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -94,7 +94,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Get a random Truth or Dare question.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -106,7 +106,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 GIF Search
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -118,7 +118,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Affection & Care
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -130,7 +130,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -142,7 +142,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -154,7 +154,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -166,7 +166,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -178,7 +178,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Affection & Care
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -190,7 +190,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Image Search
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -202,7 +202,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -214,7 +214,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -226,7 +226,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -238,7 +238,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Affection & Care
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -250,7 +250,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Affection & Care
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -262,7 +262,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -274,7 +274,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Affection & Care
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -286,7 +286,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -298,7 +298,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -310,7 +310,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -322,7 +322,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -334,7 +334,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -346,7 +346,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -358,7 +358,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -370,7 +370,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Randomly generated percentages for various fun categories. These commands take a "person" (text or mention) as an argument.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -382,7 +382,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -394,7 +394,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Get a random Truth or Dare question.
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -406,7 +406,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Emotions & Gestures
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 
@@ -418,7 +418,7 @@ Source: https://docs.zynrax.site/miscellaneous/fun
 
 Combat & Chaos
 
-Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Luna: no.
+Aliases: not documented. Reference verified: yes. Implemented: no. Tested in Emika: no.
 
 Source: https://docs.zynrax.site/miscellaneous/fun
 

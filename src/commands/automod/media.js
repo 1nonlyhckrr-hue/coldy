@@ -119,7 +119,7 @@ export default {
           flags: MessageFlags.Ephemeral,
           files: [
             new AttachmentBuilder(Buffer.from(JSON.stringify(result, null, 2) + '\n'), {
-              name: 'luna-media-policy.json',
+              name: 'emika-media-policy.json',
             }),
           ],
           allowedMentions: { parse: [], repliedUser: false },

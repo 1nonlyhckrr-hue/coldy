@@ -104,7 +104,7 @@ test('all fun commands reply in all locales with ephemeral branded embeds and no
       assert.equal(r.flags, 64);
       assert.deepEqual(r.allowedMentions.parse, []);
       assert.equal(r.embeds.length, 1);
-      assert(r.embeds[0].data.footer.text.includes('Luna'));
+      assert(r.embeds[0].data.footer.text.includes('Emika'));
       assert(r.embeds[0].data.description.length < 1900);
       if (sub === 'choose') assert(r.embeds[0].data.description.includes('\\*\\*'));
     }
@@ -425,7 +425,7 @@ test('dicekeep and RPS series reply privately with complete localized no-ping br
       await fun.execute(i, c);
       assert.equal(reply.flags, 64);
       assert.deepEqual(reply.allowedMentions.parse, []);
-      assert(reply.embeds[0].data.footer.text.includes('Luna'));
+      assert(reply.embeds[0].data.footer.text.includes('Emika'));
       assert(reply.embeds[0].data.description.length < 2000);
       if (sub === 'rpsseries') assert(reply.embeds[0].data.description.includes('10.'));
     }

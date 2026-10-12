@@ -71,7 +71,7 @@ test('3matrixarithmeticpaths exact private3locale JSON branding noping no native
       assert.equal(reply.flags, 64);
       assert.deepEqual(reply.allowedMentions.parse, []);
       assert.equal(reply.embeds[0].data.description, translate(language, 'matrixResult'));
-      assert.equal(reply.files[0].name, 'luna-matrix-' + sub + '.json');
+      assert.equal(reply.files[0].name, 'emika-matrix-' + sub + '.json');
       assert.deepEqual(
         JSON.parse(reply.files[0].attachment.toString()).values,
         sub === 'add' || sub === 'scale'

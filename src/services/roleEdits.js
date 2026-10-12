@@ -71,7 +71,7 @@ export async function editSafeRole(i, c, { roleId, action, value, confirm }) {
   });
   let accepted = false;
   try {
-    const patch = { reason: `Luna | actor ${actor.id} | safe role ${action}` };
+    const patch = { reason: `Emika | actor ${actor.id} | safe role ${action}` };
     if (action === 'color') patch.colors = { primaryColor: value };
     else patch[property] = value;
     await role.edit(patch);
