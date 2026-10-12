@@ -71,6 +71,36 @@ export class VoiceMaster {
       return { total, truncated: total > records.length, records };
     })();
   }
+  inspectRecord(guildId, id) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('vmRecordsInvalid');
+    return (
+      this.db
+        .prepare(
+          'SELECT id,channel_id,status,public_access,created_at FROM voice_master_channels WHERE guild_id=? AND id=?',
+        )
+        .get(guildId, id) ?? null
+    );
+  }
+  scopedRecords(guildId, { channelId = null, recovery = false } = {}) {
+    if (channelId !== null && (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId)))
+      throw new UserError('vmRecordsInvalid');
+    return this.db.transaction(() => {
+      const condition =
+        "guild_id=? AND (? IS NULL OR channel_id=?) AND (?=0 OR status IN ('creating','deleting','uncertain'))";
+      const values = [guildId, channelId, channelId, recovery ? 1 : 0];
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM voice_master_channels WHERE ' + condition)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id,status,public_access,created_at FROM voice_master_channels WHERE ' +
+            condition +
+            ' ORDER BY id DESC LIMIT 100',
+        )
+        .all(...values);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   resetSetup(guildId) {
     return this.db.prepare('DELETE FROM voice_master_config WHERE guild_id=?').run(guildId).changes;
   }

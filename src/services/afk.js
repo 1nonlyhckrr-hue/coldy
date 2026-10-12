@@ -43,6 +43,48 @@ export class AfkStates {
       return { total, truncated: total > records.length, records };
     })();
   }
+  exportStatusMetadata(guildId, channelId = null) {
+    if (channelId !== null && (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId)))
+      throw new UserError('afkStoredScopeInvalid');
+    const clock = this.now();
+    if (!Number.isSafeInteger(clock) || clock < 0) throw new UserError('afkStoredScopeInvalid');
+    return this.db.transaction(() => {
+      const values = [guildId, clock - 7 * 86400000, channelId, channelId];
+      const filter = 'guild_id=? AND created_at>=? AND (? IS NULL OR channel_id=?)';
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM afk_states WHERE ' + filter)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT channel_id AS channelId,created_at AS createdAt,created_at+604800000 AS expiresAt FROM afk_states WHERE ' +
+            filter +
+            ' ORDER BY created_at DESC,user_id DESC LIMIT 100',
+        )
+        .all(...values);
+      return { asOf: clock, total, truncated: total > records.length, records };
+    })();
+  }
+  ageBands(guildId) {
+    const clock = this.now();
+    if (!Number.isSafeInteger(clock) || clock < 0) throw new UserError('afkStoredScopeInvalid');
+    const rows = this.db
+      .prepare('SELECT created_at FROM afk_states WHERE guild_id=? AND created_at>=?')
+      .all(guildId, clock - 7 * 86400000);
+    const bands = { futureTimestamp: 0, under1hour: 0, from1hourTo1day: 0, from1dayTo7days: 0 };
+    for (const r of rows) {
+      const age = clock - r.created_at;
+      bands[
+        age < 0
+          ? 'futureTimestamp'
+          : age < 3600000
+            ? 'under1hour'
+            : age < 86400000
+              ? 'from1hourTo1day'
+              : 'from1dayTo7days'
+      ]++;
+    }
+    return { asOf: clock, total: rows.length, bands };
+  }
   cleanup() {
     this.db.prepare('DELETE FROM afk_states WHERE created_at<?').run(this.now() - 7 * 86400000);
     this.db.prepare('DELETE FROM afk_notices WHERE created_at<?').run(this.now() - 86400000);

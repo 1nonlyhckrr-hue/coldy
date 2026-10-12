@@ -1,3 +1,4 @@
+import { UserError } from '../utils/errors.js';
 import { createHmac, randomBytes } from 'node:crypto';
 import { validateOutputChannel } from './guildConfig.js';
 import { lunaPayload } from '../utils/embeds.js';
@@ -33,6 +34,41 @@ export class EventLogDelivery {
           'SELECT status,created_at AS createdAt FROM event_log_deliveries WHERE guild_id=? ORDER BY created_at DESC,event_key DESC LIMIT 100',
         )
         .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  scopedReceipts(guildId, scope, options = {}) {
+    let filter, parameters;
+    if (scope === 'state') {
+      if (!['reserved', 'sent', 'uncertain', 'unavailable'].includes(options.status))
+        throw new UserError('logReceiptScopeInvalid');
+      filter = 'status=?';
+      parameters = [options.status];
+    } else if (scope === 'unresolved') {
+      filter = "status IN ('reserved','uncertain','unavailable')";
+      parameters = [];
+    } else if (scope === 'window') {
+      if (
+        ![options.start, options.end].every((v) => Number.isSafeInteger(v) && v >= 0) ||
+        options.start > options.end
+      )
+        throw new UserError('logReceiptScopeInvalid');
+      filter = 'created_at>=? AND created_at<=?';
+      parameters = [options.start, options.end];
+    } else throw new UserError('logReceiptScopeInvalid');
+    return this.db.transaction(() => {
+      const values = [guildId, ...parameters],
+        where = 'guild_id=? AND ' + filter;
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM event_log_deliveries WHERE ' + where)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT status,created_at AS createdAt FROM event_log_deliveries WHERE ' +
+            where +
+            ' ORDER BY created_at DESC,event_key DESC LIMIT 100',
+        )
+        .all(...values);
       return { total, truncated: total > records.length, records };
     })();
   }

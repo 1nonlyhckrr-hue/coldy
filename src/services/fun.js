@@ -278,3 +278,49 @@ export function rollHistogram(sides, count, rng = randomInt) {
   }
   return { count, total, frequencies };
 }
+
+function boundedDraw(size, rng) {
+  const at = rng(size);
+  if (!Number.isInteger(at) || at < 0 || at >= size) throw new TypeError('Invalid random result');
+  return at;
+}
+export function eliminationBracket(text, rng = randomInt) {
+  const labels = parseChoices(text);
+  if (labels.length > 16 || labels.some((v) => v.length > 40))
+    throw new UserError('funBracketInvalid');
+  const shuffled = shuffleChoices(text, rng);
+  let size = 2;
+  while (size < shuffled.length) size *= 2;
+  const byes = size - shuffled.length;
+  const matches = [];
+  for (let n = 0; n < byes; n++)
+    matches.push({ match: matches.length + 1, labels: [shuffled.shift()], bye: true });
+  while (shuffled.length)
+    matches.push({ match: matches.length + 1, labels: shuffled.splice(0, 2), bye: false });
+  return {
+    participants: labels.length,
+    bracketSize: size,
+    rounds: Math.log2(size),
+    firstRound: matches,
+  };
+}
+export function bingoCard(rng = randomInt) {
+  const columns = ['B', 'I', 'N', 'G', 'O'].map((label, column) => {
+    const pool = Array.from({ length: 15 }, (_, n) => column * 15 + n + 1);
+    const values = Array.from({ length: 5 }, (_, row) =>
+      column === 2 && row === 2 ? null : pool.splice(boundedDraw(pool.length, rng), 1)[0],
+    );
+    return { label, values };
+  });
+  return { columns, freeCell: { row: 3, column: 'N' } };
+}
+export function drawDominoes(count, rng = randomInt) {
+  if (!Number.isInteger(count) || count < 1 || count > 7) throw new UserError('funDominoInvalid');
+  const pool = [];
+  for (let left = 0; left <= 6; left++)
+    for (let right = left; right <= 6; right++) pool.push([left, right]);
+  return {
+    tiles: Array.from({ length: count }, () => pool.splice(boundedDraw(pool.length, rng), 1)[0]),
+    remaining: 28 - count,
+  };
+}

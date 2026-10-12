@@ -2,11 +2,12 @@
 
 ## Installed Luna commands
 
-49 top-level commands, 454 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+50 top-level commands, 505 executable paths. Registry-derived original Luna behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
 | /antinuke actioncounts | Private retained alert-incident counts by audit action/state,not all audit events. | Local mock/unit only |
+| /antinuke actionincidents | Latest100retainedincidents forwatchedauditactionJSON,total/truncation,no actors/sourceIDs. | Local mock/unit only |
 | /antinuke clearchannel | Stop monitoring and forget alert destination;threshold/trust/history kept. | Local mock/unit only |
 | /antinuke cleartrust | Clear all stored user exemptions;owner/bot exemptions kept,alert-only. | Local mock/unit only |
 | /antinuke config | Show alert settings and limitations. | Local mock/unit only |
@@ -14,8 +15,10 @@
 | /antinuke enable | Enable alert-only detection for supported audit actions. | Local mock/unit only |
 | /antinuke exportincidents | Private latest100 minimalincidentmetadata JSON,total/truncation,no actor/sourceIDs. | Local mock/unit only |
 | /antinuke exportpolicy | Private storedalert config/trustedIDs JSON,not audit history/preventionproof. | Local mock/unit only |
+| /antinuke exportunresolved | Latest100recorded/uncertain/unavailable metadataJSON;not replay,retry or prevention. | Local mock/unit only |
 | /antinuke importpolicy | Replace stored alert policy from strict JSON,force disabled,no native actions. | Local mock/unit only |
 | /antinuke incidents | Show20 recent stored audit burst alerts. | Local mock/unit only |
+| /antinuke inspectincident | ExactstoredincidentID minimalmetadataJSON/null,no actor/auditentryIDs or native lookup. | Local mock/unit only |
 | /antinuke removetrust | Confirmed remove one exactstored trustedID,including departedusers,not nativeaccess. | Local mock/unit only |
 | /antinuke resetpolicy | Confirmed stopalerts/forgetdestination/trust/defaultthresholds,receipts kept. | Local mock/unit only |
 | /antinuke summary | Private retained incident counts by state,no actor/source IDs or protection claim. | Local mock/unit only |
@@ -125,6 +128,8 @@
 | /customroleaudit exportpolicy | Manage Roles: stored creation switch, gate role and mappings JSON. | Local mock/unit only |
 | /customroleaudit summary | Manage Roles: stored creation counts by state, no owner IDs or native effects. | Local mock/unit only |
 | /fun 8ball | Get a playful random answer, not advice. | Local mock/unit only |
+| /fun bingo | Private fresh75ball5x5BINGOcard,freeNcenter,no called numbers/prizes/saved game. | Local mock/unit only |
+| /fun bracket | Private randomized first-round single-elimination bracket2-16labels,no winners or assignments. | Local mock/unit only |
 | /fun cards | Draw1-10 distinct cards from a fresh52card deck,no betting/saved game. | Local mock/unit only |
 | /fun choose | Pick one of 2-20 choices separated by \|. | Local mock/unit only |
 | /fun coin | Flip a coin. | Local mock/unit only |
@@ -134,6 +139,7 @@
 | /fun dicehistogram | Private1-100 independent dice rolls summarized by face,count/total,no stored state. | Local mock/unit only |
 | /fun dicekeep | Roll bounded dice,keep highest or lowest results;no stakes or saved state. | Local mock/unit only |
 | /fun dicetarget | Roll dice and count values at or above an explicit target,no stakes. | Local mock/unit only |
+| /fun dominoes | Private draw1-7unique double-six domino tiles from fresh28tile set,no bets/saved game. | Local mock/unit only |
 | /fun exchange | Private one-cycle label exchange;no self match,no messages or secret delivery. | Local mock/unit only |
 | /fun number | One uniform integer in an inclusive bounded range;not advice. | Local mock/unit only |
 | /fun pairs | Private random pairings of2-20 labels,odd label gets bye;no member assignment. | Local mock/unit only |
@@ -159,15 +165,18 @@
 | /giveaway cancelall | Cancel all active giveaways in storage only;no native message edits or announcements. | Local mock/unit only |
 | /giveaway cancelchannel | Confirmedcancel onlyactivegiveaways in exactstoredchannel,no native announcements/deletes. | Local mock/unit only |
 | /giveaway channelcounts | Private stored giveaway counts bychannelID/state,no entries/memberIDs/currentactivityproof. | Local mock/unit only |
+| /giveaway channelmetadata | Latest100minimalgiveawaymetadata for exactstoredchannelID,no prize/member/native lookup. | Local mock/unit only |
 | /giveaway channelrecords | Private latest100metadata for exactstoredchannelID,total/truncated,no entrant IDs. | Local mock/unit only |
 | /giveaway config | Show giveaway limits and policies. | Local mock/unit only |
 | /giveaway end | End and publish a stored draw, or retry publishing it. | Local mock/unit only |
 | /giveaway entrycounts | Private retained entrycounts forlatest100 giveawayID/stateJSON,total/truncation,no memberIDs. | Local mock/unit only |
 | /giveaway export | Private latest100 stored giveaway prize/schedule/binding records,no entrant/winner IDs. | Local mock/unit only |
 | /giveaway exportmetadata | Private latest100 minimalID/channel/state/due/count/drawversion/timeJSON,no prize/sourceIDs. | Local mock/unit only |
+| /giveaway exportunresolved | Latest100pending/ending/uncertain minimalgiveawaymetadata,no draw/retry/native outcomeproof. | Local mock/unit only |
 | /giveaway forgetentries | Confirmed erase ended/cancelled entrantIDs;future rerolls lose candidates. | Local mock/unit only |
 | /giveaway forgetfinishedentries | Erase entrant IDs for ended/cancelled giveaways;winner history/native messages kept. | Local mock/unit only |
 | /giveaway inspect | Private stored prize/state/entrycount,no entrantIDs/live readiness. | Local mock/unit only |
+| /giveaway inspectmetadata | ExactstoredgiveawayID minimalmetadataJSON/null,no prize/winner/member/sourceIDs/nativeproof. | Local mock/unit only |
 | /giveaway list | List latest100 stored records,2 complete prizes/page,no live delivery claim. | Local mock/unit only |
 | /giveaway reroll | Draw again, excluding the immediately previous winners. | Local mock/unit only |
 | /giveaway start | Create a giveaway with checked eligibility. | Local mock/unit only |
@@ -197,8 +206,11 @@
 | /leaderboard stats | Show your own retained message counts. | Local mock/unit only |
 | /leaderboard top | Show retained message ranks, ten per page. | Local mock/unit only |
 | /leaderboard weeklymine | Only your90retained UTCdays in13 disjoint newest-first elapsed7-day buckets. | Local mock/unit only |
+| /casehistory actioncounts | Storedcase counts by action/state,no identities/reasons/currentnative state claims. | Local mock/unit only |
 | /casehistory actor | Private storedcase metadata for exact actor ID,10/page,no native lookup. | Local mock/unit only |
 | /casehistory export | Private latest100case metadata/reasons JSON,total/truncated,no recovery/grant. | Local mock/unit only |
+| /casehistory exportmetadata | Latest100minimal storedcaseID/action/state/timeJSON,total/truncated,no reasons/actor/targetIDs. | Local mock/unit only |
+| /casehistory exportunresolved | Latest100pending/uncertain caseID/action/state/timeJSON,no recovery/retry/nativeproof. | Local mock/unit only |
 | /casehistory inspect | Read one exact stored case identity/reason/status,not current native state. | Local mock/unit only |
 | /casehistory list | Page stored case metadata,ten per page,optional exact status filter. | Local mock/unit only |
 | /casehistory summary | Private allstoredcase counts bystatus,no identities/reasons or native claims. | Local mock/unit only |
@@ -217,7 +229,10 @@
 | /logging pausegroup | Stop member, role or channel metadata-event opt-ins; case logging/settings kept. | Local mock/unit only |
 | /logging preview | Private sample case-log payload only,no native delivery or readiness claim. | Local mock/unit only |
 | /logging reset | Confirmed stop logging and forget destination/event opt-ins,no native log deletion. | Local mock/unit only |
+| /logging statereceipts | Latest100stored receipts in explicitstate,state/timeJSON,total/truncated,no sourceIDs. | Local mock/unit only |
 | /logging test | Send one test log to the configured channel. | Local mock/unit only |
+| /logging unresolvedreceipts | Latest100reserved/uncertain/unavailable storedreceipts,no retry or native outcome proof. | Local mock/unit only |
+| /logging windowreceipts | Latest100storedreceipts in inclusive explicitUnixmillisecondwindow,no relative dates/sourceIDs. | Local mock/unit only |
 | /moderation ban | ban: one member, checked and recorded. | Local mock/unit only |
 | /moderation clearwarning | CurrentModerateMembers/hierarchy:one target stored warning clearwarning. | Local mock/unit only |
 | /moderation clearwarns | clearwarns: one member, checked and recorded. | Local mock/unit only |
@@ -277,6 +292,8 @@
 | /permit unblockchannel | Remove exact stored channel deny,including deleted channels. | Local mock/unit only |
 | /permit unblockrole | Unblock a role for one entire command. | Local mock/unit only |
 | /permit unblockuser | Unblock a user for one entire command. | Local mock/unit only |
+| /reactionroles channelcounts | Private storedpanelcounts bychannelID/state,no member/role/sourceIDs or nativevalidation. | Local mock/unit only |
+| /reactionroles channelmetadata | Latest100minimal panelmetadata for exactstoredchannelID,no roles/labels/native lookup. | Local mock/unit only |
 | /reactionroles channelrecords | Private latest100 complete bindings/mappings for stored channel ID, no click receipts. | Local mock/unit only |
 | /reactionroles clicksummary | Private retained role-click counts by state/action, no member or source IDs. | Local mock/unit only |
 | /reactionroles create | Publish one role toggle button. | Local mock/unit only |
@@ -285,7 +302,11 @@
 | /reactionroles disablechannel | Disable active panels for one stored channel ID;no native edits or role changes. | Local mock/unit only |
 | /reactionroles disablerole | Disable entire active panels containing one role ID;no native edits or role changes. | Local mock/unit only |
 | /reactionroles export | Private latest100 stored panel bindings/button mappings;no member or click receipts. | Local mock/unit only |
+| /reactionroles exportclicks | Private latest100click state/action/timeJSON,total/truncation,no member/role/sourceIDs. | Local mock/unit only |
+| /reactionroles exportmetadata | Private latest100minimalpanelID/channel/state/timeJSON,total/truncation,no role/sourceIDs or labels. | Local mock/unit only |
+| /reactionroles exportunresolved | Latest100pending/uncertain minimal panelmetadata,no retry/repair/nativeexistence proof. | Local mock/unit only |
 | /reactionroles inspect | Privately inspect stored panel mappings,status and binding IDs only. | Local mock/unit only |
+| /reactionroles inspectmetadata | ExactstoredpanelID minimalmetadataJSON/null,no role/member/message/sourceIDs/labels. | Local mock/unit only |
 | /reactionroles list | List ten complete panel records per page,newest100maximum. | Local mock/unit only |
 | /reactionroles multi | Publish 2-5 independent safe role toggle buttons. | Local mock/unit only |
 | /reactionroles receipts | Privately inspect ten unresolved stored role clicks for one member. | Local mock/unit only |
@@ -316,13 +337,16 @@
 | /ticket transcript | Export current ticket history privately. | Local mock/unit only |
 | /ticket transcriptmetadata | Manage Server:latest100 snapshot ticketID/count/truncated/time,no messagebody/memberIDs. | Local mock/unit only |
 | /ticket unclaim | Release your own claim on this open ticket,without changing access. | Local mock/unit only |
+| /afk agebands | ManageServer:unexpired storedstatus agebands fromasOfclock,no userIDs/reasons/currentawayclaim. | Local mock/unit only |
 | /afk channelcounts | Manage Server: private unexpired stored AFK counts perchannelID, no user IDs/reasons. | Local mock/unit only |
+| /afk channelmetadata | ManageServer:latest100unexpired statusmetadata forstoredchannelID,no reasons/userIDs/native lookup. | Local mock/unit only |
 | /afk clear | Erase your status and reason here. | Local mock/unit only |
 | /afk clearall | Manage Server:erase all stored guild AFK reasons;no native message deletion. | Local mock/unit only |
 | /afk clearchannel | Manage Server:erase stored away reasons shared in one exact channel,no native deletes. | Local mock/unit only |
 | /afk clearuser | Manage Server:erase one exact user away reason/status,no native deletes. | Local mock/unit only |
 | /afk exportmine | Private JSON of only your stored away reason/channel/expiry,no notice IDs. | Local mock/unit only |
 | /afk exportnotices | Manage Server: private latest100 notice channel/time JSON,no message/member IDs. | Local mock/unit only |
+| /afk exportstatuses | ManageServer:latest100unexpired status channel/time/expiryJSON,no reasons/userIDs,total/truncated. | Local mock/unit only |
 | /afk move | Move own existing reason sharing to this current channel,without extending expiry. | Local mock/unit only |
 | /afk reason | Edit own existing public reason without extending expiry;confirm exact-channel sharing. | Local mock/unit only |
 | /afk set | Set status up to7days,clear on your next eligible server message. | Local mock/unit only |
@@ -347,13 +371,28 @@
 | /list emojis | List current server emojis,ten per page with optional literal name search. | Local mock/unit only |
 | /list roles | List current server roles,ten per page with optional literal name search. | Local mock/unit only |
 | /list stickers | List current server stickers,ten per page with optional literal name search. | Local mock/unit only |
+| /matrix add | Add equalshape1-4integer matrices JSON;exact output decimalstrings. | Local mock/unit only |
+| /matrix determinant | Exact determinant of square1-4integer matrix JSON;result decimal string. | Local mock/unit only |
+| /matrix inverse | Exact rational inverse of square1-4integer matrix;singular rejected. | Local mock/unit only |
+| /matrix multiply | Multiply compatible1-4by1-4integer matrices JSON;exact outputs decimal strings. | Local mock/unit only |
+| /matrix power | Square integer matrix power0-10,0identity;exact output decimalstrings. | Local mock/unit only |
+| /matrix rank | Exact rational rank of1-4by1-4integer matrix,no floatingpoint tolerance. | Local mock/unit only |
+| /matrix scale | Multiply each matrix integer by explicit bounded scalar;exact output decimalstrings. | Local mock/unit only |
+| /matrix solve | Solve square1-4integer system with one-column RHS;unique rational solution only. | Local mock/unit only |
+| /matrix transpose | Transpose1-4by1-4integer matrix JSON;exact integer outputs are decimal strings. | Local mock/unit only |
 | /membercount | Fresh approximate server member/presence counts,no member enumeration. | Local mock/unit only |
 | /poll | Manage Server: publish a native Discord poll with2-10 answers. | Local mock/unit only |
+| /pollmanage channelcounts | Stored poll sendreceiptcounts bychannelID/state,no votingcounts or native lookup. | Local mock/unit only |
+| /pollmanage channelmetadata | Latest100minimal stored pollreceiptmetadata for exactchannelID,no sourceIDs/votinglookup. | Local mock/unit only |
 | /pollmanage channelreceipts | Private latest100storedsendreceipts for exactchannelID,no native channel/voting lookup. | Local mock/unit only |
 | /pollmanage end | End voting early on one bot-created poll after confirmation. | Local mock/unit only |
 | /pollmanage export | Private latest100storedreceipt bindings/timestamps JSON,total/truncated,no actors/voters. | Local mock/unit only |
+| /pollmanage exportmetadata | Latest100minimal storedreceiptID/channel/state/timeJSON,total/truncation,no sourceIDs. | Local mock/unit only |
+| /pollmanage exportunresolved | Latest100sending/uncertain minimal pollreceiptmetadata,no nativelookup/retry/repair. | Local mock/unit only |
+| /pollmanage inspectreceipt | ExactstoredreceiptID minimalmetadataJSON/null,no nativepoll/message lookup or voterIDs. | Local mock/unit only |
 | /pollmanage list | List the latest 20 stored poll receipts, not live voting states. | Local mock/unit only |
 | /pollmanage results | Read current answer counts, which may not be finalized. | Local mock/unit only |
+| /pollmanage statemetadata | Latest100minimal stored pollreceiptmetadata in exactstate,no native outcomeproof. | Local mock/unit only |
 | /pollmanage summary | Private stored send-receipt counts bystate,not voting counts/active polls. | Local mock/unit only |
 | /roleinfo | Read current role ID,color,position and permission flags. | Local mock/unit only |
 | /serverbanner | Fetch current server banner link,no member enumeration. | Local mock/unit only |
@@ -368,13 +407,22 @@
 | /text hexencode | LiteralUTF8 text to lowercase hexadecimalTXT,no encryption or execution. | Local mock/unit only |
 | /text htmldecode | Decode amp/lt/gt/quot/#39 once;other entities unchanged,no parsing or execution. | Local mock/unit only |
 | /text htmlencode | Encode five HTML entities in literal text;not a sanitizer or HTML parser. | Local mock/unit only |
+| /text indent | Prefix1-16ASCIIspaces to everyline,blanklines included,CRLF/CRtoLF,max100lines. | Local mock/unit only |
+| /text join | JSONarray0-100literalstrings tojoinedTXT,empties preserved,no evaluation. | Local mock/unit only |
+| /text jsonarraytypes | JSONarray top-level typecounts/lengthJSON,no numericstatistics or schema validation. | Local mock/unit only |
+| /text jsonkeys | JSONobject own top-levelkeys in parserorder JSON,no recursion,duplicatekeys lastwins. | Local mock/unit only |
+| /text jsonpointer | Select exact own JSONvalue byRFC6901pointer;no inheritedproperties,parsernumbersemantics. | Local mock/unit only |
 | /text jsonquote | Literal text to one quoted JSON string;keeps Unicode,no parsing,execution or HTML safety. | Local mock/unit only |
 | /text jsonunquote | Decode exactlyone JSONstring to literalUTF8TXT,no NUL/unpairedsurrogates or execution. | Local mock/unit only |
+| /text lineendings | Convert allCRLF/CR/LF linebreaks toLF orCRLF TXT,no trimming/trailingline addition. | Local mock/unit only |
 | /text numberlines | Number1-100 exact lines,normalizeCRLF/CR toLF;blanklines preserved,no trimming. | Local mock/unit only |
+| /text outdent | Removeup to1-16leadingASCIIspaces perline,no tabs/otherwhitespace,CRLF/CRtoLF. | Local mock/unit only |
 | /text querydecode | Strict rawformquery to key/valuepairs JSON,+isspace,repeats kept,no leading? or fragment. | Local mock/unit only |
 | /text queryencode | JSON1-50string key/valuepairs to formquery,+forspace,repeats kept,no URLfetch. | Local mock/unit only |
 | /text replace | Replace all case-sensitive non-overlapping literal matches,JSONcount/text;no regex. | Local mock/unit only |
+| /text reverselines | Reverse exact1-100linesTXT,blanklines preserved,CRLF/CRtoLF,no character reversal. | Local mock/unit only |
 | /text slice | Exact1based Unicode codepoint slice TXT;not graphemes,may split combining sequences. | Local mock/unit only |
+| /text split | Literalcase-sensitive non-overlapping split to JSONstrings,emptyparts kept,no regex. | Local mock/unit only |
 | /text urlparts | Parse absoluteHTTP(S) URL into normalizedpartsJSON;no credentials,fetch or safetycheck. | Local mock/unit only |
 | /tools base64decode | Private canonical padded standard Base64 to valid UTF-8 TXT,no evaluation. | Local mock/unit only |
 | /tools base64encode | Private exact UTF-8 text to standard Base64 TXT,not encryption/no evaluation. | Local mock/unit only |
@@ -420,12 +468,15 @@
 | /voice undeafen | undeafen: one current voice member. | Local mock/unit only |
 | /voice unmute | unmute: one current voice member. | Local mock/unit only |
 | /voicemaster bitrate | Set empty owned voice channel bitrate8-96kbps;private access unchanged. | Local mock/unit only |
+| /voicemaster channelrecords | ManageChannels:latest100stored records forchannelIDJSON,total/truncated,no native lookup. | Local mock/unit only |
 | /voicemaster close | Delete only your tracked empty private channel. | Local mock/unit only |
 | /voicemaster config | Show configured private channel category and limits. | Local mock/unit only |
 | /voicemaster exportconfig | ManageChannels:private stored category configuration only,not ownership/access backup. | Local mock/unit only |
 | /voicemaster exportmine | Private latest100onlyyour storedchannel metadata,no nativeaccess/currentmembership claim. | Local mock/unit only |
 | /voicemaster exportrecords | ManageChannels:private latest100channelstate metadata,no owner/source IDs,total/truncated. | Local mock/unit only |
+| /voicemaster exportrecovery | ManageChannels:latest100creating/deleting/uncertain metadataJSON;not recovery,retry or repair. | Local mock/unit only |
 | /voicemaster inspect | Privately read your current tracked channel name/capacity/bitrate;no members. | Local mock/unit only |
+| /voicemaster inspectrecord | ManageChannels:exact stored recordID metadataJSON/null,no owner/sourceIDs or channel lookup. | Local mock/unit only |
 | /voicemaster limit | Set your channel capacity; access stays private. | Local mock/unit only |
 | /voicemaster lock | Empty tracked channel: restore owner-only view/connect access. | Local mock/unit only |
 | /voicemaster open | Create your own private standard voice channel. | Local mock/unit only |

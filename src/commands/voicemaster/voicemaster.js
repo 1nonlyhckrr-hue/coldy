@@ -190,6 +190,43 @@ data.addSubcommand((s) =>
       'Private latest100onlyyour storedchannel metadata,no nativeaccess/currentmembership claim.',
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('inspectrecord')
+    .setDescription(
+      'ManageChannels:exact stored recordID metadataJSON/null,no owner/sourceIDs or channel lookup.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('id')
+        .setDescription('ExactstoredrecordID')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(Number.MAX_SAFE_INTEGER),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelrecords')
+    .setDescription(
+      'ManageChannels:latest100stored records forchannelIDJSON,total/truncated,no native lookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('channel-id')
+        .setDescription('ExactstoredchannelID17-20digits')
+        .setRequired(true)
+        .setMinLength(17)
+        .setMaxLength(20),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportrecovery')
+    .setDescription(
+      'ManageChannels:latest100creating/deleting/uncertain metadataJSON;not recovery,retry or repair.',
+    ),
+);
 export default {
   category: 'voicemaster',
   data,
@@ -200,7 +237,18 @@ export default {
       locale = c.localization.locale(i.guildId),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
-    if (['resetsetup', 'exportconfig', 'records', 'summary', 'exportrecords'].includes(sub)) {
+    if (
+      [
+        'resetsetup',
+        'exportconfig',
+        'records',
+        'summary',
+        'exportrecords',
+        'inspectrecord',
+        'channelrecords',
+        'exportrecovery',
+      ].includes(sub)
+    ) {
       const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
       if (
         i.guild.id !== i.guildId ||
@@ -209,7 +257,23 @@ export default {
         !actor.permissions?.has(P.ManageChannels)
       )
         throw new UserError('userPermission');
-      if (sub === 'summary') {
+      if (['inspectrecord', 'channelrecords', 'exportrecovery'].includes(sub)) {
+        const report =
+          sub === 'inspectrecord'
+            ? c.voiceMaster.inspectRecord(i.guildId, i.options.getInteger('id', true))
+            : c.voiceMaster.scopedRecords(
+                i.guildId,
+                sub === 'channelrecords'
+                  ? { channelId: i.options.getString('channel-id', true) }
+                  : { recovery: true },
+              );
+        files = [
+          new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+            name: 'luna-voice-' + sub + '.json',
+          }),
+        ];
+        text = t('vmScopedMetadata');
+      } else if (sub === 'summary') {
         const rows = c.voiceMaster.summary(i.guildId);
         text =
           t('vmSummary') +

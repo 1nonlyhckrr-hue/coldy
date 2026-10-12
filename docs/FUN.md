@@ -19,3 +19,11 @@ Number uses inclusive bounds from-1000000to1000000,unbiased system RNG,including
 `/fun cards [count]` draws1-10distinct cards without replacement from a fresh52card deck per invocation;no saved hand,stakes or betting. Cryptographic RNG,localized suit labels. `wordscramble word` scrambles3-20ASCIIletters with at least2distinctletters,lowercases input,shows answer in a spoiler. Preserves exact letter multiset and changes order;fallback swap if shuffle happens to match original,so not an unbiased distinct-anagram sampler. Suppliedword only,no dictionary/guess history.
 
 `dicetarget target [count] [sides]` rolls1-10dice,sides2-1000(default6),counts rolls at least target2-sides,inclusive. No saved game/stakes/otherperson. Private3locale/no mentions,no native effects/storage. Three tests deck/multiset/endpoints/RNG/bounds/target/privatepayloads.16Funpaths total;no live/client visual acceptance.
+
+## Fresh game preparation
+
+`bracket labels` randomizes2-16distinct labels(max40characters each),returns first-round matches with explicit single-label byes to the next power-of-two bracket. No winners, later-round pairings, dates, member lookup/assignment or tournament storage.
+
+`bingo` generates a fresh75ball5x5card: B1-15,I16-30,N31-45,G46-60,O61-75. Each column has unique numbers,centerN is JSONnull/free. No calls, prizes, multiplayer state or win validation.
+
+`dominoes count` draws1-7unique unordered tiles from fresh double-six28tile set (0-6pips),reports remaining count. No bets, opponent hand, rules enforcement or saved game. All three use bounded cryptographic randomness and private localized branded no-ping JSON attachments. Local deterministic structure/bounds and command tests,not live Discord/client visual acceptance.

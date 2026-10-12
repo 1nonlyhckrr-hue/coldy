@@ -54,6 +54,44 @@ export class Giveaways {
         .get(guildId).n,
     };
   }
+  scopedMetadata(guildId, scope, value = null) {
+    const columns =
+      'id,channel_id AS channelId,status,ends_at AS endsAt,winner_count AS winnerCount,draw_version AS drawVersion,created_at AS createdAt';
+    if (scope === 'id') {
+      if (!Number.isSafeInteger(value) || value < 1) throw new UserError('giveawayNotFound');
+      return (
+        this.db
+          .prepare('SELECT ' + columns + ' FROM giveaways WHERE guild_id=? AND id=?')
+          .get(guildId, value) ?? null
+      );
+    }
+    let filter, parameters;
+    if (scope === 'channel') {
+      if (typeof value !== 'string' || !/^\d{17,20}$/.test(value))
+        throw new UserError('giveawayNotFound');
+      filter = ' AND channel_id=?';
+      parameters = [value];
+    } else if (scope === 'unresolved') {
+      filter = " AND status IN ('pending','ending','uncertain')";
+      parameters = [];
+    } else throw new UserError('giveawayNotFound');
+    return this.db.transaction(() => {
+      const values = [guildId, ...parameters];
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM giveaways WHERE guild_id=?' + filter)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT ' +
+            columns +
+            ' FROM giveaways WHERE guild_id=?' +
+            filter +
+            ' ORDER BY id DESC LIMIT 100',
+        )
+        .all(...values);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   exportMetadata(guildId) {
     return this.db.transaction(() => {
       const total = this.db

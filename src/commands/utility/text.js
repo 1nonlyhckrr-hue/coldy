@@ -20,6 +20,14 @@ import {
   hexEncode,
   hexDecode,
   jsonUnquote,
+  jsonKeys,
+  jsonPointer,
+  jsonArrayTypes,
+  splitLiteral,
+  joinStrings,
+  reverseLines,
+  indentLines,
+  lineEndings,
 } from '../../services/textTransforms.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
@@ -29,6 +37,18 @@ const data = new SlashCommandBuilder()
   .setDescription('Private literal text transformations;no execution,fetch or stored data.')
   .setContexts(InteractionContextType.Guild);
 for (const [name, description] of [
+  [
+    'reverselines',
+    'Reverse exact1-100linesTXT,blanklines preserved,CRLF/CRtoLF,no character reversal.',
+  ],
+  [
+    'jsonkeys',
+    'JSONobject own top-levelkeys in parserorder JSON,no recursion,duplicatekeys lastwins.',
+  ],
+  [
+    'jsonarraytypes',
+    'JSONarray top-level typecounts/lengthJSON,no numericstatistics or schema validation.',
+  ],
   ['hexencode', 'LiteralUTF8 text to lowercase hexadecimalTXT,no encryption or execution.'],
   ['hexdecode', 'Evenlength strict hex to validUTF8TXT,no NUL/replacementdecoding/execution.'],
   [
@@ -162,6 +182,117 @@ data.addSubcommand((s) =>
         .setMaxValue(1200),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('jsonpointer')
+    .setDescription(
+      'Select exact own JSONvalue byRFC6901pointer;no inheritedproperties,parsernumbersemantics.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('text')
+        .setDescription('JSONdocument1-1200characters,duplicatekeys lastwins')
+        .setRequired(true)
+        .setMinLength(1)
+        .setMaxLength(1200),
+    )
+    .addStringOption((o) =>
+      o
+        .setName('pointer')
+        .setDescription('RFC6901 /key/0;~0for~ and~1for/;omitforroot,max200')
+        .setMaxLength(200),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('split')
+    .setDescription(
+      'Literalcase-sensitive non-overlapping split to JSONstrings,emptyparts kept,no regex.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('text')
+        .setDescription('Literaltext1-1200characters')
+        .setRequired(true)
+        .setMinLength(1)
+        .setMaxLength(1200),
+    )
+    .addStringOption((o) =>
+      o
+        .setName('separator')
+        .setDescription('Exactnonemptyseparator1-200characters')
+        .setRequired(true)
+        .setMinLength(1)
+        .setMaxLength(200),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('join')
+    .setDescription('JSONarray0-100literalstrings tojoinedTXT,empties preserved,no evaluation.')
+    .addStringOption((o) =>
+      o
+        .setName('text')
+        .setDescription('JSONarray1-1200characters')
+        .setRequired(true)
+        .setMinLength(1)
+        .setMaxLength(1200),
+    )
+    .addStringOption((o) =>
+      o
+        .setName('separator')
+        .setDescription('Literalseparator0-200characters;omitfornone')
+        .setMaxLength(200),
+    ),
+);
+for (const name of ['indent', 'outdent'])
+  data.addSubcommand((s) =>
+    s
+      .setName(name)
+      .setDescription(
+        name === 'indent'
+          ? 'Prefix1-16ASCIIspaces to everyline,blanklines included,CRLF/CRtoLF,max100lines.'
+          : 'Removeup to1-16leadingASCIIspaces perline,no tabs/otherwhitespace,CRLF/CRtoLF.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('text')
+          .setDescription('Literaltext1-1200characters,max100lines')
+          .setRequired(true)
+          .setMinLength(1)
+          .setMaxLength(1200),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('spaces')
+          .setDescription('ASCIIspaces1-16perline')
+          .setRequired(true)
+          .setMinValue(1)
+          .setMaxValue(16),
+      ),
+  );
+data.addSubcommand((s) =>
+  s
+    .setName('lineendings')
+    .setDescription(
+      'Convert allCRLF/CR/LF linebreaks toLF orCRLF TXT,no trimming/trailingline addition.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('text')
+        .setDescription('Literaltext1-1200characters')
+        .setRequired(true)
+        .setMinLength(1)
+        .setMaxLength(1200),
+    )
+    .addStringOption((o) =>
+      o
+        .setName('style')
+        .setDescription('Literaloutputlinebreak encoding')
+        .setRequired(true)
+        .addChoices({ name: 'LF', value: 'lf' }, { name: 'CRLF', value: 'crlf' }),
+    ),
+);
 export default {
   category: 'utility',
   data,
@@ -184,12 +315,27 @@ export default {
         'hexencode',
         'hexdecode',
         'jsonunquote',
+        'jsonkeys',
+        'jsonarraytypes',
+        'jsonpointer',
+        'split',
+        'join',
+        'reverselines',
+        'indent',
+        'outdent',
+        'lineendings',
       ].includes(sub)
     )
       throw new UserError('unknownCommand');
     let text;
     const value = i.options.getString('text', true);
-    if (sub === 'replace')
+    if (['indent', 'outdent'].includes(sub))
+      text = indentLines(value, i.options.getInteger('spaces', true), sub === 'outdent');
+    else if (sub === 'lineendings') text = lineEndings(value, i.options.getString('style', true));
+    else if (sub === 'split') text = splitLiteral(value, i.options.getString('separator', true));
+    else if (sub === 'join') text = joinStrings(value, i.options.getString('separator') ?? '');
+    else if (sub === 'jsonpointer') text = jsonPointer(value, i.options.getString('pointer') ?? '');
+    else if (sub === 'replace')
       text =
         JSON.stringify(
           replaceLiteral(
@@ -223,6 +369,9 @@ export default {
         hexencode: hexEncode,
         hexdecode: hexDecode,
         jsonunquote: jsonUnquote,
+        jsonkeys: jsonKeys,
+        jsonarraytypes: jsonArrayTypes,
+        reverselines: reverseLines,
       }[sub];
       if (!fn) throw new UserError('unknownCommand');
       text = fn(value);

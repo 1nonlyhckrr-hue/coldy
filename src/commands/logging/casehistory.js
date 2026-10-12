@@ -70,6 +70,19 @@ for (const kind of ['actor', 'target'])
         o.setName('page').setDescription('Page1-1000,newestfirst').setMinValue(1).setMaxValue(1000),
       ),
   );
+for (const sub of ['exportmetadata', 'actioncounts', 'exportunresolved'])
+  data.addSubcommand((s) =>
+    s.setName(sub).setDescription(
+      {
+        exportmetadata:
+          'Latest100minimal storedcaseID/action/state/timeJSON,total/truncated,no reasons/actor/targetIDs.',
+        actioncounts:
+          'Storedcase counts by action/state,no identities/reasons/currentnative state claims.',
+        exportunresolved:
+          'Latest100pending/uncertain caseID/action/state/timeJSON,no recovery/retry/nativeproof.',
+      }[sub],
+    ),
+  );
 export default {
   category: 'logging',
   data,
@@ -87,7 +100,18 @@ export default {
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
-    if (sub === 'summary') {
+    if (['exportmetadata', 'actioncounts', 'exportunresolved'].includes(sub)) {
+      const report =
+        sub === 'actioncounts'
+          ? c.cases.caseActionCounts(i.guildId)
+          : c.cases.exportCaseMetadata(i.guildId, sub === 'exportunresolved');
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-case-' + sub + '.json',
+        }),
+      ];
+      text = t('caseMinimalMetadata');
+    } else if (sub === 'summary') {
       const rows = c.cases.caseSummary(i.guildId);
       text =
         t('caseSummaryHeader') +

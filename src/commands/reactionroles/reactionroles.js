@@ -227,6 +227,58 @@ const data = new SlashCommandBuilder()
         o.setName('panel-id').setDescription('Panel ID').setMinValue(1).setRequired(true),
       ),
   );
+for (const [name, desc] of [
+  [
+    'exportmetadata',
+    'Private latest100minimalpanelID/channel/state/timeJSON,total/truncation,no role/sourceIDs or labels.',
+  ],
+  [
+    'exportclicks',
+    'Private latest100click state/action/timeJSON,total/truncation,no member/role/sourceIDs.',
+  ],
+  [
+    'channelcounts',
+    'Private storedpanelcounts bychannelID/state,no member/role/sourceIDs or nativevalidation.',
+  ],
+])
+  data.addSubcommand((s) => s.setName(name).setDescription(desc));
+data.addSubcommand((s) =>
+  s
+    .setName('inspectmetadata')
+    .setDescription(
+      'ExactstoredpanelID minimalmetadataJSON/null,no role/member/message/sourceIDs/labels.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('id')
+        .setDescription('ExactstoredpanelID')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(Number.MAX_SAFE_INTEGER),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelmetadata')
+    .setDescription(
+      'Latest100minimal panelmetadata for exactstoredchannelID,no roles/labels/native lookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('channel-id')
+        .setDescription('Exact17-20digit storedchannelID')
+        .setRequired(true)
+        .setMinLength(17)
+        .setMaxLength(20),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportunresolved')
+    .setDescription(
+      'Latest100pending/uncertain minimal panelmetadata,no retry/repair/nativeexistence proof.',
+    ),
+);
 export default {
   category: 'reactionroles',
   data,
@@ -246,6 +298,37 @@ export default {
       throw new UserError('roleActorPermission');
     const sub = i.options.getSubcommand();
     let content, files;
+    if (['inspectmetadata', 'channelmetadata', 'exportunresolved'].includes(sub)) {
+      const report = c.rolePanels.scopedMetadata(
+        i.guildId,
+        { inspectmetadata: 'id', channelmetadata: 'channel', exportunresolved: 'unresolved' }[sub],
+        sub === 'inspectmetadata'
+          ? i.options.getInteger('id', true)
+          : sub === 'channelmetadata'
+            ? i.options.getString('channel-id', true)
+            : null,
+      );
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-role-' + sub + '.json',
+        }),
+      ];
+      content = t('panelScopedMetadata');
+    }
+    if (['exportmetadata', 'exportclicks', 'channelcounts'].includes(sub)) {
+      const report =
+        sub === 'exportmetadata'
+          ? c.rolePanels.exportMetadata(i.guildId)
+          : sub === 'exportclicks'
+            ? c.rolePanels.exportClicks(i.guildId)
+            : c.rolePanels.channelCounts(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-role-' + sub + '.json',
+        }),
+      ];
+      content = t('panelMinimalMetadata');
+    }
     if (['summary', 'clicksummary', 'channelrecords'].includes(sub)) {
       const report =
         sub === 'summary'

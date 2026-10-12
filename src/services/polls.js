@@ -29,6 +29,68 @@ export class Polls {
       return { total, truncated: total > receipts.length, receipts };
     })();
   }
+  scopedMetadata(guildId, scope, value = null) {
+    let filter, parameters;
+    if (scope === 'channel') {
+      if (typeof value !== 'string' || !/^\d{17,20}$/.test(value))
+        throw new UserError('pollManageInvalid');
+      filter = 'channel_id=?';
+      parameters = [value];
+    } else if (scope === 'state') {
+      if (!['sending', 'sent', 'uncertain'].includes(value))
+        throw new UserError('pollManageInvalid');
+      filter = 'status=?';
+      parameters = [value];
+    } else if (scope === 'unresolved') {
+      filter = "status IN ('sending','uncertain')";
+      parameters = [];
+    } else throw new UserError('pollManageInvalid');
+    return this.db.transaction(() => {
+      const values = [guildId, ...parameters],
+        where = 'guild_id=? AND ' + filter;
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM native_polls WHERE ' + where)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,status,created_at AS createdAt FROM native_polls WHERE ' +
+            where +
+            ' ORDER BY id DESC LIMIT 100',
+        )
+        .all(...values);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  exportMetadata(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM native_polls WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,status,created_at AS createdAt FROM native_polls WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  channelCounts(guildId) {
+    return this.db
+      .prepare(
+        'SELECT channel_id AS channelId,status,COUNT(*) AS count FROM native_polls WHERE guild_id=? GROUP BY channel_id,status ORDER BY channel_id,status',
+      )
+      .all(guildId);
+  }
+  inspectReceipt(guildId, id) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('pollManageInvalid');
+    return (
+      this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,status,created_at AS createdAt FROM native_polls WHERE guild_id=? AND id=?',
+        )
+        .get(guildId, id) ?? null
+    );
+  }
   reserve(i, channelId) {
     return this.db.transaction(() => {
       this.db

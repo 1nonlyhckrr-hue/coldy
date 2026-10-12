@@ -27,7 +27,7 @@ test('HTML decode singlepass knownentities only literalunsafe output no executio
       assert.throws(() => fn(v), /textInputInvalid/);
 });
 test('3 text paths private literalTXT all3locales embedbranding mentionsblocked exactUTF8 no storage/native effects', async () => {
-  assert.equal(command.data.toJSON().options.length, 15);
+  assert.equal(command.data.toJSON().options.length, 24);
   for (const language of ['en', 'hi', 'hinglish'])
     for (const sub of ['htmlencode', 'htmldecode', 'numberlines']) {
       let result;

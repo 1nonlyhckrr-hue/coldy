@@ -67,6 +67,71 @@ data.addSubcommand((s) =>
         .setRequired(true),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('exportmetadata')
+    .setDescription(
+      'Latest100minimal storedreceiptID/channel/state/timeJSON,total/truncation,no sourceIDs.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelcounts')
+    .setDescription(
+      'Stored poll sendreceiptcounts bychannelID/state,no votingcounts or native lookup.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('inspectreceipt')
+    .setDescription(
+      'ExactstoredreceiptID minimalmetadataJSON/null,no nativepoll/message lookup or voterIDs.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('id')
+        .setDescription('ExactstoredreceiptID')
+        .setMinValue(1)
+        .setMaxValue(Number.MAX_SAFE_INTEGER)
+        .setRequired(true),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelmetadata')
+    .setDescription(
+      'Latest100minimal stored pollreceiptmetadata for exactchannelID,no sourceIDs/votinglookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('channel-id')
+        .setDescription('Exact17-20digit storedchannelID')
+        .setRequired(true)
+        .setMinLength(17)
+        .setMaxLength(20),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('statemetadata')
+    .setDescription(
+      'Latest100minimal stored pollreceiptmetadata in exactstate,no native outcomeproof.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('state')
+        .setDescription('Storedsendreceiptstate,not votingstate')
+        .setRequired(true)
+        .addChoices(...['sending', 'sent', 'uncertain'].map((value) => ({ name: value, value }))),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportunresolved')
+    .setDescription(
+      'Latest100sending/uncertain minimal pollreceiptmetadata,no nativelookup/retry/repair.',
+    ),
+);
 export default {
   category: 'utility',
   data,
@@ -78,7 +143,36 @@ export default {
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
-    if (sub === 'summary') {
+    if (['channelmetadata', 'statemetadata', 'exportunresolved'].includes(sub)) {
+      const report = c.polls.scopedMetadata(
+        i.guildId,
+        { channelmetadata: 'channel', statemetadata: 'state', exportunresolved: 'unresolved' }[sub],
+        sub === 'channelmetadata'
+          ? i.options.getString('channel-id', true)
+          : sub === 'statemetadata'
+            ? i.options.getString('state', true)
+            : null,
+      );
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-poll-' + sub + '.json',
+        }),
+      ];
+      text = t('pollScopedMetadata');
+    } else if (['exportmetadata', 'channelcounts', 'inspectreceipt'].includes(sub)) {
+      const report =
+        sub === 'exportmetadata'
+          ? c.polls.exportMetadata(i.guildId)
+          : sub === 'channelcounts'
+            ? c.polls.channelCounts(i.guildId)
+            : c.polls.inspectReceipt(i.guildId, i.options.getInteger('id', true));
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-poll-' + sub + '.json',
+        }),
+      ];
+      text = t('pollMinimalMetadata');
+    } else if (sub === 'summary') {
       const rows = c.polls.summary(i.guildId);
       text =
         t('pollReceiptSummary') +

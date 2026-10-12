@@ -174,6 +174,73 @@ export class RolePanels {
       .prepare("UPDATE role_panels SET status='disabled' WHERE guild_id=? AND status='active'")
       .run(guildId).changes;
   }
+  scopedMetadata(guildId, scope, value = null) {
+    const columns = 'id,channel_id AS channelId,status,created_at AS createdAt';
+    if (scope === 'id') {
+      if (!Number.isSafeInteger(value) || value < 1) throw new UserError('rolePanelScopeInvalid');
+      return (
+        this.db
+          .prepare('SELECT ' + columns + ' FROM role_panels WHERE guild_id=? AND id=?')
+          .get(guildId, value) ?? null
+      );
+    }
+    let filter, parameters;
+    if (scope === 'channel') {
+      if (typeof value !== 'string' || !/^\d{17,20}$/.test(value))
+        throw new UserError('rolePanelScopeInvalid');
+      filter = 'channel_id=?';
+      parameters = [value];
+    } else if (scope === 'unresolved') {
+      filter = "status IN ('pending','uncertain')";
+      parameters = [];
+    } else throw new UserError('rolePanelScopeInvalid');
+    return this.db.transaction(() => {
+      const values = [guildId, ...parameters],
+        where = 'guild_id=? AND ' + filter;
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM role_panels WHERE ' + where)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT ' + columns + ' FROM role_panels WHERE ' + where + ' ORDER BY id DESC LIMIT 100',
+        )
+        .all(...values);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  exportMetadata(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM role_panels WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,status,created_at AS createdAt FROM role_panels WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  exportClicks(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM role_click_receipts WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT status,action,created_at AS createdAt FROM role_click_receipts WHERE guild_id=? ORDER BY created_at DESC,interaction_id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  channelCounts(guildId) {
+    return this.db
+      .prepare(
+        'SELECT channel_id AS channelId,status,COUNT(*) AS count FROM role_panels WHERE guild_id=? GROUP BY channel_id,status ORDER BY channel_id,status',
+      )
+      .all(guildId);
+  }
   summary(guildId) {
     return this.db
       .prepare(

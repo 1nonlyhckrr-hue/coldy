@@ -172,6 +172,47 @@ data.addSubcommand((s) =>
         .setRequired(true),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('statereceipts')
+    .setDescription(
+      'Latest100stored receipts in explicitstate,state/timeJSON,total/truncated,no sourceIDs.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('state')
+        .setDescription('Exact stored state,no native delivery proof')
+        .setRequired(true)
+        .addChoices(
+          ...['reserved', 'sent', 'uncertain', 'unavailable'].map((value) => ({
+            name: value,
+            value,
+          })),
+        ),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('unresolvedreceipts')
+    .setDescription(
+      'Latest100reserved/uncertain/unavailable storedreceipts,no retry or native outcome proof.',
+    ),
+);
+data.addSubcommand((s) => {
+  s.setName('windowreceipts').setDescription(
+    'Latest100storedreceipts in inclusive explicitUnixmillisecondwindow,no relative dates/sourceIDs.',
+  );
+  for (const key of ['start', 'end'])
+    s.addIntegerOption((o) =>
+      o
+        .setName(key)
+        .setDescription('Inclusive Unixmilliseconds0to9007199254740991')
+        .setRequired(true)
+        .setMinValue(0)
+        .setMaxValue(Number.MAX_SAFE_INTEGER),
+    );
+  return s;
+});
 export default {
   category: 'logging',
   data,
@@ -193,6 +234,26 @@ export default {
     await authorize();
     const sub = i.options.getSubcommand();
     let text, files;
+    if (['statereceipts', 'unresolvedreceipts', 'windowreceipts'].includes(sub)) {
+      const scope = {
+        statereceipts: 'state',
+        unresolvedreceipts: 'unresolved',
+        windowreceipts: 'window',
+      }[sub];
+      const options =
+        sub === 'statereceipts'
+          ? { status: i.options.getString('state', true) }
+          : sub === 'windowreceipts'
+            ? { start: i.options.getInteger('start', true), end: i.options.getInteger('end', true) }
+            : {};
+      const report = c.eventLogs.scopedReceipts(i.guildId, scope, options);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-log-' + sub + '.json',
+        }),
+      ];
+      text = t('logScopedReceipts');
+    }
     if (sub === 'deliverysummary' || sub === 'exportreceipts') {
       const report =
         sub === 'deliverysummary'
@@ -255,6 +316,9 @@ export default {
     if (
       ![
         'export',
+        'statereceipts',
+        'unresolvedreceipts',
+        'windowreceipts',
         'deliverysummary',
         'exportreceipts',
         'pausegroup',

@@ -27,3 +27,7 @@ Reference: https://docs.zynrax.site/miscellaneous/giveaway
 `forgetfinishedentries confirm:true` erases entrant IDs only for ended/cancelled giveaways in this server. Other states,stored winner history,native messages and other servers remain. Later rerolls lose erased candidates.
 
 `export` privately attaches latest100stored giveaway records with total/truncated:prize,state,channel/message binding,deadline,winner-count and required-role setting. No entrant/winner/staff/source IDs. Keep authored prize/bindings private;not full backup or native message readiness. Fresh native Manage Server before reading/writing,private3locale/no-ping. Three tests scope/state/native-binding retention,isolation/exporttruncation/databaseabort and authority/confirmation/attachmentbytes. No live/client visual acceptance.
+
+## Scoped minimal metadata
+
+`inspectmetadata id` returns exact stored giveawayID/channel/state/due/winnerCount/drawVersion/created metadata or JSONnull;`channelmetadata channel-id` returns latest100samefields for exactstoredchannel,total/truncated;`exportunresolved` returns latest100pending/ending/uncertain records. No prize,winner/member/sourceIDs,draw/retry/cleanup or native existence/delivery/eligibility proof. FreshManageGuild/private3locale branded no-ping JSON,nonmutating/guildisolated. IDs of deletedchannels permitted,no native targetlookup.3tests exact/null/isolation/bounds/minimalkeys/100truncation/statefilter/privatepermissionbytes.

@@ -47,6 +47,30 @@ export class ModerationCases {
       .run(status, id);
     if (r.changes !== 1) throw new Error('Case not pending');
   }
+  caseActionCounts(guildId) {
+    return this.db
+      .prepare(
+        'SELECT action,status,COUNT(*) AS count FROM moderation_cases WHERE guild_id=? GROUP BY action,status ORDER BY action,status',
+      )
+      .all(guildId);
+  }
+  exportCaseMetadata(guildId, unresolved = false) {
+    if (typeof unresolved !== 'boolean') throw new UserError('caseHistoryInvalid');
+    return this.db.transaction(() => {
+      const filter = unresolved ? " AND status IN ('pending','uncertain')" : '';
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM moderation_cases WHERE guild_id=?' + filter)
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,action,status,created_at AS createdAt FROM moderation_cases WHERE guild_id=?' +
+            filter +
+            ' ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   caseSummary(guildId) {
     return this.db
       .prepare(

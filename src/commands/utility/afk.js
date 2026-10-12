@@ -132,6 +132,35 @@ for (const sub of ['clearchannel', 'clearuser'])
           .setRequired(true),
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('exportstatuses')
+    .setDescription(
+      'ManageServer:latest100unexpired status channel/time/expiryJSON,no reasons/userIDs,total/truncated.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelmetadata')
+    .setDescription(
+      'ManageServer:latest100unexpired statusmetadata forstoredchannelID,no reasons/userIDs/native lookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('channel-id')
+        .setDescription('ExactstoredchannelID17-20digits')
+        .setRequired(true)
+        .setMinLength(17)
+        .setMaxLength(20),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('agebands')
+    .setDescription(
+      'ManageServer:unexpired storedstatus agebands fromasOfclock,no userIDs/reasons/currentawayclaim.',
+    ),
+);
 export default {
   category: 'utility',
   data,
@@ -148,6 +177,9 @@ export default {
         'summary',
         'channelcounts',
         'exportnotices',
+        'exportstatuses',
+        'channelmetadata',
+        'agebands',
       ].includes(sub)
     ) {
       const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
@@ -158,7 +190,21 @@ export default {
         (sub !== 'exportmine' && !actor.permissions?.has(P.ManageGuild))
       )
         throw new UserError('userPermission');
-      if (['summary', 'channelcounts', 'exportnotices'].includes(sub)) {
+      if (['exportstatuses', 'channelmetadata', 'agebands'].includes(sub)) {
+        const report =
+          sub === 'agebands'
+            ? c.afk.ageBands(i.guildId)
+            : c.afk.exportStatusMetadata(
+                i.guildId,
+                sub === 'channelmetadata' ? i.options.getString('channel-id', true) : null,
+              );
+        files = [
+          new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+            name: 'luna-afk-' + sub + '.json',
+          }),
+        ];
+        text = t('afkStatusMetadata');
+      } else if (['summary', 'channelcounts', 'exportnotices'].includes(sub)) {
         const report =
           sub === 'summary'
             ? c.afk.summary(i.guildId)

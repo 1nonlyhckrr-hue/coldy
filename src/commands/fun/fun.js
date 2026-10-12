@@ -1,10 +1,14 @@
 import {
   SlashCommandBuilder,
+  AttachmentBuilder,
   InteractionContextType,
   MessageFlags,
   escapeMarkdown,
 } from 'discord.js';
 import {
+  eliminationBracket,
+  bingoCard,
+  drawDominoes,
   roundRobin,
   dealHands,
   rollHistogram,
@@ -368,6 +372,38 @@ data.addSubcommand((s) =>
       o.setName('sides').setDescription('Sides2-1000,default6').setMinValue(2).setMaxValue(1000),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('bracket')
+    .setDescription(
+      'Private randomized first-round single-elimination bracket2-16labels,no winners or assignments.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('labels')
+        .setDescription('2-16distinct labels separatedby|,max40characters each')
+        .setRequired(true)
+        .setMinLength(3)
+        .setMaxLength(655),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('bingo')
+    .setDescription(
+      'Private fresh75ball5x5BINGOcard,freeNcenter,no called numbers/prizes/saved game.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('dominoes')
+    .setDescription(
+      'Private draw1-7unique double-six domino tiles from fresh28tile set,no bets/saved game.',
+    )
+    .addIntegerOption((o) =>
+      o.setName('count').setDescription('Tiles1-7').setRequired(true).setMinValue(1).setMaxValue(7),
+    ),
+);
 export default {
   category: 'fun',
   data,
@@ -377,6 +413,30 @@ export default {
       t = (key, params) => c.localization.t(i.guildId, key, params);
     const sub = i.options.getSubcommand();
     let text;
+    if (['bracket', 'bingo', 'dominoes'].includes(sub)) {
+      const report =
+        sub === 'bracket'
+          ? eliminationBracket(i.options.getString('labels', true))
+          : sub === 'bingo'
+            ? bingoCard()
+            : drawDominoes(i.options.getInteger('count', true));
+      await i.reply(
+        lunaPayload(
+          {
+            content: t('funGame_' + sub),
+            flags: MessageFlags.Ephemeral,
+            files: [
+              new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+                name: 'luna-' + sub + '.json',
+              }),
+            ],
+            allowedMentions: { parse: [], repliedUser: false },
+          },
+          { locale },
+        ),
+      );
+      return;
+    }
     if (sub === 'roundrobin') {
       const labels = parseChoices(i.options.getString('labels', true));
       if (labels.length > 10 || labels.some((v) => v.length > 30))

@@ -192,6 +192,36 @@ export class AntinukeAlerts {
       .run(status, id);
     if (result.changes !== 1) throw new Error('Audit alert reservation not recorded');
   }
+  inspectIncident(guildId, id) {
+    if (!Number.isSafeInteger(id) || id < 1) throw new UserError('antinukeIncidentScopeInvalid');
+    return (
+      this.db
+        .prepare(
+          'SELECT id,action,event_count AS eventCount,status,created_at AS createdAt FROM antinuke_incidents WHERE guild_id=? AND id=?',
+        )
+        .get(guildId, id) ?? null
+    );
+  }
+  scopedIncidents(guildId, { action = null, recovery = false } = {}) {
+    if (action !== null && (!Number.isInteger(action) || !WATCHED_AUDIT_ACTIONS.has(action)))
+      throw new UserError('antinukeIncidentScopeInvalid');
+    return this.db.transaction(() => {
+      const condition =
+        "guild_id=? AND (? IS NULL OR action=?) AND (?=0 OR status IN ('recorded','uncertain','unavailable'))";
+      const values = [guildId, action, action, recovery ? 1 : 0];
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM antinuke_incidents WHERE ' + condition)
+        .get(...values).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,action,event_count AS eventCount,status,created_at AS createdAt FROM antinuke_incidents WHERE ' +
+            condition +
+            ' ORDER BY id DESC LIMIT 100',
+        )
+        .all(...values);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   summary(guildId) {
     return this.db
       .prepare(

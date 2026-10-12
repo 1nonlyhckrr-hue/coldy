@@ -171,6 +171,43 @@ data.addSubcommand((s) =>
       'Private latest100 minimalincidentmetadata JSON,total/truncation,no actor/sourceIDs.',
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('inspectincident')
+    .setDescription(
+      'ExactstoredincidentID minimalmetadataJSON/null,no actor/auditentryIDs or native lookup.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('id')
+        .setDescription('ExactstoredincidentID')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(Number.MAX_SAFE_INTEGER),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('actionincidents')
+    .setDescription(
+      'Latest100retainedincidents forwatchedauditactionJSON,total/truncation,no actors/sourceIDs.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('action')
+        .setDescription('WatchednumericDiscordauditaction,not arbitrary codes')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(1000),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportunresolved')
+    .setDescription(
+      'Latest100recorded/uncertain/unavailable metadataJSON;not replay,retry or prevention.',
+    ),
+);
 export default {
   category: 'antinuke',
   data,
@@ -192,7 +229,23 @@ export default {
       locale = c.localization.locale(i.guildId),
       sub = i.options.getSubcommand();
     let text, files;
-    if (['summary', 'actioncounts', 'exportincidents'].includes(sub)) {
+    if (['inspectincident', 'actionincidents', 'exportunresolved'].includes(sub)) {
+      const report =
+        sub === 'inspectincident'
+          ? c.antinuke.inspectIncident(i.guildId, i.options.getInteger('id', true))
+          : c.antinuke.scopedIncidents(
+              i.guildId,
+              sub === 'actionincidents'
+                ? { action: i.options.getInteger('action', true) }
+                : { recovery: true },
+            );
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-audit-' + sub + '.json',
+        }),
+      ];
+      text = t('antinukeScopedMetadata');
+    } else if (['summary', 'actioncounts', 'exportincidents'].includes(sub)) {
       const report =
         sub === 'summary'
           ? c.antinuke.summary(i.guildId)

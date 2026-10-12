@@ -176,6 +176,43 @@ for (const [name, desc] of [
   ],
 ])
   data.addSubcommand((s) => s.setName(name).setDescription(desc));
+data.addSubcommand((s) =>
+  s
+    .setName('inspectmetadata')
+    .setDescription(
+      'ExactstoredgiveawayID minimalmetadataJSON/null,no prize/winner/member/sourceIDs/nativeproof.',
+    )
+    .addIntegerOption((o) =>
+      o
+        .setName('id')
+        .setDescription('ExactstoredgiveawayID')
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(Number.MAX_SAFE_INTEGER),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelmetadata')
+    .setDescription(
+      'Latest100minimalgiveawaymetadata for exactstoredchannelID,no prize/member/native lookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('channel-id')
+        .setDescription('Exact17-20digit storedchannelID')
+        .setRequired(true)
+        .setMinLength(17)
+        .setMaxLength(20),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportunresolved')
+    .setDescription(
+      'Latest100pending/ending/uncertain minimalgiveawaymetadata,no draw/retry/native outcomeproof.',
+    ),
+);
 export default {
   category: 'giveaway',
   data,
@@ -198,6 +235,23 @@ export default {
         throw new UserError('userPermission');
     };
     await authorize();
+    if (['inspectmetadata', 'channelmetadata', 'exportunresolved'].includes(sub)) {
+      const report = c.giveaways.scopedMetadata(
+        i.guildId,
+        { inspectmetadata: 'id', channelmetadata: 'channel', exportunresolved: 'unresolved' }[sub],
+        sub === 'inspectmetadata'
+          ? i.options.getInteger('id', true)
+          : sub === 'channelmetadata'
+            ? i.options.getString('channel-id', true)
+            : null,
+      );
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-giveaway-' + sub + '.json',
+        }),
+      ];
+      content = t('giveawayScopedMetadata');
+    }
     if (['exportmetadata', 'entrycounts', 'channelcounts'].includes(sub)) {
       const report =
         sub === 'exportmetadata'
@@ -292,6 +346,9 @@ export default {
         'export',
         'cancelall',
         'forgetfinishedentries',
+        'inspectmetadata',
+        'channelmetadata',
+        'exportunresolved',
         'exportmetadata',
         'entrycounts',
         'channelcounts',

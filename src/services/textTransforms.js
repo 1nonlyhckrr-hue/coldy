@@ -248,3 +248,107 @@ export function jsonUnquote(text) {
     throw new UserError('textJsonStringInvalid');
   return value;
 }
+function jsonDocument(text) {
+  try {
+    return JSON.parse(input(text));
+  } catch {
+    throw new UserError('textJsonDocumentInvalid');
+  }
+}
+export function jsonKeys(text) {
+  const value = jsonDocument(text);
+  if (value === null || typeof value !== 'object' || Array.isArray(value))
+    throw new UserError('textJsonDocumentInvalid');
+  return JSON.stringify(Object.keys(value), null, 2) + '\n';
+}
+export function jsonPointer(text, pointer) {
+  const value = jsonDocument(text);
+  if (
+    typeof pointer !== 'string' ||
+    pointer.length > 200 ||
+    !pointer.isWellFormed() ||
+    pointer.includes('\0') ||
+    (pointer !== '' && !pointer.startsWith('/')) ||
+    /~(?:[^01]|$)/u.test(pointer)
+  )
+    throw new UserError('textJsonPointerInvalid');
+  let current = value;
+  for (const part of pointer === '' ? [] : pointer.slice(1).split('/')) {
+    const key = part.replace(/~1/g, '/').replace(/~0/g, '~');
+    if (
+      current === null ||
+      typeof current !== 'object' ||
+      !Object.hasOwn(current, key) ||
+      (Array.isArray(current) && !/^(0|[1-9][0-9]*)$/.test(key))
+    )
+      throw new UserError('textJsonPointerMissing');
+    current = current[key];
+  }
+  return JSON.stringify(current, null, 2) + '\n';
+}
+export function jsonArrayTypes(text) {
+  const value = jsonDocument(text);
+  if (!Array.isArray(value)) throw new UserError('textJsonDocumentInvalid');
+  const counts = { null: 0, boolean: 0, number: 0, string: 0, array: 0, object: 0 };
+  for (const item of value)
+    counts[item === null ? 'null' : Array.isArray(item) ? 'array' : typeof item]++;
+  return JSON.stringify({ length: value.length, counts }, null, 2) + '\n';
+}
+function separatorValue(value) {
+  if (
+    typeof value !== 'string' ||
+    value.length < 1 ||
+    value.length > 200 ||
+    value.includes('\0') ||
+    !value.isWellFormed()
+  )
+    throw new UserError('textSeparatorInvalid');
+  return value;
+}
+export function splitLiteral(text, separator) {
+  const values = input(text).split(separatorValue(separator));
+  return JSON.stringify(values, null, 2) + '\n';
+}
+export function joinStrings(text, separator) {
+  let values;
+  try {
+    values = JSON.parse(input(text));
+  } catch {
+    throw new UserError('textJoinInvalid');
+  }
+  if (
+    !Array.isArray(values) ||
+    values.length > 100 ||
+    values.some((v) => typeof v !== 'string' || v.includes('\0') || !v.isWellFormed())
+  )
+    throw new UserError('textJoinInvalid');
+  if (
+    typeof separator !== 'string' ||
+    separator.length > 200 ||
+    separator.includes('\0') ||
+    !separator.isWellFormed()
+  )
+    throw new UserError('textSeparatorInvalid');
+  return values.join(separator);
+}
+export function reverseLines(text) {
+  const lines = input(text).replace(/\r\n?/g, '\n').split('\n');
+  if (lines.length > 100) throw new UserError('textLinesInvalid');
+  return lines.reverse().join('\n');
+}
+export function indentLines(text, spaces, remove = false) {
+  const lines = input(text).replace(/\r\n?/g, '\n').split('\n');
+  if (lines.length > 100) throw new UserError('textLinesInvalid');
+  if (!Number.isInteger(spaces) || spaces < 1 || spaces > 16)
+    throw new UserError('textIndentInvalid');
+  return lines
+    .map((line) =>
+      remove ? line.replace(new RegExp('^ {0,' + spaces + '}'), '') : ' '.repeat(spaces) + line,
+    )
+    .join('\n');
+}
+export function lineEndings(text, style) {
+  const value = input(text);
+  if (!['lf', 'crlf'].includes(style)) throw new UserError('textLineEndingInvalid');
+  return value.replace(/\r\n?|\n/g, style === 'lf' ? '\n' : '\r\n');
+}
