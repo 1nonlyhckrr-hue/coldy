@@ -1148,5 +1148,6 @@
   "antinukeQuarantineReason_kick": "kicks",
   "autoStep_quarantine": "Antinuke quarantine",
   "antinukeQuarantine_roleInvalid": "Quarantine skipped for actor {actor} ({reason} x{count} in {window}s): the configured punish role is missing, managed or above Emika. Fix it with /antinuke punishrole.",
-  "autoVmActorPerms": "Warning: the user who ran this lacks Move Members and Manage Channels, and join-to-create checks that user on every join. Run /vmjoin as an admin or give them those permissions."
+  "autoVmActorPerms": "Warning: the user who ran this lacks Move Members and Manage Channels, and join-to-create checks that user on every join. Run /vmjoin as an admin or give them those permissions.",
+  "mediaNotice": "{user} this channel is media only. Post an image, video or file. Your message was removed. This notice deletes itself in 2 minutes."
 }

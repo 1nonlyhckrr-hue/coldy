@@ -1148,5 +1148,6 @@
   "antinukeQuarantineReason_kick": "kick",
   "autoStep_quarantine": "Antinuke quarantine",
   "antinukeQuarantine_roleInvalid": "Quarantine skip hua ({actor}, {window}s mein {reason} x{count}): chuna gaya punish role missing, managed ya Emika se upar hai. /antinuke punishrole se theek karein.",
-  "autoVmActorPerms": "Warning: jisne ye chalaya uske paas Move Members aur Manage Channels nahi hain, aur join-to-create har join par isi user ko check karta hai. /vmjoin admin se chalwayein ya ye permissions dein."
+  "autoVmActorPerms": "Warning: jisne ye chalaya uske paas Move Members aur Manage Channels nahi hain, aur join-to-create har join par isi user ko check karta hai. /vmjoin admin se chalwayein ya ye permissions dein.",
+  "mediaNotice": "{user} yeh channel sirf media ke liye hai. Image, video ya file bhejein. Aapka message hata diya gaya. Yeh notice 2 minute mein apne aap delete ho jayega."
 }

@@ -233,3 +233,36 @@ test('6mediapaths private3locale exactconfigguard confirm required commandsno de
     }
   }
 });
+test('media deletion posts one localized no-ping notice that deletes itself, media is untouched', async () => {
+  const s = setup();
+  try {
+    s.rule();
+    const sent = [];
+    s.channel.send = async (payload) => {
+      const record = { payload, deleted: false };
+      record.delete = async () => {
+        record.deleted = true;
+      };
+      sent.push(record);
+      return record;
+    };
+    s.c.localization = { t: (_g, key, p) => `${key}:${p.user}`, locale: () => 'en' };
+    const h = createMediaHandler(s.c, { noticeMs: 20 });
+    assert.equal(await h(s.message), true);
+    assert.deepEqual(s.calls, ['delete']);
+    assert.equal(sent.length, 1);
+    assert.match(JSON.stringify(sent[0].payload), /mediaNotice:<@/);
+    assert.deepEqual(sent[0].payload.allowedMentions, { parse: [] });
+    assert.equal(sent[0].deleted, false);
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    assert.equal(sent[0].deleted, true);
+    // A message with an attachment is never deleted and gets no notice.
+    s.message.attachments = { size: 1 };
+    s.message.id = '100000000000000777';
+    await h(s.message);
+    assert.equal(s.calls.length, 1);
+    assert.equal(sent.length, 1);
+  } finally {
+    s.db.close();
+  }
+});

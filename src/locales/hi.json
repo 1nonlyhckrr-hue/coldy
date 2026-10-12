@@ -1148,5 +1148,6 @@
   "antinukeQuarantineReason_kick": "किक",
   "autoStep_quarantine": "एंटीन्यूक क्वारंटीन",
   "antinukeQuarantine_roleInvalid": "क्वारंटीन छोड़ा गया ({actor}, {window}s में {reason} x{count}): चुना गया सज़ा रोल मौजूद नहीं है, managed है या Emika से ऊपर है। /antinuke punishrole से ठीक करें।",
-  "autoVmActorPerms": "चेतावनी: इसे चलाने वाले के पास Move Members और Manage Channels नहीं हैं, और join-to-create हर जॉइन पर इसी यूज़र की जांच करता है। /vmjoin किसी एडमिन से चलवाएं या ये परमिशन दें।"
+  "autoVmActorPerms": "चेतावनी: इसे चलाने वाले के पास Move Members और Manage Channels नहीं हैं, और join-to-create हर जॉइन पर इसी यूज़र की जांच करता है। /vmjoin किसी एडमिन से चलवाएं या ये परमिशन दें।",
+  "mediaNotice": "{user} यह चैनल सिर्फ मीडिया के लिए है। इमेज, वीडियो या फ़ाइल भेजें। आपका मैसेज हटा दिया गया। यह नोटिस 2 मिनट में अपने आप हट जाएगा।"
 }

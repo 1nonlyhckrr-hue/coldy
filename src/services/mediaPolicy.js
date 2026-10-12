@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { ChannelType, PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
+import { lunaPayload } from '../utils/embeds.js';
 export class MediaPolicy {
   constructor(db, now = Date.now) {
     this.db = db;
@@ -75,7 +76,37 @@ function eligible(message, now) {
     message.attachments.size === 0
   );
 }
-export function createMediaHandler(c) {
+// A short self-deleting notice tells the sender why the message vanished. One notice per
+// channel at a time, so a burst of text messages does not flood the channel.
+async function postNotice(c, channel, authorId, noticeMs, pending) {
+  if (!c.localization || pending.has(channel.id)) return;
+  pending.add(channel.id);
+  try {
+    const guildId = channel.guildId,
+      sent = await channel.send(
+        lunaPayload(
+          {
+            content: c.localization.t(guildId, 'mediaNotice', { user: `<@${authorId}>` }),
+            allowedMentions: { parse: [] },
+          },
+          { locale: c.localization.locale(guildId) },
+        ),
+      );
+    const timer = setTimeout(async () => {
+      try {
+        await sent.delete();
+      } catch {
+        // Already gone or no permission; nothing else to clean up.
+      }
+      pending.delete(channel.id);
+    }, noticeMs);
+    timer.unref?.();
+  } catch {
+    pending.delete(channel.id);
+  }
+}
+export function createMediaHandler(c, { noticeMs = 120000 } = {}) {
+  const pending = new Set();
   return async (message) => {
     if (c.config.messageEventsEnabled !== true || !eligible(message, c.mediaPolicy.now()))
       return false;
@@ -156,6 +187,7 @@ export function createMediaHandler(c) {
         absent = error?.code === 10008 && error?.status === 404;
       }
       c.mediaPolicy.finish(message.id, absent ? 'completed' : 'uncertain');
+      if (absent) await postNotice(c, channel, message.author.id, noticeMs, pending);
       return true;
     } catch {
       if (reserved) {
