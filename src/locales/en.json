@@ -1180,5 +1180,9 @@
   "unbanDm": "You were unbanned from {server}. Join again with this one-use link (valid 7 days):\n{link}\n\n{note}",
   "unbanInvite_sent": "Invite sent by DM.",
   "unbanInvite_dmFailed": "Could not DM the user (DMs closed). Their one-use invite link, valid 7 days: {link}",
-  "unbanInvite_noInvite": "Unbanned, but no invite was created: Emika needs Create Invite in a channel."
+  "unbanInvite_noInvite": "Unbanned, but no invite was created: Emika needs Create Invite in a channel.",
+  "joinRaidRuntimeDisabled": "Anti join-raid needs member events (ENABLE_MEMBER_EVENTS) turned on for the bot, so it stays dormant until then.",
+  "joinRaidConfig": "Anti join-raid: {status}\nRaid = {joins} joins in {seconds}s\nActs on accounts younger than {age} days\nAction: {action} ({minutes} min timeout)\nAlert channel: {channel}",
+  "joinRaidAlert_timeout": "Join raid detected ({joins}+ joins in {seconds}s). Timed out {done} new accounts for {minutes} minutes. Could not act on: {failed}.",
+  "joinRaidAlert_kick": "Join raid detected ({joins}+ joins in {seconds}s). Kicked {done} new accounts. Could not act on: {failed}."
 }

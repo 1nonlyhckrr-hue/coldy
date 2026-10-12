@@ -1180,5 +1180,9 @@
   "unbanDm": "आपको {server} से अनबैन कर दिया गया है। इस एक-बार वाले लिंक से फिर जुड़ें (7 दिन वैध):\n{link}\n\n{note}",
   "unbanInvite_sent": "इनवाइट DM से भेज दिया।",
   "unbanInvite_dmFailed": "यूज़र को DM नहीं हो सका (DM बंद)। उनका एक-बार वाला इनवाइट लिंक, 7 दिन वैध: {link}",
-  "unbanInvite_noInvite": "अनबैन हो गया, पर इनवाइट नहीं बना: Emika को किसी चैनल में Create Invite चाहिए।"
+  "unbanInvite_noInvite": "अनबैन हो गया, पर इनवाइट नहीं बना: Emika को किसी चैनल में Create Invite चाहिए।",
+  "joinRaidRuntimeDisabled": "Anti join-raid के लिए बॉट पर member events (ENABLE_MEMBER_EVENTS) चालू होने चाहिए, तब तक यह निष्क्रिय रहेगा।",
+  "joinRaidConfig": "Anti join-raid: {status}\nरेड = {seconds}s में {joins} जॉइन\n{age} दिन से नए अकाउंट पर कार्रवाई\nकार्रवाई: {action} ({minutes} मिनट टाइमआउट)\nअलर्ट चैनल: {channel}",
+  "joinRaidAlert_timeout": "जॉइन रेड मिला ({seconds}s में {joins}+ जॉइन)। {done} नए अकाउंट {minutes} मिनट के लिए टाइमआउट किए। कार्रवाई नहीं हो सकी: {failed}।",
+  "joinRaidAlert_kick": "जॉइन रेड मिला ({seconds}s में {joins}+ जॉइन)। {done} नए अकाउंट किक किए। कार्रवाई नहीं हो सकी: {failed}।"
 }

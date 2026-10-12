@@ -1180,5 +1180,9 @@
   "unbanDm": "Aapko {server} se unban kar diya gaya hai. Is ek-baar wale link se phir join karo (7 din valid):\n{link}\n\n{note}",
   "unbanInvite_sent": "Invite DM se bhej diya.",
   "unbanInvite_dmFailed": "User ko DM nahi ho saka (DM band). Unka ek-baar wala invite link, 7 din valid: {link}",
-  "unbanInvite_noInvite": "Unban ho gaya, par invite nahi bana: Emika ko kisi channel me Create Invite chahiye."
+  "unbanInvite_noInvite": "Unban ho gaya, par invite nahi bana: Emika ko kisi channel me Create Invite chahiye.",
+  "joinRaidRuntimeDisabled": "Anti join-raid ke liye bot par member events (ENABLE_MEMBER_EVENTS) chalu hone chahiye, tab tak ye dormant rahega.",
+  "joinRaidConfig": "Anti join-raid: {status}\nRaid = {seconds}s me {joins} joins\n{age} din se naye accounts par action\nAction: {action} ({minutes} min timeout)\nAlert channel: {channel}",
+  "joinRaidAlert_timeout": "Join raid mila ({seconds}s me {joins}+ joins). {done} naye accounts {minutes} minute ke liye timeout kiye. Action nahi ho saka: {failed}.",
+  "joinRaidAlert_kick": "Join raid mila ({seconds}s me {joins}+ joins). {done} naye accounts kick kiye. Action nahi ho saka: {failed}."
 }

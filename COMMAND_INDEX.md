@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-71 top-level commands, 601 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+72 top-level commands, 604 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -34,6 +34,9 @@
 | /backup export | Download one backup as JSON. | Local mock/unit only |
 | /backup list | Show saved backups. | Local mock/unit only |
 | /backup restore | Recreate missing roles and channels from a backup. Nothing is deleted or edited. | Local mock/unit only |
+| /joinraid config | Show the current settings. | Local mock/unit only |
+| /joinraid disable | Turn anti join-raid off. | Local mock/unit only |
+| /joinraid enable | Turn on and set the limits. | Local mock/unit only |
 | /lockdown | Panic mode: stop @everyone from sending messages or joining voice. Undo: /unlockdown. | Local mock/unit only |
 | /owner allow | Let a member use a security feature (default: nobody is delegated). | Local mock/unit only |
 | /owner list | Show delegated users in this server. | Local mock/unit only |
