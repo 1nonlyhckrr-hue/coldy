@@ -107,6 +107,49 @@ export class CommandRestrictions {
           )
           .run(guildId, kind, id).changes;
   }
+  commandCounts(guildId) {
+    const rules = this.exportRules(guildId),
+      counts = new Map();
+    for (const [kind, rows] of [
+      ['subjects', rules.subjects],
+      ['channels', rules.channels],
+    ])
+      for (const row of rows) {
+        const count = counts.get(row.command_name) ?? {
+          command: row.command_name,
+          subjects: 0,
+          channels: 0,
+        };
+        count[kind]++;
+        counts.set(row.command_name, count);
+      }
+    return [...counts.values()].sort((a, b) =>
+      a.command < b.command ? -1 : a.command > b.command ? 1 : 0,
+    );
+  }
+  exportCommand(guildId, name) {
+    if (typeof name !== 'string' || !/^[a-z0-9_-]{1,32}$/.test(name))
+      throw new UserError('permitCommandInvalid');
+    return { subjects: this.list(guildId, name), channels: this.channelRules(guildId, name) };
+  }
+  clearObsolete(guildId, installed) {
+    if (!(installed instanceof Map)) throw new TypeError('Installed registry required');
+    return this.db.transaction(() => {
+      const names = new Set(
+        [...this.list(guildId), ...this.channelRules(guildId)]
+          .map((row) => row.command_name)
+          .filter((name) => !installed.has(name) && !RECOVERY_COMMANDS.has(name)),
+      );
+      let subjects = 0,
+        channels = 0;
+      for (const name of names) {
+        const result = this.clearCombined(guildId, name);
+        subjects += result.subjects;
+        channels += result.channels;
+      }
+      return { subjects, channels, commands: names.size };
+    })();
+  }
   summary(guildId) {
     const rules = this.exportRules(guildId),
       all = [...rules.subjects, ...rules.channels];

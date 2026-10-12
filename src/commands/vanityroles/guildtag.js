@@ -76,6 +76,35 @@ data.addSubcommand((s) =>
       'Private JSON of only your stored role grant/state,null if absent,no live identity claim.',
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('exportgrants')
+    .setDescription(
+      'ManageRoles:private first100 stored userID/roleID/stateJSON,total/truncation,no liveclaims.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('rolecounts')
+    .setDescription(
+      'ManageRoles:stored grant counts byroleID/state,no memberIDs or nativevalidation.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('inspectuser')
+    .setDescription(
+      'ManageRoles:exact stored user grant role/state ornull,no lookup,refresh or changes.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('user-id')
+        .setDescription('Stored userID,17-20digits;no live memberlookup')
+        .setRequired(true)
+        .setMinLength(17)
+        .setMaxLength(20),
+    ),
+);
 export default {
   category: 'vanityroles',
   data,
@@ -86,7 +115,18 @@ export default {
       t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId);
     let text, files;
-    if (['setup', 'reset', 'grants', 'summary', 'exportconfig'].includes(sub)) {
+    if (
+      [
+        'setup',
+        'reset',
+        'grants',
+        'summary',
+        'exportconfig',
+        'exportgrants',
+        'rolecounts',
+        'inspectuser',
+      ].includes(sub)
+    ) {
       const authorize = async () => {
         const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
         if (
@@ -99,7 +139,20 @@ export default {
         return actor;
       };
       await authorize();
-      if (sub === 'summary') text = t('tagSummary', c.guildTags.summary(i.guildId));
+      if (['exportgrants', 'rolecounts', 'inspectuser'].includes(sub)) {
+        const report =
+          sub === 'exportgrants'
+            ? c.guildTags.exportGrants(i.guildId)
+            : sub === 'rolecounts'
+              ? c.guildTags.roleCounts(i.guildId)
+              : c.guildTags.inspectUser(i.guildId, i.options.getString('user-id', true));
+        files = [
+          new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+            name: 'luna-tag-' + sub + '.json',
+          }),
+        ];
+        text = t('tagMetadataExported');
+      } else if (sub === 'summary') text = t('tagSummary', c.guildTags.summary(i.guildId));
       else if (sub === 'exportconfig') {
         files = [
           new AttachmentBuilder(

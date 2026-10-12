@@ -6,6 +6,43 @@ export class AfkStates {
     this.db = db;
     this.now = now;
   }
+  summary(guildId) {
+    const clock = this.now();
+    if (!Number.isSafeInteger(clock) || clock < 0) throw new UserError('afkStoredScopeInvalid');
+    return {
+      states: this.db
+        .prepare('SELECT COUNT(*) n FROM afk_states WHERE guild_id=? AND created_at>=?')
+        .get(guildId, clock - 7 * 86400000).n,
+      notices: this.db
+        .prepare('SELECT COUNT(*) n FROM afk_notices WHERE guild_id=? AND created_at>=?')
+        .get(guildId, clock - 86400000).n,
+    };
+  }
+  channelCounts(guildId) {
+    const clock = this.now();
+    if (!Number.isSafeInteger(clock) || clock < 0) throw new UserError('afkStoredScopeInvalid');
+    return this.db
+      .prepare(
+        'SELECT channel_id AS channelId,COUNT(*) AS count FROM afk_states WHERE guild_id=? AND created_at>=? GROUP BY channel_id ORDER BY channel_id',
+      )
+      .all(guildId, clock - 7 * 86400000);
+  }
+  exportNotices(guildId) {
+    const clock = this.now();
+    if (!Number.isSafeInteger(clock) || clock < 0) throw new UserError('afkStoredScopeInvalid');
+    return this.db.transaction(() => {
+      const cutoff = clock - 86400000,
+        total = this.db
+          .prepare('SELECT COUNT(*) n FROM afk_notices WHERE guild_id=? AND created_at>=?')
+          .get(guildId, cutoff).n;
+      const records = this.db
+        .prepare(
+          'SELECT channel_id AS channelId,created_at AS createdAt FROM afk_notices WHERE guild_id=? AND created_at>=? ORDER BY created_at DESC,message_id DESC LIMIT 100',
+        )
+        .all(guildId, cutoff);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   cleanup() {
     this.db.prepare('DELETE FROM afk_states WHERE created_at<?').run(this.now() - 7 * 86400000);
     this.db.prepare('DELETE FROM afk_notices WHERE created_at<?').run(this.now() - 86400000);

@@ -213,6 +213,41 @@ data.addSubcommand((s) =>
       'Private JSON denies for commands absent from current registry;no deletion/resource claims.',
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('commandcounts')
+    .setDescription(
+      'Private stored deny counts percommand,no subject IDs or effectivepermission claim.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportcommand')
+    .setDescription(
+      'Private all stored subject/channel denies for exactcommandname,including absentcommands.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('command')
+        .setDescription('Exact stored top-level name,without /')
+        .setMinLength(1)
+        .setMaxLength(32)
+        .setRequired(true),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('clearobsolete')
+    .setDescription(
+      'Erase denies for registry-absent commands,may affect them if reinstalled later.',
+    )
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm forgetting absentcommand denies,no currentcommand changes')
+        .setRequired(true),
+    ),
+);
 export default {
   category: 'permit',
   data,
@@ -245,7 +280,25 @@ export default {
     )
       throw new UserError('userPermission');
     let text, files;
-    if (sub === 'summary') text = t('permitSummary', c.commandRestrictions.summary(i.guildId));
+    if (sub === 'commandcounts' || sub === 'exportcommand') {
+      const report =
+        sub === 'commandcounts'
+          ? c.commandRestrictions.commandCounts(i.guildId)
+          : c.commandRestrictions.exportCommand(i.guildId, i.options.getString('command', true));
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'commandcounts'
+              ? 'luna-permit-command-counts.json'
+              : 'luna-permit-command-denies.json',
+        }),
+      ];
+      text = t('permitCommandAudit');
+    } else if (sub === 'clearobsolete') {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('permitClearConfirm');
+      text = t('permitObsoleteCleared', c.commandRestrictions.clearObsolete(i.guildId, c.commands));
+    } else if (sub === 'summary')
+      text = t('permitSummary', c.commandRestrictions.summary(i.guildId));
     else if (sub === 'searchid' || sub === 'obsolete') {
       const rules =
         sub === 'searchid'

@@ -72,9 +72,9 @@ test('RPS computes all nine outcomes', () => {
     }
   assert.throws(() => playRps('gun'));
 });
-test('fun serializes nineteen real paths and bounded input options', () => {
+test('fun serializes twenty-two real paths and bounded input options', () => {
   const d = fun.data.toJSON();
-  assert.equal(d.options.length, 19);
+  assert.equal(d.options.length, 22);
   assert.equal(d.contexts[0], 0);
   assert.equal(fun.cooldownMs, 5000);
   assert(d.options.every((o) => o.type === 1));

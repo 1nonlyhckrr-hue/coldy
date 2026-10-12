@@ -64,6 +64,41 @@ export class Tickets {
       return { total, truncated: total > records.length, records };
     })();
   }
+  exportRecords(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM tickets WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,status,created_at AS createdAt FROM tickets WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  transcriptMetadata(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare(
+          'SELECT COUNT(*) n FROM ticket_transcripts t JOIN tickets k ON k.id=t.ticket_id WHERE k.guild_id=?',
+        )
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT t.ticket_id AS ticketId,t.message_count AS messageCount,t.truncated,t.created_at AS createdAt FROM ticket_transcripts t JOIN tickets k ON k.id=t.ticket_id WHERE k.guild_id=? ORDER BY t.created_at DESC,t.ticket_id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  claimSummary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,(claimed_by IS NOT NULL) AS claimed,COUNT(*) AS count FROM tickets WHERE guild_id=? GROUP BY status,claimed ORDER BY status,claimed',
+      )
+      .all(guildId);
+  }
   resetSetup(guildId) {
     return this.db.prepare('DELETE FROM ticket_config WHERE guild_id=?').run(guildId).changes;
   }

@@ -192,6 +192,33 @@ export class AntinukeAlerts {
       .run(status, id);
     if (result.changes !== 1) throw new Error('Audit alert reservation not recorded');
   }
+  summary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,COUNT(*) AS count FROM antinuke_incidents WHERE guild_id=? GROUP BY status ORDER BY status',
+      )
+      .all(guildId);
+  }
+  actionCounts(guildId) {
+    return this.db
+      .prepare(
+        'SELECT action,status,COUNT(*) AS count FROM antinuke_incidents WHERE guild_id=? GROUP BY action,status ORDER BY action,status',
+      )
+      .all(guildId);
+  }
+  exportIncidents(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM antinuke_incidents WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,action,event_count AS eventCount,status,created_at AS createdAt FROM antinuke_incidents WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   incidents(guildId) {
     return this.db
       .prepare(

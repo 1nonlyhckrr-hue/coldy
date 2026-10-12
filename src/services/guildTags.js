@@ -53,6 +53,31 @@ export class GuildTags {
     const row = this.grant(guildId, userId);
     return row ? { roleId: row.role_id, status: row.status } : null;
   }
+  exportGrants(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM guild_tag_grants WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT user_id AS userId,role_id AS roleId,status FROM guild_tag_grants WHERE guild_id=? ORDER BY user_id LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  roleCounts(guildId) {
+    return this.db
+      .prepare(
+        'SELECT role_id AS roleId,status,COUNT(*) AS count FROM guild_tag_grants WHERE guild_id=? GROUP BY role_id,status ORDER BY role_id,status',
+      )
+      .all(guildId);
+  }
+  inspectUser(guildId, userId) {
+    if (typeof userId !== 'string' || !/^\d{17,20}$/.test(userId))
+      throw new UserError('tagUserIdInvalid');
+    return this.exportMine(guildId, userId);
+  }
   setup(guildId, roleId) {
     if (!/^\d{17,20}$/.test(roleId)) throw new UserError('customRoleInvalid');
     const current = this.config(guildId);

@@ -63,6 +63,15 @@ test('three Discord helper paths serialize bounded inputs and reply private bran
   assert.deepEqual(
     command.data.toJSON().options.map((s) => s.name),
     [
+      'sortlines',
+      'uniquelines',
+      'comparelines',
+      'integerstats',
+      'gcdlcm',
+      'baseconvert',
+      'base64encode',
+      'base64decode',
+      'urlcomponent',
       'sha256',
       'jsonformat',
       'normalize',

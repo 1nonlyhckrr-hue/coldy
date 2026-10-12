@@ -1,5 +1,27 @@
 [
   {
+    "name": "antinuke actioncounts",
+    "category": "antinuke",
+    "syntax": "/antinuke actioncounts",
+    "description": "Private retained alert-incident counts by audit action/state,not all audit events.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/antinuke.js"
+  },
+  {
     "name": "antinuke clearchannel",
     "category": "antinuke",
     "syntax": "/antinuke clearchannel (confirm)",
@@ -111,6 +133,28 @@
         "type": 7
       }
     ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/antinuke.js"
+  },
+  {
+    "name": "antinuke exportincidents",
+    "category": "antinuke",
+    "syntax": "/antinuke exportincidents",
+    "description": "Private latest100 minimalincidentmetadata JSON,total/truncation,no actor/sourceIDs.",
+    "parameters": [],
     "userPermissions": [
       "ManageGuild"
     ],
@@ -253,6 +297,28 @@
         "type": 5
       }
     ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/antinuke.js"
+  },
+  {
+    "name": "antinuke summary",
+    "category": "antinuke",
+    "syntax": "/antinuke summary",
+    "description": "Private retained incident counts by state,no actor/source IDs or protection claim.",
+    "parameters": [],
     "userPermissions": [
       "ManageGuild"
     ],
@@ -3621,6 +3687,39 @@
     "source": "src/commands/fun/fun.js"
   },
   {
+    "name": "fun dealhands",
+    "category": "fun",
+    "syntax": "/fun dealhands (players) (cards)",
+    "description": "Private2-5 numbered hands,1-5cards each,unique standarddeck,no bets/secret delivery.",
+    "parameters": [
+      {
+        "name": "players",
+        "required": true,
+        "type": 4,
+        "min": 2,
+        "max": 5
+      },
+      {
+        "name": "cards",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
     "name": "fun dice",
     "category": "fun",
     "syntax": "/fun dice [sides] [count]",
@@ -3639,6 +3738,39 @@
         "type": 4,
         "min": 1,
         "max": 10
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
+    "name": "fun dicehistogram",
+    "category": "fun",
+    "syntax": "/fun dicehistogram (count) (sides)",
+    "description": "Private1-100 independent dice rolls summarized by face,count/total,no stored state.",
+    "parameters": [
+      {
+        "name": "count",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "name": "sides",
+        "required": true,
+        "type": 4,
+        "min": 2,
+        "max": 20
       }
     ],
     "userPermissions": [],
@@ -3819,6 +3951,32 @@
         "type": 3,
         "minLength": 3,
         "maxLength": 1800
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/fun/fun.js"
+  },
+  {
+    "name": "fun roundrobin",
+    "category": "fun",
+    "syntax": "/fun roundrobin (labels)",
+    "description": "Private complete pair schedule for2-10 labels,no dates/member assignments.",
+    "parameters": [
+      {
+        "name": "labels",
+        "required": true,
+        "type": 3,
+        "minLength": 3,
+        "maxLength": 309
       }
     ],
     "userPermissions": [],
@@ -4406,6 +4564,28 @@
     "source": "src/commands/giveaway/giveaway.js"
   },
   {
+    "name": "giveaway channelcounts",
+    "category": "giveaway",
+    "syntax": "/giveaway channelcounts",
+    "description": "Private stored giveaway counts bychannelID/state,no entries/memberIDs/currentactivityproof.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/giveaway/giveaway.js"
+  },
+  {
     "name": "giveaway channelrecords",
     "category": "giveaway",
     "syntax": "/giveaway channelrecords (channel-id)",
@@ -4487,10 +4667,54 @@
     "source": "src/commands/giveaway/giveaway.js"
   },
   {
+    "name": "giveaway entrycounts",
+    "category": "giveaway",
+    "syntax": "/giveaway entrycounts",
+    "description": "Private retained entrycounts forlatest100 giveawayID/stateJSON,total/truncation,no memberIDs.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/giveaway/giveaway.js"
+  },
+  {
     "name": "giveaway export",
     "category": "giveaway",
     "syntax": "/giveaway export",
     "description": "Private latest100 stored giveaway prize/schedule/binding records,no entrant/winner IDs.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/giveaway/giveaway.js"
+  },
+  {
+    "name": "giveaway exportmetadata",
+    "category": "giveaway",
+    "syntax": "/giveaway exportmetadata",
+    "description": "Private latest100 minimalID/channel/state/due/count/drawversion/timeJSON,no prize/sourceIDs.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -5599,6 +5823,28 @@
     "source": "src/commands/logging/logging.js"
   },
   {
+    "name": "logging deliverysummary",
+    "category": "logging",
+    "syntax": "/logging deliverysummary",
+    "description": "Private stored metadata-event receipt counts by state,no native verification.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/logging/logging.js"
+  },
+  {
     "name": "logging disable",
     "category": "logging",
     "syntax": "/logging disable",
@@ -5732,6 +5978,28 @@
     "source": "src/commands/logging/logging.js"
   },
   {
+    "name": "logging exportreceipts",
+    "category": "logging",
+    "syntax": "/logging exportreceipts",
+    "description": "Private latest100 metadata-event state/timeJSON,total/truncation,no source IDs.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/logging/logging.js"
+  },
+  {
     "name": "logging import",
     "category": "logging",
     "syntax": "/logging import (json) (confirm)",
@@ -5772,6 +6040,53 @@
     "syntax": "/logging pauseevents (confirm)",
     "description": "Confirmed clear all metadata-event opt-ins;case master/channel/replay receipts kept.",
     "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/logging/logging.js"
+  },
+  {
+    "name": "logging pausegroup",
+    "category": "logging",
+    "syntax": "/logging pausegroup (group) (confirm)",
+    "description": "Stop member, role or channel metadata-event opt-ins; case logging/settings kept.",
+    "parameters": [
+      {
+        "name": "group",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Member",
+            "value": "member"
+          },
+          {
+            "name": "Role",
+            "value": "role"
+          },
+          {
+            "name": "Channel",
+            "value": "channel"
+          }
+        ]
+      },
       {
         "name": "confirm",
         "required": true,
@@ -7164,6 +7479,30 @@
     "source": "src/commands/permit/permit.js"
   },
   {
+    "name": "permit clearobsolete",
+    "category": "permit",
+    "syntax": "/permit clearobsolete (confirm)",
+    "description": "Erase denies for registry-absent commands,may affect them if reinstalled later.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/permit/permit.js"
+  },
+  {
     "name": "permit clearrole",
     "category": "permit",
     "syntax": "/permit clearrole (id) (confirm)",
@@ -7226,11 +7565,55 @@
     "source": "src/commands/permit/permit.js"
   },
   {
+    "name": "permit commandcounts",
+    "category": "permit",
+    "syntax": "/permit commandcounts",
+    "description": "Private stored deny counts percommand,no subject IDs or effectivepermission claim.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/permit/permit.js"
+  },
+  {
     "name": "permit export",
     "category": "permit",
     "syntax": "/permit export",
     "description": "Private JSON of stored user/role/channel deny IDs,no permissions or native grants.",
     "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/permit/permit.js"
+  },
+  {
+    "name": "permit exportcommand",
+    "category": "permit",
+    "syntax": "/permit exportcommand (command)",
+    "description": "Private all stored subject/channel denies for exactcommandname,including absentcommands.",
+    "parameters": [
+      {
+        "name": "command",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 32
+      }
+    ],
     "userPermissions": [],
     "botPermissions": [],
     "defaultMemberPermissions": [],
@@ -8070,6 +8453,24 @@
     "source": "src/commands/ticket/ticket.js"
   },
   {
+    "name": "ticket claimsummary",
+    "category": "ticket",
+    "syntax": "/ticket claimsummary",
+    "description": "Manage Server:stored ticket state/claimed-flag counts only,no staff/ownerIDs.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/ticket/ticket.js"
+  },
+  {
     "name": "ticket close",
     "category": "ticket",
     "syntax": "/ticket close",
@@ -8128,6 +8529,24 @@
     "category": "ticket",
     "syntax": "/ticket exportmine",
     "description": "Private latest100onlyyour ticket metadata,total/truncated,no staff/source/transcript content.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/ticket/ticket.js"
+  },
+  {
+    "name": "ticket exportrecords",
+    "category": "ticket",
+    "syntax": "/ticket exportrecords",
+    "description": "Manage Server:latest100 stored ticketmetadataJSON,total/truncation,no owner/staff/sourceIDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -8555,6 +8974,24 @@
     "source": "src/commands/ticket/ticket.js"
   },
   {
+    "name": "ticket transcriptmetadata",
+    "category": "ticket",
+    "syntax": "/ticket transcriptmetadata",
+    "description": "Manage Server:latest100 snapshot ticketID/count/truncated/time,no messagebody/memberIDs.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/ticket/ticket.js"
+  },
+  {
     "name": "ticket unclaim",
     "category": "ticket",
     "syntax": "/ticket unclaim",
@@ -8571,6 +9008,24 @@
     "cooldownMs": 3000,
     "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/ticket/ticket.js"
+  },
+  {
+    "name": "afk channelcounts",
+    "category": "utility",
+    "syntax": "/afk channelcounts",
+    "description": "Manage Server: private unexpired stored AFK counts perchannelID, no user IDs/reasons.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/afk.js"
   },
   {
     "name": "afk clear",
@@ -8695,6 +9150,24 @@
     "source": "src/commands/utility/afk.js"
   },
   {
+    "name": "afk exportnotices",
+    "category": "utility",
+    "syntax": "/afk exportnotices",
+    "description": "Manage Server: private latest100 notice channel/time JSON,no message/member IDs.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/afk.js"
+  },
+  {
     "name": "afk move",
     "category": "utility",
     "syntax": "/afk move (share)",
@@ -8785,6 +9258,24 @@
     "category": "utility",
     "syntax": "/afk status",
     "description": "Privately view your status and disclosure channel.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/afk.js"
+  },
+  {
+    "name": "afk summary",
+    "category": "utility",
+    "syntax": "/afk summary",
+    "description": "Manage Server: unexpired stored status/notice counts, no reasons or user IDs.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -9818,6 +10309,554 @@
     "source": "src/commands/utility/stickerinfo.js"
   },
   {
+    "name": "text csvdecode",
+    "category": "utility",
+    "syntax": "/text csvdecode (text)",
+    "description": "Strict single CSV record to JSON array,1-50fields;quoted newlines kept,no formula execution.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text csvencode",
+    "category": "utility",
+    "syntax": "/text csvencode (text)",
+    "description": "JSON array of1-50strings to quoted single CSV record;not spreadsheet formula sanitization.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text findlines",
+    "category": "utility",
+    "syntax": "/text findlines (text) (find)",
+    "description": "Exactcase-sensitive literal matching lines/1basednumbers JSON,max100lines;no regex.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      {
+        "name": "find",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text hexdecode",
+    "category": "utility",
+    "syntax": "/text hexdecode (text)",
+    "description": "Evenlength strict hex to validUTF8TXT,no NUL/replacementdecoding/execution.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text hexencode",
+    "category": "utility",
+    "syntax": "/text hexencode (text)",
+    "description": "LiteralUTF8 text to lowercase hexadecimalTXT,no encryption or execution.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text htmldecode",
+    "category": "utility",
+    "syntax": "/text htmldecode (text)",
+    "description": "Decode amp/lt/gt/quot/#39 once;other entities unchanged,no parsing or execution.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text htmlencode",
+    "category": "utility",
+    "syntax": "/text htmlencode (text)",
+    "description": "Encode five HTML entities in literal text;not a sanitizer or HTML parser.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text jsonquote",
+    "category": "utility",
+    "syntax": "/text jsonquote (text)",
+    "description": "Literal text to one quoted JSON string;keeps Unicode,no parsing,execution or HTML safety.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text jsonunquote",
+    "category": "utility",
+    "syntax": "/text jsonunquote (text)",
+    "description": "Decode exactlyone JSONstring to literalUTF8TXT,no NUL/unpairedsurrogates or execution.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text numberlines",
+    "category": "utility",
+    "syntax": "/text numberlines (text)",
+    "description": "Number1-100 exact lines,normalizeCRLF/CR toLF;blanklines preserved,no trimming.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text querydecode",
+    "category": "utility",
+    "syntax": "/text querydecode (text)",
+    "description": "Strict rawformquery to key/valuepairs JSON,+isspace,repeats kept,no leading? or fragment.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text queryencode",
+    "category": "utility",
+    "syntax": "/text queryencode (text)",
+    "description": "JSON1-50string key/valuepairs to formquery,+forspace,repeats kept,no URLfetch.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text replace",
+    "category": "utility",
+    "syntax": "/text replace (text) (find) [replacement]",
+    "description": "Replace all case-sensitive non-overlapping literal matches,JSONcount/text;no regex.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      {
+        "name": "find",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 200
+      },
+      {
+        "name": "replacement",
+        "required": false,
+        "type": 3,
+        "maxLength": 200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text slice",
+    "category": "utility",
+    "syntax": "/text slice (text) (start) (count)",
+    "description": "Exact1based Unicode codepoint slice TXT;not graphemes,may split combining sequences.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      {
+        "name": "start",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 1200
+      },
+      {
+        "name": "count",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "text urlparts",
+    "category": "utility",
+    "syntax": "/text urlparts (text)",
+    "description": "Parse absoluteHTTP(S) URL into normalizedpartsJSON;no credentials,fetch or safetycheck.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/text.js"
+  },
+  {
+    "name": "tools base64decode",
+    "category": "utility",
+    "syntax": "/tools base64decode (text)",
+    "description": "Private canonical padded standard Base64 to valid UTF-8 TXT,no evaluation.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1600
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
+    "name": "tools base64encode",
+    "category": "utility",
+    "syntax": "/tools base64encode (text)",
+    "description": "Private exact UTF-8 text to standard Base64 TXT,not encryption/no evaluation.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
+    "name": "tools baseconvert",
+    "category": "utility",
+    "syntax": "/tools baseconvert (number) (from) (to)",
+    "description": "Private unsigned64bit integer base2/8/10/16 conversion,no prefixes/signs.",
+    "parameters": [
+      {
+        "name": "number",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 64
+      },
+      {
+        "name": "from",
+        "required": true,
+        "type": 4,
+        "choices": [
+          {
+            "name": "2",
+            "value": 2
+          },
+          {
+            "name": "8",
+            "value": 8
+          },
+          {
+            "name": "10",
+            "value": 10
+          },
+          {
+            "name": "16",
+            "value": 16
+          }
+        ]
+      },
+      {
+        "name": "to",
+        "required": true,
+        "type": 4,
+        "choices": [
+          {
+            "name": "2",
+            "value": 2
+          },
+          {
+            "name": "8",
+            "value": 8
+          },
+          {
+            "name": "10",
+            "value": 10
+          },
+          {
+            "name": "16",
+            "value": 16
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
     "name": "tools color",
     "category": "utility",
     "syntax": "/tools color (hex)",
@@ -9829,6 +10868,39 @@
         "type": 3,
         "minLength": 6,
         "maxLength": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
+    "name": "tools comparelines",
+    "category": "utility",
+    "syntax": "/tools comparelines (left) (right)",
+    "description": "Private exact-line sets JSON:onlyleft/onlyright/common,no full diff or evaluation.",
+    "parameters": [
+      {
+        "name": "left",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      {
+        "name": "right",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
       }
     ],
     "userPermissions": [],
@@ -9881,6 +10953,65 @@
         "type": 3,
         "minLength": 1,
         "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
+    "name": "tools gcdlcm",
+    "category": "utility",
+    "syntax": "/tools gcdlcm (a) (b)",
+    "description": "Private exact GCD/LCM of two positive integers,no settings changed.",
+    "parameters": [
+      {
+        "name": "a",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 1000000000
+      },
+      {
+        "name": "b",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 1000000000
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
+    "name": "tools integerstats",
+    "category": "utility",
+    "syntax": "/tools integerstats (values)",
+    "description": "Private count/sum/min/max/mean/median of2-20 explicit integers,no storage.",
+    "parameters": [
+      {
+        "name": "values",
+        "required": true,
+        "type": 3,
+        "minLength": 3,
+        "maxLength": 219
       }
     ],
     "userPermissions": [],
@@ -10233,6 +11364,47 @@
     "source": "src/commands/utility/tools.js"
   },
   {
+    "name": "tools sortlines",
+    "category": "utility",
+    "syntax": "/tools sortlines (text) (direction)",
+    "description": "Private exact-line UTF-16 sort TXT,no trimming or locale collation.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      {
+        "name": "direction",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Ascending",
+            "value": "ascending"
+          },
+          {
+            "name": "Descending",
+            "value": "descending"
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
     "name": "tools textstats",
     "category": "utility",
     "syntax": "/tools textstats (text)",
@@ -10393,6 +11565,73 @@
     "source": "src/commands/utility/tools.js"
   },
   {
+    "name": "tools uniquelines",
+    "category": "utility",
+    "syntax": "/tools uniquelines (text)",
+    "description": "Private exact-line deduplication TXT,first occurrence order kept,no trimming.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
+    "name": "tools urlcomponent",
+    "category": "utility",
+    "syntax": "/tools urlcomponent (text) (direction)",
+    "description": "Private URI component encoding/decoding TXT,not a URL fetch or form parser.",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      {
+        "name": "direction",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Encode",
+            "value": "encode"
+          },
+          {
+            "name": "Decode",
+            "value": "decode"
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/tools.js"
+  },
+  {
     "name": "userinfo",
     "category": "utility",
     "syntax": "/userinfo [user]",
@@ -10421,6 +11660,24 @@
     "category": "vanityroles",
     "syntax": "/guildtag exportconfig",
     "description": "ManageRoles:private stored reward role ID/null JSON,no live validation.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 10000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/vanityroles/guildtag.js"
+  },
+  {
+    "name": "guildtag exportgrants",
+    "category": "vanityroles",
+    "syntax": "/guildtag exportgrants",
+    "description": "ManageRoles:private first100 stored userID/roleID/stateJSON,total/truncation,no liveclaims.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -10498,6 +11755,32 @@
     "source": "src/commands/vanityroles/guildtag.js"
   },
   {
+    "name": "guildtag inspectuser",
+    "category": "vanityroles",
+    "syntax": "/guildtag inspectuser (user-id)",
+    "description": "ManageRoles:exact stored user grant role/state ornull,no lookup,refresh or changes.",
+    "parameters": [
+      {
+        "name": "user-id",
+        "required": true,
+        "type": 3,
+        "minLength": 17,
+        "maxLength": 20
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 10000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/vanityroles/guildtag.js"
+  },
+  {
     "name": "guildtag refresh",
     "category": "vanityroles",
     "syntax": "/guildtag refresh",
@@ -10520,6 +11803,24 @@
     "category": "vanityroles",
     "syntax": "/guildtag reset",
     "description": "Manage Roles: stop tag rewards, leaving assigned roles unchanged.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 10000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/vanityroles/guildtag.js"
+  },
+  {
+    "name": "guildtag rolecounts",
+    "category": "vanityroles",
+    "syntax": "/guildtag rolecounts",
+    "description": "ManageRoles:stored grant counts byroleID/state,no memberIDs or nativevalidation.",
     "parameters": [],
     "userPermissions": [],
     "botPermissions": [],
@@ -11274,6 +12575,49 @@
     "source": "src/commands/welcomer/welcome.js"
   },
   {
+    "name": "welcome clearassets",
+    "category": "welcomer",
+    "syntax": "/welcome clearassets (kind) (confirm)",
+    "description": "Clear welcome or goodbye image/thumbnail only;title/color/template/delivery kept.",
+    "parameters": [
+      {
+        "name": "kind",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Welcome",
+            "value": "welcome"
+          },
+          {
+            "name": "Goodbye",
+            "value": "goodbye"
+          }
+        ]
+      },
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/welcomer/welcome.js"
+  },
+  {
     "name": "welcome clearchannel",
     "category": "welcomer",
     "syntax": "/welcome clearchannel (confirm)",
@@ -11402,6 +12746,28 @@
     "category": "welcomer",
     "syntax": "/welcome export",
     "description": "Private welcome/goodbye template/style JSON;no channel IDs or enable flags.",
+    "parameters": [],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/welcomer/welcome.js"
+  },
+  {
+    "name": "welcome exportconfig",
+    "category": "welcomer",
+    "syntax": "/welcome exportconfig",
+    "description": "Private complete stored welcome/goodbye config including destination,not runtime/history.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -11573,6 +12939,34 @@
         "type": 3,
         "minLength": 1,
         "maxLength": 1800
+      }
+    ],
+    "userPermissions": [
+      "ManageGuild"
+    ],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Luna slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/welcomer/welcome.js"
+  },
+  {
+    "name": "welcome pauseboth",
+    "category": "welcomer",
+    "syntax": "/welcome pauseboth (confirm)",
+    "description": "Stop welcome and goodbye delivery;all templates/styles/channel/history kept.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
       }
     ],
     "userPermissions": [

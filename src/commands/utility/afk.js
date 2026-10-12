@@ -14,6 +14,27 @@ const data = new SlashCommandBuilder()
   .setContexts(InteractionContextType.Guild)
   .addSubcommand((s) =>
     s
+      .setName('summary')
+      .setDescription(
+        'Manage Server: unexpired stored status/notice counts, no reasons or user IDs.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('channelcounts')
+      .setDescription(
+        'Manage Server: private unexpired stored AFK counts perchannelID, no user IDs/reasons.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('exportnotices')
+      .setDescription(
+        'Manage Server: private latest100 notice channel/time JSON,no message/member IDs.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('set')
       .setDescription('Set status up to7days,clear on your next eligible server message.')
       .addStringOption((o) =>
@@ -119,7 +140,16 @@ export default {
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
-    if (['clearchannel', 'clearuser', 'exportmine'].includes(sub)) {
+    if (
+      [
+        'clearchannel',
+        'clearuser',
+        'exportmine',
+        'summary',
+        'channelcounts',
+        'exportnotices',
+      ].includes(sub)
+    ) {
       const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
       if (
         i.guild.id !== i.guildId ||
@@ -128,7 +158,25 @@ export default {
         (sub !== 'exportmine' && !actor.permissions?.has(P.ManageGuild))
       )
         throw new UserError('userPermission');
-      if (sub === 'exportmine') {
+      if (['summary', 'channelcounts', 'exportnotices'].includes(sub)) {
+        const report =
+          sub === 'summary'
+            ? c.afk.summary(i.guildId)
+            : sub === 'channelcounts'
+              ? c.afk.channelCounts(i.guildId)
+              : c.afk.exportNotices(i.guildId);
+        files = [
+          new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+            name:
+              sub === 'summary'
+                ? 'luna-afk-summary.json'
+                : sub === 'channelcounts'
+                  ? 'luna-afk-channel-counts.json'
+                  : 'luna-afk-notices.json',
+          }),
+        ];
+        text = t(sub === 'exportnotices' ? 'afkNoticesExport' : 'afkCountsExport');
+      } else if (sub === 'exportmine') {
         const r = c.afk.get(i.guildId, i.user.id),
           report = r
             ? {

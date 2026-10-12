@@ -240,7 +240,7 @@ test('Permit rejects owner, everyone, managed roles, protected/unknown command a
   }
 });
 test('Permit metadata exposes seventeen paths and runtime role loss takes effect', async () => {
-  assert.equal(permit.data.toJSON().options.length, 20);
+  assert.equal(permit.data.toJSON().options.length, 23);
   const db = openDatabase(':memory:');
   try {
     const { r, guild, member } = fixture(db);

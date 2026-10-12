@@ -18,6 +18,44 @@ const data = new SlashCommandBuilder()
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
     s
+      .setName('deliverysummary')
+      .setDescription(
+        'Private stored metadata-event receipt counts by state,no native verification.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('exportreceipts')
+      .setDescription(
+        'Private latest100 metadata-event state/timeJSON,total/truncation,no source IDs.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('pausegroup')
+      .setDescription(
+        'Stop member, role or channel metadata-event opt-ins; case logging/settings kept.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('group')
+          .setDescription('Metadata event group to pause')
+          .addChoices(
+            { name: 'Member', value: 'member' },
+            { name: 'Role', value: 'role' },
+            { name: 'Channel', value: 'channel' },
+          )
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping event opt-ins in this group')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('channel')
       .setDescription('Choose the server log channel.')
       .addChannelOption((o) =>
@@ -155,6 +193,28 @@ export default {
     await authorize();
     const sub = i.options.getSubcommand();
     let text, files;
+    if (sub === 'deliverysummary' || sub === 'exportreceipts') {
+      const report =
+        sub === 'deliverysummary'
+          ? c.eventLogs.summary(i.guildId)
+          : c.eventLogs.exportReceipts(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'deliverysummary' ? 'luna-log-delivery-summary.json' : 'luna-log-receipts.json',
+        }),
+      ];
+      text = t('logReceiptExport');
+    }
+    if (sub === 'pausegroup') {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('logResetConfirm');
+      const group = i.options.getString('group', true);
+      if (!['member', 'role', 'channel'].includes(group)) throw new UserError('logEventInvalid');
+      const before = c.guildConfig.get(i.guildId).logging.events,
+        events = before.filter((k) => !k.startsWith(group));
+      c.guildConfig.patch(i.guildId, 'logging', { events });
+      text = t('logGroupPaused', { count: before.length - events.length });
+    }
     if (sub === 'export') {
       files = [
         new AttachmentBuilder(
@@ -195,6 +255,9 @@ export default {
     if (
       ![
         'export',
+        'deliverysummary',
+        'exportreceipts',
+        'pausegroup',
         'import',
         'clearchannel',
         'preview',

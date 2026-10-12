@@ -54,6 +54,39 @@ export class Giveaways {
         .get(guildId).n,
     };
   }
+  exportMetadata(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM giveaways WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,status,ends_at AS endsAt,winner_count AS winnerCount,draw_version AS drawVersion,created_at AS createdAt FROM giveaways WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  entryCounts(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM giveaways WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT g.id,g.status,COUNT(e.user_id) AS count FROM giveaways g LEFT JOIN giveaway_entries e ON e.giveaway_id=g.id WHERE g.guild_id=? GROUP BY g.id,g.status ORDER BY g.id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  channelCounts(guildId) {
+    return this.db
+      .prepare(
+        'SELECT channel_id AS channelId,status,COUNT(*) AS count FROM giveaways WHERE guild_id=? GROUP BY channel_id,status ORDER BY channel_id,status',
+      )
+      .all(guildId);
+  }
   channelRecords(guildId, channelId) {
     if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
       throw new UserError('giveawayNotFound');

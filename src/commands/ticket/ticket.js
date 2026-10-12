@@ -216,6 +216,27 @@ data.addSubcommand((s) =>
       'Private latest100onlyyour ticket metadata,total/truncated,no staff/source/transcript content.',
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('exportrecords')
+    .setDescription(
+      'Manage Server:latest100 stored ticketmetadataJSON,total/truncation,no owner/staff/sourceIDs.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('transcriptmetadata')
+    .setDescription(
+      'Manage Server:latest100 snapshot ticketID/count/truncated/time,no messagebody/memberIDs.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('claimsummary')
+    .setDescription(
+      'Manage Server:stored ticket state/claimed-flag counts only,no staff/ownerIDs.',
+    ),
+);
 export default {
   category: 'ticket',
   data,
@@ -228,6 +249,9 @@ export default {
     if (
       [
         'summary',
+        'exportrecords',
+        'transcriptmetadata',
+        'claimsummary',
         'exportconfig',
         'setup',
         'panel',
@@ -243,6 +267,25 @@ export default {
       ].includes(sub)
     ) {
       await requireTicketManager(i);
+    }
+    if (['exportrecords', 'transcriptmetadata', 'claimsummary'].includes(sub)) {
+      const report =
+        sub === 'exportrecords'
+          ? c.tickets.exportRecords(i.guildId)
+          : sub === 'transcriptmetadata'
+            ? c.tickets.transcriptMetadata(i.guildId)
+            : c.tickets.claimSummary(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'exportrecords'
+              ? 'luna-ticket-records.json'
+              : sub === 'transcriptmetadata'
+                ? 'luna-ticket-snapshot-metadata.json'
+                : 'luna-ticket-claim-summary.json',
+        }),
+      ];
+      content = t('ticketMetadataExport');
     }
     if (sub === 'summary') {
       const r = c.tickets.summary(i.guildId);

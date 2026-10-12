@@ -161,6 +161,21 @@ for (const sub of ['channelrecords', 'cancelchannel'])
       );
     return s;
   });
+for (const [name, desc] of [
+  [
+    'exportmetadata',
+    'Private latest100 minimalID/channel/state/due/count/drawversion/timeJSON,no prize/sourceIDs.',
+  ],
+  [
+    'entrycounts',
+    'Private retained entrycounts forlatest100 giveawayID/stateJSON,total/truncation,no memberIDs.',
+  ],
+  [
+    'channelcounts',
+    'Private stored giveaway counts bychannelID/state,no entries/memberIDs/currentactivityproof.',
+  ],
+])
+  data.addSubcommand((s) => s.setName(name).setDescription(desc));
 export default {
   category: 'giveaway',
   data,
@@ -183,6 +198,20 @@ export default {
         throw new UserError('userPermission');
     };
     await authorize();
+    if (['exportmetadata', 'entrycounts', 'channelcounts'].includes(sub)) {
+      const report =
+        sub === 'exportmetadata'
+          ? c.giveaways.exportMetadata(i.guildId)
+          : sub === 'entrycounts'
+            ? c.giveaways.entryCounts(i.guildId)
+            : c.giveaways.channelCounts(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-giveaway-' + sub + '.json',
+        }),
+      ];
+      content = t('giveawayMetadataExported');
+    }
     if (sub === 'summary') {
       const r = c.giveaways.summary(i.guildId);
       content =
@@ -263,6 +292,9 @@ export default {
         'export',
         'cancelall',
         'forgetfinishedentries',
+        'exportmetadata',
+        'entrycounts',
+        'channelcounts',
       ].includes(sub)
     )
       throw new UserError('unknownCommand');

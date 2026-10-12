@@ -225,6 +225,44 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('pauseboth')
+    .setDescription('Stop welcome and goodbye delivery;all templates/styles/channel/history kept.')
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm stopping both welcome/goodbye delivery')
+        .setRequired(true),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportconfig')
+    .setDescription(
+      'Private complete stored welcome/goodbye config including destination,not runtime/history.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('clearassets')
+    .setDescription(
+      'Clear welcome or goodbye image/thumbnail only;title/color/template/delivery kept.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('kind')
+        .setDescription('Asset pair to clear')
+        .addChoices({ name: 'Welcome', value: 'welcome' }, { name: 'Goodbye', value: 'goodbye' })
+        .setRequired(true),
+    )
+    .addBooleanOption((o) =>
+      o
+        .setName('confirm')
+        .setDescription('Confirm forgetting both image and thumbnail for this kind')
+        .setRequired(true),
+    ),
+);
 export default {
   category: 'welcomer',
   data,
@@ -248,6 +286,33 @@ export default {
     const actor = await authorize();
     const sub = i.options.getSubcommand();
     let text, files;
+    if (sub === 'exportconfig') {
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(JSON.stringify(c.guildConfig.get(i.guildId).welcome, null, 2) + '\n', 'utf8'),
+          { name: 'luna-welcome-config.json' },
+        ),
+      ];
+      text = t('welcomeFullConfigExport');
+    }
+    if (sub === 'pauseboth' || sub === 'clearassets') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('welcomeLibraryConfirm');
+      if (sub === 'pauseboth')
+        c.guildConfig.patch(i.guildId, 'welcome', { enabled: false, goodbyeEnabled: false });
+      else {
+        const kind = i.options.getString('kind', true);
+        if (!['welcome', 'goodbye'].includes(kind)) throw new UserError('unknownCommand');
+        c.guildConfig.patch(
+          i.guildId,
+          'welcome',
+          kind === 'welcome'
+            ? { image: undefined, thumbnail: undefined }
+            : { goodbyeImage: undefined, goodbyeThumbnail: undefined },
+        );
+      }
+      text = t(sub === 'pauseboth' ? 'welcomeBothPaused' : 'welcomeAssetsCleared');
+    }
     if (sub === 'export') {
       files = [
         new AttachmentBuilder(

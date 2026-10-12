@@ -5,6 +5,9 @@ import {
   escapeMarkdown,
 } from 'discord.js';
 import {
+  roundRobin,
+  dealHands,
+  rollHistogram,
   pairLabels,
   exchangeCycle,
   weightedChoice,
@@ -31,6 +34,65 @@ const data = new SlashCommandBuilder()
   .setName('fun')
   .setDescription('Safe solo games and random choices.')
   .setContexts(InteractionContextType.Guild)
+  .addSubcommand((s) =>
+    s
+      .setName('roundrobin')
+      .setDescription('Private complete pair schedule for2-10 labels,no dates/member assignments.')
+      .addStringOption((o) =>
+        o
+          .setName('labels')
+          .setDescription('2-10 distinct labels separated by |,max30characters each')
+          .setMinLength(3)
+          .setMaxLength(309)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('dealhands')
+      .setDescription(
+        'Private2-5 numbered hands,1-5cards each,unique standarddeck,no bets/secret delivery.',
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('players')
+          .setDescription('Numbered hands2-5')
+          .setMinValue(2)
+          .setMaxValue(5)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('cards')
+          .setDescription('Cards perhand1-5')
+          .setMinValue(1)
+          .setMaxValue(5)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('dicehistogram')
+      .setDescription(
+        'Private1-100 independent dice rolls summarized by face,count/total,no stored state.',
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('count')
+          .setDescription('Roll count1-100')
+          .setMinValue(1)
+          .setMaxValue(100)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('sides')
+          .setDescription('Sides2-20')
+          .setMinValue(2)
+          .setMaxValue(20)
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) =>
     s
       .setName('pairs')
@@ -315,7 +377,39 @@ export default {
       t = (key, params) => c.localization.t(i.guildId, key, params);
     const sub = i.options.getSubcommand();
     let text;
-    if (sub === 'pairs') {
+    if (sub === 'roundrobin') {
+      const labels = parseChoices(i.options.getString('labels', true));
+      if (labels.length > 10 || labels.some((v) => v.length > 30))
+        throw new UserError('funChoicesInvalid');
+      const rounds = roundRobin(labels.join('|'))
+        .map(
+          (r, n) =>
+            `${n + 1}: ${r.pairs.map((p) => p.map(escapeMarkdown).join(' / ')).join('; ')}${r.bye === null ? '' : ` | ${t('funRoundBye', { label: escapeMarkdown(r.bye) })}`}`,
+        )
+        .join('\n');
+      if (rounds.length > 1700) throw new UserError('funShuffleTooLong');
+      text = t('funRoundRobin', { rounds });
+    } else if (sub === 'dealhands') {
+      const hands = dealHands(
+        i.options.getInteger('players', true),
+        i.options.getInteger('cards', true),
+      )
+        .map(
+          (hand, n) =>
+            `${n + 1}: ${hand.map((card) => card.rank + ' ' + t('funSuit_' + card.suit)).join(', ')}`,
+        )
+        .join('\n');
+      text = t('funHands', { hands });
+    } else if (sub === 'dicehistogram') {
+      const report = rollHistogram(
+        i.options.getInteger('sides', true),
+        i.options.getInteger('count', true),
+      );
+      text = t('funHistogram', {
+        ...report,
+        faces: report.frequencies.map((count, n) => `${n + 1}: ${count}`).join(', '),
+      });
+    } else if (sub === 'pairs') {
       const r = pairLabels(i.options.getString('labels', true));
       const pairs = r.pairs
         .map((v, n) => `${n + 1}. ${v.map(escapeMarkdown).join(' / ')}`)

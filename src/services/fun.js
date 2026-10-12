@@ -211,3 +211,70 @@ export function weightedChoice(text, weightsText, rng = randomInt) {
   }
   throw new TypeError('Invalid random result');
 }
+
+export function roundRobin(text) {
+  const labels = parseChoices(text);
+  if (labels.length > 10) throw new UserError('funChoicesInvalid');
+  if (labels.length % 2) labels.push(null);
+  const rounds = [];
+  for (let n = 0; n < labels.length - 1; n++) {
+    const pairs = [];
+    let bye = null;
+    for (let at = 0; at < labels.length / 2; at++) {
+      const a = labels[at],
+        b = labels[labels.length - 1 - at];
+      if (a === null || b === null) bye = a ?? b;
+      else pairs.push([a, b]);
+    }
+    rounds.push({ pairs, bye });
+    labels.splice(1, 0, labels.pop());
+  }
+  return rounds;
+}
+export function dealHands(players, cards, rng = randomInt) {
+  if (
+    !Number.isInteger(players) ||
+    players < 2 ||
+    players > 5 ||
+    !Number.isInteger(cards) ||
+    cards < 1 ||
+    cards > 5
+  )
+    throw new UserError('funCardsInvalid');
+  const deck = ['clubs', 'diamonds', 'hearts', 'spades'].flatMap((suit) =>
+    ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'].map((rank) => ({
+      suit,
+      rank,
+    })),
+  );
+  const hands = Array.from({ length: players }, () => []);
+  for (let n = 0; n < cards; n++)
+    for (const hand of hands) {
+      const at = rng(deck.length);
+      if (!Number.isInteger(at) || at < 0 || at >= deck.length)
+        throw new TypeError('Invalid random result');
+      hand.push(deck.splice(at, 1)[0]);
+    }
+  return hands;
+}
+export function rollHistogram(sides, count, rng = randomInt) {
+  if (
+    !Number.isInteger(count) ||
+    count < 1 ||
+    count > 100 ||
+    !Number.isInteger(sides) ||
+    sides < 2 ||
+    sides > 20
+  )
+    throw new UserError('funDiceInvalid');
+  const frequencies = Array.from({ length: sides }, () => 0);
+  let total = 0;
+  for (let n = 0; n < count; n++) {
+    const at = rng(sides);
+    if (!Number.isInteger(at) || at < 0 || at >= sides)
+      throw new TypeError('Invalid random result');
+    frequencies[at]++;
+    total += at + 1;
+  }
+  return { count, total, frequencies };
+}

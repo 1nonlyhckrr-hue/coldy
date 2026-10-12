@@ -16,6 +16,26 @@ export class EventLogDelivery {
     this.db = db;
     this.lastCleanup = 0;
   }
+  summary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,COUNT(*) AS count FROM event_log_deliveries WHERE guild_id=? GROUP BY status ORDER BY status',
+      )
+      .all(guildId);
+  }
+  exportReceipts(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM event_log_deliveries WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT status,created_at AS createdAt FROM event_log_deliveries WHERE guild_id=? ORDER BY created_at DESC,event_key DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   reserve(key, guildId, now = Date.now()) {
     return this.db.transaction(() => {
       if (this.db.prepare('SELECT 1 FROM event_log_deliveries WHERE event_key=?').get(key))

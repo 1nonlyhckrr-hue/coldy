@@ -226,3 +226,121 @@ export function normalizeText(text, form) {
   if (!['NFC', 'NFD', 'NFKC', 'NFKD'].includes(form)) throw new UserError('toolsNormalizeInvalid');
   return text.normalize(form);
 }
+
+export function encodeBase64(text) {
+  textStatistics(text);
+  const bytes = Buffer.from(text, 'utf8');
+  if (bytes.toString('utf8') !== text) throw new UserError('toolsEncodingInvalid');
+  return bytes.toString('base64');
+}
+export function decodeBase64(text) {
+  if (
+    typeof text !== 'string' ||
+    text.length < 1 ||
+    text.length > 1600 ||
+    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(text)
+  )
+    throw new UserError('toolsEncodingInvalid');
+  const bytes = Buffer.from(text, 'base64'),
+    output = bytes.toString('utf8');
+  if (bytes.toString('base64') !== text || !Buffer.from(output, 'utf8').equals(bytes))
+    throw new UserError('toolsEncodingInvalid');
+  textStatistics(output);
+  return output;
+}
+export function urlComponent(text, direction) {
+  textStatistics(text);
+  if (!['encode', 'decode'].includes(direction)) throw new UserError('toolsEncodingInvalid');
+  try {
+    const out = direction === 'encode' ? encodeURIComponent(text) : decodeURIComponent(text);
+    if (out.includes('\0') || out.length > 3600) throw Error('invalid');
+    return out;
+  } catch {
+    throw new UserError('toolsEncodingInvalid');
+  }
+}
+
+export function integerStatistics(text) {
+  if (
+    typeof text !== 'string' ||
+    text.length > 219 ||
+    !/^-?(?:0|[1-9][0-9]*)(?:\|-?(?:0|[1-9][0-9]*)){1,19}$/.test(text)
+  )
+    throw new UserError('toolsIntegerInvalid');
+  const values = text.split('|').map(Number);
+  if (values.some((v) => !Number.isSafeInteger(v) || Math.abs(v) > 1000000))
+    throw new UserError('toolsIntegerInvalid');
+  const sorted = [...values].sort((a, b) => a - b),
+    n = sorted.length,
+    total = values.reduce((a, b) => a + b, 0);
+  return {
+    count: n,
+    total,
+    minimum: sorted[0],
+    maximum: sorted[n - 1],
+    mean: total / n,
+    median: n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2,
+  };
+}
+export function integerFactors(a, b) {
+  if (
+    !Number.isSafeInteger(a) ||
+    !Number.isSafeInteger(b) ||
+    a < 1 ||
+    b < 1 ||
+    a > 1000000000 ||
+    b > 1000000000
+  )
+    throw new UserError('toolsIntegerInvalid');
+  let x = a,
+    y = b;
+  while (y) {
+    [x, y] = [y, x % y];
+  }
+  return { gcd: x, lcm: ((BigInt(a) / BigInt(x)) * BigInt(b)).toString() };
+}
+export function convertIntegerBase(text, from, to) {
+  if (
+    typeof text !== 'string' ||
+    text.length < 1 ||
+    text.length > 64 ||
+    ![2, 8, 10, 16].includes(from) ||
+    ![2, 8, 10, 16].includes(to)
+  )
+    throw new UserError('toolsIntegerInvalid');
+  const valid = { 2: /^[01]+$/, 8: /^[0-7]+$/, 10: /^[0-9]+$/, 16: /^[0-9a-fA-F]+$/ };
+  if (!valid[from].test(text)) throw new UserError('toolsIntegerInvalid');
+  let value = 0n;
+  for (const digit of text) {
+    value = value * BigInt(from) + BigInt(parseInt(digit, 16));
+    if (value > (1n << 64n) - 1n) throw new UserError('toolsIntegerInvalid');
+  }
+  return { from, to, value: value.toString(to).toUpperCase() };
+}
+
+function suppliedLines(text) {
+  textStatistics(text);
+  const lines = text.split(/\r\n|\r|\n/);
+  if (lines.length > 100) throw new UserError('toolsTextInvalid');
+  return lines;
+}
+export function sortTextLines(text, direction) {
+  const lines = suppliedLines(text);
+  if (!['ascending', 'descending'].includes(direction)) throw new UserError('toolsTextInvalid');
+  const sorted = lines.sort((a, b) =>
+    a === b ? 0 : (a < b ? -1 : 1) * (direction === 'ascending' ? 1 : -1),
+  );
+  return sorted.join('\n');
+}
+export function uniqueTextLines(text) {
+  return [...new Set(suppliedLines(text))].join('\n');
+}
+export function compareTextLines(left, right) {
+  const a = new Set(suppliedLines(left)),
+    b = new Set(suppliedLines(right));
+  return {
+    onlyLeft: [...a].filter((v) => !b.has(v)),
+    onlyRight: [...b].filter((v) => !a.has(v)),
+    common: [...a].filter((v) => b.has(v)),
+  };
+}

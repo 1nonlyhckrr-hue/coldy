@@ -150,6 +150,27 @@ data.addSubcommand((s) =>
     .setName('trustlist')
     .setDescription('Private stored trusteduser IDs only,no native membership/permission claim.'),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription(
+      'Private retained incident counts by state,no actor/source IDs or protection claim.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('actioncounts')
+    .setDescription(
+      'Private retained alert-incident counts by audit action/state,not all audit events.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportincidents')
+    .setDescription(
+      'Private latest100 minimalincidentmetadata JSON,total/truncation,no actor/sourceIDs.',
+    ),
+);
 export default {
   category: 'antinuke',
   data,
@@ -171,7 +192,25 @@ export default {
       locale = c.localization.locale(i.guildId),
       sub = i.options.getSubcommand();
     let text, files;
-    if (['importpolicy', 'cleartrust', 'clearchannel'].includes(sub)) {
+    if (['summary', 'actioncounts', 'exportincidents'].includes(sub)) {
+      const report =
+        sub === 'summary'
+          ? c.antinuke.summary(i.guildId)
+          : sub === 'actioncounts'
+            ? c.antinuke.actionCounts(i.guildId)
+            : c.antinuke.exportIncidents(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'summary'
+              ? 'luna-audit-alert-summary.json'
+              : sub === 'actioncounts'
+                ? 'luna-audit-action-counts.json'
+                : 'luna-audit-incidents.json',
+        }),
+      ];
+      text = t('antinukeIncidentExport');
+    } else if (['importpolicy', 'cleartrust', 'clearchannel'].includes(sub)) {
       if (i.options.getBoolean('confirm', true) !== true)
         throw new UserError('antinukeResetConfirm');
       if (sub === 'importpolicy') {
