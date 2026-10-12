@@ -31,7 +31,9 @@ export class LavalinkAdapter {
     manager.on('close', () =>
       logger.warn({ kind: 'lavalink' }, 'Music provider connection closed'),
     );
-    return new this(manager);
+    const adapter = new this(manager);
+    adapter.logger = logger;
+    return adapter;
   }
   node() {
     const node = [...this.manager.nodes.values()].find(
