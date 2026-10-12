@@ -1175,5 +1175,10 @@
   "backupDeleted": "Backup #{id} deleted.",
   "backupNotFound": "Backup not found.",
   "backupConfirm": "Restore recreates every missing role and channel from the backup. Nothing existing is deleted or edited. Run again with confirm:True.",
-  "backupRestored": "Restore from backup #{id} done. Roles created: {rolesCreated}. Channels created: {channelsCreated}. Already existed: {skipped}. Failed: {failed}."
+  "backupRestored": "Restore from backup #{id} done. Roles created: {rolesCreated}. Channels created: {channelsCreated}. Already existed: {skipped}. Failed: {failed}.",
+  "unbanApologyDefault": "We are sorry, you were banned by mistake. You are welcome back.",
+  "unbanDm": "You were unbanned from {server}. Join again with this one-use link (valid 7 days):\n{link}\n\n{note}",
+  "unbanInvite_sent": "Invite sent by DM.",
+  "unbanInvite_dmFailed": "Could not DM the user (DMs closed). Their one-use invite link, valid 7 days: {link}",
+  "unbanInvite_noInvite": "Unbanned, but no invite was created: Emika needs Create Invite in a channel."
 }

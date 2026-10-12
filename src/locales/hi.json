@@ -1175,5 +1175,10 @@
   "backupDeleted": "बैकअप #{id} हटाया गया।",
   "backupNotFound": "बैकअप नहीं मिला।",
   "backupConfirm": "रिस्टोर बैकअप से हर गायब रोल और चैनल दोबारा बनाता है। मौजूदा कुछ नहीं हटता या बदलता। confirm:True के साथ फिर चलाएं।",
-  "backupRestored": "बैकअप #{id} से रिस्टोर पूरा। बने रोल: {rolesCreated}। बने चैनल: {channelsCreated}। पहले से मौजूद: {skipped}। विफल: {failed}।"
+  "backupRestored": "बैकअप #{id} से रिस्टोर पूरा। बने रोल: {rolesCreated}। बने चैनल: {channelsCreated}। पहले से मौजूद: {skipped}। विफल: {failed}।",
+  "unbanApologyDefault": "हमें खेद है, आपको गलती से बैन किया गया था। आपका वापस स्वागत है।",
+  "unbanDm": "आपको {server} से अनबैन कर दिया गया है। इस एक-बार वाले लिंक से फिर जुड़ें (7 दिन वैध):\n{link}\n\n{note}",
+  "unbanInvite_sent": "इनवाइट DM से भेज दिया।",
+  "unbanInvite_dmFailed": "यूज़र को DM नहीं हो सका (DM बंद)। उनका एक-बार वाला इनवाइट लिंक, 7 दिन वैध: {link}",
+  "unbanInvite_noInvite": "अनबैन हो गया, पर इनवाइट नहीं बना: Emika को किसी चैनल में Create Invite चाहिए।"
 }

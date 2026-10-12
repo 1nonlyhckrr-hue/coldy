@@ -1175,5 +1175,10 @@
   "backupDeleted": "Backup #{id} delete kiya.",
   "backupNotFound": "Backup nahi mila.",
   "backupConfirm": "Restore backup se har missing role aur channel dobara banata hai. Jo exist karta hai wo delete ya edit nahi hota. confirm:True ke saath phir chalao.",
-  "backupRestored": "Backup #{id} se restore ho gaya. Bane roles: {rolesCreated}. Bane channels: {channelsCreated}. Pehle se the: {skipped}. Fail: {failed}."
+  "backupRestored": "Backup #{id} se restore ho gaya. Bane roles: {rolesCreated}. Bane channels: {channelsCreated}. Pehle se the: {skipped}. Fail: {failed}.",
+  "unbanApologyDefault": "Hume khed hai, aapko galti se ban kiya gaya tha. Aapka wapas swagat hai.",
+  "unbanDm": "Aapko {server} se unban kar diya gaya hai. Is ek-baar wale link se phir join karo (7 din valid):\n{link}\n\n{note}",
+  "unbanInvite_sent": "Invite DM se bhej diya.",
+  "unbanInvite_dmFailed": "User ko DM nahi ho saka (DM band). Unka ek-baar wala invite link, 7 din valid: {link}",
+  "unbanInvite_noInvite": "Unban ho gaya, par invite nahi bana: Emika ko kisi channel me Create Invite chahiye."
 }

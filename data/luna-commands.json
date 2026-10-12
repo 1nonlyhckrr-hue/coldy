@@ -790,6 +790,10 @@
           {
             "name": "backup",
             "value": "backup"
+          },
+          {
+            "name": "unban",
+            "value": "unban"
           }
         ]
       }
@@ -851,6 +855,10 @@
           {
             "name": "backup",
             "value": "backup"
+          },
+          {
+            "name": "unban",
+            "value": "unban"
           }
         ]
       }
@@ -8671,7 +8679,7 @@
   {
     "name": "moderation unban",
     "category": "moderation",
-    "syntax": "/moderation unban (user-id) [reason]",
+    "syntax": "/moderation unban (user-id) [invite] [message] [reason]",
     "description": "unban: one member, checked and recorded.",
     "parameters": [
       {
@@ -8680,6 +8688,17 @@
         "type": 3,
         "minLength": 17,
         "maxLength": 20
+      },
+      {
+        "name": "invite",
+        "required": false,
+        "type": 5
+      },
+      {
+        "name": "message",
+        "required": false,
+        "type": 3,
+        "maxLength": 500
       },
       {
         "name": "reason",

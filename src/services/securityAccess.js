@@ -2,7 +2,7 @@ import { PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
 // Who may run Emika's opt-in security commands: bot owners (OWNER_IDS), users a bot owner delegated
 // in this server, and members with Discord Administrator. Nothing is granted by default.
-export const SECURITY_FEATURES = ['all', 'lockdown', 'backup'];
+export const SECURITY_FEATURES = ['all', 'lockdown', 'backup', 'unban'];
 export class SecurityAccess {
   constructor(db) {
     this.db = db;
