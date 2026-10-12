@@ -5,7 +5,7 @@ test('checkpoint documentation preserves verified external run and reference ide
   for (const path of ['README.md', 'docs/MODULE_STATUS.md'])
     assert.match(
       readFileSync(path, 'utf8'),
-      /https:\/\/github\.com\/1nonlyhckrr-hue\/coldy\/actions\/runs\/38142183664/,
+      /https:\/\/github\.com\/1nonlyhckrr-hue\/coldy\/actions\/runs\/38181335379/,
     );
   assert.match(readFileSync('README.md', 'utf8'), /https:\/\/top\.gg\/bot\/1402377137087840378/);
 });

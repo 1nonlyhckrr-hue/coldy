@@ -5,6 +5,30 @@ export class Polls {
   constructor(db) {
     this.db = db;
   }
+  summary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,COUNT(*) count FROM native_polls WHERE guild_id=? GROUP BY status ORDER BY status',
+      )
+      .all(guildId);
+  }
+  exportReceipts(guildId, channelId = null) {
+    if (channelId !== null && (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId)))
+      throw new UserError('pollManageInvalid');
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare(
+          'SELECT COUNT(*) n FROM native_polls WHERE guild_id=? AND (? IS NULL OR channel_id=?)',
+        )
+        .get(guildId, channelId, channelId).n;
+      const receipts = this.db
+        .prepare(
+          'SELECT id,channel_id,message_id,status,created_at FROM native_polls WHERE guild_id=? AND (? IS NULL OR channel_id=?) ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId, channelId, channelId);
+      return { total, truncated: total > receipts.length, receipts };
+    })();
+  }
   reserve(i, channelId) {
     return this.db.transaction(() => {
       this.db

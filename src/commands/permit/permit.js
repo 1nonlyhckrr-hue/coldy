@@ -186,6 +186,33 @@ for (const kind of ['user', 'role', 'channel'])
           .setRequired(true),
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription('Private stored deny counts bykind/command,no native permissions or IDs.'),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('searchid')
+    .setDescription(
+      'Private exact stored ID lookup across user/role/channel denies,no native lookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('id')
+        .setDescription('Exact stored17-20digit ID')
+        .setMinLength(17)
+        .setMaxLength(20)
+        .setRequired(true),
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('obsolete')
+    .setDescription(
+      'Private JSON denies for commands absent from current registry;no deletion/resource claims.',
+    ),
+);
 export default {
   category: 'permit',
   data,
@@ -218,7 +245,25 @@ export default {
     )
       throw new UserError('userPermission');
     let text, files;
-    if (['clearuser', 'clearrole', 'clearchannel'].includes(sub)) {
+    if (sub === 'summary') text = t('permitSummary', c.commandRestrictions.summary(i.guildId));
+    else if (sub === 'searchid' || sub === 'obsolete') {
+      const rules =
+        sub === 'searchid'
+          ? c.commandRestrictions.searchStored(i.guildId, i.options.getString('id', true))
+          : c.commandRestrictions.obsolete(i.guildId, c.commands);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(rules, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'searchid'
+              ? 'luna-permit-id-matches.json'
+              : 'luna-permit-obsolete-commands.json',
+        }),
+      ];
+      text = t(sub === 'searchid' ? 'permitMatchesExported' : 'permitObsoleteExported', {
+        subjects: rules.subjects.length,
+        channels: rules.channels.length,
+      });
+    } else if (['clearuser', 'clearrole', 'clearchannel'].includes(sub)) {
       if (i.options.getBoolean('confirm', true) !== true) throw new UserError('permitClearConfirm');
       const kind = sub.slice(5),
         id = i.options.getString('id', true);

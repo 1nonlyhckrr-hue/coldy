@@ -29,6 +29,40 @@ const data = new SlashCommandBuilder()
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
     s
+      .setName('deliveryoverview')
+      .setDescription(
+        'Private stored receipt counts per rule/state,not current delivery or recovery.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('exportreceipts')
+      .setDescription(
+        'Private latest100 receipt metadata JSON,total/truncation,no message IDs or text.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('disablemode')
+      .setDescription(
+        'Pause enabled exact or keyword rules;in-flight sends may finish,history kept.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('mode')
+          .setDescription('Stored match mode to pause')
+          .addChoices({ name: 'Exact', value: 'exact' }, { name: 'Keyword', value: 'keyword' })
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm pausing all enabled rules in this mode')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('create')
       .setDescription('Create an exact or literal keyword trigger.')
       .addStringOption(trigger)
@@ -343,10 +377,37 @@ export default {
         'replace',
         'deletepaused',
         'cooldownall',
+        'deliveryoverview',
+        'exportreceipts',
+        'disablemode',
       ].includes(sub)
     )
       throw new UserError('unknownCommand');
     let text, files;
+    if (sub === 'deliveryoverview' || sub === 'exportreceipts') {
+      const report =
+        sub === 'deliveryoverview'
+          ? c.autoresponders.deliveryOverview(i.guildId)
+          : c.autoresponders.exportReceipts(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'deliveryoverview'
+              ? 'luna-responder-delivery-overview.json'
+              : 'luna-responder-receipts.json',
+        }),
+      ];
+      text = t(
+        sub === 'deliveryoverview' ? 'responderDeliveryOverview' : 'responderReceiptsExport',
+      );
+    }
+    if (sub === 'disablemode') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('responderConfirmRequired');
+      text = t('responderModeDisabled', {
+        count: c.autoresponders.disableMode(i.guildId, i.options.getString('mode', true)),
+      });
+    }
     if (['replace', 'deletepaused', 'cooldownall'].includes(sub)) {
       if (i.options.getBoolean('confirm', true) !== true)
         throw new UserError('responderConfirmRequired');

@@ -107,6 +107,33 @@ export class CommandRestrictions {
           )
           .run(guildId, kind, id).changes;
   }
+  summary(guildId) {
+    const rules = this.exportRules(guildId),
+      all = [...rules.subjects, ...rules.channels];
+    return {
+      subjects: rules.subjects.length,
+      users: rules.subjects.filter((r) => r.subject_kind === 'user').length,
+      roles: rules.subjects.filter((r) => r.subject_kind === 'role').length,
+      channels: rules.channels.length,
+      commands: new Set(all.map((r) => r.command_name)).size,
+    };
+  }
+  searchStored(guildId, id) {
+    if (typeof id !== 'string' || !subjectId.test(id)) throw new UserError('permitSubjectInvalid');
+    const rules = this.exportRules(guildId);
+    return {
+      subjects: rules.subjects.filter((r) => r.subject_id === id),
+      channels: rules.channels.filter((r) => r.channel_id === id),
+    };
+  }
+  obsolete(guildId, installed) {
+    if (!(installed instanceof Map)) throw new TypeError('Installed registry required');
+    const rules = this.exportRules(guildId);
+    return {
+      subjects: rules.subjects.filter((r) => !installed.has(r.command_name)),
+      channels: rules.channels.filter((r) => !installed.has(r.command_name)),
+    };
+  }
   exportRules(guildId) {
     return { subjects: this.list(guildId), channels: this.channelRules(guildId) };
   }

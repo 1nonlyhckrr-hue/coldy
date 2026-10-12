@@ -95,6 +95,27 @@ export class GuildConfig {
       return updated[section];
     })();
   }
+  pauseDelivery(guildId) {
+    return this.settings.db.transaction(() => {
+      const current = this.get(guildId);
+      const next = guildConfigSchema.parse({
+        ...current,
+        welcome: { ...current.welcome, enabled: false, goodbyeEnabled: false },
+        logging: { ...current.logging, enabled: false },
+      });
+      this.settings.set(guildId, next);
+      return next;
+    })();
+  }
+  resetDelivery(guildId) {
+    return this.settings.db.transaction(() => {
+      const current = this.get(guildId),
+        defaults = guildConfigSchema.parse({});
+      const next = { ...defaults, language: current.language };
+      this.settings.set(guildId, next);
+      return next;
+    })();
+  }
   setLanguage(guildId, language) {
     return this.settings.db.transaction(() => {
       const updated = guildConfigSchema.parse({ ...this.get(guildId), language });

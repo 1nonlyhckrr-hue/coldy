@@ -4,17 +4,17 @@ import { helpPage, commandDetails } from '../src/services/helpIndex.js';
 import { loadCommands } from '../src/services/registry.js';
 import command from '../src/commands/general/help.js';
 const commands = await loadCommands();
-test('help pages expose all352 installed paths exactly once with complete sorted lines', () => {
+test('help pages expose all403 installed paths exactly once with complete sorted lines', () => {
   const first = helpPage(commands),
     lines = [];
-  assert.equal(first.total, 352);
+  assert.equal(first.total, 403);
   for (let page = 1; page <= first.pages; page++) {
     const result = helpPage(commands, { page });
     assert(result.lines.length <= 8);
     lines.push(...result.lines);
   }
-  assert.equal(lines.length, 352);
-  assert.equal(new Set(lines).size, 352);
+  assert.equal(lines.length, 403);
+  assert.equal(new Set(lines).size, 403);
   assert.deepEqual(lines, [...lines].sort());
 });
 test('help category and case-insensitive literal search combine without changing registry', () => {
@@ -25,7 +25,7 @@ test('help category and case-insensitive literal search combine without changing
   );
   assert.equal(helpPage(commands, { search: '.*' }).total, 0);
   assert.equal(helpPage(commands, { category: 'music', search: 'ban' }).total, 0);
-  assert.equal(commands.size, 47);
+  assert.equal(commands.size, 48);
 });
 test('help refuses malformed/out-of-range pages/categories/search without clamping', () => {
   for (const page of [0, -1, 101, 1.5, '1', NaN]) assert.throws(() => helpPage(commands, { page }));

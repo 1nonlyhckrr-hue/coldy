@@ -19,6 +19,49 @@ const data = new SlashCommandBuilder()
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
     s
+      .setName('exportmetadata')
+      .setDescription(
+        'Private latest100 schedule metadata JSON,total/truncation,no message text/source IDs.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('channelrecords')
+      .setDescription(
+        'Private latest100 stored schedule metadata for exactchannelID,no native validity claim.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact stored channel ID')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('cancelchannel')
+      .setDescription(
+        'Cancel pending schedules for stored channel ID; sending/uncertain/history untouched.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact stored channel ID')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm cancelling all pending schedules for this channel')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('create')
       .setDescription('Schedule one message or a fixed elapsed-time repeat.')
       .addChannelOption((o) =>
@@ -366,6 +409,31 @@ export default {
       locale = c.guildConfig.get(i.guildId).language,
       t = (key, p) => translate(locale, key, p);
     let content, files;
+    if (sub === 'channelrecords' || sub === 'exportmetadata') {
+      const report =
+        sub === 'channelrecords'
+          ? c.messageSchedules.channelRecords(i.guildId, i.options.getString('channel-id', true))
+          : c.messageSchedules.exportMetadata(i.guildId);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'channelrecords'
+              ? 'luna-channel-schedules.json'
+              : 'luna-schedule-metadata.json',
+        }),
+      ];
+      content = t('automationMetadataExport');
+    }
+    if (sub === 'cancelchannel') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automationBulkConfirm');
+      content = t('automationChannelCancelled', {
+        count: c.messageSchedules.cancelChannelPending(
+          i.guildId,
+          i.options.getString('channel-id', true),
+        ),
+      });
+    }
     if (sub === 'export') {
       const rows = c.messageSchedules.exportRecords(i.guildId);
       files = [

@@ -44,6 +44,32 @@ const data = new SlashCommandBuilder()
         'Private latest100case metadata/reasons JSON,total/truncated,no recovery/grant.',
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription(
+      'Private allstoredcase counts bystatus,no identities/reasons or native claims.',
+    ),
+);
+for (const kind of ['actor', 'target'])
+  data.addSubcommand((s) =>
+    s
+      .setName(kind)
+      .setDescription(
+        'Private storedcase metadata for exact ' + kind + ' ID,10/page,no native lookup.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('id')
+          .setDescription('Exact stored17-20digit ' + kind + ' ID')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-1000,newestfirst').setMinValue(1).setMaxValue(1000),
+      ),
+  );
 export default {
   category: 'logging',
   data,
@@ -61,7 +87,26 @@ export default {
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
-    if (sub === 'inspect') {
+    if (sub === 'summary') {
+      const rows = c.cases.caseSummary(i.guildId);
+      text =
+        t('caseSummaryHeader') +
+        '\n' +
+        (rows.map((r) => `${r.status}: ${r.count}`).join('\n') || '0');
+    } else if (sub === 'actor' || sub === 'target') {
+      const r = c.cases.caseSubject(
+        i.guildId,
+        sub,
+        i.options.getString('id', true),
+        i.options.getInteger('page') ?? 1,
+      );
+      text =
+        t('caseSubjectHeader', { page: r.page, pages: r.pages, total: r.total }) +
+        '\n' +
+        r.rows
+          .map((v) => `#${v.id} | ${v.action} | ${v.status} | ${v.actor_id} / ${v.target_id}`)
+          .join('\n');
+    } else if (sub === 'inspect') {
       const row = c.cases.inspectCase(i.guildId, i.options.getInteger('id', true));
       text =
         t('caseHistoryHeader') +

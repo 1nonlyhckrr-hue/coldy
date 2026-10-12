@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-47 top-level slash commands,352 executable paths,976 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+48 top-level slash commands,403 executable paths,1027 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -451,3 +451,39 @@ Feature970VoiceMasterlibrary:3new resetsetup/exportconfig/records. Confirmedforg
 Feature973funactivities:3new cards/wordscramble/dicetarget. Fresh52deck1-10distinct/no stakes;suppliedASCII3-20wordmultiset/orderchanged/spoileranswer/no dictionary;diceinclusivetarget2-sidescount,no state.3tests endpoints/RNG/bounds/multiset/targets/private3locale.349paths47topSQL27,973localtests;published659/214unchanged/livepixelsunverified.
 
 Feature976customrolecleanup:3new unmaprole/clearrequired/resetconfig. ConfirmedstoredroleIDmappingremove/no native;gateclear permits otherwiseeligiblefutureclaim/creation;atomicallmapping/gate/creationconfigresetkeepsownership/uncertaincases/nativeassignments/replay.3tests isolation/ownership/ID/abort/currentauth/confirm/private3locale.352paths47topSQL27,976localtests;published659/214unchanged/livepixelsunverified.
+
+Published976/352 checkpoint016b67320f75bd7adfeb94f9947045360f13b075:all296 reviewed source files byte-match. Publisher https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38181057208 success;exacthead Node22/24CI https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38181335379 success,pixels inspected. Temptransfer release/asset/tag removed. No deployment/nativeacceptance. This receipt update is local.
+
+Feature979toolsText:3new duration/textstats/escapetext. Strict descending unique positive elapsed d/h/m/s,max365days,no schedule/calendar inference;explicit UTF16/codepoints/graphemes/UTF8bytes/line counts;private TXT common markdown escape+@neutralization,no URL sanitization/all-client guarantee. Bounded1200units,no persistence/native effects,3locale shared embeds.3tests strict endpoints/unicode/exactbytes/privateoutput. Published976/352 unchanged;nativeclient visual acceptance unverified.
+
+Feature982rankanalytics:3new weeklymine/dailyoverview/erasebefore. Onlyown90retainedUTCdays13disjoint7daybuckets(oldest6),notISOweeks;manager10dailyaggregatepage/no identities;confirmedstrictbeforeactualUTCdate guild-countrowerase,cutoff/later/config/preferences/replay/nativeexportskept.3tests dates/ranges/isolation/abort/privacy/auth/private3locale. Published976/352 unchanged;nativeacceptance unverified.
+
+Feature985funplanning:3new pairs/exchange/weightedchoice. Private2-20distinctlabel pairings oddbye;one-cycle exchange uniquegiverreceiver/no-self,notallpossiblederangements/secretDM;explicit1-1000relativeweightsmatchinglabels bounded unbiaseddraw,no advice/assignments/contact.3tests permutation/odd/even/cycle/weightendpoints/bounds/RNG/private3locale. Published976/352unchanged;nativepixelsunverified.
+
+Feature988permitdiagnostics:3new summary/searchid/obsolete. Freshmanager private aggregatecounts/exactstoredID allkindJSON/registryabsentcommandrulesJSON. No nativeidentity/existence/removalsafety/effectivepermission claims,no mutation.3tests counts/matching/allkinds/registry/guildisolation/input/currentauth/private3localeexactbytes. Published976/352unchanged/nativeunverified.
+
+Feature991configdelivery:3new export/pause/resetdelivery. Freshmanager private language/welcome/logging JSONnotruntime/secrets;confirmedatomicall3deliverypause keepssettings;confirmedatomicdeliverydefaultresetkeep language/othermoduletables/history. Inflight/native/exportcaveats explicit.3tests fields/isolation/defaultforget/all3pauses/storageabort/auth/confirm/private3localeexactbytes. Published976/352unchanged;nativeacceptanceunverified.
+
+Feature994tagprivacy:3new summary/exportconfig/exportmine. FreshManageRoles aggregate storedpending/granted/uncertaincounts/privatepolicyroleIDnullJSON;freshcalleronlyowngrantroleID/state/nullJSON,no sourceIDs/liveidentity/access/eligibilityclaim/repair/nativeeffects.3tests state/isolation/exactbytes/auth-first/private3locale. Published976/352unchanged/nativeunverified.
+
+Feature997casefilters:3new summary/actor/target. Freshmanager private allstatuscounts/exactstoredactor-targetID 10pagedmetadata,total/pages excludesreasons/sourceIDs,no native identity/currentoutcome/recovery claim.3tests states/filterpages/isolation/bounds/no mutation/auth-beforework/private3locale. Published976/352unchanged/nativeunverified.
+
+Feature1000pollreceipts:3new summary/export/channelreceipts. Freshmanager private storedsendstateaggregate/latest100wholebinding-timestampJSON total/truncated exactchannelIDfilter,excludesactors/source/voters/question,no native/voting/currentvalidity/retry claim.3tests states/bounds/truncation/isolation/exclusions/auth-beforework/private3localeexactbytes. Published976/352unchanged/nativeunverified.
+
+Feature1003ticketprivacy:3new summary/exportconfig/exportmine. Freshmanager storedstate/snapshotaggregate+categorysupportretentionJSON;freshcalleronlyownlatest100metadata total/truncated/no staff/source/content. No native/access/validityclaim/effects.3tests states/snapshotcount/isolation/nullsettings/100bound/exclusions/auth-beforework/private3localeexactbytes. Published976/352unchanged/nativeunverified.
+
+Feature1006giveawayscope:3new summary/channelrecords/cancelchannel. Freshmanager private storedstate/entryaggregates/exactchannel100wholemetadata total/truncated no entrant/winner/sourceIDs;confirmedactiveonlyexactchannelcancel keepspending/ending/uncertain/history/entries/native.3tests states/isolation/filterbounds/truncation/retention/confirm/auth/private3locale. Published976/352unchanged/nativeunverified.
+
+Feature1009voiceprivacy:3new summary/exportrecords/exportmine. FreshManageChannels storedstate/publicflagaggregates/private100metadata total/truncated;freshcalleronlyownrecords. No owner/sourceIDs/nativeaccess/existence/occupancy/membershipclaims/mutation.3tests counts/states/bounds/truncation/isolation/privacy/auth-beforework/private3localeexactbytes. Published976/352unchanged/nativevoiceunverified.
+
+Feature1012policycontrols:3new automoddisablerules/resetthresholds,antinuketrustlist. Confirmmanagerall6ruleoff/defaultcapsmentionsspamlimits preserveotherpolicy/guards/history;ownspamwindowclearedonsuccess. Private trustedalertIDJSONno native/member/trustworthinessclaim.3tests preservations/defaults/isolation/abort/auth/confirm/private3locale. Published976/352unchanged/nativeunverified.
+
+Feature1015textutilities:3new tools sha256/jsonformat/normalize. ExactexplicitUTF8digest(notsecurityproof/passwordscheme);JSONprettyTXT preservesnumberspelling/duplicatekeys/order no evaluation;explicit4UnicodeformsTXT withcompatibilitymeaningcaveat. Bounded/no fetch/storage,3tests knownvectors/Unicode/JSONprecisionduplicates/invalid/private3localeexactbytes. Published976/352unchanged/nativeunverified.
+
+Feature1018customaudit:3new customroleaudit summary/exportpolicy/exportmine,separateauditcommandkeepscustomrolebelow25subcommandlimit. FreshManageRoles aggregates/policyswitch-gatemappingsJSON;freshcalleronlyowncreationmetadata/null,no owner/sourceIDs/live role/assignment/eligibility/recoveryclaim/effects.3tests states/isolation/minimalbytes/null/ownprivacy/auth/private3locale. Published976/352unchanged/nativeunverified.
+
+Feature1021autoresponder:3new deliveryoverview/exportreceipts/disablemode. FreshManageGuild private retainedrule/statecounts,latest100minimalreceipts total/truncated no messageIDs/text;confirmedexact/keywordmodepausekeepsotherstate/settings/replay,inflightmayfinish. No nativeverification/retry/recovery.3tests aggregate/deletedrules/order/truncation/isolation/minimalJSON/confirm/replay/private3locale/freshpermission. Published976/352unchanged/nativeunverified.
+
+Feature1024reactionroles:3new summary/clicksummary/channelrecords. FreshManageRolesprivatepanelstatecounts/clickstate-actioncounts(no member/role/sourceIDs)/exactchannel100wholebindings+buttonmappings total/truncated,no clickreceipts. No nativevalidity/outcome/readiness/retry/recoveryclaim/effects.3tests states/aggregates/isolation/100limit/multibuttoncompleteness/order/invalid/private3locale/freshpermission. Published976/352unchanged/nativeunverified.
+
+Feature1027automations:3new exportmetadata/channelrecords/cancelchannel. FreshManageGuild private100minimalmetadata/total/truncated no text/sourceIDs exactchannel;confirmedpendingonlychannelcancelkeep sending/uncertain/history/body/replay,native/inflightnotundone.3tests states/isolation/order/truncation/minimalJSON/invalid/confirm/replay/private3locale/freshpermission. Nativeunverified.

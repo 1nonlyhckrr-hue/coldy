@@ -1,4 +1,5 @@
 import {
+  AttachmentBuilder,
   SlashCommandBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
@@ -39,6 +40,33 @@ for (const sub of ['results', 'end', 'list'])
       );
     return s;
   });
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription('Private stored send-receipt counts bystate,not voting counts/active polls.'),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('export')
+    .setDescription(
+      'Private latest100storedreceipt bindings/timestamps JSON,total/truncated,no actors/voters.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('channelreceipts')
+    .setDescription(
+      'Private latest100storedsendreceipts for exactchannelID,no native channel/voting lookup.',
+    )
+    .addStringOption((o) =>
+      o
+        .setName('channel-id')
+        .setDescription('Exact17-20digit storedchannelID')
+        .setMinLength(17)
+        .setMaxLength(20)
+        .setRequired(true),
+    ),
+);
 export default {
   category: 'utility',
   data,
@@ -49,8 +77,25 @@ export default {
     await pollManager(i);
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p);
-    let text;
-    if (sub === 'list') {
+    let text, files;
+    if (sub === 'summary') {
+      const rows = c.polls.summary(i.guildId);
+      text =
+        t('pollReceiptSummary') +
+        '\n' +
+        (rows.map((r) => `${r.status}: ${r.count}`).join('\n') || '0');
+    } else if (sub === 'export' || sub === 'channelreceipts') {
+      const r = c.polls.exportReceipts(
+        i.guildId,
+        sub === 'channelreceipts' ? i.options.getString('channel-id', true) : null,
+      );
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(r, null, 2) + '\n', 'utf8'), {
+          name: 'luna-poll-send-receipts.json',
+        }),
+      ];
+      text = t('pollReceiptExport', { count: r.receipts.length, total: r.total });
+    } else if (sub === 'list') {
       const rows = c.polls.db
         .prepare(
           'SELECT id,channel_id,status FROM native_polls WHERE guild_id=? ORDER BY id DESC LIMIT 20',
@@ -99,7 +144,7 @@ export default {
     } else throw new UserError('unknownCommand');
     await i.editReply(
       lunaPayload(
-        { content: text, allowedMentions: { parse: [] } },
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
         { locale: c.localization.locale(i.guildId) },
       ),
     );

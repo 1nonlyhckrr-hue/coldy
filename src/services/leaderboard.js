@@ -234,6 +234,41 @@ export class MessageRanks {
       )
       .get(guildId, this.since('retained', now), utcDay(now));
   }
+  weeklyMine(guildId, userId, now = Date.now()) {
+    const anchor = Date.parse(utcDay(now) + 'T00:00:00Z');
+    return Array.from({ length: 13 }, (_, n) => {
+      const end = utcDay(anchor - n * 7 * DAY),
+        start = utcDay(anchor - Math.min(89, n * 7 + 6) * DAY);
+      const row = this.db
+        .prepare(
+          'SELECT COALESCE(SUM(count),0) total FROM message_rank_daily WHERE guild_id=? AND user_id=? AND day>=? AND day<=?',
+        )
+        .get(guildId, userId, start, end);
+      return { start, end, total: row.total };
+    });
+  }
+  dailyOverview(guildId, page = 1, now = Date.now()) {
+    if (!Number.isInteger(page) || page < 1 || page > 9) throw new UserError('rankPageInvalid');
+    const anchor = Date.parse(utcDay(now) + 'T00:00:00Z');
+    return Array.from({ length: 10 }, (_, n) => {
+      const day = utcDay(anchor - ((page - 1) * 10 + n) * DAY);
+      const row = this.db
+        .prepare(
+          'SELECT COUNT(DISTINCT user_id) contributors,COALESCE(SUM(count),0) messages FROM message_rank_daily WHERE guild_id=? AND day=?',
+        )
+        .get(guildId, day);
+      return { day, ...row };
+    });
+  }
+  eraseBefore(guildId, cutoff) {
+    if (typeof cutoff !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(cutoff))
+      throw new UserError('rankDateInvalid');
+    const ms = Date.parse(cutoff + 'T00:00:00Z');
+    if (!Number.isFinite(ms) || utcDay(ms) !== cutoff) throw new UserError('rankDateInvalid');
+    return this.db
+      .prepare('DELETE FROM message_rank_daily WHERE guild_id=? AND day<?')
+      .run(guildId, cutoff).changes;
+  }
   resetAll(guildId) {
     return this.db.prepare('DELETE FROM message_rank_daily WHERE guild_id=?').run(guildId).changes;
   }

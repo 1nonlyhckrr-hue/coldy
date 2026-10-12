@@ -40,6 +40,44 @@ export class Giveaways {
     this.db = db;
     this.now = now;
   }
+  summary(guildId) {
+    return {
+      states: this.db
+        .prepare(
+          'SELECT status,COUNT(*) count FROM giveaways WHERE guild_id=? GROUP BY status ORDER BY status',
+        )
+        .all(guildId),
+      retainedEntries: this.db
+        .prepare(
+          'SELECT COUNT(*) n FROM giveaway_entries e JOIN giveaways g ON g.id=e.giveaway_id WHERE g.guild_id=?',
+        )
+        .get(guildId).n,
+    };
+  }
+  channelRecords(guildId, channelId) {
+    if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
+      throw new UserError('giveawayNotFound');
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM giveaways WHERE guild_id=? AND channel_id=?')
+        .get(guildId, channelId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,prize,status,channel_id,message_id,ends_at,winner_count,required_role_id FROM giveaways WHERE guild_id=? AND channel_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId, channelId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  cancelChannel(guildId, channelId) {
+    if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
+      throw new UserError('giveawayNotFound');
+    return this.db
+      .prepare(
+        "UPDATE giveaways SET status='cancelled' WHERE guild_id=? AND channel_id=? AND status='active'",
+      )
+      .run(guildId, channelId).changes;
+  }
   reserve(input) {
     const v = schema.parse(input);
     return this.db.transaction(() => {

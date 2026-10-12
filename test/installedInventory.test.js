@@ -11,8 +11,8 @@ test('installed Luna inventory exact registry paths are separate from reference 
     actual.push(...(subs.length ? subs.map((s) => d.name + ' ' + s.name) : [d.name]));
   }
   const rows = JSON.parse(await readFile('data/luna-commands.json', 'utf8'));
-  assert.equal(rows.length, 352);
-  assert.equal(new Set(rows.map((r) => r.name)).size, 352);
+  assert.equal(rows.length, 403);
+  assert.equal(new Set(rows.map((r) => r.name)).size, 403);
   assert.deepEqual(rows.map((r) => r.name).sort(), actual.sort());
   for (const row of rows) {
     assert(row.implemented);
@@ -26,7 +26,7 @@ test('installed Luna inventory exact registry paths are separate from reference 
 test('Luna CSV preserves formula-safe quoted syntax and structured native parameters', async () => {
   const rows = JSON.parse(await readFile('data/luna-commands.json', 'utf8')),
     csv = await readFile('data/luna-commands.csv', 'utf8');
-  assert.equal(csv.split('\n').filter(Boolean).length, 353);
+  assert.equal(csv.split('\n').filter(Boolean).length, 404);
   const poll = rows.find((r) => r.name === 'poll');
   assert.equal(poll.parameters.filter((p) => p.required).length, 4);
   assert.equal(poll.parameters.find((p) => p.name === 'hours').max, 768);

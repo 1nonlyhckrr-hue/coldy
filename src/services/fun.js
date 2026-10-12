@@ -179,3 +179,35 @@ export function rollTarget(sides, count, target, rng = randomInt) {
   const r = rollDice(sides, count, rng);
   return { ...r, target, successes: r.rolls.filter((v) => v >= target).length };
 }
+
+export function pairLabels(text, rng = randomInt) {
+  const labels = shuffleChoices(text, rng),
+    pairs = [];
+  while (labels.length >= 2) pairs.push(labels.splice(0, 2));
+  return { pairs, bye: labels[0] ?? null };
+}
+export function exchangeCycle(text, rng = randomInt) {
+  const labels = shuffleChoices(text, rng);
+  return labels.map((giver, n) => ({ giver, receiver: labels[(n + 1) % labels.length] }));
+}
+export function weightedChoice(text, weightsText, rng = randomInt) {
+  const labels = parseChoices(text);
+  if (
+    typeof weightsText !== 'string' ||
+    weightsText.length > 119 ||
+    !/^([1-9][0-9]{0,3})(\|[1-9][0-9]{0,3})+$/.test(weightsText)
+  )
+    throw new UserError('funWeightsInvalid');
+  const weights = weightsText.split('|').map(Number);
+  if (weights.length !== labels.length || weights.some((v) => v > 1000))
+    throw new UserError('funWeightsInvalid');
+  const total = weights.reduce((a, b) => a + b, 0),
+    at = rng(total);
+  if (!Number.isInteger(at) || at < 0 || at >= total) throw new TypeError('Invalid random result');
+  let cumulative = 0;
+  for (let n = 0; n < labels.length; n++) {
+    cumulative += weights[n];
+    if (at < cumulative) return { choice: labels[n], weight: weights[n], total };
+  }
+  throw new TypeError('Invalid random result');
+}

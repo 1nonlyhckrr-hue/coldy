@@ -1,4 +1,5 @@
 import {
+  AttachmentBuilder,
   SlashCommandBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
@@ -56,6 +57,25 @@ const data = new SlashCommandBuilder()
       .setName('refresh')
       .setDescription('Check your current primary-guild identity and own reward role.'),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription(
+      'ManageRoles:private stored grant counts bystate,no identities/native access claims.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportconfig')
+    .setDescription('ManageRoles:private stored reward role ID/null JSON,no live validation.'),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportmine')
+    .setDescription(
+      'Private JSON of only your stored role grant/state,null if absent,no live identity claim.',
+    ),
+);
 export default {
   category: 'vanityroles',
   data,
@@ -65,8 +85,8 @@ export default {
     const sub = i.options.getSubcommand(),
       t = (k, p) => c.localization.t(i.guildId, k, p),
       locale = c.localization.locale(i.guildId);
-    let text;
-    if (['setup', 'reset', 'grants'].includes(sub)) {
+    let text, files;
+    if (['setup', 'reset', 'grants', 'summary', 'exportconfig'].includes(sub)) {
       const authorize = async () => {
         const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
         if (
@@ -79,7 +99,19 @@ export default {
         return actor;
       };
       await authorize();
-      if (sub === 'setup') {
+      if (sub === 'summary') text = t('tagSummary', c.guildTags.summary(i.guildId));
+      else if (sub === 'exportconfig') {
+        files = [
+          new AttachmentBuilder(
+            Buffer.from(
+              JSON.stringify(c.guildTags.exportConfig(i.guildId), null, 2) + '\n',
+              'utf8',
+            ),
+            { name: 'luna-tag-config.json' },
+          ),
+        ];
+        text = t('tagConfigExported');
+      } else if (sub === 'setup') {
         const selected = i.options.getRole('role', true),
           role = await i.guild.roles.fetch(selected.id, { force: true });
         if (!role || role.id !== selected.id) throw new UserError('roleInvalid');
@@ -107,6 +139,20 @@ export default {
         c.guildTags.reset(i.guildId);
         text = t('tagReset');
       }
+    } else if (sub === 'exportmine') {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (i.guild.id !== i.guildId || actor?.id !== i.user.id || actor.guild?.id !== i.guildId)
+        throw new UserError('customMemberMissing');
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(
+            JSON.stringify(c.guildTags.exportMine(i.guildId, i.user.id), null, 2) + '\n',
+            'utf8',
+          ),
+          { name: 'luna-own-tag-grant.json' },
+        ),
+      ];
+      text = t('tagOwnExported');
     } else if (sub === 'show') {
       text = t('tagConfig', { role: c.guildTags.config(i.guildId)?.role_id ?? '-' });
     } else if (sub === 'status') {
@@ -117,6 +163,11 @@ export default {
     } else if (sub === 'refresh') {
       text = t(`tag_${await refreshGuildTag(i, c)}`);
     } else throw new UserError('unknownCommand');
-    await i.editReply(lunaPayload({ content: text, allowedMentions: { parse: [] } }, { locale }));
+    await i.editReply(
+      lunaPayload(
+        { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
+        { locale },
+      ),
+    );
   },
 };

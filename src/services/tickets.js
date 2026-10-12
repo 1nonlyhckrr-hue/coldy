@@ -29,6 +29,41 @@ export class Tickets {
   config(guildId) {
     return this.db.prepare('SELECT * FROM ticket_config WHERE guild_id=?').get(guildId);
   }
+  summary(guildId) {
+    return {
+      states: this.db
+        .prepare(
+          'SELECT status,COUNT(*) count FROM tickets WHERE guild_id=? GROUP BY status ORDER BY status',
+        )
+        .all(guildId),
+      storedTranscripts: this.db
+        .prepare(
+          'SELECT COUNT(*) n FROM ticket_transcripts t JOIN tickets k ON k.id=t.ticket_id WHERE k.guild_id=?',
+        )
+        .get(guildId).n,
+    };
+  }
+  exportConfig(guildId) {
+    const cfg = this.config(guildId);
+    return {
+      categoryId: cfg?.category_id ?? null,
+      supportRoleId: cfg?.support_role_id ?? null,
+      retentionDays: this.retention(guildId),
+    };
+  }
+  exportOwn(guildId, ownerId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM tickets WHERE guild_id=? AND owner_id=?')
+        .get(guildId, ownerId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id,status,created_at FROM tickets WHERE guild_id=? AND owner_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId, ownerId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   resetSetup(guildId) {
     return this.db.prepare('DELETE FROM ticket_config WHERE guild_id=?').run(guildId).changes;
   }

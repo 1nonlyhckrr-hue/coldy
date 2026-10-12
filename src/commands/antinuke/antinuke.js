@@ -145,6 +145,11 @@ for (const name of ['cleartrust', 'clearchannel'])
           .setRequired(true),
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('trustlist')
+    .setDescription('Private stored trusteduser IDs only,no native membership/permission claim.'),
+);
 export default {
   category: 'antinuke',
   data,
@@ -178,6 +183,15 @@ export default {
         c.antinuke.clearChannel(i.guildId);
         text = t('antinukeChannelCleared');
       }
+    } else if (sub === 'trustlist') {
+      const ids = c.antinuke.get(i.guildId).trustedUsers;
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(JSON.stringify({ trustedUserIds: ids }, null, 2) + '\n', 'utf8'),
+          { name: 'luna-antinuke-trusted-ids.json' },
+        ),
+      ];
+      text = t('antinukeTrustExported', { count: ids.length });
     } else if (sub === 'exportpolicy') {
       files = [
         new AttachmentBuilder(

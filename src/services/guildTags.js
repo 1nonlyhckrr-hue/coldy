@@ -34,6 +34,25 @@ export class GuildTags {
       )
       .all(guildId, state, state, (page - 1) * 10);
   }
+  summary(guildId) {
+    const rows = this.db
+      .prepare(
+        'SELECT status,COUNT(*) count FROM guild_tag_grants WHERE guild_id=? GROUP BY status',
+      )
+      .all(guildId);
+    return {
+      pending: rows.find((r) => r.status === 'pending')?.count ?? 0,
+      granted: rows.find((r) => r.status === 'granted')?.count ?? 0,
+      uncertain: rows.find((r) => r.status === 'uncertain')?.count ?? 0,
+    };
+  }
+  exportConfig(guildId) {
+    return { roleId: this.config(guildId)?.role_id ?? null };
+  }
+  exportMine(guildId, userId) {
+    const row = this.grant(guildId, userId);
+    return row ? { roleId: row.role_id, status: row.status } : null;
+  }
   setup(guildId, roleId) {
     if (!/^\d{17,20}$/.test(roleId)) throw new UserError('customRoleInvalid');
     const current = this.config(guildId);

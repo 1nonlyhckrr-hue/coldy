@@ -1,4 +1,5 @@
 import {
+  AttachmentBuilder,
   SlashCommandBuilder,
   InteractionContextType,
   PermissionFlagsBits as P,
@@ -11,6 +12,41 @@ const data = new SlashCommandBuilder()
   .setDescription('View per-server setup and set Luna language.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
+  .addSubcommand((s) =>
+    s
+      .setName('export')
+      .setDescription(
+        'Private stored language/welcome/logging JSON,includes templates/channel IDs,no token/runtime.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('pause')
+      .setDescription(
+        'Stop welcome/goodbye/logging delivery;keep destination/templates/options/language.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm stopping all three configured delivery streams')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('resetdelivery')
+      .setDescription(
+        'Stop and forget welcome/goodbye/logging settings;keep language/other modules/history.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription(
+            'Confirm forgetting all configured destinations/templates/styles/log event choices',
+          )
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('view').setDescription('View this server configuration.'))
   .addSubcommand((s) =>
     s
@@ -43,8 +79,25 @@ export default {
     )
       throw new UserError('userPermission');
     const sub = i.options.getSubcommand();
-    let description;
-    if (sub === 'language') {
+    let description, files;
+    if (sub === 'export') {
+      files = [
+        new AttachmentBuilder(
+          Buffer.from(JSON.stringify(c.guildConfig.get(i.guildId), null, 2) + '\n', 'utf8'),
+          { name: 'luna-guild-delivery-config.json' },
+        ),
+      ];
+      description = c.localization.t(i.guildId, 'configExported');
+    } else if (sub === 'pause' || sub === 'resetdelivery') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('configDeliveryConfirm');
+      if (sub === 'pause') c.guildConfig.pauseDelivery(i.guildId);
+      else c.guildConfig.resetDelivery(i.guildId);
+      description = c.localization.t(
+        i.guildId,
+        sub === 'pause' ? 'configDeliveryPaused' : 'configDeliveryReset',
+      );
+    } else if (sub === 'language') {
       const language = c.guildConfig.setLanguage(i.guildId, i.options.getString('locale', true));
       description = c.localization.t(i.guildId, 'languageSaved', { language });
     } else if (sub === 'view') {
@@ -59,6 +112,7 @@ export default {
       });
     } else throw new UserError('unknownCommand');
     await i.editReply({
+      ...(files ? { files } : {}),
       embeds: [
         lunaEmbed({
           title: c.localization.t(i.guildId, 'configTitle'),

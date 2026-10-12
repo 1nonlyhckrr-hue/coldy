@@ -174,6 +174,39 @@ export class RolePanels {
       .prepare("UPDATE role_panels SET status='disabled' WHERE guild_id=? AND status='active'")
       .run(guildId).changes;
   }
+  summary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,COUNT(*) AS count FROM role_panels WHERE guild_id=? GROUP BY status ORDER BY status',
+      )
+      .all(guildId);
+  }
+  clickSummary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,action,COUNT(*) AS count FROM role_click_receipts WHERE guild_id=? GROUP BY status,action ORDER BY status,action',
+      )
+      .all(guildId);
+  }
+  channelRecords(guildId, channelId) {
+    if (typeof channelId !== 'string' || !/^\d{17,20}$/.test(channelId))
+      throw new UserError('rolePanelScopeInvalid');
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM role_panels WHERE guild_id=? AND channel_id=?')
+        .get(guildId, channelId).n;
+      const rows = this.db
+        .prepare(
+          'SELECT id,channel_id,message_id,status FROM role_panels WHERE guild_id=? AND channel_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId, channelId);
+      return {
+        total,
+        truncated: total > rows.length,
+        panels: rows.map((row) => ({ ...row, buttons: this.buttons(row.id) })),
+      };
+    })();
+  }
   exportMappings(guildId) {
     return this.db.transaction(() => {
       const total = this.db

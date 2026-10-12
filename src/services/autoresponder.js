@@ -63,6 +63,30 @@ export class Autoresponders {
         .all(guildId),
     };
   }
+  deliveryOverview(guildId) {
+    return this.db
+      .prepare(
+        'SELECT rule_id AS ruleId,status,COUNT(*) AS count FROM autoresponder_deliveries WHERE guild_id=? GROUP BY rule_id,status ORDER BY rule_id,status',
+      )
+      .all(guildId);
+  }
+  exportReceipts(guildId) {
+    const total = this.db
+      .prepare('SELECT COUNT(*) n FROM autoresponder_deliveries WHERE guild_id=?')
+      .get(guildId).n;
+    const records = this.db
+      .prepare(
+        'SELECT rule_id AS ruleId,status,created_at AS createdAt FROM autoresponder_deliveries WHERE guild_id=? ORDER BY created_at DESC,message_id DESC LIMIT 100',
+      )
+      .all(guildId);
+    return { total, truncated: total > records.length, records };
+  }
+  disableMode(guildId, mode) {
+    const v = input.shape.mode.parse(mode);
+    return this.db
+      .prepare('UPDATE autoresponders SET enabled=0 WHERE guild_id=? AND mode=? AND enabled=1')
+      .run(guildId, v).changes;
+  }
   create(guildId, value) {
     const v = input.parse(value),
       trigger = validatedTrigger(v.trigger);

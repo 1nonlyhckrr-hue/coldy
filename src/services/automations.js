@@ -226,6 +226,41 @@ export class MessageSchedules {
           : "UPDATE message_schedules SET body='[erased]' WHERE guild_id=? AND channel_id=? AND status IN ('done','cancelled') AND body!='[erased]'";
     return this.db.prepare(sql).run(guildId, channelId).changes;
   }
+  channelRecords(guildId, channelId) {
+    schema.shape.channelId.parse(channelId);
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM message_schedules WHERE guild_id=? AND channel_id=?')
+        .get(guildId, channelId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,due_at AS dueAt,repeat_ms AS repeatMs,status FROM message_schedules WHERE guild_id=? AND channel_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId, channelId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  exportMetadata(guildId) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare('SELECT COUNT(*) n FROM message_schedules WHERE guild_id=?')
+        .get(guildId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id AS channelId,due_at AS dueAt,repeat_ms AS repeatMs,status FROM message_schedules WHERE guild_id=? ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
+  cancelChannelPending(guildId, channelId) {
+    schema.shape.channelId.parse(channelId);
+    return this.db
+      .prepare(
+        "UPDATE message_schedules SET status='cancelled' WHERE guild_id=? AND channel_id=? AND status='pending'",
+      )
+      .run(guildId, channelId).changes;
+  }
   exportRecords(guildId) {
     return this.list(guildId).map((r) => ({
       id: r.id,

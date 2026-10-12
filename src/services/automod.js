@@ -63,6 +63,33 @@ export class AutoMod {
       return updated;
     })();
   }
+  disableRules(guildId) {
+    return this.db.transaction(() => {
+      const current = this.get(guildId),
+        count = Object.values(current.rules).filter(Boolean).length;
+      this.patch(guildId, {
+        rules: Object.fromEntries(Object.keys(current.rules).map((k) => [k, false])),
+      });
+      for (const key of this.recent.keys())
+        if (key.startsWith(guildId + ':')) this.recent.delete(key);
+      return count;
+    })();
+  }
+  resetThresholds(guildId) {
+    const defaults = schema.parse({}),
+      keys = [
+        'mentionLimit',
+        'capsPercent',
+        'capsMinLetters',
+        'spamMessages',
+        'spamRepeats',
+        'spamWindowSeconds',
+      ];
+    const updated = this.patch(guildId, Object.fromEntries(keys.map((k) => [k, defaults[k]])));
+    for (const key of this.recent.keys())
+      if (key.startsWith(guildId + ':')) this.recent.delete(key);
+    return updated;
+  }
   clearWords(guildId) {
     return this.db.transaction(() => {
       const count = this.get(guildId).words.length;

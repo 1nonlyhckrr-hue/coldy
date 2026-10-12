@@ -5,6 +5,9 @@ import {
   escapeMarkdown,
 } from 'discord.js';
 import {
+  pairLabels,
+  exchangeCycle,
+  weightedChoice,
   drawCards,
   scrambleWord,
   rollTarget,
@@ -28,6 +31,59 @@ const data = new SlashCommandBuilder()
   .setName('fun')
   .setDescription('Safe solo games and random choices.')
   .setContexts(InteractionContextType.Guild)
+  .addSubcommand((s) =>
+    s
+      .setName('pairs')
+      .setDescription(
+        'Private random pairings of2-20 labels,odd label gets bye;no member assignment.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('labels')
+          .setDescription('Distinct labels separated by |')
+          .setMinLength(3)
+          .setMaxLength(1800)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('exchange')
+      .setDescription(
+        'Private one-cycle label exchange;no self match,no messages or secret delivery.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('labels')
+          .setDescription('2-20 distinct labels separated by |,result visible to you')
+          .setMinLength(3)
+          .setMaxLength(1800)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('weightedchoice')
+      .setDescription(
+        'Private weighted draw from explicit labels/positive integer weights,not advice.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('choices')
+          .setDescription('2-20 distinct choices separated by |')
+          .setMinLength(3)
+          .setMaxLength(1800)
+          .setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('weights')
+          .setDescription('Matching positive1-1000 integer weights separated by |,no spaces')
+          .setMinLength(3)
+          .setMaxLength(119)
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) =>
     s
       .setName('8ball')
@@ -259,7 +315,26 @@ export default {
       t = (key, params) => c.localization.t(i.guildId, key, params);
     const sub = i.options.getSubcommand();
     let text;
-    if (sub === 'cards')
+    if (sub === 'pairs') {
+      const r = pairLabels(i.options.getString('labels', true));
+      const pairs = r.pairs
+        .map((v, n) => `${n + 1}. ${v.map(escapeMarkdown).join(' / ')}`)
+        .join('\n');
+      if (pairs.length > 1700) throw new UserError('funShuffleTooLong');
+      text = t('funPairs', { pairs, bye: r.bye === null ? t('funNoBye') : escapeMarkdown(r.bye) });
+    } else if (sub === 'exchange') {
+      const cycle = exchangeCycle(i.options.getString('labels', true))
+        .map((v, n) => `${n + 1}. ${escapeMarkdown(v.giver)} -> ${escapeMarkdown(v.receiver)}`)
+        .join('\n');
+      if (cycle.length > 1700) throw new UserError('funShuffleTooLong');
+      text = t('funExchange', { cycle });
+    } else if (sub === 'weightedchoice') {
+      const r = weightedChoice(
+        i.options.getString('choices', true),
+        i.options.getString('weights', true),
+      );
+      text = t('funWeightedChoice', { ...r, choice: escapeMarkdown(r.choice) });
+    } else if (sub === 'cards')
       text = t('funCards', {
         cards: drawCards(i.options.getInteger('count') ?? 1)
           .map((v) => v.rank + ' ' + t('funSuit_' + v.suit))

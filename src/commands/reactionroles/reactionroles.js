@@ -22,6 +22,33 @@ const data = new SlashCommandBuilder()
   .setDefaultMemberPermissions(P.ManageRoles)
   .addSubcommand((s) =>
     s
+      .setName('summary')
+      .setDescription('Private stored panel counts by state, no native readiness or effects.'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('clicksummary')
+      .setDescription(
+        'Private retained role-click counts by state/action, no member or source IDs.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('channelrecords')
+      .setDescription(
+        'Private latest100 complete bindings/mappings for stored channel ID, no click receipts.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact stored channel ID, no native existence claim')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
       .setName('create')
       .setDescription('Publish one role toggle button.')
       .addChannelOption((o) =>
@@ -219,6 +246,31 @@ export default {
       throw new UserError('roleActorPermission');
     const sub = i.options.getSubcommand();
     let content, files;
+    if (['summary', 'clicksummary', 'channelrecords'].includes(sub)) {
+      const report =
+        sub === 'summary'
+          ? c.rolePanels.summary(i.guildId)
+          : sub === 'clicksummary'
+            ? c.rolePanels.clickSummary(i.guildId)
+            : c.rolePanels.channelRecords(i.guildId, i.options.getString('channel-id', true));
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name:
+            sub === 'summary'
+              ? 'luna-panel-summary.json'
+              : sub === 'clicksummary'
+                ? 'luna-role-click-summary.json'
+                : 'luna-channel-panels.json',
+        }),
+      ];
+      content = t(
+        sub === 'summary'
+          ? 'panelAuditSummary'
+          : sub === 'clicksummary'
+            ? 'panelClickSummary'
+            : 'panelChannelRecords',
+      );
+    }
     if (sub === 'export') {
       const report = c.rolePanels.exportMappings(i.guildId);
       files = [

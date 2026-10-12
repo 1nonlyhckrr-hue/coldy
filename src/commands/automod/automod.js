@@ -328,6 +328,26 @@ for (const name of ['clearignored', 'clearexempt'])
           .setRequired(true),
       ),
   );
+for (const sub of ['disablerules', 'resetthresholds'])
+  data.addSubcommand((s) =>
+    s
+      .setName(sub)
+      .setDescription(
+        sub === 'disablerules'
+          ? 'Disable allsix moderationrules,keep enabledswitch/action/exclusions/words/history.'
+          : 'Reset caps/mentions/spam limits to defaults,keep switches/action/exclusions/words/history.',
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription(
+            sub === 'disablerules'
+              ? 'Confirm stopping allsix future rulematches'
+              : 'Confirm default thresholds;may make future moderation more or less sensitive',
+          )
+          .setRequired(true),
+      ),
+  );
 export default {
   category: 'automod',
   data,
@@ -349,6 +369,16 @@ export default {
       locale = c.guildConfig.get(i.guildId).language,
       t = (k, p) => translate(locale, k, p);
     let content, files;
+    if (sub === 'disablerules' || sub === 'resetthresholds') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('automodResetConfirm');
+      if (sub === 'disablerules')
+        content = t('automodRulesDisabled', { count: c.automod.disableRules(i.guildId) });
+      else {
+        c.automod.resetThresholds(i.guildId);
+        content = t('automodThresholdsReset');
+      }
+    }
     if (['importpolicy', 'clearignored', 'clearexempt'].includes(sub)) {
       if (i.options.getBoolean('confirm', true) !== true)
         throw new UserError('automodResetConfirm');

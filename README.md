@@ -4,7 +4,7 @@ Professional multipurpose Discord bot project. Repository name: `coldy`. Node.js
 
 ## Honest status
 
-**This is not a finished 541-command bot.** 47 top-level slash commands provide 352 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music has18 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
+**This is not a finished 541-command bot.** 48 top-level slash commands provide 403 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message Leaderboard. Antinuke is alert-only, GuildTag uses manual refresh, and VoiceMaster creates explicit private channels. Music has18 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
 
 The official Zynrax documentation yields 319 distinct documented command paths after shortcut deduplication. These are reference-only rows, not Luna implementations. The reference inventory is not advertised as the complete 541-command list. Aliases do not count as separate commands. Examples and parameter values do not count as new commands.
 
@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All976 distinct automated tests pass locally; these are not live Discord integration tests. The659-test/214-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38142183664). 659/214 source publication and exact-head Node22/24CI are verified;Later local changes need their own publication and CI verification. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1027 distinct automated tests pass locally; these are not live Discord integration tests. The976-test/352-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38181335379). 976/352 source publication and exact-head Node22/24CI are verified;later local changes need their own publication and CI verification. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -44,7 +44,7 @@ No public reuse license has been selected yet. `UNLICENSED` is deliberate until 
 
 ## Separate installed inventory
 
-`npm run inventory:luna` generates `data/luna-commands.json` and CSV from the actual slash registry.352 installed paths are original Luna behavior,not claimed reference equivalence. Runtime permission conditions are documented separately from static/default fields. Local mocks passed976tests;live-tested flag stays false until native acceptance.
+`npm run inventory:luna` generates `data/luna-commands.json` and CSV from the actual slash registry.403 installed paths are original Luna behavior,not claimed reference equivalence. Runtime permission conditions are documented separately from static/default fields. Local mocks passed1027tests;live-tested flag stays false until native acceptance.
 
 ## Source style and checks
 
@@ -52,7 +52,7 @@ Pinned Prettier formats source/scripts/tests;`npm run format:check` verifies sty
 
 `npm run lint` uses pinned ESLint10.12.0;current Node minimum22.13+ keeps tooling compatible. CI includes lint with formatter/tests and inventory drift checks.
 
-Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint659/214 (041890f35e06647be9ae0b7c34d080145f1bf93a),exact-headCI verified;this receipt update is local. Never commit tokens or private runtime data.
+Repository visibility:PUBLIC as of October11,2026,2:54PM,after explicit owner confirmation reversing the morning private decision. Current published checkpoint976/352 (016b67320f75bd7adfeb94f9947045360f13b075),exact-headCI verified;this receipt update is local. Never commit tokens or private runtime data.
 
 Private source publication on October11,2026:506-test/182-path source checkpoint commit `0d2fff5d1356b56e06227adf7695b061ac79228b`. [Publisher verification](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125749267) passed;[current-head Node22/24 CI](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38125897895) passed. Temporary transfer release/asset/tag deleted. No deployment or live Discord acceptance. This local publication receipt was added after the published checkpoint;later archive will include it.
 

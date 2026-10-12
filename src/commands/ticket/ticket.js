@@ -1,4 +1,10 @@
-import { SlashCommandBuilder, InteractionContextType, ChannelType, MessageFlags } from 'discord.js';
+import {
+  AttachmentBuilder,
+  SlashCommandBuilder,
+  InteractionContextType,
+  ChannelType,
+  MessageFlags,
+} from 'discord.js';
 import {
   validateTicketConfig,
   requireTicketAccess,
@@ -189,6 +195,27 @@ for (const name of ['forgetbyid', 'forgetusertranscripts', 'forgetclosedtranscri
       );
     return s;
   });
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription(
+      'ManageServer:private stored ticket states/snapshotcount,no identities/content.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportconfig')
+    .setDescription(
+      'ManageServer:private stored category/supportrole/retention JSON,no live validation.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportmine')
+    .setDescription(
+      'Private latest100onlyyour ticket metadata,total/truncated,no staff/source/transcript content.',
+    ),
+);
 export default {
   category: 'ticket',
   data,
@@ -200,6 +227,8 @@ export default {
     let content, files;
     if (
       [
+        'summary',
+        'exportconfig',
         'setup',
         'panel',
         'config',
@@ -214,6 +243,30 @@ export default {
       ].includes(sub)
     ) {
       await requireTicketManager(i);
+    }
+    if (sub === 'summary') {
+      const r = c.tickets.summary(i.guildId);
+      content =
+        t('ticketSummary', { snapshots: r.storedTranscripts }) +
+        '\n' +
+        (r.states.map((v) => `${v.status}: ${v.count}`).join('\n') || '0');
+    }
+    if (sub === 'exportconfig' || sub === 'exportmine') {
+      if (sub === 'exportmine') {
+        const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+        if (i.guild.id !== i.guildId || actor?.id !== i.user.id || actor.guild?.id !== i.guildId)
+          throw new UserError('ticketAccessDenied');
+      }
+      const report =
+        sub === 'exportconfig'
+          ? c.tickets.exportConfig(i.guildId)
+          : c.tickets.exportOwn(i.guildId, i.user.id);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: sub === 'exportconfig' ? 'luna-ticket-config.json' : 'luna-own-ticket-records.json',
+        }),
+      ];
+      content = t(sub === 'exportconfig' ? 'ticketConfigExported' : 'ticketOwnExported');
     }
     if (['forgetbyid', 'forgetusertranscripts', 'forgetclosedtranscripts'].includes(sub)) {
       if (i.options.getBoolean('confirm', true) !== true)

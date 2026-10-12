@@ -49,6 +49,28 @@ export class VoiceMaster {
       .prepare('SELECT category_id FROM voice_master_config WHERE guild_id=?')
       .get(guildId);
   }
+  summary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,public_access,COUNT(*) count FROM voice_master_channels WHERE guild_id=? GROUP BY status,public_access ORDER BY status,public_access',
+      )
+      .all(guildId);
+  }
+  exportRecords(guildId, ownerId = null) {
+    return this.db.transaction(() => {
+      const total = this.db
+        .prepare(
+          'SELECT COUNT(*) n FROM voice_master_channels WHERE guild_id=? AND (? IS NULL OR owner_id=?)',
+        )
+        .get(guildId, ownerId, ownerId).n;
+      const records = this.db
+        .prepare(
+          'SELECT id,channel_id,status,public_access,created_at FROM voice_master_channels WHERE guild_id=? AND (? IS NULL OR owner_id=?) ORDER BY id DESC LIMIT 100',
+        )
+        .all(guildId, ownerId, ownerId);
+      return { total, truncated: total > records.length, records };
+    })();
+  }
   resetSetup(guildId) {
     return this.db.prepare('DELETE FROM voice_master_config WHERE guild_id=?').run(guildId).changes;
   }

@@ -14,7 +14,7 @@ test('offline preflight reports registry/counts with explicit unverified live ga
   const text = JSON.stringify(result);
   assert(!text.includes(env.DISCORD_TOKEN));
   assert(!text.includes(env.DATABASE_PATH));
-  assert(text.includes('352 executable'));
+  assert(text.includes('403 executable'));
   assert(text.includes('NOT live readiness'));
   assert(text.includes('Music off'));
   assert(text.includes('ownership and backup policy NOT checked'));
@@ -63,7 +63,7 @@ test('preflight runtime cannot claim supported for partial/malformed/pre-release
     '24.-1.0',
     '22.13',
     '22.13.0x',
-    '24.9007199353740992.0',
+    '24.9007199401740992.0',
     null,
     24,
     {},

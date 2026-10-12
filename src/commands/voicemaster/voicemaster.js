@@ -169,6 +169,27 @@ data.addSubcommand((s) =>
         ),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription(
+      'ManageChannels:private storedstate/publicflag counts,no owners/nativeaccess claim.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportrecords')
+    .setDescription(
+      'ManageChannels:private latest100channelstate metadata,no owner/source IDs,total/truncated.',
+    ),
+);
+data.addSubcommand((s) =>
+  s
+    .setName('exportmine')
+    .setDescription(
+      'Private latest100onlyyour storedchannel metadata,no nativeaccess/currentmembership claim.',
+    ),
+);
 export default {
   category: 'voicemaster',
   data,
@@ -179,7 +200,7 @@ export default {
       locale = c.localization.locale(i.guildId),
       t = (k, p) => c.localization.t(i.guildId, k, p);
     let text, files;
-    if (['resetsetup', 'exportconfig', 'records'].includes(sub)) {
+    if (['resetsetup', 'exportconfig', 'records', 'summary', 'exportrecords'].includes(sub)) {
       const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
       if (
         i.guild.id !== i.guildId ||
@@ -188,7 +209,21 @@ export default {
         !actor.permissions?.has(P.ManageChannels)
       )
         throw new UserError('userPermission');
-      if (sub === 'resetsetup') {
+      if (sub === 'summary') {
+        const rows = c.voiceMaster.summary(i.guildId);
+        text =
+          t('vmSummary') +
+          '\n' +
+          (rows.map((v) => `${v.status} | ${v.public_access}: ${v.count}`).join('\n') || '0');
+      } else if (sub === 'exportrecords') {
+        const report = c.voiceMaster.exportRecords(i.guildId);
+        files = [
+          new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+            name: 'luna-voice-records.json',
+          }),
+        ];
+        text = t('vmMetadataExported', { count: report.records.length, total: report.total });
+      } else if (sub === 'resetsetup') {
         if (i.options.getBoolean('confirm', true) !== true)
           throw new UserError('vmSetupResetConfirm');
         c.voiceMaster.resetSetup(i.guildId);
@@ -220,6 +255,17 @@ export default {
             )
             .join('\n');
       }
+    } else if (sub === 'exportmine') {
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (i.guild.id !== i.guildId || actor?.id !== i.user.id || actor.guild?.id !== i.guildId)
+        throw new UserError('vmMemberInvalid');
+      const report = c.voiceMaster.exportRecords(i.guildId, i.user.id);
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-own-voice-records.json',
+        }),
+      ];
+      text = t('vmOwnMetadataExported', { count: report.records.length, total: report.total });
     } else if (sub === 'setup') {
       if (i.guild?.id !== i.guildId) throw new UserError('userPermission');
       const selected = i.options.getChannel('category', true).id;

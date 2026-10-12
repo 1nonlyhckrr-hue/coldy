@@ -2,6 +2,12 @@ import { SlashCommandBuilder, InteractionContextType, MessageFlags } from 'disco
 import { lunaPayload } from '../../utils/embeds.js';
 import { UserError } from '../../utils/errors.js';
 import {
+  textDigest,
+  formatJson,
+  normalizeText,
+  parseDuration,
+  textStatistics,
+  escapeText,
   decodePermissions,
   rgbColor,
   isoTimestamp,
@@ -19,6 +25,99 @@ export default {
     .setName('tools')
     .setDescription('Private Discord ID,time and embed-color helpers;no API changes.')
     .setContexts(InteractionContextType.Guild)
+    .addSubcommand((s) =>
+      s
+        .setName('sha256')
+        .setDescription('SHA256 of explicit exactUTF8text,no URL/file fetch/password storage.')
+        .addStringOption((o) =>
+          o
+            .setName('text')
+            .setDescription('Text1-1200UTF16units,not trimmed;do not paste secrets')
+            .setMinLength(1)
+            .setMaxLength(1200)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((s) =>
+      s
+        .setName('jsonformat')
+        .setDescription(
+          'Private prettyJSON TXT,keepsnumber spelling/key order/duplicates;no execution/storage.',
+        )
+        .addStringOption((o) =>
+          o
+            .setName('json')
+            .setDescription('ValidJSON1-1800chars,do not paste secrets')
+            .setMinLength(1)
+            .setMaxLength(1800)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((s) =>
+      s
+        .setName('normalize')
+        .setDescription(
+          'Private explicit Unicode normalization TXT;compatibilityforms may change meaning.',
+        )
+        .addStringOption((o) =>
+          o
+            .setName('text')
+            .setDescription('Text1-1200UTF16units,no persistence')
+            .setMinLength(1)
+            .setMaxLength(1200)
+            .setRequired(true),
+        )
+        .addStringOption((o) =>
+          o
+            .setName('form')
+            .setDescription('Explicit normalization form,no inferred selection')
+            .addChoices(...['NFC', 'NFD', 'NFKC', 'NFKD'].map((value) => ({ name: value, value })))
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((s) =>
+      s
+        .setName('duration')
+        .setDescription(
+          'Parse explicit elapsed duration into seconds;no reminder/calendar arithmetic.',
+        )
+        .addStringOption((o) =>
+          o
+            .setName('duration')
+            .setDescription('Descending unique d/h/m/s e.g.1d2h30m,max365days,no spaces')
+            .setMinLength(2)
+            .setMaxLength(80)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((s) =>
+      s
+        .setName('textstats')
+        .setDescription('Count explicit text UTF16/codepoints/graphemes/UTF8bytes/lines privately.')
+        .addStringOption((o) =>
+          o
+            .setName('text')
+            .setDescription('Text1-1200UTF16units;not stored or sent elsewhere')
+            .setMinLength(1)
+            .setMaxLength(1200)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((s) =>
+      s
+        .setName('escapetext')
+        .setDescription(
+          'Escape common Discord markdown and neutralize @ in supplied text privately.',
+        )
+        .addStringOption((o) =>
+          o
+            .setName('text')
+            .setDescription('Text1-1200UTF16units;returns TXT,no send or settings change')
+            .setMinLength(1)
+            .setMaxLength(1200)
+            .setRequired(true),
+        ),
+    )
     .addSubcommand((s) =>
       s
         .setName('snowflake')
@@ -193,7 +292,53 @@ export default {
       t = (k, p) => c.localization.t(i.guildId, k, p),
       sub = i.options.getSubcommand();
     let text;
-    if (sub === 'permissions') {
+    if (sub === 'sha256') text = t('toolsDigest', textDigest(i.options.getString('text', true)));
+    else if (sub === 'jsonformat' || sub === 'normalize') {
+      const { AttachmentBuilder } = await import('discord.js');
+      const output =
+        sub === 'jsonformat'
+          ? formatJson(i.options.getString('json', true))
+          : normalizeText(i.options.getString('text', true), i.options.getString('form', true));
+      await i.reply(
+        lunaPayload(
+          {
+            content: t(sub === 'jsonformat' ? 'toolsJsonFormatted' : 'toolsTextNormalized'),
+            flags: MessageFlags.Ephemeral,
+            files: [
+              new AttachmentBuilder(Buffer.from(output, 'utf8'), {
+                name: sub === 'jsonformat' ? 'formatted-json.txt' : 'normalized-text.txt',
+              }),
+            ],
+            allowedMentions: { parse: [], repliedUser: false },
+          },
+          { locale },
+        ),
+      );
+      return;
+    } else if (sub === 'duration')
+      text = t('toolsDuration', parseDuration(i.options.getString('duration', true)));
+    else if (sub === 'textstats')
+      text = t('toolsTextStats', textStatistics(i.options.getString('text', true)));
+    else if (sub === 'escapetext') {
+      const { AttachmentBuilder } = await import('discord.js');
+      await i.reply(
+        lunaPayload(
+          {
+            content: t('toolsEscapeText'),
+            flags: MessageFlags.Ephemeral,
+            files: [
+              new AttachmentBuilder(
+                Buffer.from(escapeText(i.options.getString('text', true)), 'utf8'),
+                { name: 'escaped-text.txt' },
+              ),
+            ],
+            allowedMentions: { parse: [], repliedUser: false },
+          },
+          { locale },
+        ),
+      );
+      return;
+    } else if (sub === 'permissions') {
       const r = decodePermissions(i.options.getString('bits', true));
       text = t('toolsPermissions', { ...r, flags: r.flags.join(', ') || '-' });
     } else if (sub === 'rgb')

@@ -22,6 +22,44 @@ const data = new SlashCommandBuilder()
   .setDescription('Opt-in retained message counts, no message content.')
   .setContexts(InteractionContextType.Guild)
   .addSubcommand((s) =>
+    s
+      .setName('weeklymine')
+      .setDescription(
+        'Only your90retained UTCdays in13 disjoint newest-first elapsed7-day buckets.',
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('dailyoverview')
+      .setDescription(
+        'Manage Server:ten retained UTCdaily contributor/count aggregates,no identities.',
+      )
+      .addIntegerOption((o) =>
+        o.setName('page').setDescription('Page1-9,newest first').setMinValue(1).setMaxValue(9),
+      ),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('erasebefore')
+      .setDescription(
+        'Manage Server:erase stored counts strictly before explicit UTCdate;guards kept.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('date')
+          .setDescription('Exact YYYY-MM-DD cutoff;cutoff day kept')
+          .setMinLength(10)
+          .setMaxLength(10)
+          .setRequired(true),
+      )
+      .addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription('Confirm erasing all earlier guild count rows,not preferences/guards')
+          .setRequired(true),
+      ),
+  )
+  .addSubcommand((s) =>
     s.setName('enable').setDescription('Manage Server: start counting future eligible messages.'),
   )
   .addSubcommand((s) =>
@@ -196,6 +234,8 @@ export default {
     let text, files;
     if (
       [
+        'dailyoverview',
+        'erasebefore',
         'enable',
         'disable',
         'exclude',
@@ -219,7 +259,21 @@ export default {
           throw new UserError('userPermission');
       };
       await authorize();
-      if (sub === 'exportconfig') {
+      if (sub === 'dailyoverview') {
+        const page = i.options.getInteger('page') ?? 1;
+        const rows = c.messageRanks.dailyOverview(i.guildId, page);
+        text =
+          t('rankDailyOverview', { page }) +
+          '\n' +
+          rows.map((r) => `${r.day}: ${r.contributors} / ${r.messages}`).join('\n');
+      } else if (sub === 'erasebefore') {
+        if (i.options.getBoolean('confirm', true) !== true) throw new UserError('rankEraseConfirm');
+        const cutoff = i.options.getString('date', true);
+        text = t('rankErasedBefore', {
+          cutoff,
+          count: c.messageRanks.eraseBefore(i.guildId, cutoff),
+        });
+      } else if (sub === 'exportconfig') {
         files = [
           new AttachmentBuilder(
             Buffer.from(JSON.stringify(c.messageRanks.config(i.guildId), null, 2) + '\n', 'utf8'),
@@ -281,6 +335,16 @@ export default {
         c.messageRanks.exclude(i.guildId, channel.id, i.options.getBoolean('excluded', true));
         text = t('rankSaved');
       }
+    } else if (sub === 'weeklymine') {
+      if (i.guild?.id !== i.guildId) throw new UserError('permitMemberMissing');
+      const actor = await i.guild.members.fetch({ user: i.user.id, force: true });
+      if (actor?.id !== i.user.id || actor.guild?.id !== i.guildId)
+        throw new UserError('permitMemberMissing');
+      const rows = c.messageRanks.weeklyMine(i.guildId, i.user.id);
+      text =
+        t('rankWeeklyMine') +
+        '\n' +
+        rows.map((r) => `${r.start} - ${r.end}: ${r.total}`).join('\n');
     } else if (sub === 'exportmine') {
       if (i.guild?.id !== i.guildId) throw new UserError('permitMemberMissing');
       const actor = await i.guild.members.fetch({ user: i.user.id, force: true });

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { PermissionFlagsBits } from 'discord.js';
 import { resolveZonedTime } from './zonedTime.js';
 import { UserError } from '../utils/errors.js';
@@ -135,4 +136,93 @@ export function isoTimestamp(value, style = 'f') {
   } catch {
     throw new UserError('toolsIsoInvalid');
   }
+}
+
+export function parseDuration(value) {
+  if (typeof value !== 'string' || value.length > 80 || !/^(?:[1-9][0-9]*[dhms])+$/.test(value))
+    throw new UserError('toolsDurationInvalid');
+  const units = { d: 86400, h: 3600, m: 60, s: 1 };
+  let seconds = 0,
+    last = Infinity;
+  for (const match of value.matchAll(/([1-9][0-9]*)([dhms])/g)) {
+    const scale = units[match[2]],
+      amount = Number(match[1]);
+    if (scale >= last || !Number.isSafeInteger(amount)) throw new UserError('toolsDurationInvalid');
+    seconds += amount * scale;
+    last = scale;
+    if (!Number.isSafeInteger(seconds) || seconds > 31536000)
+      throw new UserError('toolsDurationInvalid');
+  }
+  return { seconds, ...timeDifference(0, seconds) };
+}
+export function textStatistics(value) {
+  if (typeof value !== 'string' || value.length < 1 || value.length > 1200 || value.includes('\0'))
+    throw new UserError('toolsTextInvalid');
+  const segments = [...new Intl.Segmenter('und', { granularity: 'grapheme' }).segment(value)];
+  return {
+    units: value.length,
+    points: [...value].length,
+    graphemes: segments.length,
+    bytes: Buffer.byteLength(value, 'utf8'),
+    lines: value.split(/\r\n|\r|\n/).length,
+  };
+}
+export function escapeText(value) {
+  textStatistics(value);
+  // Backslash first; neutralize mentions separately, without changing the supplied text's intent.
+  return value.replace(/[\\`*_~|>#[\]()]/g, '\\$&').replaceAll('@', '@\u200b');
+}
+
+export function textDigest(text) {
+  textStatistics(text);
+  return {
+    sha256: createHash('sha256').update(text, 'utf8').digest('hex'),
+    bytes: Buffer.byteLength(text, 'utf8'),
+  };
+}
+export function formatJson(text) {
+  if (typeof text !== 'string' || text.length < 1 || text.length > 1800)
+    throw new UserError('toolsJsonInvalid');
+  try {
+    // Keep original number spelling/duplicate keys rather than silently rounding/dropping data.
+    const tokens = text.match(/"(?:\\.|[^"\\])*"|[^"\s]+|\s+/g);
+    if (!tokens || tokens.join('') !== text) throw Error('tokens');
+    JSON.parse(text);
+    const raw = text.match(
+      /"(?:\\.|[^"\\])*"|true|false|null|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|[{}\[\],:]/g,
+    );
+    if (!raw) throw Error('tokens');
+    let indent = 0,
+      result = '',
+      previous = '';
+    const line = () => {
+      result += '\n' + '  '.repeat(indent);
+    };
+    for (const token of raw) {
+      if (token === '{' || token === '[') {
+        result += token;
+        indent++;
+      } else if (token === '}' || token === ']') {
+        indent--;
+        if (previous !== '{' && previous !== '[') line();
+        result += token;
+      } else if (token === ',') {
+        result += token;
+        line();
+      } else if (token === ':') result += ': ';
+      else {
+        if (previous === '{' || previous === '[') line();
+        result += token;
+      }
+      previous = token;
+    }
+    return result + '\n';
+  } catch {
+    throw new UserError('toolsJsonInvalid');
+  }
+}
+export function normalizeText(text, form) {
+  textStatistics(text);
+  if (!['NFC', 'NFD', 'NFKC', 'NFKD'].includes(form)) throw new UserError('toolsNormalizeInvalid');
+  return text.normalize(form);
 }

@@ -47,6 +47,38 @@ export class ModerationCases {
       .run(status, id);
     if (r.changes !== 1) throw new Error('Case not pending');
   }
+  caseSummary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,COUNT(*) count FROM moderation_cases WHERE guild_id=? GROUP BY status ORDER BY status',
+      )
+      .all(guildId);
+  }
+  caseSubject(guildId, kind, id, page = 1) {
+    if (
+      !['actor', 'target'].includes(kind) ||
+      typeof id !== 'string' ||
+      !/^\d{17,20}$/.test(id) ||
+      !Number.isInteger(page) ||
+      page < 1 ||
+      page > 1000
+    )
+      throw new UserError('caseHistoryInvalid');
+    const column = kind === 'actor' ? 'actor_id' : 'target_id';
+    return this.db.transaction(() => {
+      const total = this.db
+          .prepare(`SELECT COUNT(*) n FROM moderation_cases WHERE guild_id=? AND ${column}=?`)
+          .get(guildId, id).n,
+        pages = Math.max(1, Math.ceil(total / 10));
+      if (page > pages) throw new UserError('caseHistoryInvalid');
+      const rows = this.db
+        .prepare(
+          `SELECT id,action,actor_id,target_id,status FROM moderation_cases WHERE guild_id=? AND ${column}=? ORDER BY id DESC LIMIT 10 OFFSET ?`,
+        )
+        .all(guildId, id, (page - 1) * 10);
+      return { total, pages, page, rows };
+    })();
+  }
   inspectCase(guildId, id) {
     if (!Number.isSafeInteger(id) || id < 1) throw new UserError('caseHistoryInvalid');
     const row = this.db

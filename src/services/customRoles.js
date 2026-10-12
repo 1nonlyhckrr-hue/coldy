@@ -6,6 +6,32 @@ export class CustomRoles {
     this.db = db;
     this.active = new Set();
   }
+  creationSummary(guildId) {
+    return this.db
+      .prepare(
+        'SELECT status,COUNT(*) count FROM custom_created_roles WHERE guild_id=? GROUP BY status ORDER BY status',
+      )
+      .all(guildId);
+  }
+  exportCreation(guildId, ownerId) {
+    const row = this.created(guildId, ownerId);
+    return row
+      ? {
+          roleId: row.role_id,
+          name: row.name,
+          color: row.color,
+          status: row.status,
+          createdAt: row.created_at,
+        }
+      : null;
+  }
+  exportPolicy(guildId) {
+    return {
+      creationEnabled: this.creationEnabled(guildId),
+      requiredRoleId: this.required(guildId) ?? null,
+      mappings: this.list(guildId).map((r) => ({ name: r.name, roleId: r.role_id })),
+    };
+  }
   creationEnabled(guildId) {
     return (
       this.db

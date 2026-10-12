@@ -127,6 +127,40 @@ for (const name of ['cancelall', 'forgetfinishedentries'])
           .setRequired(true),
       ),
   );
+data.addSubcommand((s) =>
+  s
+    .setName('summary')
+    .setDescription(
+      'Private storedgiveawaystate/retained-entry counts,no entrant/winner identities.',
+    ),
+);
+for (const sub of ['channelrecords', 'cancelchannel'])
+  data.addSubcommand((s) => {
+    s.setName(sub)
+      .setDescription(
+        sub === 'channelrecords'
+          ? 'Private latest100metadata for exactstoredchannelID,total/truncated,no entrant IDs.'
+          : 'Confirmedcancel onlyactivegiveaways in exactstoredchannel,no native announcements/deletes.',
+      )
+      .addStringOption((o) =>
+        o
+          .setName('channel-id')
+          .setDescription('Exact17-20digit storedchannelID,deleted resources allowed')
+          .setMinLength(17)
+          .setMaxLength(20)
+          .setRequired(true),
+      );
+    if (sub === 'cancelchannel')
+      s.addBooleanOption((o) =>
+        o
+          .setName('confirm')
+          .setDescription(
+            'Confirm stopping activegiveaways here,entries/history/native messages kept',
+          )
+          .setRequired(true),
+      );
+    return s;
+  });
 export default {
   category: 'giveaway',
   data,
@@ -149,6 +183,29 @@ export default {
         throw new UserError('userPermission');
     };
     await authorize();
+    if (sub === 'summary') {
+      const r = c.giveaways.summary(i.guildId);
+      content =
+        t('giveawaySummary', { entries: r.retainedEntries }) +
+        '\n' +
+        (r.states.map((v) => `${v.status}: ${v.count}`).join('\n') || '0');
+    }
+    if (sub === 'channelrecords') {
+      const report = c.giveaways.channelRecords(i.guildId, i.options.getString('channel-id', true));
+      files = [
+        new AttachmentBuilder(Buffer.from(JSON.stringify(report, null, 2) + '\n', 'utf8'), {
+          name: 'luna-channel-giveaway-records.json',
+        }),
+      ];
+      content = t('giveawayRecordsExported', { count: report.records.length, total: report.total });
+    }
+    if (sub === 'cancelchannel') {
+      if (i.options.getBoolean('confirm', true) !== true)
+        throw new UserError('giveawayStoredConfirm');
+      content = t('giveawayChannelCancelled', {
+        count: c.giveaways.cancelChannel(i.guildId, i.options.getString('channel-id', true)),
+      });
+    }
     if (sub === 'export') {
       const report = c.giveaways.exportRecords(i.guildId);
       files = [
@@ -192,6 +249,9 @@ export default {
     }
     if (
       ![
+        'summary',
+        'channelrecords',
+        'cancelchannel',
         'start',
         'end',
         'reroll',
