@@ -1,6 +1,6 @@
 # Module status: local checkpoint
 
-65 top-level slash commands,586 executable paths,1284 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
+65 top-level slash commands,586 executable paths,1287 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Luna paths. No deployment/release.
 
 | Required area | Current built scope | Major remaining work |
 | --- | --- | --- |
@@ -627,3 +627,5 @@ Checkpoint1278utilityclosure:37exactrows Utility28/Customization6/Setup1/Overvie
 Checkpoint1281entertainmentclosure:55exactrowsFun35/Music20 in data/entertainment-closure.json/docs/ENTERTAINMENT_CLOSURE.md,14adapted41explicit safety/native omissions. All319exact commandrows mapped across8disjointledgers. Supplemental prose behavior reconciliation remains before base closure.3tests exactsources/syntax/currentpaths/disjoint319;65top586paths1281localtests,publicheadunchanged,no token/deploy/Koki. Musicresolve diagnosis/liveaudio stillunresolved,guardsunchanged.
 
 Checkpoint1284aggregateclosure:all319exactrows and34officialindex contentpages source-covered,data/source-closure.json/docs/SUPPLEMENTAL_CLOSURE.md,3aggregate tests. Premium3commands outsideoriginal319registry explicitlyomitted;Dating/Pfp/Vanity/goodbye/AntiBetray/payment/privacy/removal/legal claims accounted. Top-level reference maps replaced to remove stale pendingfamily/ETA wording.1284localtests,65top586paths,no full541/native/audio/visual/production claim. Public feature/ledger milestone stillpending,parentdecision;no token/deploy/Koki/historyrewrite.
+
+Registration1287hotfix:required jail.apply duration nowbeforeoptionalreason. Recursive required-before-optional validator runs before preview/apply;3tests full65commandpayload/root/sub/groupreject/realpreview. Full1287localtests pass.65top586paths unchanged,no native registration/deploy/musicguard changes.

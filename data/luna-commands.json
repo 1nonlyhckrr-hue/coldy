@@ -7721,7 +7721,7 @@
   {
     "name": "jail apply",
     "category": "moderation",
-    "syntax": "/jail apply (confirm) (member) [reason] (duration)",
+    "syntax": "/jail apply (confirm) (member) (duration) [reason]",
     "description": "Confirmed1s-28d native timeout;roles unchanged,no existing timeout overwritten.",
     "parameters": [
       {
@@ -7735,16 +7735,16 @@
         "type": 6
       },
       {
-        "name": "reason",
-        "required": false,
-        "type": 3,
-        "maxLength": 400
-      },
-      {
         "name": "duration",
         "required": true,
         "type": 3,
         "maxLength": 12
+      },
+      {
+        "name": "reason",
+        "required": false,
+        "type": 3,
+        "maxLength": 400
       }
     ],
     "userPermissions": [],

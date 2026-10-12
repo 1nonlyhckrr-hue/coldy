@@ -2,8 +2,10 @@ import 'dotenv/config';
 import { REST, Routes } from 'discord.js';
 import { loadConfig } from '../src/config/env.js';
 import { loadCommands } from '../src/services/registry.js';
+import { validateCommandOptionOrder } from '../src/services/commandValidation.js';
 const commands = await loadCommands();
 const body = [...commands.values()].map((c) => c.data.toJSON());
+validateCommandOptionOrder(body);
 if (!process.argv.includes('--apply')) {
   console.log(JSON.stringify({ mode: 'preview', commands: body }, null, 2));
 } else {

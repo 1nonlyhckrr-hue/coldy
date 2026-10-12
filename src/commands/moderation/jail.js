@@ -44,9 +44,6 @@ for (const sub of ['setup', 'config', 'reset', 'apply', 'release', 'list'])
       s.addUserOption((o) =>
         o.setName('member').setDescription('One current human member').setRequired(true),
       );
-      s.addStringOption((o) =>
-        o.setName('reason').setDescription('Moderation case reason').setMaxLength(400),
-      );
     }
     if (sub === 'apply')
       s.addStringOption((o) =>
@@ -55,6 +52,10 @@ for (const sub of ['setup', 'config', 'reset', 'apply', 'release', 'list'])
           .setDescription('Required1s-28d,no permanent jail')
           .setRequired(true)
           .setMaxLength(12),
+      );
+    if (['apply', 'release'].includes(sub))
+      s.addStringOption((o) =>
+        o.setName('reason').setDescription('Moderation case reason').setMaxLength(400),
       );
     return s;
   });

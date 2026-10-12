@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1284 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1287 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
