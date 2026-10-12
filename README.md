@@ -26,7 +26,7 @@ Read [INSTALLATION](INSTALLATION.md), [CONFIGURATION](CONFIGURATION.md), [DEPLOY
 
 ## Verification
 
-Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1287 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
+Local tests cover configuration, SQLite migrations/restarts, guild isolation, permissions/hierarchy, input bounds, cooldowns, mock command execution and side-effect failure states. All1294 distinct automated tests pass locally; these are not live Discord integration tests. The1205-test/555-path published checkpoint passed Node22/24 CI at [the verified published-head run](https://github.com/1nonlyhckrr-hue/coldy/actions/runs/38211667918). 1205/555 source publication and exact-head Node22/24 CI are verified; later local changes need their own publication and CI verification. This receipt was updated locally after publication and will enter the next source milestone. No Discord token, live visual test, Docker build or deployment has been verified.
 
 ## Reference sources
 
@@ -67,3 +67,9 @@ Help supports exact category and literal case-insensitive search filters with ei
 ## Documented reference scope
 
 [Behavior closure](docs/REFERENCE_CLOSURE_MAP.md) maps319exact registry rows to bounded adaptations or explicit safety/native-limit omissions. [Supplemental scope](docs/SUPPLEMENTAL_CLOSURE.md) covers the5non-registry introduction/premium/legal/privacy pages,including3Premium command rows outside the original319inventory. All34official index pages have source-level dispositions. This is not541+numeric parity,live Discord acceptance or production readiness. Known music resolution diagnosis and native/client/audio acceptance remain open.
+
+### Global slash commands
+
+Preview remains credential-free: `node scripts/register.js --global`. Apply the same validated command set globally with `node scripts/register.js --apply --global` (no DISCORD_GUILD_ID required). Existing `npm run register:guild` still registers to DISCORD_GUILD_ID.
+
+To migrate without duplicate guild overrides, register globally first, confirm success, then explicitly clear each intended guild with `node scripts/register.js --clear-guild <guild-id>`. Clearing immediately replaces only that guild command set with an empty array; it does not remove global commands. Never clear a guild after a failed global registration. Discord clients may take time to show global updates. These commands use the configured application ID/token; use Luna credentials only.
