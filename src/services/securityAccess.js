@@ -1,7 +1,6 @@
-import { PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
 // Who may run Emika's opt-in security commands: bot owners (OWNER_IDS), users a bot owner delegated
-// in this server, and members with Discord Administrator. Nothing is granted by default.
+// in this server. Server Administrators get no automatic access. Nothing is granted by default.
 export const SECURITY_FEATURES = [
   'all',
   'lockdown',
@@ -50,11 +49,9 @@ export class SecurityAccess {
 export function isBotOwner(c, userId) {
   return c.config?.ownerIds?.includes(userId) === true;
 }
-/** Throws securityDenied unless the user is a bot owner, a delegate for this feature, or a server Administrator. */
+/** Throws securityDenied unless the user is a bot owner, a delegate for this feature. */
 export async function requireSecurityAccess(i, c, feature) {
   if (isBotOwner(c, i.user.id)) return 'owner';
   if (c.securityAccess.delegated(i.guildId, i.user.id, feature)) return 'delegate';
-  const m = await i.guild.members.fetch({ user: i.user.id, force: true }).catch(() => null);
-  if (m?.id === i.user.id && m.permissions?.has(P.Administrator)) return 'admin';
   throw new UserError('securityDenied');
 }

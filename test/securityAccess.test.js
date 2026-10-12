@@ -18,7 +18,7 @@ function inter(userId, perms = []) {
     },
   };
 }
-test('nobody is allowed by default; owner, delegate and Administrator are', async () => {
+test('nobody is allowed by default; owner and delegates are; Administrators are not', async () => {
   const db = openDatabase(':memory:');
   try {
     const c = { config: { ownerIds: [owner] }, securityAccess: new SecurityAccess(db) };
@@ -32,9 +32,9 @@ test('nobody is allowed by default; owner, delegate and Administrator are', asyn
       },
     );
     assert.equal(await requireSecurityAccess(inter(owner), c, 'lockdown'), 'owner');
-    assert.equal(
-      await requireSecurityAccess(inter(admin, [P.Administrator]), c, 'lockdown'),
-      'admin',
+    await assert.rejects(
+      () => requireSecurityAccess(inter(admin, [P.Administrator]), c, 'lockdown'),
+      { message: 'securityDenied' },
     );
     c.securityAccess.allow('g', delegate, 'lockdown', owner);
     assert.equal(await requireSecurityAccess(inter(delegate), c, 'lockdown'), 'delegate');

@@ -1164,7 +1164,7 @@
   "lockdownDone": "Lockdown on. Channels locked: {locked}. Failed: {failed}. Use /unlockdown to restore the exact previous permissions.",
   "unlockdownDone": "Lockdown ended. Channels restored: {restored}. Deleted since lockdown: {gone}.",
   "unlockdownPartial": "Some channels could not be restored. Restored: {restored}, failed: {failed}. The lockdown record is kept, run /unlockdown again after fixing Emika's permissions.",
-  "securityDenied": "Only the bot owner, a user the bot owner allowed, or a server Administrator can use this command.",
+  "securityDenied": "Only the bot owner or a user the bot owner allowed with /owner allow can use this command.",
   "securityAccessInvalid": "Invalid member or feature.",
   "securityAllowed": "<@{user}> may now use: {feature}.",
   "securityRevoked": "Removed {count} delegation(s) for <@{user}>.",

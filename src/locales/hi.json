@@ -1164,7 +1164,7 @@
   "lockdownDone": "लॉकडाउन चालू। लॉक हुए चैनल: {locked}। विफल: {failed}। पुरानी अनुमतियां ठीक वैसी ही लौटाने के लिए /unlockdown चलाएं।",
   "unlockdownDone": "लॉकडाउन खत्म। लौटाए गए चैनल: {restored}। लॉकडाउन के बाद हटे चैनल: {gone}।",
   "unlockdownPartial": "कुछ चैनल वापस नहीं हो सके। लौटे: {restored}, विफल: {failed}। रिकॉर्ड रखा गया है, Emika की अनुमतियां ठीक करके /unlockdown फिर चलाएं।",
-  "securityDenied": "यह कमांड सिर्फ बॉट ओनर, बॉट ओनर द्वारा अनुमति प्राप्त यूज़र, या सर्वर Administrator चला सकता है।",
+  "securityDenied": "यह कमांड सिर्फ बॉट ओनर या /owner allow से बॉट ओनर द्वारा अनुमति प्राप्त यूज़र चला सकते हैं।",
   "securityAccessInvalid": "अमान्य सदस्य या फ़ीचर।",
   "securityAllowed": "<@{user}> अब यह चला सकता है: {feature}।",
   "securityRevoked": "<@{user}> के लिए {count} अनुमति हटाई गई।",

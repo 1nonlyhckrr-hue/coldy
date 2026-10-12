@@ -1164,7 +1164,7 @@
   "lockdownDone": "Lockdown chalu. Lock hue channels: {locked}. Fail: {failed}. Purani permissions bilkul waisi hi wapas karne ke liye /unlockdown chalao.",
   "unlockdownDone": "Lockdown khatam. Restore hue channels: {restored}. Lockdown ke baad delete hue: {gone}.",
   "unlockdownPartial": "Kuch channels restore nahi ho paye. Restored: {restored}, fail: {failed}. Record rakha gaya hai, Emika ki permissions theek karke /unlockdown phir chalao.",
-  "securityDenied": "Ye command sirf bot owner, bot owner se allowed user, ya server Administrator chala sakta hai.",
+  "securityDenied": "Ye command sirf bot owner ya /owner allow se bot owner ke allowed user chala sakte hain.",
   "securityAccessInvalid": "Invalid member ya feature.",
   "securityAllowed": "<@{user}> ab ye chala sakta hai: {feature}.",
   "securityRevoked": "<@{user}> ke liye {count} permission hata di gayi.",
