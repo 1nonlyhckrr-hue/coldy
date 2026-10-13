@@ -10786,6 +10786,177 @@
     "source": "src/commands/moderation/snipe.js"
   },
   {
+    "name": "temprole add",
+    "category": "moderation",
+    "syntax": "/temprole add (member) (role) (duration)",
+    "description": "Give a member a role for a limited time.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "role",
+        "required": true,
+        "type": 8
+      },
+      {
+        "name": "duration",
+        "required": true,
+        "type": 3,
+        "maxLength": 40
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageRoles"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/temprole.js"
+  },
+  {
+    "name": "temprole list",
+    "category": "moderation",
+    "syntax": "/temprole list",
+    "description": "Show active temporary roles.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageRoles"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/temprole.js"
+  },
+  {
+    "name": "temprole remove",
+    "category": "moderation",
+    "syntax": "/temprole remove (member) (role)",
+    "description": "Take the role away now and cancel its timer.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "role",
+        "required": true,
+        "type": 8
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageRoles"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/temprole.js"
+  },
+  {
+    "name": "vcmass moveall",
+    "category": "moderation",
+    "syntax": "/vcmass moveall (to) [from]",
+    "description": "Move everyone from one voice channel to another.",
+    "parameters": [
+      {
+        "name": "to",
+        "required": true,
+        "type": 7
+      },
+      {
+        "name": "from",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "MuteMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/vcmass.js"
+  },
+  {
+    "name": "vcmass muteall",
+    "category": "moderation",
+    "syntax": "/vcmass muteall [channel]",
+    "description": "Server-mute everyone in a voice channel (staff with Mute Members are skipped).",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "MuteMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/vcmass.js"
+  },
+  {
+    "name": "vcmass unmuteall",
+    "category": "moderation",
+    "syntax": "/vcmass unmuteall [channel]",
+    "description": "Remove the server-mute from everyone in a voice channel.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "MuteMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/vcmass.js"
+  },
+  {
     "name": "watchlist list",
     "category": "moderation",
     "syntax": "/watchlist list",

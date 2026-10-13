@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-82 top-level commands, 656 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+84 top-level commands, 662 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -369,6 +369,12 @@
 | /snipe config | Turn message sniping and ghost-ping alerts on or off. | Local mock/unit only |
 | /snipe deleted | Last deleted message in this channel. | Local mock/unit only |
 | /snipe edited | Last edited message (old text) in this channel. | Local mock/unit only |
+| /temprole add | Give a member a role for a limited time. | Local mock/unit only |
+| /temprole list | Show active temporary roles. | Local mock/unit only |
+| /temprole remove | Take the role away now and cancel its timer. | Local mock/unit only |
+| /vcmass moveall | Move everyone from one voice channel to another. | Local mock/unit only |
+| /vcmass muteall | Server-mute everyone in a voice channel (staff with Mute Members are skipped). | Local mock/unit only |
+| /vcmass unmuteall | Remove the server-mute from everyone in a voice channel. | Local mock/unit only |
 | /watchlist list | Show watched members. | Local mock/unit only |
 | /watchlist nicklock | Lock a nickname: any change is reverted automatically. | Local mock/unit only |
 | /watchlist nicklockoff | Unlock a member nickname. | Local mock/unit only |

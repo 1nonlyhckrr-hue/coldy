@@ -1368,5 +1368,14 @@
   "snNone": "Nothing to show in this channel (messages are kept for 1 hour).",
   "snDeleted": "Last deleted message by {user} ({files} files):\n{content}",
   "snEdited": "Last edit by {user}.\nBefore: {old}\nAfter: {now}",
-  "snGhost": "Ghost ping: {user} pinged {list} and deleted the message."
+  "snGhost": "Ghost ping: {user} pinged {list} and deleted the message.",
+  "trLimit": "This server already has 200 temporary roles.",
+  "trNoMember": "That member is not in this server.",
+  "trRoleLocked": "I cannot give that role: it is managed, @everyone, or above my role or yours.",
+  "trAdded": "{user} has {role} until {when}.",
+  "trRemoved": "Removed {role} from {user} and cancelled its timer.",
+  "trList": "Active temporary roles:\n{list}",
+  "vmNoChannel": "Pick a voice channel or join one first.",
+  "vmBadDest": "The destination must be a different voice channel that I can join.",
+  "vmDone": "Done: {ok} changed, {skipped} skipped, {failed} failed."
 }

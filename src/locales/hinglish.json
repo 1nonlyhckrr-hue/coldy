@@ -1368,5 +1368,14 @@
   "snNone": "Is channel me dikhane ko kuch nahi (messages 1 ghante tak rakhe jaate hain).",
   "snDeleted": "{user} ka last deleted message ({files} files):\n{content}",
   "snEdited": "{user} ka last edit.\nPehle: {old}\nBaad me: {now}",
-  "snGhost": "Ghost ping: {user} ne {list} ko ping kiya aur message delete kar diya."
+  "snGhost": "Ghost ping: {user} ne {list} ko ping kiya aur message delete kar diya.",
+  "trLimit": "Is server me pehle se 200 temporary roles hain.",
+  "trNoMember": "Ye member is server me nahi hai.",
+  "trRoleLocked": "Main wo role nahi de sakta: wo managed hai, @everyone hai, ya mere ya aapke role se upar hai.",
+  "trAdded": "{user} ke paas {role} hai, {when} tak.",
+  "trRemoved": "{user} se {role} hataya aur timer cancel kiya.",
+  "trList": "Active temporary roles:\n{list}",
+  "vmNoChannel": "Koi voice channel chuno ya pehle kisi me join karo.",
+  "vmBadDest": "Destination dusra voice channel hona chahiye jisme main join kar sakun.",
+  "vmDone": "Ho gaya: {ok} badle, {skipped} chhode, {failed} fail."
 }

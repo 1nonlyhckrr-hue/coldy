@@ -39,6 +39,7 @@ import { BotActivity } from './services/botActivity.js';
 import { FeatureStore } from './services/featureStore.js';
 import { InviteTracker, createRaidHandlers } from './services/raidTools.js';
 import { SnipeCache, createSnipeHandlers } from './services/snipe.js';
+import { TempRoles } from './services/tempRole.js';
 import { Watch, createWatchHandlers } from './services/watch.js';
 import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
@@ -302,6 +303,7 @@ context.logHub = new LogHub(context);
     client.on(Events.MessageDelete, sn.delete);
     client.on(Events.MessageUpdate, sn.update);
   }
+  context.tempRoles = new TempRoles(context);
   context.watch = new Watch(context);
   const watch = createWatchHandlers(context);
   if (config.messageEventsEnabled) client.on(Events.MessageCreate, watch.message);
@@ -316,6 +318,7 @@ client.once(Events.ClientReady, (ready) => {
   context.voiceReadiness.initialReady();
   context.botActivity.apply(ready);
   resumeAutoUnlocks(context, client);
+  context.tempRoles.start(client);
   for (const g of ready.guilds.cache.values())
     if (context.invites.enabled(g.id)) context.invites.snapshot(g).catch(() => {});
   logger.info({ botId: ready.user.id, commands: commands.size }, 'Emika ready');
