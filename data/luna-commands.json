@@ -3357,7 +3357,7 @@
   {
     "name": "automod rule",
     "category": "automod",
-    "syntax": "/automod rule (name) (enabled)",
+    "syntax": "/automod rule (name) (enabled) [action] [confirm-timeout]",
     "description": "Enable or disable one rule.",
     "parameters": [
       {
@@ -3402,6 +3402,34 @@
       {
         "name": "enabled",
         "required": true,
+        "type": 5
+      },
+      {
+        "name": "action",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Record warning",
+            "value": "warn"
+          },
+          {
+            "name": "Delete message",
+            "value": "delete"
+          },
+          {
+            "name": "Timeout (minutes from /automod timeoutminutes)",
+            "value": "timeout"
+          },
+          {
+            "name": "Default (global action)",
+            "value": "default"
+          }
+        ]
+      },
+      {
+        "name": "confirm-timeout",
+        "required": false,
         "type": 5
       }
     ],

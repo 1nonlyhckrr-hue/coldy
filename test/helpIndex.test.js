@@ -110,7 +110,7 @@ test('help detail pagination uses6whole lines and exact stored bounds and repeat
   const first = commandDetails(commands, 'automod rule');
   for (let p = 1; p <= first.pages; p++)
     rows.push(...commandDetails(commands, 'automod rule', p).lines);
-  assert.equal(rows.filter((r) => r.kind === 'choice').length, 8);
+  assert.equal(rows.filter((r) => r.kind === 'choice').length, 12);
   assert(first.pages > 1);
 });
 test('help command details localize public no-ping bounded replies over all paths/pages with no effects', async () => {

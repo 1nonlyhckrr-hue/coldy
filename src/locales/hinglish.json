@@ -1235,5 +1235,7 @@
   "guardAutoLockdown_manual": "<@{actor}> par quarantine laga, isliye Emika ne server automatically lock kiya ({locked} channels, {failed} fail). Safe hone par /unlockdown chalao.",
   "guardAutoLockdown_failed": "<@{actor}> par quarantine laga, lekin auto lockdown nahi chal saka (Emika ko Manage Channels chahiye).",
   "guardAutoLockdown_unlocked": "Auto lockdown khatam. Restore hue channels: {restored}.",
-  "guardAutoLockdown_unlockPartial": "Auto lockdown khatam, {failed} channels restore nahi hue. /unlockdown phir chalao."
+  "guardAutoLockdown_unlockPartial": "Auto lockdown khatam, {failed} channels restore nahi hue. /unlockdown phir chalao.",
+  "automodRuleActionSaved": "Rule {rule} ab ye action use karega: {action}. (default = global action)",
+  "automodRuleActionsConfig": "Rule-wise actions: {overrides}."
 }

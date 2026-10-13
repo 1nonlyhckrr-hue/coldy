@@ -21,6 +21,17 @@ const schema = z
       })
       .strict()
       .default({}),
+    // Optional per-rule action; a rule without an entry uses the global action above.
+    ruleActions: z
+      .object(
+        Object.fromEntries(
+          ['words', 'invites', 'links', 'mentions', 'caps', 'spam', 'phishing', 'nsfwlinks'].map(
+            (k) => [k, z.enum(['warn', 'delete', 'timeout']).optional()],
+          ),
+        ),
+      )
+      .strict()
+      .default({}),
     mentionLimit: z.number().int().min(2).max(20).default(5),
     capsPercent: z.number().int().min(50).max(100).default(80),
     capsMinLetters: z.number().int().min(10).max(100).default(20),
@@ -348,9 +359,10 @@ export function createAutoModHandler(c) {
         return false;
       const rule = c.automod.detect(message, settings);
       if (!rule) return false;
-      reserved = c.automod.reserve(message, rule, settings.action);
+      const action = settings.ruleActions?.[rule] ?? settings.action;
+      reserved = c.automod.reserve(message, rule, action);
       if (!reserved) return true;
-      if (settings.action === 'warn') {
+      if (action === 'warn') {
         c.cases.warn({
           guildId: message.guild.id,
           targetId: message.author.id,
@@ -359,7 +371,7 @@ export function createAutoModHandler(c) {
           reason: 'Emika AutoMod: ' + rule,
           interactionId: 'automod:' + message.id,
         });
-      } else if (settings.action === 'timeout') {
+      } else if (action === 'timeout') {
         const [bot, target] = await Promise.all([
           message.guild.members.fetchMe({ force: true }),
           message.guild.members.fetch({ user: message.author.id, force: true }),
@@ -393,7 +405,7 @@ export function createAutoModHandler(c) {
           message.webhookId ||
           !latest.enabled ||
           latest.ignoredChannels.includes(message.channel.id) ||
-          latest.action !== 'timeout' ||
+          (latest.ruleActions?.[rule] ?? latest.action) !== 'timeout' ||
           latest.timeoutMinutes !== settings.timeoutMinutes ||
           JSON.stringify(latest) !== JSON.stringify(settings) ||
           JSON.stringify(latest.rules) !== JSON.stringify(settings.rules) ||

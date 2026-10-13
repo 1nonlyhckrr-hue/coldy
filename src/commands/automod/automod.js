@@ -71,7 +71,21 @@ const data = new SlashCommandBuilder()
           .addChoices(...ruleNames.map((value) => ({ name: value, value })))
           .setRequired(true),
       )
-      .addBooleanOption((o) => o.setName('enabled').setDescription('Enabled').setRequired(true)),
+      .addBooleanOption((o) => o.setName('enabled').setDescription('Enabled').setRequired(true))
+      .addStringOption((o) =>
+        o
+          .setName('action')
+          .setDescription('Optional own action for this rule; default = use the global action')
+          .addChoices(
+            { name: 'Record warning', value: 'warn' },
+            { name: 'Delete message', value: 'delete' },
+            { name: 'Timeout (minutes from /automod timeoutminutes)', value: 'timeout' },
+            { name: 'Default (global action)', value: 'default' },
+          ),
+      )
+      .addBooleanOption((o) =>
+        o.setName('confirm-timeout').setDescription('Required when action is timeout'),
+      ),
   )
   .addSubcommand((s) =>
     s
@@ -460,10 +474,36 @@ export default {
       content = t('automodDisabled');
     }
     if (sub === 'rule') {
-      const name = i.options.getString('name', true);
+      const name = i.options.getString('name', true),
+        action = i.options.getString('action');
       if (!ruleNames.includes(name)) throw new UserError('automodRuleInvalid');
-      c.automod.patch(i.guildId, { rules: { [name]: i.options.getBoolean('enabled', true) } });
-      content = t('automodSaved');
+      if (action !== null && !['warn', 'delete', 'timeout', 'default'].includes(action))
+        throw new UserError('automodRuleInvalid');
+      if (action === 'timeout' && i.options.getBoolean('confirm-timeout') !== true)
+        throw new UserError('automodTimeoutConfirm');
+      if (['delete', 'timeout'].includes(action)) {
+        const bot = await i.guild.members.fetchMe({ force: true });
+        const need = action === 'delete' ? P.ManageMessages : P.ModerateMembers;
+        if (
+          bot?.id !== i.guild.client?.user?.id ||
+          bot.guild?.id !== i.guildId ||
+          !bot.permissions?.has(need)
+        )
+          throw new UserError(
+            action === 'delete' ? 'automodDeletePermission' : 'automodTimeoutPermission',
+          );
+      }
+      const changes = { rules: { [name]: i.options.getBoolean('enabled', true) } };
+      if (action !== null) {
+        await authorize();
+        const current = { ...c.automod.get(i.guildId).ruleActions };
+        if (action === 'default') delete current[name];
+        else current[name] = action;
+        changes.ruleActions = current;
+      }
+      c.automod.patch(i.guildId, changes);
+      content =
+        action === null ? t('automodSaved') : t('automodRuleActionSaved', { rule: name, action });
     }
     if (['wordadd', 'wordremove'].includes(sub)) {
       c.automod.word(i.guildId, i.options.getString('text', true), sub === 'wordadd');
@@ -591,6 +631,13 @@ export default {
               .join(', ') || '-',
           words: s.words.length,
           roles: s.exemptRoles.length,
+        }) +
+        ' ' +
+        t('automodRuleActionsConfig', {
+          overrides:
+            Object.entries(s.ruleActions)
+              .map(([k, v]) => `${k}=${v}`)
+              .join(', ') || '-',
         }) +
         ' ' +
         t('automodTimeoutSaved', { minutes: s.timeoutMinutes }) +

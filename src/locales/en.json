@@ -1235,5 +1235,7 @@
   "guardAutoLockdown_manual": "Quarantine fired on <@{actor}>, so Emika locked the server automatically ({locked} channels, {failed} failed). Run /unlockdown when it is safe.",
   "guardAutoLockdown_failed": "Quarantine fired on <@{actor}> but auto lockdown could not run (Emika needs Manage Channels).",
   "guardAutoLockdown_unlocked": "Auto lockdown ended. Channels restored: {restored}.",
-  "guardAutoLockdown_unlockPartial": "Auto lockdown ended with {failed} channels not restored. Run /unlockdown again."
+  "guardAutoLockdown_unlockPartial": "Auto lockdown ended with {failed} channels not restored. Run /unlockdown again.",
+  "automodRuleActionSaved": "Rule {rule} now uses action: {action}. (default = the global action.)",
+  "automodRuleActionsConfig": "Per-rule actions: {overrides}."
 }

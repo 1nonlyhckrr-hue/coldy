@@ -1962,3 +1962,83 @@ test('AutoMod exportpolicy/clearwords/resetpolicy private3locale bytes/confirmat
     }
   }
 });
+test('per-rule actions override the global action only for that rule and survive export/import', async () => {
+  const x = setup();
+  try {
+    const effects = [];
+    x.member.user = { bot: false };
+    x.member.moderatable = true;
+    x.member.roles.highest = {};
+    x.member.disableCommunicationUntil = async (...a) => effects.push(a);
+    x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+    x.automod.patch('g', {
+      enabled: true,
+      action: 'warn',
+      rules: { words: true, caps: true },
+      words: ['bad'],
+      ruleActions: { words: 'timeout' },
+    });
+    assert.deepEqual(x.automod.get('g').ruleActions, { words: 'timeout' });
+    const h = createAutoModHandler(x.c);
+    await h(x.m);
+    assert.equal(effects.length, 1);
+    assert.equal(x.automod.incidents('g').find((r) => r.message_id === 'msg').action, 'timeout');
+    assert.equal(x.deleted.length, 0);
+    await h({ ...x.m, id: 'caps', content: 'THIS IS ALL CAPITAL LETTERS HERE NOW' });
+    assert.equal(effects.length, 1);
+    assert.equal(x.automod.incidents('g').find((r) => r.message_id === 'caps').action, 'warn');
+    x.automod.patch('g', { ruleActions: { words: 'delete' } });
+    await h({ ...x.m, id: 'del' });
+    assert.equal(x.deleted.length, 1);
+    const exported = JSON.stringify(x.automod.get('g'));
+    x.automod.resetPolicy('g');
+    assert.deepEqual(x.automod.get('g').ruleActions, {});
+    x.automod.importPolicy('g', exported);
+    assert.deepEqual(x.automod.get('g').ruleActions, { words: 'delete' });
+    assert.throws(() => x.automod.patch('g', { ruleActions: { words: 'ban' } }));
+    assert.throws(() => x.automod.patch('g', { ruleActions: { nope: 'warn' } }));
+  } finally {
+    x.db.close();
+  }
+});
+test('/automod rule action: confirm for timeout, permission check, set and reset to default', async () => {
+  const x = setup();
+  try {
+    x.member.permissions.has = () => true;
+    let args = {};
+    const replies = [],
+      i = {
+        guild: x.guild,
+        guildId: 'g',
+        user: { id: 'u' },
+        deferReply: async () => {},
+        editReply: async (p) => replies.push(p),
+        options: {
+          getSubcommand: () => 'rule',
+          getString: (n) => args[n] ?? null,
+          getBoolean: (n) => (n === 'enabled' ? true : (args[n] ?? null)),
+        },
+      };
+    args = { name: 'spam', action: 'timeout' };
+    await assert.rejects(() => command.execute(i, x.c), /automodTimeoutConfirm/);
+    args = { name: 'spam', action: 'delete' };
+    await command.execute(i, x.c);
+    assert.deepEqual(x.automod.get('g').ruleActions, { spam: 'delete' });
+    args = { name: 'words', action: 'timeout', 'confirm-timeout': true };
+    await command.execute(i, x.c);
+    assert.deepEqual(x.automod.get('g').ruleActions, { spam: 'delete', words: 'timeout' });
+    x.bot.permissions.has = () => false;
+    args = { name: 'links', action: 'delete' };
+    await assert.rejects(() => command.execute(i, x.c), /automodDeletePermission/);
+    x.bot.permissions.has = () => true;
+    args = { name: 'spam', action: 'default' };
+    await command.execute(i, x.c);
+    assert.deepEqual(x.automod.get('g').ruleActions, { words: 'timeout' });
+    args = { name: 'caps' };
+    await command.execute(i, x.c);
+    assert.equal(x.automod.get('g').rules.caps, true);
+    assert.deepEqual(x.automod.get('g').ruleActions, { words: 'timeout' });
+  } finally {
+    x.db.close();
+  }
+});

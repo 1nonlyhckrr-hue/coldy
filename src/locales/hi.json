@@ -1235,5 +1235,7 @@
   "guardAutoLockdown_manual": "<@{actor}> पर क्वारंटीन लगा, इसलिए Emika ने सर्वर अपने आप लॉक किया ({locked} चैनल, {failed} विफल)। सुरक्षित होने पर /unlockdown चलाएं।",
   "guardAutoLockdown_failed": "<@{actor}> पर क्वारंटीन लगा, लेकिन ऑटो लॉकडाउन नहीं चल सका (Emika को Manage Channels चाहिए)।",
   "guardAutoLockdown_unlocked": "ऑटो लॉकडाउन खत्म। बहाल चैनल: {restored}।",
-  "guardAutoLockdown_unlockPartial": "ऑटो लॉकडाउन खत्म, {failed} चैनल बहाल नहीं हुए। /unlockdown फिर चलाएं।"
+  "guardAutoLockdown_unlockPartial": "ऑटो लॉकडाउन खत्म, {failed} चैनल बहाल नहीं हुए। /unlockdown फिर चलाएं।",
+  "automodRuleActionSaved": "नियम {rule} अब यह एक्शन इस्तेमाल करेगा: {action}। (default = ग्लोबल एक्शन)",
+  "automodRuleActionsConfig": "नियम-वार एक्शन: {overrides}।"
 }
