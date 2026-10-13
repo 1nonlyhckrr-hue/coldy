@@ -1417,5 +1417,12 @@
   "mrDone": "म्यूट रोल {role} तैयार: {done} चैनल में Send, React और Speak बंद ({failed} विफल)।",
   "dwOn": "अब वार्न होने पर सदस्य को DM मिलेगा।",
   "dwOff": "वार्न पर DM बंद।",
-  "dwMessage": "आपको {server} में {by} ने वार्न किया। कारण: {reason}"
+  "dwMessage": "आपको {server} में {by} ने वार्न किया। कारण: {reason}",
+  "wcBadLink": "Discord मैसेज लिंक दें, जैसे https://discord.com/channels/123/456/789 (मैसेज पर राइट क्लिक, Copy Message Link)।",
+  "wcNoAccess": "मैं वह मैसेज नहीं पढ़ सकता। Emika उस सर्वर में हो और उसके पास View Channel और Read Message History हो, और आप भी वह चैनल देख सकते हों।",
+  "wcEmpty": "उस मैसेज में कॉपी करने लायक टेक्स्ट या एम्बेड डिस्क्रिप्शन नहीं है।",
+  "welcomeCopied": "आपके टेम्पलेट में कॉपी हुआ। सेव: {saved}। जो प्लेसहोल्डर पहचाने नहीं (जैसे लिखे हैं वैसे रखे): {unknown}। नोट: {notes}। भेजना पहले जैसा है: /welcome preview से जाँचें और /welcome enable से चालू करें।",
+  "welcomeCopyNote_truncated": "टेक्स्ट 1800 अक्षरों पर काटा गया।",
+  "welcomeCopyNote_expiring": "एक इमेज लिंक पर एक्सपायरी है और बंद हो सकता है: स्थायी लिंक के लिए इमेज दोबारा होस्ट करें।",
+  "welcomeCopyNote_badAsset": "एक इमेज छोड़ी गई क्योंकि उसका लिंक वैध पब्लिक HTTPS लिंक नहीं है।"
 }

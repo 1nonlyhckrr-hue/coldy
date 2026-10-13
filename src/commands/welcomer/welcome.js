@@ -1,3 +1,4 @@
+import { convertMessage, loadLinkedMessage } from '../../services/welcomeCopy.js';
 import { exportWelcome, importWelcome, resetWelcome } from '../../services/welcomeLibrary.js';
 import { validateWelcomeAsset, welcomeStyle } from '../../services/welcomeAssets.js';
 import { translate } from '../../services/localization.js';
@@ -267,6 +268,25 @@ data.addSubcommand((s) =>
         .setRequired(true),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('copy')
+    .setDescription('Copy the look of any message (link) into your welcome or goodbye template.')
+    .addStringOption((o) =>
+      o
+        .setName('link')
+        .setDescription('Message link you can read, e.g. a bot welcome message')
+        .setRequired(true)
+        .setMaxLength(200),
+    )
+    .addStringOption((o) =>
+      o
+        .setName('type')
+        .setDescription('Save as')
+        .setRequired(true)
+        .addChoices({ name: 'welcome', value: 'welcome' }, { name: 'goodbye', value: 'goodbye' }),
+    ),
+);
 export default {
   category: 'welcomer',
   data,
@@ -410,6 +430,19 @@ export default {
         color: hex === null ? undefined : parseInt(hex.replace('#', ''), 16),
       });
       text = t('welcomeColorSaved');
+    }
+    if (sub === 'copy') {
+      const msg = await loadLinkedMessage(i, i.options.getString('link', true));
+      const r = convertMessage(msg, i.options.getString('type', true));
+      c.guildConfig.patch(i.guildId, 'welcome', r.set);
+      const saved = Object.keys(r.set)
+        .filter((k) => !k.endsWith('Custom'))
+        .join(', ');
+      text = t('welcomeCopied', {
+        saved,
+        unknown: r.unknown.join(' ') || '-',
+        notes: r.notes.map((n) => t('welcomeCopyNote_' + n)).join(' ') || '-',
+      });
     }
     if (sub === 'mentions') {
       const enabled = i.options.getBoolean('enabled', true);

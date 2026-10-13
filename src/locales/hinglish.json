@@ -1417,5 +1417,12 @@
   "mrDone": "Mute role {role} ready: {done} channels me Send, React aur Speak band ({failed} fail).",
   "dwOn": "Ab warn hone par member ko DM milega.",
   "dwOff": "Warn par DM off.",
-  "dwMessage": "Aapko {server} me {by} ne warn kiya. Reason: {reason}"
+  "dwMessage": "Aapko {server} me {by} ne warn kiya. Reason: {reason}",
+  "wcBadLink": "Discord message link do, jaise https://discord.com/channels/123/456/789 (message par right click, Copy Message Link).",
+  "wcNoAccess": "Main wo message nahi padh sakta. Emika us server me ho aur uske paas View Channel aur Read Message History ho, aur aap bhi wo channel dekh sakte ho.",
+  "wcEmpty": "Us message me copy karne layak text ya embed description nahi hai.",
+  "welcomeCopied": "Aapke template me copy hua. Save: {saved}. Jo placeholders pehchane nahi (jaise likhe hain waise rakhe): {unknown}. Notes: {notes}. Bhejna pehle jaisa hai: /welcome preview se check karo aur /welcome enable se on karo.",
+  "welcomeCopyNote_truncated": "Text 1800 characters par kata gaya.",
+  "welcomeCopyNote_expiring": "Ek image link par expiry hai aur band ho sakta hai: permanent link ke liye image dobara host karo.",
+  "welcomeCopyNote_badAsset": "Ek image skip hui kyunki uska link valid public HTTPS link nahi hai."
 }

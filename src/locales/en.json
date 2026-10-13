@@ -1417,5 +1417,12 @@
   "mrDone": "Mute role {role} is ready: Send, React and Speak denied in {done} channels ({failed} failed).",
   "dwOn": "Members will now get a DM when they are warned.",
   "dwOff": "DM on warn is off.",
-  "dwMessage": "You were warned in {server} by {by}. Reason: {reason}"
+  "dwMessage": "You were warned in {server} by {by}. Reason: {reason}",
+  "wcBadLink": "Give a Discord message link, like https://discord.com/channels/123/456/789 (right click a message, Copy Message Link).",
+  "wcNoAccess": "I cannot read that message. Emika must be in that server with View Channel and Read Message History, and you must be able to see that channel too.",
+  "wcEmpty": "That message has no text or embed description to copy.",
+  "welcomeCopied": "Copied into your template. Saved: {saved}. Placeholders I did not recognise (left as written): {unknown}. Notes: {notes}. Sending stays as it was: use /welcome preview to check and /welcome enable to turn it on.",
+  "welcomeCopyNote_truncated": "Text was cut to 1800 characters.",
+  "welcomeCopyNote_expiring": "An image link has an expiry stamp and may stop working: re-host the image for a permanent link.",
+  "welcomeCopyNote_badAsset": "An image was skipped because its link is not a valid public HTTPS link."
 }
