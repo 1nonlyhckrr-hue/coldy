@@ -185,3 +185,21 @@ test('botadd: untrusted adds are alerted or kicked, allowlisted bots and trusted
     f.db.close();
   }
 });
+test('vanity: alerts only on a vanity code change by an untrusted user', async () => {
+  const f = setup();
+  try {
+    const run = (e) => createGuardHandler(f.c)(e, f.guild);
+    const van = (who, key = 'vanity_url_code') =>
+      entry(who, AuditLogEvent.GuildUpdate, { changes: [{ key, old: 'old', new: 'evil' }] });
+    await run(van(BAD));
+    assert.equal(f.sent.length, 0);
+    f.c.guard.patch(G, { vanity: { enabled: true } });
+    await run(van(BAD, 'name'));
+    await run(van(TRUSTED));
+    assert.equal(f.sent.length, 0);
+    await run(van(BAD));
+    assert.match(f.sent[0], /guardVanity.*"old":"old".*"new":"evil"/);
+  } finally {
+    f.db.close();
+  }
+});

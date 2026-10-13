@@ -23,6 +23,10 @@ const schema = z
       })
       .strict()
       .prefault({}),
+    vanity: z
+      .object({ enabled: z.boolean().default(false) })
+      .strict()
+      .prefault({}),
   })
   .strict();
 export class Guard {
@@ -188,7 +192,18 @@ async function botAddRule(c, guild, entry, cfg) {
   }
   await alert(c, guild, 'guardBot_' + result, { actor: entry.executorId, bot: botId });
 }
-const RULES = [webhookRule, permRule, botAddRule];
+async function vanityRule(c, guild, entry, cfg) {
+  if (entry.action !== AuditLogEvent.GuildUpdate || !cfg.vanity.enabled) return;
+  const ch = (entry.changes ?? []).find((x) => x.key === 'vanity_url_code');
+  if (!ch) return;
+  const show = (v) => (typeof v === 'string' && /^[\w-]{1,32}$/.test(v) ? v : '-');
+  await alert(c, guild, 'guardVanity', {
+    actor: entry.executorId,
+    old: show(ch.old),
+    new: show(ch.new),
+  });
+}
+const RULES = [webhookRule, permRule, botAddRule, vanityRule];
 export function createGuardHandler(c) {
   return async (entry, guild) => {
     try {

@@ -57,6 +57,14 @@ const data = new SlashCommandBuilder()
         o.setName('allowed').setDescription('true = never act on this bot, false = remove it'),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('vanity')
+      .setDescription('Alert when an untrusted user changes the server vanity URL.')
+      .addBooleanOption((o) =>
+        o.setName('enabled').setDescription('Turn the vanity alert on or off').setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show all guard settings.'));
 export default {
   category: 'antinuke',
@@ -86,6 +94,8 @@ export default {
         : cur;
       c.guard.patch(i.guildId, { botAdd: { ...(mode ? { mode } : {}), allow } });
     }
+    if (sub === 'vanity')
+      c.guard.patch(i.guildId, { vanity: { enabled: i.options.getBoolean('enabled', true) } });
     const cfg = c.guard.get(i.guildId),
       ch = c.antinuke.get(i.guildId).channelId;
     await i.editReply(
@@ -94,6 +104,7 @@ export default {
           content: t('guardConfig', {
             channel: ch ? `<#${ch}>` : t('guardNoChannel'),
             webhook: cfg.webhook.mode,
+            vanity: t(cfg.vanity.enabled ? 'enabled' : 'disabled'),
             botadd: cfg.botAdd.mode,
             allowed: cfg.botAdd.allow.map((x) => `<@${x}>`).join(' ') || '-',
             permalert: cfg.permAlert.mode,
