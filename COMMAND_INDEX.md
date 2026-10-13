@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-76 top-level commands, 625 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+77 top-level commands, 637 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -335,6 +335,18 @@
 | /moderation untimeout | untimeout: one member, checked and recorded. | Local mock/unit only |
 | /moderation warn | warn: one member, checked and recorded. | Local mock/unit only |
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
+| /modtools dehoist | Remove ! # . and similar hoisting characters from the start of a name. | Local mock/unit only |
+| /modtools freeze | Owner/delegate: instant timeout and strip all removable roles. | Local mock/unit only |
+| /modtools hackban | Ban by user ID, also for people who are not in the server. | Local mock/unit only |
+| /modtools massban | Owner/delegate: ban several user IDs at once, with a per-user report. | Local mock/unit only |
+| /modtools purge | Preview a filtered bulk delete (user, bots, links). Nothing is deleted yet. | Local mock/unit only |
+| /modtools purgeconfirm | Delete the messages from your purge preview (valid 2 minutes). | Local mock/unit only |
+| /modtools quarantine | Take all roles and apply the quarantine role. | Local mock/unit only |
+| /modtools roleall | Owner/delegate: give a role to every human member (bots skipped). | Local mock/unit only |
+| /modtools softban | Ban then unban at once: removes 7 days of their messages. | Local mock/unit only |
+| /modtools unfreeze | Owner/delegate: end the timeout and give saved roles back. | Local mock/unit only |
+| /modtools unquarantine | Release a quarantined member and give roles back. | Local mock/unit only |
+| /modtools voicekick | Disconnect a member from voice. | Local mock/unit only |
 | /nickname | Confirmed one-member nickname update or explicit reset, no bulk changes. | Local mock/unit only |
 | /role add | Confirmed onehuman safe role add,no managed/panel/autorole/selfcreated roles. | Local mock/unit only |
 | /role color | CurrentManageRoles/hierarchy safeexistingrole color,no assignments/permissionchange. | Local mock/unit only |

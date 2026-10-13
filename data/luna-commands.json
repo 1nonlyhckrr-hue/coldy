@@ -1250,6 +1250,18 @@
           {
             "name": "nuke",
             "value": "nuke"
+          },
+          {
+            "name": "freeze",
+            "value": "freeze"
+          },
+          {
+            "name": "massban",
+            "value": "massban"
+          },
+          {
+            "name": "roleall",
+            "value": "roleall"
           }
         ]
       }
@@ -1339,6 +1351,18 @@
           {
             "name": "nuke",
             "value": "nuke"
+          },
+          {
+            "name": "freeze",
+            "value": "freeze"
+          },
+          {
+            "name": "massban",
+            "value": "massban"
+          },
+          {
+            "name": "roleall",
+            "value": "roleall"
           }
         ]
       }
@@ -9653,6 +9677,376 @@
     "cooldownMs": 5000,
     "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/moderation/moderation.js"
+  },
+  {
+    "name": "modtools dehoist",
+    "category": "moderation",
+    "syntax": "/modtools dehoist [member] [confirm]",
+    "description": "Remove ! # . and similar hoisting characters from the start of a name.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": false,
+        "type": 6
+      },
+      {
+        "name": "confirm",
+        "required": false,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools freeze",
+    "category": "moderation",
+    "syntax": "/modtools freeze (member) [reason] [minutes]",
+    "description": "Owner/delegate: instant timeout and strip all removable roles.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "reason",
+        "required": false,
+        "type": 3,
+        "maxLength": 400
+      },
+      {
+        "name": "minutes",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 40320
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools hackban",
+    "category": "moderation",
+    "syntax": "/modtools hackban (ids) [reason]",
+    "description": "Ban by user ID, also for people who are not in the server.",
+    "parameters": [
+      {
+        "name": "ids",
+        "required": true,
+        "type": 3,
+        "maxLength": 200
+      },
+      {
+        "name": "reason",
+        "required": false,
+        "type": 3,
+        "maxLength": 400
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools massban",
+    "category": "moderation",
+    "syntax": "/modtools massban (ids) (confirm) [reason]",
+    "description": "Owner/delegate: ban several user IDs at once, with a per-user report.",
+    "parameters": [
+      {
+        "name": "ids",
+        "required": true,
+        "type": 3,
+        "maxLength": 1000
+      },
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      },
+      {
+        "name": "reason",
+        "required": false,
+        "type": 3,
+        "maxLength": 400
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools purge",
+    "category": "moderation",
+    "syntax": "/modtools purge (count) [channel] [user] [bots] [links]",
+    "description": "Preview a filtered bulk delete (user, bots, links). Nothing is deleted yet.",
+    "parameters": [
+      {
+        "name": "count",
+        "required": true,
+        "type": 4,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      },
+      {
+        "name": "user",
+        "required": false,
+        "type": 6
+      },
+      {
+        "name": "bots",
+        "required": false,
+        "type": 5
+      },
+      {
+        "name": "links",
+        "required": false,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools purgeconfirm",
+    "category": "moderation",
+    "syntax": "/modtools purgeconfirm (plan) (confirm)",
+    "description": "Delete the messages from your purge preview (valid 2 minutes).",
+    "parameters": [
+      {
+        "name": "plan",
+        "required": true,
+        "type": 3,
+        "maxLength": 12
+      },
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools quarantine",
+    "category": "moderation",
+    "syntax": "/modtools quarantine (member) [reason]",
+    "description": "Take all roles and apply the quarantine role.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "reason",
+        "required": false,
+        "type": 3,
+        "maxLength": 400
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools roleall",
+    "category": "moderation",
+    "syntax": "/modtools roleall (role) (confirm)",
+    "description": "Owner/delegate: give a role to every human member (bots skipped).",
+    "parameters": [
+      {
+        "name": "role",
+        "required": true,
+        "type": 8
+      },
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools softban",
+    "category": "moderation",
+    "syntax": "/modtools softban (member) [reason]",
+    "description": "Ban then unban at once: removes 7 days of their messages.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "reason",
+        "required": false,
+        "type": 3,
+        "maxLength": 400
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools unfreeze",
+    "category": "moderation",
+    "syntax": "/modtools unfreeze (member)",
+    "description": "Owner/delegate: end the timeout and give saved roles back.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools unquarantine",
+    "category": "moderation",
+    "syntax": "/modtools unquarantine (member)",
+    "description": "Release a quarantined member and give roles back.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
+  },
+  {
+    "name": "modtools voicekick",
+    "category": "moderation",
+    "syntax": "/modtools voicekick (member)",
+    "description": "Disconnect a member from voice.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modtools.js"
   },
   {
     "name": "nickname",

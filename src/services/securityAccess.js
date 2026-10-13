@@ -12,6 +12,9 @@ export const SECURITY_FEATURES = [
   'activity',
   'guard',
   'nuke',
+  'freeze',
+  'massban',
+  'roleall',
 ];
 export class SecurityAccess {
   constructor(db) {
