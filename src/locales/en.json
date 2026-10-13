@@ -1405,5 +1405,17 @@
   "mtUnbanBusy": "A mass unban is already running in this server.",
   "mtUnbanNone": "This server has no bans.",
   "mtUnbanStarted": "Mass unban started for {total} bans (max 2000 per run, about 1 per second). I will post the result here when finished. It cannot be stopped from Discord, only by removing my Ban Members permission.",
-  "mtUnbanDone": "Mass unban finished: {ok} of {total} unbanned, {failed} failed. Invites sent by DM: {invited}. DMs closed: {closed} (their one-use links are in the attached file when any). No invite created: {noInvite}."
+  "mtUnbanDone": "Mass unban finished: {ok} of {total} unbanned, {failed} failed. Invites sent by DM: {invited}. DMs closed: {closed} (their one-use links are in the attached file when any). No invite created: {noInvite}.",
+  "abBadTime": "Time must look like 03:00 (HH:MM, 24 hour, UTC).",
+  "abOn": "Daily auto backup is on at {time} UTC. Only the newest 5 backups are kept, so old manual ones rotate out.",
+  "abOff": "Daily auto backup is off.",
+  "stLimit": "This server already has 20 sticky messages.",
+  "stSet": "Sticky saved for {channel}. It is posted after the next messages and then re-posted at the bottom.",
+  "stRemoved": "Sticky removed from {channel}.",
+  "stNone": "No sticky in {channel}.",
+  "stList": "Sticky messages:\n{list}",
+  "mrDone": "Mute role {role} is ready: Send, React and Speak denied in {done} channels ({failed} failed).",
+  "dwOn": "Members will now get a DM when they are warned.",
+  "dwOff": "DM on warn is off.",
+  "dwMessage": "You were warned in {server} by {by}. Reason: {reason}"
 }

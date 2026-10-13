@@ -41,6 +41,8 @@ import { InviteTracker, createRaidHandlers } from './services/raidTools.js';
 import { SnipeCache, createSnipeHandlers } from './services/snipe.js';
 import { TempRoles } from './services/tempRole.js';
 import { ModCase, createAppealDmHandler } from './services/modCase.js';
+import { Sticky, createStickyHandler } from './services/stickyTools.js';
+import { startAutoBackup } from './services/autoBackup.js';
 import { Watch, createWatchHandlers } from './services/watch.js';
 import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
@@ -309,6 +311,8 @@ context.logHub = new LogHub(context);
   context.tempRoles = new TempRoles(context);
   context.modCase = new ModCase(context);
   client.on(Events.MessageCreate, createAppealDmHandler(context));
+  context.sticky = new Sticky(context);
+  if (config.messageEventsEnabled) client.on(Events.MessageCreate, createStickyHandler(context));
   context.watch = new Watch(context);
   const watch = createWatchHandlers(context);
   if (config.messageEventsEnabled) client.on(Events.MessageCreate, watch.message);
@@ -324,6 +328,7 @@ client.once(Events.ClientReady, (ready) => {
   context.botActivity.apply(ready);
   resumeAutoUnlocks(context, client);
   context.tempRoles.start(client);
+  startAutoBackup(context, client);
   for (const g of ready.guilds.cache.values())
     if (context.invites.enabled(g.id)) context.invites.snapshot(g).catch(() => {});
   logger.info({ botId: ready.user.id, commands: commands.size }, 'Emika ready');

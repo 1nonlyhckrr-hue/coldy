@@ -8,6 +8,7 @@ import {
 import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import { requireSecurityAccess } from '../../services/securityAccess.js';
+import { AUTOBACKUP } from '../../services/autoBackup.js';
 import { snapshotGuild, restoreGuild } from '../../services/serverBackup.js';
 const idOption = (o) =>
   o
@@ -23,6 +24,22 @@ const data = new SlashCommandBuilder()
     s
       .setName('create')
       .setDescription('Save roles, channels and permissions as a backup (keeps the latest 5).'),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('auto')
+      .setDescription(
+        'Daily automatic backup (off by default; keeps the newest 5 backups in total).',
+      )
+      .addBooleanOption((o) =>
+        o.setName('enabled').setDescription('Turn daily backups on or off').setRequired(true),
+      )
+      .addStringOption((o) =>
+        o
+          .setName('time')
+          .setDescription('Time of day in UTC as HH:MM (default 03:00)')
+          .setMaxLength(5),
+      ),
   )
   .addSubcommand((s) => s.setName('list').setDescription('Show saved backups.'))
   .addSubcommand((s) =>
@@ -51,7 +68,14 @@ export default {
     const t = (k, p) => c.localization.t(i.guildId, k, p),
       sub = i.options.getSubcommand();
     let text, files;
-    if (sub === 'create') {
+    if (sub === 'auto') {
+      const on = i.options.getBoolean('enabled', true);
+      const time =
+        i.options.getString('time') ?? c.features.config(i.guildId, 'autobackup', AUTOBACKUP).time;
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) throw new UserError('abBadTime');
+      c.features.setConfig(i.guildId, 'autobackup', AUTOBACKUP, { enabled: on, time });
+      text = t(on ? 'abOn' : 'abOff', { time });
+    } else if (sub === 'create') {
       const snap = snapshotGuild(i.guild),
         id = c.serverBackups.save(i.guildId, i.user.id, snap);
       text = t('backupCreated', { id, roles: snap.roles.length, channels: snap.channels.length });

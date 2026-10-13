@@ -22,7 +22,7 @@ test('global apply sends all65 validated commands without guild configuration', 
   assert.equal(calls.length, 1);
   assert.equal(calls[0][0], Routes.applicationCommands(clientId));
   const expected = [...(await loadCommands()).values()].map((c) => c.data.toJSON());
-  assert.equal(expected.length, 86);
+  assert.equal(expected.length, 87);
   assert.deepEqual(calls[0][1].body, expected);
 });
 test('existing guild apply still sends same65command body to configured guild', async () => {
@@ -30,7 +30,7 @@ test('existing guild apply still sends same65command body to configured guild', 
   await registerCommands(['--apply'], deps);
   assert.equal(calls.length, 1);
   assert.equal(calls[0][0], Routes.applicationGuildCommands(clientId, guildId));
-  assert.equal(calls[0][1].body.length, 86);
+  assert.equal(calls[0][1].body.length, 87);
 });
 test('clear-guild sends only empty body to explicitly named guilds without loading commands', async () => {
   for (const id of [guildId, '1551646147100024925']) {
@@ -51,7 +51,7 @@ test('preview including global remains nonmutating and needs no credentials', as
     const logs = [];
     deps.log = (s) => logs.push(s);
     await registerCommands(args, deps);
-    assert.equal(JSON.parse(logs[0]).commands.length, 86);
+    assert.equal(JSON.parse(logs[0]).commands.length, 87);
     assert.deepEqual(calls, []);
   }
 });

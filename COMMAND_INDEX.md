@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-86 top-level commands, 673 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+87 top-level commands, 679 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -34,6 +34,7 @@
 | /antinuke unresolved | Privately inspect stored unresolved alert metadata;no retry or punishment. | Local mock/unit only |
 | /audit perms | List every role holding dangerous permissions and its members. | Local mock/unit only |
 | /audit securityscore | Score the server out of 100 with what to fix. | Local mock/unit only |
+| /backup auto | Daily automatic backup (off by default; keeps the newest 5 backups in total). | Local mock/unit only |
 | /backup create | Save roles, channels and permissions as a backup (keeps the latest 5). | Local mock/unit only |
 | /backup delete | Delete one saved backup. | Local mock/unit only |
 | /backup export | Download one backup as JSON. | Local mock/unit only |
@@ -380,6 +381,11 @@
 | /snipe config | Turn message sniping and ghost-ping alerts on or off. | Local mock/unit only |
 | /snipe deleted | Last deleted message in this channel. | Local mock/unit only |
 | /snipe edited | Last edited message (old text) in this channel. | Local mock/unit only |
+| /sticky dmwarn | DM a member when they are warned. | Local mock/unit only |
+| /sticky list | Show sticky messages. | Local mock/unit only |
+| /sticky muterole | Create a Muted role and deny it Send/React/Speak in every channel. | Local mock/unit only |
+| /sticky remove | Remove the sticky of a channel. | Local mock/unit only |
+| /sticky set | Keep a message at the bottom of a channel, re-posted every N messages. | Local mock/unit only |
 | /temprole add | Give a member a role for a limited time. | Local mock/unit only |
 | /temprole list | Show active temporary roles. | Local mock/unit only |
 | /temprole remove | Take the role away now and cancel its timer. | Local mock/unit only |

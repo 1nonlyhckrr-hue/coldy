@@ -1,3 +1,4 @@
+import { dmWarn } from './stickyTools.js';
 import { translate } from './localization.js';
 import { PermissionFlagsBits } from 'discord.js';
 import { enforceHierarchy } from '../utils/permissions.js';
@@ -367,6 +368,10 @@ async function moderateInner(interaction, context, input) {
 }
 export async function moderate(interaction, context, input) {
   const result = await moderateInner(interaction, context, input);
+  if (result?.id && input.action === 'warn')
+    dmWarn(context, interaction.guild, input.targetId, input.reason, interaction.user.id).catch(
+      () => {},
+    );
   if (result?.id && !['warnings', 'exportwarnings'].includes(input.action))
     context.logHub
       ?.mod(interaction.guild, {
