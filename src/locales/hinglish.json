@@ -1362,5 +1362,11 @@
   "auditCheck_antinuke": "Antinuke on hai",
   "auditCheck_automod": "AutoMod on hai",
   "auditCheck_joinProtection": "Join protection (joinraid ya joingate) on hai",
-  "auditCheck_modlog": "Modlog channel set hai"
+  "auditCheck_modlog": "Modlog channel set hai",
+  "snConfig": "Snipe {snipe} hai. Ghost-ping alerts {ghost} hain. Snipe messages ko 1 ghante tak sirf memory me rakhta hai, disk par kabhi save nahi karta.",
+  "snOff": "Snipe off hai. /snipe config snipe:true se on karo.",
+  "snNone": "Is channel me dikhane ko kuch nahi (messages 1 ghante tak rakhe jaate hain).",
+  "snDeleted": "{user} ka last deleted message ({files} files):\n{content}",
+  "snEdited": "{user} ka last edit.\nPehle: {old}\nBaad me: {now}",
+  "snGhost": "Ghost ping: {user} ne {list} ko ping kiya aur message delete kar diya."
 }

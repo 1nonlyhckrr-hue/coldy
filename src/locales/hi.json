@@ -1362,5 +1362,11 @@
   "auditCheck_antinuke": "Antinuke चालू है",
   "auditCheck_automod": "AutoMod चालू है",
   "auditCheck_joinProtection": "जॉइन प्रोटेक्शन (joinraid या joingate) चालू है",
-  "auditCheck_modlog": "मॉडलॉग चैनल सेट है"
+  "auditCheck_modlog": "मॉडलॉग चैनल सेट है",
+  "snConfig": "Snipe {snipe} है। घोस्ट-पिंग अलर्ट {ghost} हैं। Snipe मैसेज 1 घंटे तक सिर्फ मेमोरी में रखता है, डिस्क पर कभी सेव नहीं करता।",
+  "snOff": "Snipe बंद है। /snipe config snipe:true से चालू करें।",
+  "snNone": "इस चैनल में दिखाने को कुछ नहीं (मैसेज 1 घंटे तक रखे जाते हैं)।",
+  "snDeleted": "{user} का आखिरी डिलीट मैसेज ({files} फ़ाइलें):\n{content}",
+  "snEdited": "{user} का आखिरी एडिट।\nपहले: {old}\nबाद में: {now}",
+  "snGhost": "घोस्ट पिंग: {user} ने {list} को पिंग किया और मैसेज डिलीट कर दिया।"
 }

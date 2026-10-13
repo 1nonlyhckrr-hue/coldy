@@ -38,6 +38,7 @@ import {
 import { BotActivity } from './services/botActivity.js';
 import { FeatureStore } from './services/featureStore.js';
 import { InviteTracker, createRaidHandlers } from './services/raidTools.js';
+import { SnipeCache, createSnipeHandlers } from './services/snipe.js';
 import { Watch, createWatchHandlers } from './services/watch.js';
 import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
@@ -294,6 +295,12 @@ context.logHub = new LogHub(context);
         if (inv.guild && context.invites.enabled(inv.guild.id))
           context.invites.snapshot(inv.guild).catch(() => {});
       });
+  }
+  context.snipe = new SnipeCache();
+  if (config.messageEventsEnabled) {
+    const sn = createSnipeHandlers(context);
+    client.on(Events.MessageDelete, sn.delete);
+    client.on(Events.MessageUpdate, sn.update);
   }
   context.watch = new Watch(context);
   const watch = createWatchHandlers(context);

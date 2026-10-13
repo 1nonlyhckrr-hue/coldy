@@ -1362,5 +1362,11 @@
   "auditCheck_antinuke": "Antinuke is on",
   "auditCheck_automod": "AutoMod is on",
   "auditCheck_joinProtection": "Join protection (joinraid or joingate) is on",
-  "auditCheck_modlog": "A modlog channel is set"
+  "auditCheck_modlog": "A modlog channel is set",
+  "snConfig": "Snipe is {snipe}. Ghost-ping alerts are {ghost}. Snipe keeps messages in memory for 1 hour and never saves them to disk.",
+  "snOff": "Snipe is off. Turn it on with /snipe config snipe:true",
+  "snNone": "Nothing to show in this channel (messages are kept for 1 hour).",
+  "snDeleted": "Last deleted message by {user} ({files} files):\n{content}",
+  "snEdited": "Last edit by {user}.\nBefore: {old}\nAfter: {now}",
+  "snGhost": "Ghost ping: {user} pinged {list} and deleted the message."
 }

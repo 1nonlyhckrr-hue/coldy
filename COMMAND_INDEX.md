@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-81 top-level commands, 653 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+82 top-level commands, 656 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -366,6 +366,9 @@
 | /role remove | Confirmed onehuman safe role remove,no managed/panel/autorole/selfcreated roles. | Local mock/unit only |
 | /role rename | CurrentManageRoles/hierarchy safeexistingrole rename,no assignments/permissionchange. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode, 0 disables, no bulk changes. | Local mock/unit only |
+| /snipe config | Turn message sniping and ghost-ping alerts on or off. | Local mock/unit only |
+| /snipe deleted | Last deleted message in this channel. | Local mock/unit only |
+| /snipe edited | Last edited message (old text) in this channel. | Local mock/unit only |
 | /watchlist list | Show watched members. | Local mock/unit only |
 | /watchlist nicklock | Lock a nickname: any change is reverted automatically. | Local mock/unit only |
 | /watchlist nicklockoff | Unlock a member nickname. | Local mock/unit only |

@@ -10715,6 +10715,77 @@
     "source": "src/commands/moderation/slowmode.js"
   },
   {
+    "name": "snipe config",
+    "category": "moderation",
+    "syntax": "/snipe config [snipe] [ghostping]",
+    "description": "Turn message sniping and ghost-ping alerts on or off.",
+    "parameters": [
+      {
+        "name": "snipe",
+        "required": false,
+        "type": 5
+      },
+      {
+        "name": "ghostping",
+        "required": false,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageMessages"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/snipe.js"
+  },
+  {
+    "name": "snipe deleted",
+    "category": "moderation",
+    "syntax": "/snipe deleted",
+    "description": "Last deleted message in this channel.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageMessages"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/snipe.js"
+  },
+  {
+    "name": "snipe edited",
+    "category": "moderation",
+    "syntax": "/snipe edited",
+    "description": "Last edited message (old text) in this channel.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageMessages"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/snipe.js"
+  },
+  {
     "name": "watchlist list",
     "category": "moderation",
     "syntax": "/watchlist list",
