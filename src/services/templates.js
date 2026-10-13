@@ -1,6 +1,7 @@
 import { gzipSync, gunzipSync } from 'node:zlib';
 import { UserError } from '../utils/errors.js';
 import { snapshotGuild, restoreGuild } from './serverBackup.js';
+import { builtinKey, builtinTemplate, builtinManifests } from './builtinTemplates.js';
 // /template: save a server's structure (roles, categories, channels, permission overwrites) under a name,
 // then paste it into another server where Emika is. Structure only: no messages, no members, no settings.
 // Templates live in one global slot, owned by whoever saved them; only the owner (or a bot owner) can use them.
@@ -27,6 +28,8 @@ export class Templates {
   }
   /** Manifest row plus the compressed payload, split across rows because one row holds at most 20000 characters. */
   get(name) {
+    const builtin = builtinTemplate(name);
+    if (builtin) return builtin;
     const m = this.c.features.get(SLOT, FEATURE, name);
     if (!m) return null;
     if (m.data) return m;
@@ -46,6 +49,7 @@ export class Templates {
     for (let n = 0; n < count; n++) this.c.features.del(SLOT, FEATURE, `${name}#${n}`);
   }
   save(name, data, userId, fromName) {
+    if (builtinKey(name)) throw new UserError('tpBuiltin');
     if (!NAME.test(name)) throw new UserError('tpBadName');
     const cur = this.c.features.get(SLOT, FEATURE, name);
     if (cur && cur.by !== userId) throw new UserError('tpNotYours');
@@ -76,16 +80,18 @@ export class Templates {
   }
   /** Templates a user may see: their own, or all for a bot owner. */
   list(userId, isOwner) {
-    return this.manifests()
-      .filter((r) => isOwner || r.by === userId)
-      .map((r) => ({ name: r.name, from: r.from, at: r.at, roles: r.roles, channels: r.channels }));
+    return [
+      ...this.manifests().filter((r) => isOwner || r.by === userId),
+      ...builtinManifests(),
+    ].map((r) => ({ name: r.name, from: r.from, at: r.at, roles: r.roles, channels: r.channels }));
   }
   use(name, userId, isOwner) {
     const t = this.get(name);
-    if (!t || (!isOwner && t.by !== userId)) throw new UserError('tpNotFound');
+    if (!t || (!t.builtin && !isOwner && t.by !== userId)) throw new UserError('tpNotFound');
     return t;
   }
   remove(name, userId, isOwner) {
+    if (builtinKey(name)) throw new UserError('tpBuiltin');
     const t = this.use(name, userId, isOwner);
     this.dropChunks(name, t.chunks ?? 0);
     return this.c.features.del(SLOT, FEATURE, name);

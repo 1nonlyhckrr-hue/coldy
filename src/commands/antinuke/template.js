@@ -55,7 +55,7 @@ export default {
           rows
             .map(
               (r) =>
-                `${r.name}: ${r.roles} roles, ${r.channels} channels, from ${r.from} <t:${Math.floor(r.at / 1000)}:d>`,
+                `${r.name}: ${r.roles} roles, ${r.channels} channels, from ${r.from}${r.at ? ` <t:${Math.floor(r.at / 1000)}:d>` : ''}`,
             )
             .join('\n') || '-',
       });

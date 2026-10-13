@@ -60,9 +60,9 @@ test('template drops member overwrites and keeps role ones', () => {
 test('templates are private to their saver, bot owner sees all', () => {
   const { db, c } = env();
   c.templates.save('1', templateOf(src()), 'u1', 'Source');
-  assert.equal(c.templates.list('u1', false).length, 1);
-  assert.equal(c.templates.list('u2', false).length, 0);
-  assert.equal(c.templates.list('u2', true).length, 1);
+  assert.equal(c.templates.list('u1', false).length, 2);
+  assert.equal(c.templates.list('u2', false).length, 1);
+  assert.equal(c.templates.list('u2', true).length, 2);
   assert.throws(() => c.templates.use('1', 'u2', false), { key: 'tpNotFound' });
   assert.throws(() => c.templates.save('1', templateOf(src()), 'u2', 'x'), { key: 'tpNotYours' });
   assert.throws(() => c.templates.save('Bad Name', {}, 'u1', 'x'), { key: 'tpBadName' });

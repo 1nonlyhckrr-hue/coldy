@@ -113,9 +113,10 @@ export async function restoreGuild(guild, data, opts = {}) {
   await Promise.all([guild.roles.fetch(), guild.channels.fetch()]);
   const out = { rolesCreated: 0, channelsCreated: 0, skipped: 0, failed: 0 };
   const roleMap = new Map([[data.guildId, guild.id]]);
-  const roleList = opts.ordered
-    ? [...data.roles].sort((a, b) => b.position - a.position)
-    : data.roles;
+  const roleList =
+    opts.ordered && data.createOrder !== 'listed'
+      ? [...data.roles].sort((a, b) => b.position - a.position)
+      : data.roles;
   for (const r of roleList) {
     if (r.everyone) continue;
     const existing = [...guild.roles.cache.values()].find((x) => !x.managed && x.name === r.name);
