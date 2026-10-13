@@ -151,3 +151,37 @@ test('permalert: only newly added dangerous bits trigger; strip removes them', a
     f.db.close();
   }
 });
+test('botadd: untrusted adds are alerted or kicked, allowlisted bots and trusted adders are spared', async () => {
+  const f = setup();
+  try {
+    const kicked = [],
+      BOT = '888888888888888888',
+      OK = '999999999999999999';
+    f.guild.members.fetch = async () => ({
+      roles: { highest: { position: 1 } },
+      kick: async () => kicked.push(BOT),
+    });
+    f.guild.members.fetchMe = async () => ({
+      id: 'bot',
+      guild: { id: G },
+      permissions: { has: () => true },
+      roles: { highest: { position: 5 } },
+    });
+    const run = (e) => createGuardHandler(f.c)(e, f.guild);
+    const add = (who, bot = BOT) => entry(who, AuditLogEvent.BotAdd, { targetId: bot });
+    await run(add(BAD));
+    assert.equal(f.sent.length, 0);
+    f.c.guard.patch(G, { botAdd: { mode: 'alert' } });
+    await run(add(BAD));
+    assert.match(f.sent[0], /guardBot_alerted/);
+    f.c.guard.patch(G, { botAdd: { mode: 'kick', allow: [OK] } });
+    await run(add(BAD, OK));
+    await run(add(TRUSTED));
+    assert.equal(kicked.length, 0);
+    await run(add(BAD));
+    assert.equal(kicked.length, 1);
+    assert.match(f.sent[1], /guardBot_kicked/);
+  } finally {
+    f.db.close();
+  }
+});

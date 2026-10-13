@@ -16,6 +16,13 @@ const schema = z
       .object({ mode: z.enum(['off', 'alert', 'strip']).default('off') })
       .strict()
       .prefault({}),
+    botAdd: z
+      .object({
+        mode: z.enum(['off', 'alert', 'kick']).default('off'),
+        allow: z.array(z.string().regex(SNOWFLAKE)).max(25).default([]),
+      })
+      .strict()
+      .prefault({}),
   })
   .strict();
 export class Guard {
@@ -157,7 +164,31 @@ async function permRule(c, guild, entry, cfg) {
     perms: names,
   });
 }
-const RULES = [webhookRule, permRule];
+async function botAddRule(c, guild, entry, cfg) {
+  if (entry.action !== AuditLogEvent.BotAdd || cfg.botAdd.mode === 'off') return;
+  const botId = entry.targetId;
+  if (!SNOWFLAKE.test(botId ?? '') || cfg.botAdd.allow.includes(botId)) return;
+  let result = 'alerted';
+  if (cfg.botAdd.mode === 'kick') {
+    result = 'failed';
+    try {
+      const me = await guild.members.fetchMe();
+      const target = await guild.members.fetch({ user: botId, force: true }).catch(() => null);
+      if (!target) result = 'gone';
+      else if (
+        me.permissions?.has(P.KickMembers) &&
+        target.roles.highest.position < me.roles.highest.position
+      ) {
+        await target.kick('Emika guard: bot added by an untrusted user');
+        result = 'kicked';
+      }
+    } catch {
+      result = 'failed';
+    }
+  }
+  await alert(c, guild, 'guardBot_' + result, { actor: entry.executorId, bot: botId });
+}
+const RULES = [webhookRule, permRule, botAddRule];
 export function createGuardHandler(c) {
   return async (entry, guild) => {
     try {

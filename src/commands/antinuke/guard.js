@@ -38,6 +38,25 @@ const data = new SlashCommandBuilder()
           ),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('botadd')
+      .setDescription('Act when an untrusted user adds a bot. Trusted users may add any bot.')
+      .addStringOption((o) =>
+        o
+          .setName('mode')
+          .setDescription('off, alert only, or kick the new bot and alert')
+          .addChoices(
+            { name: 'off', value: 'off' },
+            { name: 'alert', value: 'alert' },
+            { name: 'kick', value: 'kick' },
+          ),
+      )
+      .addUserOption((o) => o.setName('bot').setDescription('A bot to allow or stop allowing'))
+      .addBooleanOption((o) =>
+        o.setName('allowed').setDescription('true = never act on this bot, false = remove it'),
+      ),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show all guard settings.'));
 export default {
   category: 'antinuke',
@@ -53,6 +72,20 @@ export default {
       c.guard.patch(i.guildId, { webhook: { mode: i.options.getString('mode', true) } });
     if (sub === 'permalert')
       c.guard.patch(i.guildId, { permAlert: { mode: i.options.getString('mode', true) } });
+    if (sub === 'botadd') {
+      const mode = i.options.getString('mode'),
+        bot = i.options.getUser('bot'),
+        allowed = i.options.getBoolean('allowed');
+      if (bot && !bot.bot) throw new UserError('guardNotBot');
+      if (bot && allowed === null) throw new UserError('guardAllowedMissing');
+      const cur = c.guard.get(i.guildId).botAdd.allow;
+      const allow = bot
+        ? allowed
+          ? [...new Set([...cur, bot.id])].slice(0, 25)
+          : cur.filter((x) => x !== bot.id)
+        : cur;
+      c.guard.patch(i.guildId, { botAdd: { ...(mode ? { mode } : {}), allow } });
+    }
     const cfg = c.guard.get(i.guildId),
       ch = c.antinuke.get(i.guildId).channelId;
     await i.editReply(
@@ -61,6 +94,8 @@ export default {
           content: t('guardConfig', {
             channel: ch ? `<#${ch}>` : t('guardNoChannel'),
             webhook: cfg.webhook.mode,
+            botadd: cfg.botAdd.mode,
+            allowed: cfg.botAdd.allow.map((x) => `<@${x}>`).join(' ') || '-',
             permalert: cfg.permAlert.mode,
           }),
           allowedMentions: { parse: [] },
