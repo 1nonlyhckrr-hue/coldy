@@ -1436,11 +1436,12 @@
   "tpList": "Your templates:\n{list}",
   "tpDeleted": "Template {name} deleted.",
   "tpStarted": "Applying template {name} ({total} items, about 2 per second). Existing roles and channels with the same name are skipped and nothing is deleted. I will post the result here.",
-  "tpDone": "Template {name} applied: {roles} roles and {channels} channels created, {skipped} already existed, {failed} failed.",
-  "tpFailed": "Applying template {name} stopped on an error after {roles} roles and {channels} channels. Check my Manage Roles and Manage Channels permissions.",
+  "tpDone": "Template {name} applied: {roles} roles and {channels} channels created, {skipped} already existed, {failed} failed. {reason}",
+  "tpFailed": "Applying template {name} stopped on an error after {roles} roles and {channels} channels. {reason}",
   "welcomeEditTitle": "Edit message text",
   "welcomeEditLabelWelcome": "Welcome text",
   "welcomeEditLabelGoodbye": "Goodbye text",
   "welcomeEditSavedGoodbye": "Goodbye template saved.",
-  "welcomeEditInvalid": "The text must be 1 to 1800 characters."
+  "welcomeEditInvalid": "The text must be 1 to 1800 characters.",
+  "tpProgress": "Template {name} in progress: {done} of {total} items done ({roles} roles and {channels} channels created, {failed} failed). Still working."
 }

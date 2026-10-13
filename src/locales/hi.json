@@ -1436,11 +1436,12 @@
   "tpList": "आपके टेम्पलेट:\n{list}",
   "tpDeleted": "टेम्पलेट {name} हटाया।",
   "tpStarted": "टेम्पलेट {name} लग रहा है ({total} आइटम, लगभग 2 प्रति सेकंड)। उसी नाम के मौजूदा रोल/चैनल छोड़े जाते हैं और कुछ डिलीट नहीं होता। नतीजा यहीं बताऊँगा।",
-  "tpDone": "टेम्पलेट {name} लगा: {roles} रोल और {channels} चैनल बने, {skipped} पहले से थे, {failed} विफल।",
-  "tpFailed": "टेम्पलेट {name} एक एरर पर रुक गया ({roles} रोल, {channels} चैनल के बाद)। मेरी Manage Roles और Manage Channels अनुमति जाँचें।",
+  "tpDone": "टेम्पलेट {name} लगा: {roles} रोल और {channels} चैनल बने, {skipped} पहले से थे, {failed} विफल। {reason}",
+  "tpFailed": "टेम्पलेट {name} एक एरर पर रुक गया ({roles} रोल, {channels} चैनल के बाद)। {reason}",
   "welcomeEditTitle": "मैसेज टेक्स्ट एडिट करें",
   "welcomeEditLabelWelcome": "वेलकम टेक्स्ट",
   "welcomeEditLabelGoodbye": "गुडबाय टेक्स्ट",
   "welcomeEditSavedGoodbye": "गुडबाय टेम्पलेट सेव हुआ।",
-  "welcomeEditInvalid": "टेक्स्ट 1 से 1800 अक्षरों का होना चाहिए।"
+  "welcomeEditInvalid": "टेक्स्ट 1 से 1800 अक्षरों का होना चाहिए।",
+  "tpProgress": "टेम्पलेट {name} चल रहा है: {total} में से {done} आइटम हो गए ({roles} रोल, {channels} चैनल बने, {failed} विफल)। काम जारी है।"
 }

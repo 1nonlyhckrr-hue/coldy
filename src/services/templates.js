@@ -93,15 +93,36 @@ export class Templates {
 }
 const busy = new Set();
 /** Creates missing roles and channels from the template, never deleting or editing anything. Runs in the background. */
-export function startApply(guild, data, { sleep, finish, pace = 450 }) {
+export function startApply(guild, data, { sleep, finish, progress, log, pace = 450 }) {
   if (busy.has(guild.id)) throw new UserError('tpBusy');
   busy.add(guild.id);
   (async () => {
     let out;
     try {
-      out = await restoreGuild(guild, data, { ordered: true, dropMembers: true, pace, sleep });
-    } catch {
-      out = { rolesCreated: 0, channelsCreated: 0, skipped: 0, failed: -1 };
+      out = await restoreGuild(guild, data, {
+        ordered: true,
+        dropMembers: true,
+        pace,
+        sleep,
+        onError: (kind, name, e) =>
+          log?.warn(
+            { guildId: guild.id, kind, name, code: e?.code, err: e?.message },
+            'Template item failed',
+          ),
+        onProgress: (done, o) => {
+          if (done % 25 === 0) Promise.resolve(progress?.(done, o)).catch(() => {});
+        },
+      });
+      log?.info({ guildId: guild.id, ...out }, 'Template apply finished');
+    } catch (e) {
+      log?.error({ guildId: guild.id, err: e?.message, code: e?.code }, 'Template apply crashed');
+      out = {
+        rolesCreated: 0,
+        channelsCreated: 0,
+        skipped: 0,
+        failed: -1,
+        firstError: `Error: ${String(e?.message ?? e).slice(0, 160)}.`,
+      };
     } finally {
       busy.delete(guild.id);
     }

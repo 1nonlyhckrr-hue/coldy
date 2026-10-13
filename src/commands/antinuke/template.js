@@ -80,16 +80,31 @@ export default {
     const bot = i.guild.members.me;
     if (!bot.permissions.has([P.ManageRoles, P.ManageChannels]))
       throw new UserError('botPermission');
+    let ended = false;
     const total = startApply(i.guild, t.data, {
       sleep,
-      finish: (r) =>
-        say(i, c, r.failed === -1 ? 'tpFailed' : 'tpDone', {
+      log: c.logger,
+      progress: (done, o) =>
+        !ended &&
+        say(i, c, 'tpProgress', {
+          name: nm,
+          done,
+          total: t.data.roles.length + t.data.channels.length,
+          roles: o.rolesCreated,
+          channels: o.channelsCreated,
+          failed: o.failed,
+        }),
+      finish: (r) => {
+        ended = true;
+        return say(i, c, r.failed === -1 ? 'tpFailed' : 'tpDone', {
           name: nm,
           roles: r.rolesCreated,
           channels: r.channelsCreated,
           skipped: r.skipped,
           failed: r.failed,
-        }),
+          reason: r.firstError ?? '',
+        });
+      },
     });
     return say(i, c, 'tpStarted', { name: nm, total });
   },

@@ -1436,11 +1436,12 @@
   "tpList": "Aapke templates:\n{list}",
   "tpDeleted": "Template {name} hataya.",
   "tpStarted": "Template {name} lag raha hai ({total} items, lagbhag 2 per second). Usi naam ke maujooda roles/channels chhode jaate hain aur kuch delete nahi hota. Result yahin bataunga.",
-  "tpDone": "Template {name} laga: {roles} roles aur {channels} channels bane, {skipped} pehle se the, {failed} fail.",
-  "tpFailed": "Template {name} ek error par ruk gaya ({roles} roles, {channels} channels ke baad). Meri Manage Roles aur Manage Channels permission check karo.",
+  "tpDone": "Template {name} laga: {roles} roles aur {channels} channels bane, {skipped} pehle se the, {failed} fail. {reason}",
+  "tpFailed": "Template {name} ek error par ruk gaya ({roles} roles, {channels} channels ke baad). {reason}",
   "welcomeEditTitle": "Message text edit karo",
   "welcomeEditLabelWelcome": "Welcome text",
   "welcomeEditLabelGoodbye": "Goodbye text",
   "welcomeEditSavedGoodbye": "Goodbye template save hua.",
-  "welcomeEditInvalid": "Text 1 se 1800 characters ka hona chahiye."
+  "welcomeEditInvalid": "Text 1 se 1800 characters ka hona chahiye.",
+  "tpProgress": "Template {name} chal raha hai: {total} me se {done} items ho gaye ({roles} roles, {channels} channels bane, {failed} fail). Kaam jaari hai."
 }

@@ -129,6 +129,12 @@ context.voiceRoles = new VoiceRoles(db);
 context.voiceRoles.recover();
 context.voiceReadiness = new VoiceReadiness();
 if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, createVoiceRoleHandler(context));
+client.rest.on('rateLimited', (info) =>
+  logger.warn(
+    { route: info.route, timeToReset: info.timeToReset, global: info.global, limit: info.limit },
+    'Discord rate limit hit',
+  ),
+);
 client.on(Events.ShardDisconnect, (event, id) => {
   logger.warn({ shardId: id, code: event?.code }, 'Shard disconnected; voice effects paused');
   context.voiceReadiness.disconnected(id);

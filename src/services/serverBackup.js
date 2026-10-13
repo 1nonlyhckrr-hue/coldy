@@ -98,7 +98,17 @@ export class ServerBackups {
 }
 /** Recreates missing roles then missing channels (by name, type and category). Returns counts. */
 export async function restoreGuild(guild, data, opts = {}) {
-  const pause = async () => opts.sleep && opts.pace && (await opts.sleep(opts.pace));
+  let done = 0;
+  const note = (kind, name, e) => {
+    out.failed++;
+    out.firstError ??= `First error: ${kind} "${String(name).slice(0, 40)}": ${String(e?.message ?? e).slice(0, 160)}${e?.code ? ` (code ${e.code})` : ''}.`;
+    opts.onError?.(kind, name, e);
+  };
+  const pause = async () => {
+    done++;
+    opts.onProgress?.(done, out);
+    if (opts.sleep && opts.pace) await opts.sleep(opts.pace);
+  };
   if (data?.version !== BACKUP_VERSION) throw new UserError('backupNotFound');
   await Promise.all([guild.roles.fetch(), guild.channels.fetch()]);
   const out = { rolesCreated: 0, channelsCreated: 0, skipped: 0, failed: 0 };
@@ -125,8 +135,8 @@ export async function restoreGuild(guild, data, opts = {}) {
       });
       roleMap.set(r.id, made.id);
       out.rolesCreated++;
-    } catch {
-      out.failed++;
+    } catch (e) {
+      note('role', r.name, e);
     }
     await pause();
   }
@@ -142,7 +152,7 @@ export async function restoreGuild(guild, data, opts = {}) {
   for (const c of order) {
     const parentId = c.parentId ? (chanMap.get(c.parentId) ?? null) : null;
     if (c.parentId && !parentId) {
-      out.failed++;
+      note('channel', c.name, new Error('its category was not created'));
       continue;
     }
     const existing = find(c, parentId);
@@ -179,8 +189,8 @@ export async function restoreGuild(guild, data, opts = {}) {
       }
       chanMap.set(c.id, made.id);
       out.channelsCreated++;
-    } catch {
-      out.failed++;
+    } catch (e) {
+      note('channel', c.name, e);
     }
     await pause();
   }
