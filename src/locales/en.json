@@ -179,7 +179,7 @@
   "automodEnabled": "AutoMod enabled. Only explicitly enabled rules run; staff are exempt.",
   "automodDisabled": "AutoMod disabled.",
   "automodSaved": "AutoMod settings saved.",
-  "automodConfig": "AutoMod: {status}\nAction: {action}\nEnabled rules: {rules}\nFiltered phrases: {words}/100\nExempt roles: {roles}/20\nMention limit 5; caps above 80% with 20 letters; spam 6 messages or 3 repeats in 10 seconds. Staff always exempt. No automatic timeout/ban.",
+  "automodConfig": "AutoMod: {status}\nAction: {action}\nEnabled rules: {rules}\nFiltered phrases: {words}/5000\nExempt roles: {roles}/20\nMention limit 5; caps above 80% with 20 letters; spam 6 messages or 3 repeats in 10 seconds. Staff always exempt. No automatic timeout/ban.",
   "automodIncidents": "Recent AutoMod outcomes (no message contents)",
   "automodEmpty": "No incidents.",
   "funDiceInvalid": "Use 2-1000 sides and 1-10 dice.",
@@ -1237,5 +1237,7 @@
   "guardAutoLockdown_unlocked": "Auto lockdown ended. Channels restored: {restored}.",
   "guardAutoLockdown_unlockPartial": "Auto lockdown ended with {failed} channels not restored. Run /unlockdown again.",
   "automodRuleActionSaved": "Rule {rule} now uses action: {action}. (default = the global action.)",
-  "automodRuleActionsConfig": "Per-rule actions: {overrides}."
+  "automodRuleActionsConfig": "Per-rule actions: {overrides}.",
+  "automodWordsAdded": "Added {added} new words ({skipped} invalid skipped). Total: {total}/5000. Duplicates are ignored.",
+  "automodWordLimit": "Too many words: the limit is 5000 per server. Nothing was changed."
 }

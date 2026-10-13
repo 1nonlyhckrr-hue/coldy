@@ -179,7 +179,7 @@
   "automodEnabled": "AutoMod chalu hai. Sirf enabled rules chalenge; staff exempt hain.",
   "automodDisabled": "AutoMod band hai.",
   "automodSaved": "AutoMod settings save ho gayi.",
-  "automodConfig": "AutoMod: {status}\nAction: {action}\nEnabled rules: {rules}\nFiltered phrases: {words}/100\nExempt roles: {roles}/20\nMention limit 5; 20 letters me 80% se zyada caps; 10 seconds me 6 messages ya 3 repeats. Staff exempt. Automatic timeout/ban nahi.",
+  "automodConfig": "AutoMod: {status}\nAction: {action}\nEnabled rules: {rules}\nFiltered phrases: {words}/5000\nExempt roles: {roles}/20\nMention limit 5; 20 letters me 80% se zyada caps; 10 seconds me 6 messages ya 3 repeats. Staff exempt. Automatic timeout/ban nahi.",
   "automodIncidents": "Recent AutoMod outcomes (message content nahi)",
   "automodEmpty": "Koi incident nahi hai.",
   "funDiceInvalid": "2-1000 sides aur 1-10 dice chunein.",
@@ -1237,5 +1237,7 @@
   "guardAutoLockdown_unlocked": "Auto lockdown khatam. Restore hue channels: {restored}.",
   "guardAutoLockdown_unlockPartial": "Auto lockdown khatam, {failed} channels restore nahi hue. /unlockdown phir chalao.",
   "automodRuleActionSaved": "Rule {rule} ab ye action use karega: {action}. (default = global action)",
-  "automodRuleActionsConfig": "Rule-wise actions: {overrides}."
+  "automodRuleActionsConfig": "Rule-wise actions: {overrides}.",
+  "automodWordsAdded": "{added} naye words add hue ({skipped} invalid skip hue). Total: {total}/5000. Duplicates ignore hote hain.",
+  "automodWordLimit": "Bahut zyada words: limit har server par 5000 hai. Kuch change nahi hua."
 }

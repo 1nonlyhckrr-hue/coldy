@@ -179,7 +179,7 @@
   "automodEnabled": "AutoMod चालू है। केवल चुने गए नियम चलेंगे; स्टाफ को छूट है।",
   "automodDisabled": "AutoMod बंद है।",
   "automodSaved": "AutoMod सेटिंग्स सेव हुईं।",
-  "automodConfig": "AutoMod: {status}\nकार्रवाई: {action}\nचालू नियम: {rules}\nवाक्यांश: {words}/100\nछूट भूमिकाएं: {roles}/20\n5 मेंशन; 20 अक्षरों में 80% से अधिक बड़े अक्षर; 10 सेकंड में 6 संदेश या 3 दोहराव। स्टाफ को छूट। अपने-आप टाइमआउट या बैन नहीं।",
+  "automodConfig": "AutoMod: {status}\nकार्रवाई: {action}\nचालू नियम: {rules}\nवाक्यांश: {words}/5000\nछूट भूमिकाएं: {roles}/20\n5 मेंशन; 20 अक्षरों में 80% से अधिक बड़े अक्षर; 10 सेकंड में 6 संदेश या 3 दोहराव। स्टाफ को छूट। अपने-आप टाइमआउट या बैन नहीं।",
   "automodIncidents": "हाल के AutoMod परिणाम (संदेश सामग्री नहीं)",
   "automodEmpty": "कोई घटना नहीं है।",
   "funDiceInvalid": "2-1000 भुजाएं और 1-10 पासे चुनें।",
@@ -1237,5 +1237,7 @@
   "guardAutoLockdown_unlocked": "ऑटो लॉकडाउन खत्म। बहाल चैनल: {restored}।",
   "guardAutoLockdown_unlockPartial": "ऑटो लॉकडाउन खत्म, {failed} चैनल बहाल नहीं हुए। /unlockdown फिर चलाएं।",
   "automodRuleActionSaved": "नियम {rule} अब यह एक्शन इस्तेमाल करेगा: {action}। (default = ग्लोबल एक्शन)",
-  "automodRuleActionsConfig": "नियम-वार एक्शन: {overrides}।"
+  "automodRuleActionsConfig": "नियम-वार एक्शन: {overrides}।",
+  "automodWordsAdded": "{added} नए शब्द जोड़े ({skipped} अमान्य छोड़े गए)। कुल: {total}/5000। डुप्लिकेट अनदेखे।",
+  "automodWordLimit": "बहुत ज़्यादा शब्द: सीमा प्रति सर्वर 5000 है। कुछ नहीं बदला।"
 }

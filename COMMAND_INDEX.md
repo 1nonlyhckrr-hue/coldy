@@ -123,7 +123,7 @@
 | /automod thresholds | Tune mention/caps thresholds; does not enable rules or moderation. | Local mock/unit only |
 | /automod timeoutminutes | Set automatic timeout duration 1-60 minutes; does not enable rules. | Local mock/unit only |
 | /automod unresolved | Privately inspect unresolved stored incident metadata; never retries actions. | Local mock/unit only |
-| /automod wordadd | Add a literal word/phrase to the filter. | Local mock/unit only |
+| /automod wordadd | Add a literal word/phrase, or many separated by commas, up to 5000 total. | Local mock/unit only |
 | /automod wordlist | Privately inspect twenty stored literal phrases per page. | Local mock/unit only |
 | /automod wordremove | Remove a literal filtered word/phrase. | Local mock/unit only |
 | /media bypassadd | Exempt one confirmed current human member, max 100 saved bypasses. | Local mock/unit only |

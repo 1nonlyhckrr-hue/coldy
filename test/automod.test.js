@@ -825,7 +825,7 @@ test('AutoMod phrase listing is bounded private localized and preserves exact st
       assert(text.includes('40. phrase39'));
       assert(!text.includes('phrase40'));
       assert.deepEqual(replies[0].allowedMentions.parse, []);
-      page = 5;
+      page = 250;
       await command.execute(i, x.c);
       assert(
         replies[1].embeds[0].data.description.includes(translate(locale, 'automodWordListEmpty')),
@@ -853,7 +853,7 @@ test('AutoMod phrase listing validates pages and manager identity before private
         options: {
           getSubcommand: () => 'wordlist',
           getInteger: () =>
-            kind === 'zero' ? 0 : kind === 'fraction' ? 1.5 : kind === 'large' ? 6 : 1,
+            kind === 'zero' ? 0 : kind === 'fraction' ? 1.5 : kind === 'large' ? 251 : 1,
         },
       };
       await assert.rejects(
@@ -2038,6 +2038,37 @@ test('/automod rule action: confirm for timeout, permission check, set and reset
     await command.execute(i, x.c);
     assert.equal(x.automod.get('g').rules.caps, true);
     assert.deepEqual(x.automod.get('g').ruleActions, { words: 'timeout' });
+  } finally {
+    x.db.close();
+  }
+});
+test('5000 words: bulk comma add dedupes, enforces the limit atomically, and matching stays whole-word and fast', async () => {
+  const { matchesAnyWord, MAX_WORDS } = await import('../src/services/automod.js');
+  const x = setup();
+  try {
+    assert.equal(MAX_WORDS, 5000);
+    const chunk = (a, b) => Array.from({ length: b - a }, (_, n) => 'word' + (a + n)).join(', ');
+    x.automod.word('g', chunk(0, 300) + ', Word5, ,  ' + 'x'.repeat(51), true);
+    assert.deepEqual(x.automod.lastWordChange, { added: 300, skipped: 1, total: 300 });
+    x.automod.word('g', chunk(0, 300), true);
+    assert.equal(x.automod.lastWordChange.added, 0);
+    for (let a = 300; a < 5000; a += 300)
+      x.automod.word('g', chunk(a, Math.min(a + 300, 5000)), true);
+    assert.equal(x.automod.get('g').words.length, 5000);
+    assert.throws(() => x.automod.word('g', 'one more, another', true), /automodWordLimit/);
+    assert.equal(x.automod.get('g').words.length, 5000);
+    const words = x.automod.get('g').words;
+    assert(matchesAnyWord('hello WORD4999 there', words));
+    assert(!matchesAnyWord('hello word50000 there', words));
+    assert(!matchesAnyWord('swordfish', words));
+    const t0 = Date.now();
+    for (let n = 0; n < 2000; n++)
+      matchesAnyWord('just a normal chat message about nothing', words);
+    assert(Date.now() - t0 < 1000);
+    x.automod.word('g', 'word0, word1', false);
+    x.automod.word('g', 'two words, bad-ish!', true);
+    assert(matchesAnyWord('say two  words now', x.automod.get('g').words));
+    assert(matchesAnyWord('so bad-ish! indeed', x.automod.get('g').words));
   } finally {
     x.db.close();
   }

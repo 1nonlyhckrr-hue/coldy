@@ -3653,14 +3653,14 @@
     "name": "automod wordadd",
     "category": "automod",
     "syntax": "/automod wordadd (text)",
-    "description": "Add a literal word/phrase to the filter.",
+    "description": "Add a literal word/phrase, or many separated by commas, up to 5000 total.",
     "parameters": [
       {
         "name": "text",
         "required": true,
         "type": 3,
         "minLength": 1,
-        "maxLength": 50
+        "maxLength": 4000
       }
     ],
     "userPermissions": [
@@ -3690,7 +3690,7 @@
         "required": false,
         "type": 4,
         "min": 1,
-        "max": 5
+        "max": 250
       }
     ],
     "userPermissions": [

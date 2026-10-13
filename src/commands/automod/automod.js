@@ -116,13 +116,13 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('wordadd')
-      .setDescription('Add a literal word/phrase to the filter.')
+      .setDescription('Add a literal word/phrase, or many separated by commas, up to 5000 total.')
       .addStringOption((o) =>
         o
           .setName('text')
-          .setDescription('Literal phrase, no regex')
+          .setDescription('Literal phrase (50 chars max each), no regex; separate many with commas')
           .setMinLength(1)
-          .setMaxLength(50)
+          .setMaxLength(4000)
           .setRequired(true),
       ),
   )
@@ -247,7 +247,7 @@ const data = new SlashCommandBuilder()
       .setName('wordlist')
       .setDescription('Privately inspect twenty stored literal phrases per page.')
       .addIntegerOption((o) =>
-        o.setName('page').setDescription('Page 1-5').setMinValue(1).setMaxValue(5),
+        o.setName('page').setDescription('Page 1-250').setMinValue(1).setMaxValue(250),
       ),
   )
   .addSubcommand((s) =>
@@ -506,8 +506,13 @@ export default {
         action === null ? t('automodSaved') : t('automodRuleActionSaved', { rule: name, action });
     }
     if (['wordadd', 'wordremove'].includes(sub)) {
-      c.automod.word(i.guildId, i.options.getString('text', true), sub === 'wordadd');
-      content = t('automodSaved');
+      const text = i.options.getString('text', true);
+      c.automod.word(i.guildId, text, sub === 'wordadd');
+      const r = c.automod.lastWordChange;
+      content =
+        sub === 'wordadd' && /[,\n]/u.test(text) && r
+          ? t('automodWordsAdded', { added: r.added, skipped: r.skipped, total: r.total })
+          : t('automodSaved');
     }
     if (sub === 'exempt') {
       const selected = i.options.getRole('role', true),
@@ -602,7 +607,7 @@ export default {
     }
     if (sub === 'wordlist') {
       const page = i.options.getInteger('page') ?? 1;
-      if (!Number.isInteger(page) || page < 1 || page > 5)
+      if (!Number.isInteger(page) || page < 1 || page > 250)
         throw new UserError('automodWordPageInvalid');
       const words = c.automod.get(i.guildId).words,
         rows = words.slice((page - 1) * 20, page * 20);

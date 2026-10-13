@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
 import { matchesTrigger, normalizeTrigger } from './autoresponder.js';
+export const MAX_WORDS = 5000;
 const schema = z
   .object({
     enabled: z.boolean().default(false),
@@ -38,7 +39,7 @@ const schema = z
     spamMessages: z.number().int().min(3).max(10).default(6),
     spamRepeats: z.number().int().min(2).max(10).default(3),
     spamWindowSeconds: z.number().int().min(5).max(30).default(10),
-    words: z.array(z.string().min(1).max(50)).max(100).default([]),
+    words: z.array(z.string().min(1).max(50)).max(MAX_WORDS).default([]),
     ignoredChannels: z
       .array(z.string().regex(/^\d{17,20}$/))
       .max(20)
@@ -49,18 +50,52 @@ const schema = z
       .default([]),
   })
   .strict();
+const WORD_CHARS = /^[\p{L}\p{N}_]+$/u,
+  matchers = new WeakMap();
+/**
+ * Compiled matcher for a word list: single words are looked up in a Set against the message
+ * tokens (same whole-word rule as matchesTrigger), only phrases with spaces or symbols are
+ * scanned one by one. Cached per stored list.
+ */
+function wordMatcher(words) {
+  let m = matchers.get(words);
+  if (m) return m;
+  const set = new Set(),
+    phrases = [];
+  for (const raw of words) {
+    const w = normalizeTrigger(raw);
+    if (WORD_CHARS.test(w)) set.add(w);
+    else if (w) phrases.push(w);
+  }
+  m = { set, phrases };
+  matchers.set(words, m);
+  return m;
+}
+export function matchesAnyWord(text, words) {
+  if (!words.length) return false;
+  const { set, phrases } = wordMatcher(words),
+    norm = normalizeTrigger(text);
+  if (set.size) for (const t of norm.matchAll(/[\p{L}\p{N}_]+/gu)) if (set.has(t[0])) return true;
+  return phrases.some((w) => matchesTrigger(norm, w, 'keyword'));
+}
 export class AutoMod {
   constructor(db, now = Date.now) {
     this.db = db;
     this.now = now;
     this.recent = new Map();
+    this.cache = new Map();
     this.linkSafety = null;
   }
   get(guildId) {
     const r = this.db
       .prepare('SELECT settings_json FROM automod_settings WHERE guild_id=?')
       .get(guildId);
-    return schema.parse(r ? JSON.parse(r.settings_json) : {});
+    const raw = r?.settings_json ?? '',
+      hit = this.cache.get(guildId);
+    if (hit && hit.raw === raw) return hit.settings;
+    const settings = schema.parse(r ? JSON.parse(raw) : {});
+    this.cache.set(guildId, { raw, settings });
+    return settings;
   }
   patch(guildId, changes) {
     return this.db.transaction(() => {
@@ -163,16 +198,32 @@ export class AutoMod {
   }
   word(guildId, value, add) {
     if (typeof add !== 'boolean') throw new TypeError('Invalid word mode');
-    if (typeof value !== 'string' || value.length > 50) throw new UserError('automodWordInvalid');
-    const word = normalizeTrigger(value);
-    if (!word || word.length > 50 || /[\u0000-\u001f\u007f]/u.test(word))
-      throw new UserError('automodWordInvalid');
+    if (typeof value !== 'string' || value.length > 4000) throw new UserError('automodWordInvalid');
+    const bulk = /[,\n]/u.test(value),
+      parts = bulk ? value.split(/[,\n]/u) : [value],
+      list = [];
+    let skipped = 0;
+    for (const part of parts) {
+      if (bulk && !part.trim()) continue;
+      const word = normalizeTrigger(part);
+      if (!word || word.length > 50 || /[\u0000-\u001f\u007f]/u.test(word)) {
+        if (!bulk) throw new UserError('automodWordInvalid');
+        skipped++;
+      } else list.push(word);
+    }
+    if (!list.length) throw new UserError('automodWordInvalid');
     return this.db.transaction(() => {
       const s = this.get(guildId),
-        words = new Set(s.words);
-      if (add) words.add(word);
-      else words.delete(word);
-      return this.patch(guildId, { words: [...words] });
+        words = new Set(s.words),
+        before = words.size;
+      for (const w of list) {
+        if (add) words.add(w);
+        else words.delete(w);
+      }
+      if (words.size > MAX_WORDS) throw new UserError('automodWordLimit');
+      const updated = this.patch(guildId, { words: [...words] });
+      this.lastWordChange = { added: words.size - before, skipped, total: words.size };
+      return updated;
     })();
   }
   ignoreChannel(guildId, channelId, add) {
@@ -196,8 +247,7 @@ export class AutoMod {
   }
   detect(message, settings) {
     const text = message.content ?? '';
-    if (settings.rules.words && settings.words.some((w) => matchesTrigger(text, w, 'keyword')))
-      return 'words';
+    if (settings.rules.words && matchesAnyWord(text, settings.words)) return 'words';
     if (
       settings.rules.invites &&
       /(?:discord\.gg|discord(?:app)?\.com\/invite)\/[a-z0-9-]+/iu.test(text)
