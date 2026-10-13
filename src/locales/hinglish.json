@@ -1214,9 +1214,12 @@
   "activityNone": "Koi custom activity saved nahi hai.",
   "guardRuntimeDisabled": "Guards audit log padhte hain, isliye bot par ENABLE_AUDIT_EVENTS chalu hona chahiye. Tab tak ye dormant rahenge.",
   "guardNoChannel": "set nahi hai (/antinuke enable use karo)",
-  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook banana: {webhook}",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook banana: {webhook}\nDangerous permission change: {permalert}",
   "guardWebhook_alerted": "Untrusted user <@{actor}> ne webhook banaya. Sirf alert, kuch hataya nahi gaya.",
   "guardWebhook_deleted": "Untrusted user <@{actor}> ne webhook banaya. Emika ne use delete kar diya.",
   "guardWebhook_gone": "Untrusted user <@{actor}> ne webhook banaya, lekin wo pehle hi hat chuka tha.",
-  "guardWebhook_failed": "Untrusted user <@{actor}> ne webhook banaya aur Emika use delete nahi kar saka. Manage Webhooks check karo."
+  "guardWebhook_failed": "Untrusted user <@{actor}> ne webhook banaya aur Emika use delete nahi kar saka. Manage Webhooks check karo.",
+  "guardPerm_alerted": "Untrusted user <@{actor}> ne role <@&{role}> ko dangerous permissions di: {perms}. Sirf alert.",
+  "guardPerm_stripped": "Untrusted user <@{actor}> ne role <@&{role}> ko dangerous permissions di: {perms}. Emika ne unhe wapas hata diya.",
+  "guardPerm_failed": "Untrusted user <@{actor}> ne role <@&{role}> ko dangerous permissions di: {perms}. Emika unhe hata nahi saka (role Emika se upar, managed, ya Manage Roles nahi)."
 }

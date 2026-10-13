@@ -1214,9 +1214,12 @@
   "activityNone": "No custom activity is saved.",
   "guardRuntimeDisabled": "Guards read the audit log, so ENABLE_AUDIT_EVENTS must be on for the bot. They stay dormant until then.",
   "guardNoChannel": "not set (use /antinuke enable)",
-  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}\nDangerous permission change: {permalert}",
   "guardWebhook_alerted": "Untrusted user <@{actor}> created a webhook. Alert only, nothing was removed.",
   "guardWebhook_deleted": "Untrusted user <@{actor}> created a webhook. Emika deleted it.",
   "guardWebhook_gone": "Untrusted user <@{actor}> created a webhook, but it was already gone.",
-  "guardWebhook_failed": "Untrusted user <@{actor}> created a webhook and Emika could not delete it. Check Manage Webhooks."
+  "guardWebhook_failed": "Untrusted user <@{actor}> created a webhook and Emika could not delete it. Check Manage Webhooks.",
+  "guardPerm_alerted": "Untrusted user <@{actor}> gave role <@&{role}> dangerous permissions: {perms}. Alert only.",
+  "guardPerm_stripped": "Untrusted user <@{actor}> gave role <@&{role}> dangerous permissions: {perms}. Emika removed them again.",
+  "guardPerm_failed": "Untrusted user <@{actor}> gave role <@&{role}> dangerous permissions: {perms}. Emika could not remove them (role above Emika, managed, or Manage Roles missing)."
 }

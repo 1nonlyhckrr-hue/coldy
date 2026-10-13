@@ -107,3 +107,47 @@ test('stale entries and disabled audit runtime are ignored', async () => {
     f.db.close();
   }
 });
+const permEntry = (executorId, oldP, newP, action = AuditLogEvent.RoleUpdate) =>
+  entry(executorId, action, {
+    targetId: '777777777777777777',
+    changes: [{ key: 'permissions', old: String(oldP), new: String(newP) }],
+  });
+test('permalert: only newly added dangerous bits trigger; strip removes them', async () => {
+  const { PermissionFlagsBits: P, PermissionsBitField } = await import('discord.js');
+  const f = setup();
+  try {
+    const roleCalls = [];
+    f.guild.roles = {
+      fetch: async () => ({
+        managed: false,
+        position: 1,
+        permissions: new PermissionsBitField(P.Administrator | P.SendMessages),
+        setPermissions: async (p) => roleCalls.push(p.bitfield),
+      }),
+    };
+    f.guild.members.fetchMe = async () => ({
+      id: 'bot',
+      guild: { id: G },
+      permissions: { has: () => true },
+      roles: { highest: { position: 5 } },
+    });
+    const run = (e) => createGuardHandler(f.c)(e, f.guild);
+    await run(permEntry(BAD, 0, P.Administrator));
+    assert.equal(f.sent.length, 0);
+    f.c.guard.patch(G, { permAlert: { mode: 'alert' } });
+    await run(permEntry(BAD, P.Administrator, P.Administrator | P.SendMessages));
+    await run(permEntry(BAD, 0, P.SendMessages));
+    assert.equal(f.sent.length, 0);
+    await run(permEntry(BAD, P.SendMessages, P.SendMessages | P.BanMembers));
+    assert.match(f.sent[0], /guardPerm_alerted.*BanMembers/);
+    assert.equal(roleCalls.length, 0);
+    f.c.guard.patch(G, { permAlert: { mode: 'strip' } });
+    await run(permEntry(BAD, 0, P.Administrator, AuditLogEvent.RoleCreate));
+    assert.match(f.sent[1], /guardPerm_stripped.*Administrator/);
+    assert.equal(roleCalls[0], P.SendMessages);
+    await run(permEntry(TRUSTED, 0, P.Administrator));
+    assert.equal(f.sent.length, 2);
+  } finally {
+    f.db.close();
+  }
+});

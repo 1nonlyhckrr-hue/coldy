@@ -12,6 +12,10 @@ const schema = z
       .object({ mode: z.enum(['off', 'alert', 'delete']).default('off') })
       .strict()
       .prefault({}),
+    permAlert: z
+      .object({ mode: z.enum(['off', 'alert', 'strip']).default('off') })
+      .strict()
+      .prefault({}),
   })
   .strict();
 export class Guard {
@@ -93,7 +97,67 @@ async function webhookRule(c, guild, entry, cfg) {
   }
   await alert(c, guild, 'guardWebhook_' + result, { actor: entry.executorId });
 }
-const RULES = [webhookRule];
+const DANGEROUS = [
+  P.Administrator,
+  P.ManageGuild,
+  P.ManageRoles,
+  P.ManageChannels,
+  P.KickMembers,
+  P.BanMembers,
+].reduce((a, b) => a | b, 0n);
+/** Dangerous permission bits that a role-change audit entry added. */
+export function addedDangerousBits(entry) {
+  const ch = (entry.changes ?? []).find((x) => x.key === 'permissions');
+  if (!ch) return 0n;
+  try {
+    const was = BigInt(ch.old ?? 0),
+      now = BigInt(ch.new ?? 0);
+    return now & ~was & DANGEROUS;
+  } catch {
+    return 0n;
+  }
+}
+async function permRule(c, guild, entry, cfg) {
+  if (
+    ![AuditLogEvent.RoleUpdate, AuditLogEvent.RoleCreate].includes(entry.action) ||
+    cfg.permAlert.mode === 'off'
+  )
+    return;
+  const bits = addedDangerousBits(entry);
+  if (!bits) return;
+  const names = Object.entries(P)
+    .filter(([, v]) => (bits & v) === v && (v & (v - 1n)) === 0n)
+    .map(([k]) => k)
+    .join(', ');
+  let result = 'alerted';
+  if (cfg.permAlert.mode === 'strip') {
+    result = 'failed';
+    try {
+      const role = await guild.roles.fetch(entry.targetId, { force: true });
+      const me = await guild.members.fetchMe();
+      if (
+        role &&
+        !role.managed &&
+        me.permissions?.has(P.ManageRoles) &&
+        role.position < me.roles.highest.position
+      ) {
+        await role.setPermissions(
+          role.permissions.remove(bits),
+          'Emika guard: dangerous permissions added by an untrusted user',
+        );
+        result = 'stripped';
+      }
+    } catch {
+      result = 'failed';
+    }
+  }
+  await alert(c, guild, 'guardPerm_' + result, {
+    actor: entry.executorId,
+    role: entry.targetId,
+    perms: names,
+  });
+}
+const RULES = [webhookRule, permRule];
 export function createGuardHandler(c) {
   return async (entry, guild) => {
     try {

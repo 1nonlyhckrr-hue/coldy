@@ -22,6 +22,22 @@ const data = new SlashCommandBuilder()
           ),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('permalert')
+      .setDescription('Act when an untrusted user gives a role dangerous permissions.')
+      .addStringOption((o) =>
+        o
+          .setName('mode')
+          .setDescription('off, alert only, or remove the added permissions and alert')
+          .setRequired(true)
+          .addChoices(
+            { name: 'off', value: 'off' },
+            { name: 'alert', value: 'alert' },
+            { name: 'strip', value: 'strip' },
+          ),
+      ),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show all guard settings.'));
 export default {
   category: 'antinuke',
@@ -35,6 +51,8 @@ export default {
       throw new UserError('guardRuntimeDisabled');
     if (sub === 'webhook')
       c.guard.patch(i.guildId, { webhook: { mode: i.options.getString('mode', true) } });
+    if (sub === 'permalert')
+      c.guard.patch(i.guildId, { permAlert: { mode: i.options.getString('mode', true) } });
     const cfg = c.guard.get(i.guildId),
       ch = c.antinuke.get(i.guildId).channelId;
     await i.editReply(
@@ -43,6 +61,7 @@ export default {
           content: t('guardConfig', {
             channel: ch ? `<#${ch}>` : t('guardNoChannel'),
             webhook: cfg.webhook.mode,
+            permalert: cfg.permAlert.mode,
           }),
           allowedMentions: { parse: [] },
         },
