@@ -7,6 +7,7 @@ import {
   PermissionFlagsBits as P,
 } from 'discord.js';
 import { translate } from './localization.js';
+import { validateWelcomeAsset } from './welcomeAssets.js';
 import { lunaPayload } from '../utils/embeds.js';
 import { UserError, handleInteractionError } from '../utils/errors.js';
 // /welcome edit: a pop-up form pre-filled with the current welcome or goodbye text.
@@ -15,6 +16,9 @@ export const MAX = 1800;
 const KINDS = ['welcome', 'goodbye'];
 export function currentText(settings, kind) {
   return kind === 'goodbye' ? settings.goodbyeMessage : settings.message;
+}
+export function currentImage(settings, kind) {
+  return (kind === 'goodbye' ? settings.goodbyeImage : settings.image) ?? '';
 }
 export function buildModal(kind, userId, settings, locale) {
   if (!KINDS.includes(kind)) throw new UserError('unknownCommand');
@@ -32,7 +36,18 @@ export function buildModal(kind, userId, settings, locale) {
   return new ModalBuilder()
     .setCustomId(`${PREFIX}:${kind}:${userId}`)
     .setTitle(t('welcomeEditTitle').slice(0, 45))
-    .addComponents(new ActionRowBuilder().addComponents(input));
+    .addComponents(
+      new ActionRowBuilder().addComponents(input),
+      new ActionRowBuilder().addComponents(
+        new TextInputBuilder()
+          .setCustomId('image')
+          .setLabel(t('welcomeEditLabelImage').slice(0, 45))
+          .setStyle(TextInputStyle.Short)
+          .setRequired(false)
+          .setMaxLength(1000)
+          .setValue(currentImage(settings, kind).slice(0, 1000)),
+      ),
+    );
 }
 export function createWelcomeEditHandler(c) {
   return async (i) => {
@@ -47,13 +62,24 @@ export function createWelcomeEditHandler(c) {
       if (!member?.permissions?.has(P.ManageGuild)) throw new UserError('userPermission');
       const text = String(i.fields.getTextInputValue('text') ?? '').trim();
       if (!text || text.length > MAX) throw new UserError('welcomeEditInvalid');
-      c.guildConfig.patch(
-        i.guildId,
-        'welcome',
-        kind === 'goodbye'
+      let rawImage;
+      try {
+        rawImage = i.fields.getTextInputValue('image');
+      } catch {
+        rawImage = undefined; // a form opened before this field existed
+      }
+      rawImage = typeof rawImage === 'string' ? rawImage.trim() : undefined;
+      const imageKey = kind === 'goodbye' ? 'goodbyeImage' : 'image';
+      const image =
+        rawImage === undefined
+          ? {}
+          : { [imageKey]: rawImage ? validateWelcomeAsset(rawImage) : undefined };
+      c.guildConfig.patch(i.guildId, 'welcome', {
+        ...(kind === 'goodbye'
           ? { goodbyeMessage: text, goodbyeCustom: true }
-          : { message: text, messageCustom: true },
-      );
+          : { message: text, messageCustom: true }),
+        ...image,
+      });
       const locale = c.guildConfig.get(i.guildId).language;
       await i.reply(
         lunaPayload(

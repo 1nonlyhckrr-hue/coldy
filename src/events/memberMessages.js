@@ -29,7 +29,7 @@ export function createMemberMessageHandler(context, kind) {
           },
           {
             locale: latest.language,
-            ...welcomeStyle(current, kind),
+            ...welcomeStyle(current, kind, member),
           },
         ),
       );

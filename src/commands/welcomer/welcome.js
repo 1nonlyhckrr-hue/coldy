@@ -1,7 +1,7 @@
 import { buildModal } from '../../services/welcomeEdit.js';
 import { convertMessage, loadLinkedMessage } from '../../services/welcomeCopy.js';
 import { exportWelcome, importWelcome, resetWelcome } from '../../services/welcomeLibrary.js';
-import { validateWelcomeAsset, welcomeStyle } from '../../services/welcomeAssets.js';
+import { memberTitle, validateWelcomeAsset, welcomeStyle } from '../../services/welcomeAssets.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import {
@@ -549,7 +549,7 @@ export default {
           },
           {
             locale: latest.language,
-            ...welcomeStyle(latest.welcome, kind),
+            ...welcomeStyle(latest.welcome, kind, actor),
           },
         ),
       );
@@ -568,7 +568,7 @@ export default {
             content: renderGuildTemplate(latest.welcome, 'welcome', member, latest.language),
             allowedMentions: { parse: [], users: latest.welcome.mentionMember ? [i.user.id] : [] },
           },
-          { locale: latest.language, ...welcomeStyle(latest.welcome, 'welcome') },
+          { locale: latest.language, ...welcomeStyle(latest.welcome, 'welcome', member) },
         ),
       );
       text = t('welcomeTestSent');
@@ -576,7 +576,7 @@ export default {
     await i.editReply(
       lunaPayload(
         { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
-        { locale, ...(sub === 'test' ? { title: false } : {}) },
+        { locale, ...(sub === 'test' ? { title: memberTitle(i.member) ?? i.user.username } : {}) },
       ),
     );
   },

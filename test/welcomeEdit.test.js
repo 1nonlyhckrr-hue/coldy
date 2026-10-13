@@ -25,7 +25,7 @@ function env(perm = true) {
     localization: { t: (g, k) => k, locale: () => 'en' },
     logger: { warn() {}, error() {} },
   };
-  const i = (cid, text, uid = '9') => ({
+  const i = (cid, text, uid = '9', image) => ({
     isModalSubmit: () => true,
     customId: cid,
     user: { id: uid },
@@ -35,7 +35,13 @@ function env(perm = true) {
         fetch: async () => ({ permissions: { has: (f) => perm && f === P.ManageGuild } }),
       },
     },
-    fields: { getTextInputValue: () => text },
+    fields: {
+      getTextInputValue: (id) => {
+        if (id !== 'image') return text;
+        if (image === undefined) throw new Error('no such field');
+        return image;
+      },
+    },
     reply: async (p) => replies.push(p),
     replied: false,
     deferred: false,
@@ -62,4 +68,22 @@ test('submit is refused without Manage Server, for another user, or with bad len
   await createWelcomeEditHandler(b.c)(b.i('welcomeEdit:welcome:9', 'x'.repeat(1801)));
   await createWelcomeEditHandler(b.c)(b.i('other:thing', 'x'));
   assert.equal(b.patched.length, 0);
+});
+
+test('modal has an optional image/GIF field and submit sets, clears or rejects it', async () => {
+  const m = buildModal('welcome', '9', { ...settings, image: 'https://x.io/a.gif' }, 'en').toJSON();
+  const f = m.components[1].components[0];
+  assert.equal(f.custom_id, 'image');
+  assert.equal(f.required, false);
+  assert.equal(f.value, 'https://x.io/a.gif');
+  const { c, i, patched } = env();
+  const h = createWelcomeEditHandler(c);
+  await h(i('welcomeEdit:welcome:9', 'Hi', '9', ' https://cdn.example.org/w.gif '));
+  await h(i('welcomeEdit:goodbye:9', 'Bye', '9', 'https://cdn.example.org/b.png'));
+  await h(i('welcomeEdit:welcome:9', 'Hi', '9', ''));
+  await h(i('welcomeEdit:welcome:9', 'Hi', '9', 'http://insecure.example.org/a.gif'));
+  assert.equal(patched.length, 3);
+  assert.equal(patched[0].image, 'https://cdn.example.org/w.gif');
+  assert.equal(patched[1].goodbyeImage, 'https://cdn.example.org/b.png');
+  assert.ok('image' in patched[2] && patched[2].image === undefined);
 });

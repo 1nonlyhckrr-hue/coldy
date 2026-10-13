@@ -14,3 +14,11 @@ test('welcome embeds have no default Emika title, custom titles are kept', () =>
   assert.equal(lunaPayload({ content: 'x' }, {}).embeds[0].data.title, 'Emika');
   assert.equal(lunaPayload({ content: 'x' }, { title: false }).embeds[0].data.title, undefined);
 });
+
+test('welcome title falls back to the member display name', () => {
+  const m = { displayName: 'Aryan', user: { username: 'aryan01' } };
+  assert.equal(welcomeStyle({}, 'welcome', m).title, 'Aryan');
+  assert.equal(welcomeStyle({}, 'goodbye', { user: { username: 'bye' } }).title, 'bye');
+  assert.equal(welcomeStyle({ title: 'Mine' }, 'welcome', m).title, 'Mine');
+  assert.equal(welcomeStyle({}, 'welcome').title, false);
+});

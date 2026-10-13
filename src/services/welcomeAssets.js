@@ -23,10 +23,15 @@ export function validateWelcomeAsset(value) {
     throw new UserError('welcomeAssetInvalid');
   return value;
 }
-export function welcomeStyle(settings, kind) {
+/** Display name of the member a welcome/goodbye card is about. */
+export function memberTitle(member) {
+  return member?.displayName || member?.user?.username || member?.username || undefined;
+}
+export function welcomeStyle(settings, kind, member) {
   return {
     color: settings.color,
-    title: (kind === 'goodbye' ? settings.goodbyeTitle : settings.title) || false,
+    title:
+      (kind === 'goodbye' ? settings.goodbyeTitle : settings.title) || memberTitle(member) || false,
     image: kind === 'goodbye' ? settings.goodbyeImage : settings.image,
     thumbnail: kind === 'goodbye' ? settings.goodbyeThumbnail : settings.thumbnail,
   };
