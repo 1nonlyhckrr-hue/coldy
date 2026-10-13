@@ -42,6 +42,7 @@ test('installed command names and option limits validate', async () => {
     'list',
     'lockdown',
     'logging',
+    'logs',
     'matrix',
     'media',
     'membercount',
@@ -81,6 +82,7 @@ test('installed command names and option limits validate', async () => {
     'voice',
     'voicelb',
     'voicemaster',
+    'watchlist',
     'welcome',
   ]);
   for (const c of commands.values()) {
@@ -110,6 +112,8 @@ test('foundation and utility commands execute mock replies', async () => {
         'slowmode',
         'channeltools',
         'modtools',
+        'logs',
+        'watchlist',
         'list',
         'membercount',
         'afk',

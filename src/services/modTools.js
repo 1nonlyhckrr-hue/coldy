@@ -33,7 +33,16 @@ function record(c, i, target, action, reason) {
     reason,
     interactionId: `${i.id}:${action}:${target}`,
   });
-  return { id, done: (s) => c.cases.finish(id, s) };
+  return {
+    id,
+    done: (s) => {
+      c.cases.finish(id, s);
+      if (s === 'completed')
+        c.logHub
+          ?.mod(i.guild, { actor: i.user.id, action, target, reason, caseId: id })
+          .catch(() => {});
+    },
+  };
 }
 /** Bans each ID (members or not). Returns [{id, ok, why}]. */
 export async function banMany(i, c, ids, { reason, bot, actor, checkActor, soft = false }) {

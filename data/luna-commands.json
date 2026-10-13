@@ -8749,6 +8749,135 @@
     "source": "src/commands/logging/logging.js"
   },
   {
+    "name": "logs config",
+    "category": "logging",
+    "syntax": "/logs config",
+    "description": "Show which logs are on.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/logging/logs.js"
+  },
+  {
+    "name": "logs off",
+    "category": "logging",
+    "syntax": "/logs off (kind)",
+    "description": "Stop one kind of log.",
+    "parameters": [
+      {
+        "name": "kind",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Moderation actions (modlog)",
+            "value": "mod"
+          },
+          {
+            "name": "Message delete/edit",
+            "value": "msg"
+          },
+          {
+            "name": "Joins and leaves",
+            "value": "join"
+          },
+          {
+            "name": "Voice joins, leaves, moves",
+            "value": "vc"
+          },
+          {
+            "name": "Member role changes",
+            "value": "role"
+          },
+          {
+            "name": "Channel create/delete/rename",
+            "value": "channel"
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/logging/logs.js"
+  },
+  {
+    "name": "logs set",
+    "category": "logging",
+    "syntax": "/logs set (kind) (channel)",
+    "description": "Send one kind of log to a channel (off until set).",
+    "parameters": [
+      {
+        "name": "kind",
+        "required": true,
+        "type": 3,
+        "choices": [
+          {
+            "name": "Moderation actions (modlog)",
+            "value": "mod"
+          },
+          {
+            "name": "Message delete/edit",
+            "value": "msg"
+          },
+          {
+            "name": "Joins and leaves",
+            "value": "join"
+          },
+          {
+            "name": "Voice joins, leaves, moves",
+            "value": "vc"
+          },
+          {
+            "name": "Member role changes",
+            "value": "role"
+          },
+          {
+            "name": "Channel create/delete/rename",
+            "value": "channel"
+          }
+        ]
+      },
+      {
+        "name": "channel",
+        "required": true,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/logging/logs.js"
+  },
+  {
     "name": "bulktimeout confirm",
     "category": "moderation",
     "syntax": "/bulktimeout confirm (plan-id) (confirm)",
@@ -10352,6 +10481,126 @@
     "cooldownMs": 5000,
     "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/moderation/slowmode.js"
+  },
+  {
+    "name": "watchlist list",
+    "category": "moderation",
+    "syntax": "/watchlist list",
+    "description": "Show watched members.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/watchlist.js"
+  },
+  {
+    "name": "watchlist nicklock",
+    "category": "moderation",
+    "syntax": "/watchlist nicklock (member) [nickname]",
+    "description": "Lock a nickname: any change is reverted automatically.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "nickname",
+        "required": false,
+        "type": 3,
+        "maxLength": 32
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/watchlist.js"
+  },
+  {
+    "name": "watchlist nicklockoff",
+    "category": "moderation",
+    "syntax": "/watchlist nicklockoff (member)",
+    "description": "Unlock a member nickname.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/watchlist.js"
+  },
+  {
+    "name": "watchlist unwatch",
+    "category": "moderation",
+    "syntax": "/watchlist unwatch (member)",
+    "description": "Stop watching this member.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/watchlist.js"
+  },
+  {
+    "name": "watchlist watch",
+    "category": "moderation",
+    "syntax": "/watchlist watch (member)",
+    "description": "Log every message and voice move of this member to the modlog.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/watchlist.js"
   },
   {
     "name": "music clear",

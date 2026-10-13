@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-77 top-level commands, 637 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+79 top-level commands, 645 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -306,6 +306,9 @@
 | /logging test | Send one test log to the configured channel. | Local mock/unit only |
 | /logging unresolvedreceipts | Latest 100 reserved/uncertain/unavailable stored receipts, no retry or native outcome proof. | Local mock/unit only |
 | /logging windowreceipts | Read up to 100 stored receipts in a Unix millisecond window; no relative dates or source IDs. | Local mock/unit only |
+| /logs config | Show which logs are on. | Local mock/unit only |
+| /logs off | Stop one kind of log. | Local mock/unit only |
+| /logs set | Send one kind of log to a channel (off until set). | Local mock/unit only |
 | /bulktimeout confirm | Your exact unexpired preview; fresh permission/deadline guards, partial/uncertain stops, no retry. | Local mock/unit only |
 | /bulktimeout preview | Explicit 1-10 member ID strings JSON; private exact deadline preview valid 120 s, no effects. | Local mock/unit only |
 | /channeltools archive | Make one channel read-only and hidden for @everyone. | Local mock/unit only |
@@ -355,6 +358,11 @@
 | /role remove | Confirmed onehuman safe role remove,no managed/panel/autorole/selfcreated roles. | Local mock/unit only |
 | /role rename | CurrentManageRoles/hierarchy safeexistingrole rename,no assignments/permissionchange. | Local mock/unit only |
 | /slowmode | Confirmed single text-channel slowmode, 0 disables, no bulk changes. | Local mock/unit only |
+| /watchlist list | Show watched members. | Local mock/unit only |
+| /watchlist nicklock | Lock a nickname: any change is reverted automatically. | Local mock/unit only |
+| /watchlist nicklockoff | Unlock a member nickname. | Local mock/unit only |
+| /watchlist unwatch | Stop watching this member. | Local mock/unit only |
+| /watchlist watch | Log every message and voice move of this member to the modlog. | Local mock/unit only |
 | /music clear | Clear waiting tracks only; current track keeps playing. | Local mock/unit only |
 | /music deduplicate | Keep the first queued track per provider ID; current track and requester history are not compared. | Local mock/unit only |
 | /music duplicate | Append one waiting track copy attributed to you; current playback unchanged. | Local mock/unit only |

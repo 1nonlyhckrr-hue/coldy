@@ -246,7 +246,7 @@ export class ModerationCases {
     })();
   }
 }
-export async function moderate(interaction, context, input) {
+async function moderateInner(interaction, context, input) {
   const { action, targetId } = input;
   if (!actionPermissions[action]) throw new UserError('modUnknown');
   if (!/^\d{17,20}$/.test(targetId ?? '')) throw new UserError('modIdInvalid');
@@ -364,4 +364,18 @@ export async function moderate(interaction, context, input) {
     throw new UserError('modStorageIncomplete', { action, id });
   }
   return { id };
+}
+export async function moderate(interaction, context, input) {
+  const result = await moderateInner(interaction, context, input);
+  if (result?.id && !['warnings', 'exportwarnings'].includes(input.action))
+    context.logHub
+      ?.mod(interaction.guild, {
+        actor: interaction.user.id,
+        action: input.action,
+        target: input.targetId,
+        reason: input.reason ?? '',
+        caseId: result.id,
+      })
+      .catch(() => {});
+  return result;
 }

@@ -37,6 +37,8 @@ import {
 } from './services/verification.js';
 import { BotActivity } from './services/botActivity.js';
 import { FeatureStore } from './services/featureStore.js';
+import { Watch, createWatchHandlers } from './services/watch.js';
+import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
 import { Lockdown } from './services/lockdown.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
@@ -263,6 +265,29 @@ client.on(Events.ChannelUpdate, createChannelUpdateLogHandler(context));
 if (config.memberEventsEnabled) {
   client.on(Events.GuildMemberAdd, createMetadataLogHandler(context, 'memberjoin'));
   client.on(Events.GuildMemberRemove, createMetadataLogHandler(context, 'memberleave'));
+}
+
+context.logHub = new LogHub(context);
+{
+  const logs = createLogHandlers(context);
+  if (config.messageEventsEnabled) {
+    client.on(Events.MessageDelete, logs.messageDelete);
+    client.on(Events.MessageUpdate, logs.messageUpdate);
+  }
+  if (config.memberEventsEnabled) {
+    client.on(Events.GuildMemberAdd, logs.memberAdd);
+    client.on(Events.GuildMemberRemove, logs.memberRemove);
+    client.on(Events.GuildMemberUpdate, logs.memberUpdate);
+  }
+  if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, logs.voice);
+  context.watch = new Watch(context);
+  const watch = createWatchHandlers(context);
+  if (config.messageEventsEnabled) client.on(Events.MessageCreate, watch.message);
+  if (config.memberEventsEnabled) client.on(Events.GuildMemberUpdate, watch.nick);
+  if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, watch.voice);
+  client.on(Events.ChannelCreate, (ch) => logs.channel('create', ch));
+  client.on(Events.ChannelDelete, (ch) => logs.channel('delete', ch));
+  client.on(Events.ChannelUpdate, (before, ch) => logs.channel('update', ch, before));
 }
 
 client.once(Events.ClientReady, (ready) => {
