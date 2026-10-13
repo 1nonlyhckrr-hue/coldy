@@ -175,6 +175,7 @@ if (config.auditEventsEnabled)
 context.guard = new Guard(db);
 context.features = new FeatureStore(db);
 context.steal = new StealQueue(context.features);
+context.stealClient = client;
 if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createGuardHandler(context));
 context.lockdown = new Lockdown(db);

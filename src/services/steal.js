@@ -123,6 +123,30 @@ export class StealQueue {
     return this.features.del(QUEUE_GUILD, FEATURE, name);
   }
 }
+const clean = (v, max) =>
+  String(v ?? '')
+    .replace(/[\u0000-\u001f\u007f@`*_~|>]/g, '')
+    .slice(0, max);
+/** Stable owner-DM text for a first-time queue entry. */
+export function stealNotice({ name, botName, guildName }) {
+  return `New steal request: ${clean(name, 60)} (from ${clean(botName, 40) || 'unknown bot'}, in ${clean(guildName, 60) || 'unknown server'})`;
+}
+/** Logs a structured line and DMs every bot owner. Best effort: a closed DM only logs a warning. */
+export function notifyNewSteal(context, { name, guildId, botName }) {
+  const guildName = context.stealClient?.guilds?.cache?.get(guildId)?.name ?? null;
+  context.logger?.info?.({ event: 'steal queued', name, bot: botName, guildId }, 'steal queued');
+  const client = context.stealClient,
+    content = stealNotice({ name, botName, guildName });
+  for (const ownerId of context.config?.ownerIds ?? [])
+    Promise.resolve()
+      .then(async () => {
+        const user = await client.users.fetch(ownerId);
+        await user.send({ content, allowedMentions: { parse: [] } });
+      })
+      .catch(() =>
+        context.logger?.warn?.({ name, ownerId }, 'steal queued: owner DM could not be delivered'),
+      );
+}
 /** Shared by the slash command and the &steal prefix alias. Returns the localized reply text. */
 export function runSteal(context, t, { input, userId, guildId, botName }) {
   const result = resolveSteal(context.commands, input);
@@ -132,6 +156,7 @@ export function runSteal(context, t, { input, userId, guildId, botName }) {
       text: t('stealWired', { name: result.name, path: result.path }),
     };
   const { alreadyQueued } = context.steal.add(result.name, { userId, guildId, botName });
+  if (!alreadyQueued) notifyNewSteal(context, { name: result.name, guildId, botName });
   return {
     status: 'queued',
     text: t(alreadyQueued ? 'stealQueuedAgain' : 'stealQueued', { name: result.name }),

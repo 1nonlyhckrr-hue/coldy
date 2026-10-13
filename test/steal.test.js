@@ -14,6 +14,7 @@ import {
   normalizeStealName,
   resolveSteal,
   runSteal,
+  stealNotice,
 } from '../src/services/steal.js';
 import steal from '../src/commands/utility/steal.js';
 import stealqueue from '../src/commands/utility/stealqueue.js';
@@ -184,4 +185,54 @@ test('&stealqueue is owner-only', async () => {
   r = msg('&stealqueue', { author: { id: 'owner', bot: false } });
   await handler(r.m);
   assert.match(r.sent[0].content, /feat/);
+});
+test('first queue entry logs and DMs each owner once; repeats and wired names do not', async () => {
+  const { context } = setup(),
+    dms = [],
+    logs = [];
+  context.config = { ownerIds: ['o1', 'o2'] };
+  context.logger = { info: (o, m) => logs.push([o, m]), warn: (o) => logs.push(['warn', o]) };
+  context.stealClient = {
+    guilds: { cache: new Map([['g1', { name: 'Cuties' }]]) },
+    users: {
+      fetch: async (id) => {
+        if (id === 'o2') throw new Error('closed');
+        return { send: async (p) => dms.push([id, p]) };
+      },
+    },
+  };
+  runSteal(context, t, { input: 'tiktokfeed', userId: 'u', guildId: 'g1', botName: 'Wick' });
+  runSteal(context, t, { input: 'tiktokfeed', userId: 'v', guildId: 'g1' });
+  runSteal(context, t, { input: 'ban', userId: 'u', guildId: 'g1' });
+  await new Promise((r) => setTimeout(r, 5));
+  assert.deepEqual(dms, [
+    [
+      'o1',
+      {
+        content: 'New steal request: tiktokfeed (from Wick, in Cuties)',
+        allowedMentions: { parse: [] },
+      },
+    ],
+  ]);
+  assert.equal(logs.filter(([, m]) => m === 'steal queued').length, 1);
+  assert.deepEqual(logs[0][0], {
+    event: 'steal queued',
+    name: 'tiktokfeed',
+    bot: 'Wick',
+    guildId: 'g1',
+  });
+  assert.ok(
+    logs.some(([k, o]) => k === 'warn' && o.ownerId === 'o2'),
+    'failed DM is logged',
+  );
+});
+test('notice text strips mentions and control characters and has fallbacks', () => {
+  assert.equal(
+    stealNotice({ name: 'x', botName: '@everyone\nEvil`', guildName: '<@1>' }),
+    'New steal request: x (from everyoneEvil, in <1)',
+  );
+  assert.equal(
+    stealNotice({ name: 'x', botName: null, guildName: null }),
+    'New steal request: x (from unknown bot, in unknown server)',
+  );
 });
