@@ -1246,6 +1246,10 @@
           {
             "name": "guard",
             "value": "guard"
+          },
+          {
+            "name": "nuke",
+            "value": "nuke"
           }
         ]
       }
@@ -1331,6 +1335,10 @@
           {
             "name": "guard",
             "value": "guard"
+          },
+          {
+            "name": "nuke",
+            "value": "nuke"
           }
         ]
       }
@@ -8774,6 +8782,226 @@
     "cooldownMs": 3000,
     "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/moderation/bulktimeout.js"
+  },
+  {
+    "name": "channeltools archive",
+    "category": "moderation",
+    "syntax": "/channeltools archive [channel]",
+    "description": "Make one channel read-only and hidden for @everyone.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools clone",
+    "category": "moderation",
+    "syntax": "/channeltools clone [channel] [name]",
+    "description": "Copy a channel (name, topic, category, permissions) without its messages.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      },
+      {
+        "name": "name",
+        "required": false,
+        "type": 3,
+        "maxLength": 100
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools hide",
+    "category": "moderation",
+    "syntax": "/channeltools hide [channel]",
+    "description": "Hide one channel from @everyone (View Channel denied).",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools lock",
+    "category": "moderation",
+    "syntax": "/channeltools lock [channel]",
+    "description": "Deny @everyone from sending in one channel. Undo restores the exact previous state.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools nuke",
+    "category": "moderation",
+    "syntax": "/channeltools nuke (channel) (confirm-name)",
+    "description": "Owner/delegate: delete a text channel and recreate it empty with the same settings.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": true,
+        "type": 7
+      },
+      {
+        "name": "confirm-name",
+        "required": true,
+        "type": 3,
+        "maxLength": 100
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools show",
+    "category": "moderation",
+    "syntax": "/channeltools show [channel]",
+    "description": "Show a channel hidden with /channeltools hide, restoring its previous state.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools unarchive",
+    "category": "moderation",
+    "syntax": "/channeltools unarchive [channel]",
+    "description": "Undo /channeltools archive and restore the previous state.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
+  },
+  {
+    "name": "channeltools unlock",
+    "category": "moderation",
+    "syntax": "/channeltools unlock [channel]",
+    "description": "Restore the exact previous @everyone state of a channel locked with /channeltools lock.",
+    "parameters": [
+      {
+        "name": "channel",
+        "required": false,
+        "type": 7
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/channeltools.js"
   },
   {
     "name": "jail apply",

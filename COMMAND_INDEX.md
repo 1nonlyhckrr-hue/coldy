@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-75 top-level commands, 617 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+76 top-level commands, 625 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -308,6 +308,14 @@
 | /logging windowreceipts | Read up to 100 stored receipts in a Unix millisecond window; no relative dates or source IDs. | Local mock/unit only |
 | /bulktimeout confirm | Your exact unexpired preview; fresh permission/deadline guards, partial/uncertain stops, no retry. | Local mock/unit only |
 | /bulktimeout preview | Explicit 1-10 member ID strings JSON; private exact deadline preview valid 120 s, no effects. | Local mock/unit only |
+| /channeltools archive | Make one channel read-only and hidden for @everyone. | Local mock/unit only |
+| /channeltools clone | Copy a channel (name, topic, category, permissions) without its messages. | Local mock/unit only |
+| /channeltools hide | Hide one channel from @everyone (View Channel denied). | Local mock/unit only |
+| /channeltools lock | Deny @everyone from sending in one channel. Undo restores the exact previous state. | Local mock/unit only |
+| /channeltools nuke | Owner/delegate: delete a text channel and recreate it empty with the same settings. | Local mock/unit only |
+| /channeltools show | Show a channel hidden with /channeltools hide, restoring its previous state. | Local mock/unit only |
+| /channeltools unarchive | Undo /channeltools archive and restore the previous state. | Local mock/unit only |
+| /channeltools unlock | Restore the exact previous @everyone state of a channel locked with /channeltools lock. | Local mock/unit only |
 | /jail apply | Confirmed 1 s-28 d native timeout; roles unchanged, no existing timeout overwritten. | Local mock/unit only |
 | /jail config | Private stored reference channel policy, not isolation proof. | Local mock/unit only |
 | /jail list | Up to 25 active/uncertain jail metadata; expired native timeouts settle locally. | Local mock/unit only |

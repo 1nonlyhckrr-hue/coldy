@@ -11,6 +11,7 @@ export const SECURITY_FEATURES = [
   'verification',
   'activity',
   'guard',
+  'nuke',
 ];
 export class SecurityAccess {
   constructor(db) {

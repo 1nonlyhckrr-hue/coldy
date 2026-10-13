@@ -294,6 +294,12 @@ export function openDatabase(path) {
       db.exec('CREATE TABLE guard_config(guild_id TEXT PRIMARY KEY,settings_json TEXT NOT NULL);');
       db.prepare('INSERT INTO schema_migrations VALUES (48, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=49').get()) {
+      db.exec(
+        'CREATE TABLE feature_state(guild_id TEXT NOT NULL,feature TEXT NOT NULL,key TEXT NOT NULL,value_json TEXT NOT NULL,updated_at INTEGER NOT NULL,PRIMARY KEY(guild_id,feature,key));',
+      );
+      db.prepare('INSERT INTO schema_migrations VALUES (49, ?)').run(Date.now());
+    }
   })();
   return db;
 }

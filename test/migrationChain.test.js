@@ -7,7 +7,7 @@ test('all45 schema migrations apply once in order with foreign-key integrity and
     const rows = db.prepare('SELECT version FROM schema_migrations ORDER BY version').all();
     assert.deepEqual(
       rows.map((r) => r.version),
-      Array.from({ length: 48 }, (_, n) => n + 1),
+      Array.from({ length: 49 }, (_, n) => n + 1),
     );
     assert.deepEqual(db.pragma('foreign_key_check'), []);
     assert.equal(db.pragma('integrity_check', { simple: true }), 'ok');

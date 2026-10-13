@@ -16,7 +16,7 @@ test('migrations are idempotent and guild data survives reopening', () => {
     db.close();
     const again = openDatabase(path);
     assert.deepEqual(new GuildSettings(again).get('guild-a'), { welcome: true, channel: '42' });
-    assert.equal(again.prepare('SELECT COUNT(*) AS n FROM schema_migrations').get().n, 48);
+    assert.equal(again.prepare('SELECT COUNT(*) AS n FROM schema_migrations').get().n, 49);
     again.close();
   } finally {
     rmSync(dir, { recursive: true, force: true });
