@@ -40,6 +40,7 @@ import { FeatureStore } from './services/featureStore.js';
 import { InviteTracker, createRaidHandlers } from './services/raidTools.js';
 import { SnipeCache, createSnipeHandlers } from './services/snipe.js';
 import { TempRoles } from './services/tempRole.js';
+import { ModCase, createAppealDmHandler } from './services/modCase.js';
 import { Watch, createWatchHandlers } from './services/watch.js';
 import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
@@ -64,7 +65,7 @@ import { Localization } from './services/localization.js';
 import { GuildConfig } from './services/guildConfig.js';
 import { ServerLogs } from './services/logging.js';
 import { createMemberMessageHandler } from './events/memberMessages.js';
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Partials } from 'discord.js';
 import { loadConfig } from './config/env.js';
 import { createLogger } from './utils/logger.js';
 import { openDatabase, GuildSettings } from './database/index.js';
@@ -78,6 +79,7 @@ const db = openDatabase(config.databasePath);
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.DirectMessages,
     ...(config.voiceEventsEnabled ? [GatewayIntentBits.GuildVoiceStates] : []),
     ...(config.auditEventsEnabled ? [GatewayIntentBits.GuildModeration] : []),
     ...(config.messageEventsEnabled
@@ -87,6 +89,7 @@ const client = new Client({
       ? [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildInvites]
       : []),
   ],
+  partials: [Partials.Channel],
   allowedMentions: { parse: [], repliedUser: false },
 });
 const commands = await loadCommands();
@@ -304,6 +307,8 @@ context.logHub = new LogHub(context);
     client.on(Events.MessageUpdate, sn.update);
   }
   context.tempRoles = new TempRoles(context);
+  context.modCase = new ModCase(context);
+  client.on(Events.MessageCreate, createAppealDmHandler(context));
   context.watch = new Watch(context);
   const watch = createWatchHandlers(context);
   if (config.messageEventsEnabled) client.on(Events.MessageCreate, watch.message);

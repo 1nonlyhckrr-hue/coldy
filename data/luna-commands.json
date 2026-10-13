@@ -9566,6 +9566,226 @@
     "source": "src/commands/moderation/jail.js"
   },
   {
+    "name": "modcase appealaccept",
+    "category": "moderation",
+    "syntax": "/modcase appealaccept (user-id)",
+    "description": "Accept an appeal: unban and DM a one-use invite (owner/delegate).",
+    "parameters": [
+      {
+        "name": "user-id",
+        "required": true,
+        "type": 3,
+        "minLength": 17,
+        "maxLength": 24
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase appealconfig",
+    "category": "moderation",
+    "syntax": "/modcase appealconfig (enabled)",
+    "description": "Turn the DM ban-appeal flow on or off (on by default, needs a modlog channel).",
+    "parameters": [
+      {
+        "name": "enabled",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase appealdeny",
+    "category": "moderation",
+    "syntax": "/modcase appealdeny (user-id)",
+    "description": "Deny an appeal (needs Ban Members).",
+    "parameters": [
+      {
+        "name": "user-id",
+        "required": true,
+        "type": 3,
+        "minLength": 17,
+        "maxLength": 24
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase appeallog",
+    "category": "moderation",
+    "syntax": "/modcase appeallog (user-id) (text)",
+    "description": "Record a ban appeal someone sent you.",
+    "parameters": [
+      {
+        "name": "user-id",
+        "required": true,
+        "type": 3,
+        "minLength": 17,
+        "maxLength": 24
+      },
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "maxLength": 1000
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase appeals",
+    "category": "moderation",
+    "syntax": "/modcase appeals",
+    "description": "Show open ban appeals.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase history",
+    "category": "moderation",
+    "syntax": "/modcase history (member)",
+    "description": "Cases, warnings, notes and appeal of a member.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase noteadd",
+    "category": "moderation",
+    "syntax": "/modcase noteadd (member) (note)",
+    "description": "Add a private mod note about a member.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      },
+      {
+        "name": "note",
+        "required": true,
+        "type": 3,
+        "maxLength": 500
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
+    "name": "modcase notes",
+    "category": "moderation",
+    "syntax": "/modcase notes (member)",
+    "description": "Show private mod notes about a member.",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ModerateMembers"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/modcase.js"
+  },
+  {
     "name": "moderation ban",
     "category": "moderation",
     "syntax": "/moderation ban (member) [reason]",
@@ -10446,6 +10666,41 @@
     "cooldownMs": 5000,
     "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/moderation/nickname.js"
+  },
+  {
+    "name": "report",
+    "category": "moderation",
+    "syntax": "/report (text) [member] [anonymous]",
+    "description": "Report a problem to the server moderators (private).",
+    "parameters": [
+      {
+        "name": "text",
+        "required": true,
+        "type": 3,
+        "maxLength": 1000
+      },
+      {
+        "name": "member",
+        "required": false,
+        "type": 6
+      },
+      {
+        "name": "anonymous",
+        "required": false,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 60000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/moderation/report.js"
   },
   {
     "name": "role add",

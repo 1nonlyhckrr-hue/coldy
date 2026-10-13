@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-84 top-level commands, 662 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+86 top-level commands, 671 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -333,6 +333,14 @@
 | /jail release | Confirmed clear exact owned current timeout only; drift/uncertain blocks. | Local mock/unit only |
 | /jail reset | Owner: forget policy only when no live or uncertain jail records. | Local mock/unit only |
 | /jail setup | Owner: record existing normal text jail reference channel, no permission or role edits. | Local mock/unit only |
+| /modcase appealaccept | Accept an appeal: unban and DM a one-use invite (owner/delegate). | Local mock/unit only |
+| /modcase appealconfig | Turn the DM ban-appeal flow on or off (on by default, needs a modlog channel). | Local mock/unit only |
+| /modcase appealdeny | Deny an appeal (needs Ban Members). | Local mock/unit only |
+| /modcase appeallog | Record a ban appeal someone sent you. | Local mock/unit only |
+| /modcase appeals | Show open ban appeals. | Local mock/unit only |
+| /modcase history | Cases, warnings, notes and appeal of a member. | Local mock/unit only |
+| /modcase noteadd | Add a private mod note about a member. | Local mock/unit only |
+| /modcase notes | Show private mod notes about a member. | Local mock/unit only |
 | /moderation ban | ban: one member, checked and recorded. | Local mock/unit only |
 | /moderation clearwarning | CurrentModerateMembers/hierarchy:one target stored warning clearwarning. | Local mock/unit only |
 | /moderation clearwarns | clearwarns: one member, checked and recorded. | Local mock/unit only |
@@ -359,6 +367,7 @@
 | /modtools unquarantine | Release a quarantined member and give roles back. | Local mock/unit only |
 | /modtools voicekick | Disconnect a member from voice. | Local mock/unit only |
 | /nickname | Confirmed one-member nickname update or explicit reset, no bulk changes. | Local mock/unit only |
+| /report | Report a problem to the server moderators (private). | Local mock/unit only |
 | /role add | Confirmed onehuman safe role add,no managed/panel/autorole/selfcreated roles. | Local mock/unit only |
 | /role color | CurrentManageRoles/hierarchy safeexistingrole color,no assignments/permissionchange. | Local mock/unit only |
 | /role create | Confirmed unassigned zero-permission role create, no member assignment. | Local mock/unit only |
