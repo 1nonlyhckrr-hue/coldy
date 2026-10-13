@@ -20,13 +20,14 @@ export function lunaEmbed({
   const style = styles[kind] ?? styles.info;
   const embed = new EmbedBuilder()
     .setColor(color ?? style.color)
-    .setTitle(
+    .setFooter({ text: translate(locale, 'embedFooter') });
+  if (title !== false)
+    embed.setTitle(
       (title ?? translate(locale, kind === 'error' ? 'embedErrorTitle' : 'embedInfoTitle')).slice(
         0,
         256,
       ),
-    )
-    .setFooter({ text: translate(locale, 'embedFooter') });
+    );
   if (description) embed.setDescription(description.slice(0, 4096));
   if (fields.length)
     embed.addFields(

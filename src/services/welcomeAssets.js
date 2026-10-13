@@ -26,7 +26,7 @@ export function validateWelcomeAsset(value) {
 export function welcomeStyle(settings, kind) {
   return {
     color: settings.color,
-    title: kind === 'goodbye' ? settings.goodbyeTitle : settings.title,
+    title: (kind === 'goodbye' ? settings.goodbyeTitle : settings.title) || false,
     image: kind === 'goodbye' ? settings.goodbyeImage : settings.image,
     thumbnail: kind === 'goodbye' ? settings.goodbyeThumbnail : settings.thumbnail,
   };

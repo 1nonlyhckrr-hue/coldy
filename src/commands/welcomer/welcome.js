@@ -576,7 +576,7 @@ export default {
     await i.editReply(
       lunaPayload(
         { content: text, ...(files ? { files } : {}), allowedMentions: { parse: [] } },
-        { locale },
+        { locale, ...(sub === 'test' ? { title: false } : {}) },
       ),
     );
   },
