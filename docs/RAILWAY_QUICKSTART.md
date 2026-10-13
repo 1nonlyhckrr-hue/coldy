@@ -36,4 +36,4 @@ LiveREST `https://lavalink.nazha.online/v4/info` checkedOctober11,2026 15:32IST:
 
 Aftersettingenv,run `npm run doctor` before registration/deploy. Failure reports fieldnames/constant diagnostics,not secrets. Verifies supportedNode,configuration shapes,registry and guildIDpresence only;no login/network/registration/provider/database/volumewrite. Passing is NOT live readiness. You muststill verifytoken/intents/permissions/provider/volume using separate isolatedactualtests.
 
-> Deploy note: if auto deploy stops, reinstall the Railway GitHub App for this repo (GitHub settings, Applications) and push a new commit.
+> Deploy note: if auto deploy stops, reconnect GitHub in the Railway account settings, reinstall the Railway GitHub App for this repo, then push a new commit.
