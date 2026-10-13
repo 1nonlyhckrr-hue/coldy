@@ -1399,5 +1399,11 @@
   "mcDmReceived": "Your appeal was sent to the moderators of {server}. If it is accepted you will get an invite by DM.",
   "mcDmShort": "Write a few sentences about why you should be unbanned from {server} (at least 10 characters).",
   "mcDmOpen": "You already have an open appeal in {server}. Please wait for the moderators.",
-  "mcDmPick": "You are banned in more than one server. Send your appeal again starting with the server ID:\n{list}"
+  "mcDmPick": "You are banned in more than one server. Send your appeal again starting with the server ID:\n{list}",
+  "mtBanlist": "{count} bans exported. The CSV is attached (id, username, reason).",
+  "mtPhrase": "Type exactly UNBAN ALL in the phrase option to confirm.",
+  "mtUnbanBusy": "A mass unban is already running in this server.",
+  "mtUnbanNone": "This server has no bans.",
+  "mtUnbanStarted": "Mass unban started for {total} bans (max 2000 per run, about 1 per second). I will post the result here when finished. It cannot be stopped from Discord, only by removing my Ban Members permission.",
+  "mtUnbanDone": "Mass unban finished: {ok} of {total} unbanned, {failed} failed. Invites sent by DM: {invited}. DMs closed: {closed} (their one-use links are in the attached file when any). No invite created: {noInvite}."
 }

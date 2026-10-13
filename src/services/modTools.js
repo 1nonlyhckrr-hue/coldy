@@ -269,3 +269,65 @@ export async function runPurge(i, c, planId) {
     throw new UserError('ctFailed');
   }
 }
+// ---------- /modtools massunban + banlist ----------
+export const UNBAN_MAX = 2000;
+const unbanning = new Set();
+export async function fetchAllBans(guild, max = UNBAN_MAX) {
+  const all = [];
+  let after;
+  while (all.length < max) {
+    const page = await guild.bans.fetch({ limit: 1000, cache: false, ...(after ? { after } : {}) });
+    const rows = [...page.values()];
+    all.push(...rows);
+    if (rows.length < 1000) break;
+    after = rows[rows.length - 1].user.id;
+  }
+  return all.slice(0, max);
+}
+const csvCell = (s) =>
+  `"${String(s ?? '')
+    .replace(/"/g, '""')
+    .replace(/[\r\n]+/g, ' ')}"`;
+export function banCsv(bans) {
+  return (
+    'id,username,reason\n' +
+    bans
+      .map((b) => [b.user.id, b.user.username, b.reason ?? ''].map(csvCell).join(','))
+      .join('\n') +
+    '\n'
+  );
+}
+/** Unbans everyone (up to UNBAN_MAX), one per second. Reports via `finish` when done. Never throws per user. */
+export async function startMassUnban(i, c, { invite, t, sendInvite, finish, delayMs = 1000 }) {
+  const g = i.guild;
+  if (unbanning.has(g.id)) throw new UserError('mtUnbanBusy');
+  const bans = await fetchAllBans(g);
+  if (!bans.length) throw new UserError('mtUnbanNone');
+  unbanning.add(g.id);
+  const res = { total: bans.length, ok: 0, failed: 0, invited: 0, dmClosed: [], noInvite: 0 };
+  (async () => {
+    try {
+      for (const b of bans) {
+        try {
+          await g.members.unban(b.user.id, `Emika massunban by ${i.user.id}`);
+          res.ok++;
+        } catch {
+          res.failed++;
+          await sleep(delayMs);
+          continue;
+        }
+        if (invite) {
+          const r = await sendInvite(g, i.client, b.user.id, { t });
+          if (r.status === 'sent') res.invited++;
+          else if (r.status === 'dmFailed') res.dmClosed.push(`${b.user.id} ${r.url}`);
+          else res.noInvite++;
+        }
+        await sleep(delayMs);
+      }
+    } finally {
+      unbanning.delete(g.id);
+      await finish(res).catch(() => {});
+    }
+  })();
+  return res.total;
+}

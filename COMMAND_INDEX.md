@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-86 top-level commands, 671 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+86 top-level commands, 673 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -354,10 +354,12 @@
 | /moderation untimeout | untimeout: one member, checked and recorded. | Local mock/unit only |
 | /moderation warn | warn: one member, checked and recorded. | Local mock/unit only |
 | /moderation warnings | warnings: one member, checked and recorded. | Local mock/unit only |
+| /modtools banlist | Export every ban (id, name, reason) as a CSV file. | Local mock/unit only |
 | /modtools dehoist | Remove ! # . and similar hoisting characters from the start of a name. | Local mock/unit only |
 | /modtools freeze | Owner/delegate: instant timeout and strip all removable roles. | Local mock/unit only |
 | /modtools hackban | Ban by user ID, also for people who are not in the server. | Local mock/unit only |
 | /modtools massban | Owner/delegate: ban several user IDs at once, with a per-user report. | Local mock/unit only |
+| /modtools massunban | Owner/delegate: unban EVERYONE and DM each a one-use invite (type UNBAN ALL). | Local mock/unit only |
 | /modtools purge | Preview a filtered bulk delete (user, bots, links). Nothing is deleted yet. | Local mock/unit only |
 | /modtools purgeconfirm | Delete the messages from your purge preview (valid 2 minutes). | Local mock/unit only |
 | /modtools quarantine | Take all roles and apply the quarantine role. | Local mock/unit only |

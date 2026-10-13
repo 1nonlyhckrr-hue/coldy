@@ -1399,5 +1399,11 @@
   "mcDmReceived": "{server} ke moderators ko aapki appeal bhej di gayi. Accept hone par aapko DM me invite milega.",
   "mcDmShort": "{server} se unban hone ka reason kuch sentences me likho (kam se kam 10 characters).",
   "mcDmOpen": "{server} me aapki appeal pehle se open hai. Please moderators ka wait karo.",
-  "mcDmPick": "Aap ek se zyada server me banned ho. Server ID se shuru karke appeal phir bhejo:\n{list}"
+  "mcDmPick": "Aap ek se zyada server me banned ho. Server ID se shuru karke appeal phir bhejo:\n{list}",
+  "mtBanlist": "{count} bans export hue. CSV attached hai (id, username, reason).",
+  "mtPhrase": "Confirm karne ke liye phrase me bilkul UNBAN ALL likho.",
+  "mtUnbanBusy": "Is server me mass unban pehle se chal raha hai.",
+  "mtUnbanNone": "Is server me koi ban nahi hai.",
+  "mtUnbanStarted": "{total} bans ke liye mass unban shuru (ek run me maximum 2000, lagbhag 1 per second). Khatam hone par result yahin bataunga. Ise Discord se roka nahi ja sakta, sirf meri Ban Members permission hata kar.",
+  "mtUnbanDone": "Mass unban khatam: {total} me se {ok} unban, {failed} fail. DM se invite bheje: {invited}. DM band: {closed} (unke one-use links attached file me hain). Invite nahi bana: {noInvite}."
 }

@@ -6,6 +6,9 @@ import {
 } from 'discord.js';
 import { begin, say, needPerm, parseIds, tr } from '../../utils/toolReply.js';
 import { UserError } from '../../utils/errors.js';
+import { AttachmentBuilder } from 'discord.js';
+import { sendUnbanInvite } from '../../services/unbanInvite.js';
+import { alertTo } from '../../services/raidTools.js';
 import { requireSecurityAccess } from '../../services/securityAccess.js';
 import {
   banMany,
@@ -19,6 +22,9 @@ import {
   planPurge,
   runPurge,
   MASSBAN_MAX,
+  fetchAllBans,
+  banCsv,
+  startMassUnban,
 } from '../../services/modTools.js';
 const member = (s, d = 'Target member') =>
   s.addUserOption((o) => o.setName('member').setDescription(d).setRequired(true));
@@ -126,6 +132,27 @@ const data = new SlashCommandBuilder()
     ),
   )
   .addSubcommand((s) =>
+    confirm(
+      s
+        .setName('massunban')
+        .setDescription(
+          'Owner/delegate: unban EVERYONE and DM each a one-use invite (type UNBAN ALL).',
+        )
+        .addStringOption((o) =>
+          o
+            .setName('phrase')
+            .setDescription('Type exactly: UNBAN ALL')
+            .setRequired(true)
+            .setMaxLength(20),
+        ),
+    ).addBooleanOption((o) =>
+      o.setName('invite').setDescription('DM each person a one-use invite (default: yes)'),
+    ),
+  )
+  .addSubcommand((s) =>
+    s.setName('banlist').setDescription('Export every ban (id, name, reason) as a CSV file.'),
+  )
+  .addSubcommand((s) =>
     s
       .setName('purge')
       .setDescription('Preview a filtered bulk delete (user, bots, links). Nothing is deleted yet.')
@@ -168,10 +195,17 @@ const PERM = {
   softban: P.BanMembers,
   voicekick: P.MoveMembers,
   dehoist: P.ManageNicknames,
+  banlist: P.BanMembers,
   purge: P.ManageMessages,
   purgeconfirm: P.ManageMessages,
 };
-const GATED = { freeze: 'freeze', unfreeze: 'freeze', massban: 'massban', roleall: 'roleall' };
+const GATED = {
+  freeze: 'freeze',
+  unfreeze: 'freeze',
+  massban: 'massban',
+  roleall: 'roleall',
+  massunban: 'massunban',
+};
 const row = (i, c, r) =>
   `${r.ok ? 'OK' : 'NO'} <@${r.id}>${r.ok ? '' : ' - ' + tr(i, c)('mtWhy_' + r.why)}`;
 export default {
@@ -222,6 +256,66 @@ export default {
     if (sub === 'unfreeze') {
       const r = await unfreezeMember(i, c, await target(), bot);
       return say(i, c, 'mtDone_unfreeze', { count: r.restored, skipped: r.skipped });
+    }
+    if (sub === 'banlist') {
+      if (!bot.permissions.has(P.BanMembers)) throw new UserError('mtBotPerm');
+      const bans = await fetchAllBans(i.guild, 20000);
+      return say(
+        i,
+        c,
+        'mtBanlist',
+        { count: bans.length },
+        {
+          files: [new AttachmentBuilder(Buffer.from(banCsv(bans)), { name: 'emika-banlist.csv' })],
+        },
+      );
+    }
+    if (sub === 'massunban') {
+      if (i.options.getBoolean('confirm', true) !== true) throw new UserError('mtConfirm');
+      if (i.options.getString('phrase', true).trim() !== 'UNBAN ALL')
+        throw new UserError('mtPhrase');
+      if (!bot.permissions.has(P.BanMembers)) throw new UserError('mtBotPerm');
+      const t = tr(i, c);
+      const total = await startMassUnban(i, c, {
+        invite: i.options.getBoolean('invite') !== false,
+        t,
+        sendInvite: sendUnbanInvite,
+        finish: async (r) => {
+          const files = r.dmClosed.length
+            ? [
+                new AttachmentBuilder(Buffer.from(r.dmClosed.join('\n') + '\n'), {
+                  name: 'emika-closed-dms-invites.txt',
+                }),
+              ]
+            : [];
+          try {
+            await say(
+              i,
+              c,
+              'mtUnbanDone',
+              {
+                total: r.total,
+                ok: r.ok,
+                failed: r.failed,
+                invited: r.invited,
+                closed: r.dmClosed.length,
+                noInvite: r.noInvite,
+              },
+              { files },
+            );
+          } catch {
+            await alertTo(c, i.guild, 'mtUnbanDone', {
+              total: r.total,
+              ok: r.ok,
+              failed: r.failed,
+              invited: r.invited,
+              closed: r.dmClosed.length,
+              noInvite: r.noInvite,
+            });
+          }
+        },
+      });
+      return say(i, c, 'mtUnbanStarted', { total });
     }
     if (sub === 'massban' || sub === 'hackban') {
       if (sub === 'massban' && i.options.getBoolean('confirm', true) !== true)

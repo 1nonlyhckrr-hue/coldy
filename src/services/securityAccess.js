@@ -17,6 +17,7 @@ export const SECURITY_FEATURES = [
   'roleall',
   'raid',
   'emergency',
+  'massunban',
 ];
 export class SecurityAccess {
   constructor(db) {
