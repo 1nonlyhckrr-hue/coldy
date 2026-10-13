@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-75 top-level commands, 616 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+75 top-level commands, 617 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -37,6 +37,7 @@
 | /backup export | Download one backup as JSON. | Local mock/unit only |
 | /backup list | Show saved backups. | Local mock/unit only |
 | /backup restore | Recreate missing roles and channels from a backup. Nothing is deleted or edited. | Local mock/unit only |
+| /guard autolockdown | Run a server lockdown automatically when antinuke quarantines someone. | Local mock/unit only |
 | /guard botadd | Act when an untrusted user adds a bot. Trusted users may add any bot. | Local mock/unit only |
 | /guard config | Show all guard settings. | Local mock/unit only |
 | /guard permalert | Act when an untrusted user gives a role dangerous permissions. | Local mock/unit only |

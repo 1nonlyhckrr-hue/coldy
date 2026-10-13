@@ -1,6 +1,6 @@
 import { ChannelType, PermissionFlagsBits as P } from 'discord.js';
 import { UserError } from '../utils/errors.js';
-// Panic mode. Only ever runs when an admin uses /lockdown; nothing here is automatic.
+// Panic mode. Runs from /lockdown, or automatically only when /guard autolockdown is enabled.
 const TEXT_TYPES = new Set([
   ChannelType.GuildText,
   ChannelType.GuildAnnouncement,

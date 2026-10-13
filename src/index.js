@@ -36,7 +36,7 @@ import {
   createVerificationJoinHandler,
 } from './services/verification.js';
 import { BotActivity } from './services/botActivity.js';
-import { Guard, createGuardHandler } from './services/guard.js';
+import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
 import { Lockdown } from './services/lockdown.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
@@ -266,6 +266,7 @@ if (config.memberEventsEnabled) {
 client.once(Events.ClientReady, (ready) => {
   context.voiceReadiness.initialReady();
   context.botActivity.apply(ready);
+  resumeAutoUnlocks(context, client);
   logger.info({ botId: ready.user.id, commands: commands.size }, 'Emika ready');
   context.giveawayRunner.start();
   context.automationRunner.start();

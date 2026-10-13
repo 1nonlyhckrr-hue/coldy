@@ -4,6 +4,7 @@ import { UserError } from '../utils/errors.js';
 import { validateOutputChannel } from './guildConfig.js';
 import { roleHasDangerousPermissions } from './rolePanels.js';
 import { lunaPayload } from '../utils/embeds.js';
+import { autoLockdown } from './guard.js';
 export const WATCHED_AUDIT_ACTIONS = new Set([
   AuditLogEvent.GuildUpdate,
   AuditLogEvent.ChannelCreate,
@@ -582,6 +583,8 @@ export function createAntinukeHandler(c) {
         const trigger = c.antinuke.quarantineTrigger(entry, guild);
         const outcome = trigger && (await quarantineActor(c, guild, trigger));
         const cfg = c.antinuke.get(guild.id);
+        if (outcome && ['quarantined', 'partial'].includes(outcome.status))
+          await autoLockdown(c, guild, trigger.actorId);
         if (outcome && cfg.channelId) {
           const channel = await validateOutputChannel(guild, cfg.channelId);
           await channel.send(

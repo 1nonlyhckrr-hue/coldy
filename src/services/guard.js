@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AuditLogEvent, PermissionFlagsBits as P } from 'discord.js';
 import { validateOutputChannel } from './guildConfig.js';
 import { lunaPayload } from '../utils/embeds.js';
+import { startLockdown, endLockdown } from './lockdown.js';
 // Opt-in server guards driven by the audit log. Every rule is off until /guard enables it. Alerts go
 // to the /antinuke alert channel. Trusted actors (server owner, Emika, bot owners, /antinuke trusted
 // users, /owner delegates for "guard") are never acted on.
@@ -32,6 +33,14 @@ const schema = z
         enabled: z.boolean().default(false),
         threshold: z.number().int().min(2).max(50).default(5),
         windowSeconds: z.number().int().min(10).max(600).default(60),
+      })
+      .strict()
+      .prefault({}),
+    autoLockdown: z
+      .object({
+        enabled: z.boolean().default(false),
+        minutes: z.number().int().min(0).max(1440).default(15),
+        unlockAt: z.number().int().positive().optional(),
       })
       .strict()
       .prefault({}),
@@ -271,4 +280,66 @@ export function createGuardHandler(c) {
       c.logger?.warn?.({ guildId: guild.id, kind: 'guard' }, 'Guard unavailable');
     }
   };
+}
+
+const timers = new Map();
+function scheduleUnlock(c, guild) {
+  clearTimeout(timers.get(guild.id));
+  const at = c.guard.get(guild.id).autoLockdown.unlockAt;
+  if (!at) return;
+  const t = setTimeout(
+    () => void autoUnlock(c, guild),
+    Math.min(Math.max(at - Date.now(), 1000), 2 ** 31 - 1),
+  );
+  t.unref?.();
+  timers.set(guild.id, t);
+}
+async function autoUnlock(c, guild) {
+  timers.delete(guild.id);
+  const cfg = c.guard.get(guild.id);
+  if (!cfg.autoLockdown.unlockAt) return;
+  if (cfg.autoLockdown.unlockAt > Date.now() + 1000) return scheduleUnlock(c, guild);
+  try {
+    if (c.lockdown.get(guild.id)) {
+      const out = await endLockdown(guild, c.lockdown);
+      await alert(
+        c,
+        guild,
+        out.failed ? 'guardAutoLockdown_unlockPartial' : 'guardAutoLockdown_unlocked',
+        out,
+      );
+      if (out.failed) return;
+    }
+    c.guard.patch(guild.id, { autoLockdown: { unlockAt: undefined } });
+  } catch {
+    c.logger?.warn?.({ guildId: guild.id, kind: 'guard_unlock' }, 'Auto unlock failed');
+  }
+}
+/** Re-arms pending auto-unlocks after a restart. */
+export function resumeAutoUnlocks(c, client) {
+  for (const guild of client.guilds.cache.values()) scheduleUnlock(c, guild);
+}
+/** Called by the antinuke handler after a quarantine fired. Opt-in; never throws. */
+export async function autoLockdown(c, guild, actorId) {
+  try {
+    const cfg = c.guard.get(guild.id).autoLockdown;
+    if (!cfg.enabled || c.lockdown.get(guild.id)) return;
+    const me = await guild.members.fetchMe();
+    if (!me.permissions?.has(P.ManageChannels)) {
+      await alert(c, guild, 'guardAutoLockdown_failed', { actor: actorId, minutes: cfg.minutes });
+      return;
+    }
+    const out = await startLockdown(guild, c.lockdown);
+    const unlockAt = cfg.minutes ? Date.now() + cfg.minutes * 60000 : undefined;
+    c.guard.patch(guild.id, { autoLockdown: { unlockAt } });
+    scheduleUnlock(c, guild);
+    await alert(c, guild, cfg.minutes ? 'guardAutoLockdown_timed' : 'guardAutoLockdown_manual', {
+      actor: actorId,
+      minutes: cfg.minutes,
+      locked: out.locked,
+      failed: out.failed,
+    });
+  } catch {
+    c.logger?.warn?.({ guildId: guild.id, kind: 'guard_autolockdown' }, 'Auto lockdown failed');
+  }
 }

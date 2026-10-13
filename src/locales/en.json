@@ -1214,7 +1214,7 @@
   "activityNone": "No custom activity is saved.",
   "guardRuntimeDisabled": "Guards read the audit log, so ENABLE_AUDIT_EVENTS must be on for the bot. They stay dormant until then.",
   "guardNoChannel": "not set (use /antinuke enable)",
-  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}\nDangerous permission change: {permalert}\nBot add: {botadd} (allowed bots: {allowed})\nVanity URL alert: {vanity}\nMass removal alert: {prune}",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}\nDangerous permission change: {permalert}\nBot add: {botadd} (allowed bots: {allowed})\nVanity URL alert: {vanity}\nMass removal alert: {prune}\nAuto lockdown on quarantine: {autolockdown}",
   "guardWebhook_alerted": "Untrusted user <@{actor}> created a webhook. Alert only, nothing was removed.",
   "guardWebhook_deleted": "Untrusted user <@{actor}> created a webhook. Emika deleted it.",
   "guardWebhook_gone": "Untrusted user <@{actor}> created a webhook, but it was already gone.",
@@ -1230,5 +1230,10 @@
   "guardBot_failed": "Untrusted user <@{actor}> added bot <@{bot}> and Emika could not kick it (Kick Members missing or the bot role is above Emika).",
   "guardVanity": "Untrusted user <@{actor}> changed the vanity URL from {old} to {new}. Emika cannot change it back, so fix it in Server Settings.",
   "guardPrune": "Untrusted user <@{actor}> ran a member prune. Members removed: {count}.",
-  "guardBurst": "Mass removal: {count} members were kicked or banned in {window}s by untrusted users (latest: <@{actor}>)."
+  "guardBurst": "Mass removal: {count} members were kicked or banned in {window}s by untrusted users (latest: <@{actor}>).",
+  "guardAutoLockdown_timed": "Quarantine fired on <@{actor}>, so Emika locked the server automatically ({locked} channels, {failed} failed). It unlocks itself in {minutes} minutes, or run /unlockdown.",
+  "guardAutoLockdown_manual": "Quarantine fired on <@{actor}>, so Emika locked the server automatically ({locked} channels, {failed} failed). Run /unlockdown when it is safe.",
+  "guardAutoLockdown_failed": "Quarantine fired on <@{actor}> but auto lockdown could not run (Emika needs Manage Channels).",
+  "guardAutoLockdown_unlocked": "Auto lockdown ended. Channels restored: {restored}.",
+  "guardAutoLockdown_unlockPartial": "Auto lockdown ended with {failed} channels not restored. Run /unlockdown again."
 }

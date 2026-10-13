@@ -225,3 +225,38 @@ test('prune: any untrusted prune alerts; kick/ban bursts alert once per window',
     f.db.close();
   }
 });
+test('autolockdown: off by default; when on it locks once, alerts and schedules the unlock', async () => {
+  const { autoLockdown } = await import('../src/services/guard.js');
+  const { Lockdown } = await import('../src/services/lockdown.js');
+  const f = setup();
+  try {
+    const edits = [];
+    const ch = {
+      id: '121212121212121212',
+      type: ChannelType.GuildText,
+      permissionOverwrites: { cache: new Map(), edit: async (id, e) => edits.push(e) },
+    };
+    f.guild.channels = {
+      fetch: async (id) => (id ? f.channel : undefined),
+      cache: new Map([[ch.id, ch]]),
+    };
+    f.guild.members.fetchMe = async () => ({
+      id: 'bot',
+      guild: { id: G },
+      permissions: { has: () => true },
+    });
+    f.c.lockdown = new Lockdown(f.db);
+    await autoLockdown(f.c, f.guild, BAD);
+    assert.equal(edits.length, 0);
+    f.c.guard.patch(G, { autoLockdown: { enabled: true, minutes: 10 } });
+    await autoLockdown(f.c, f.guild, BAD);
+    assert.equal(edits.length, 1);
+    assert.ok(f.c.lockdown.get(G));
+    assert.ok(f.c.guard.get(G).autoLockdown.unlockAt > Date.now());
+    assert.match(f.sent[0], /guardAutoLockdown_timed.*"minutes":10/);
+    await autoLockdown(f.c, f.guild, BAD);
+    assert.equal(edits.length, 1);
+  } finally {
+    f.db.close();
+  }
+});

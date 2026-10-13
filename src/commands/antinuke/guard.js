@@ -90,6 +90,23 @@ const data = new SlashCommandBuilder()
           .setMaxValue(600),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('autolockdown')
+      .setDescription('Run a server lockdown automatically when antinuke quarantines someone.')
+      .addBooleanOption((o) =>
+        o.setName('enabled').setDescription('Turn auto lockdown on or off').setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('minutes')
+          .setDescription(
+            'Unlock automatically after this many minutes, 0 = stay locked (default 15)',
+          )
+          .setMinValue(0)
+          .setMaxValue(1440),
+      ),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show all guard settings.'));
 export default {
   category: 'antinuke',
@@ -132,6 +149,15 @@ export default {
         },
       });
     }
+    if (sub === 'autolockdown') {
+      const minutes = i.options.getInteger('minutes');
+      c.guard.patch(i.guildId, {
+        autoLockdown: {
+          enabled: i.options.getBoolean('enabled', true),
+          ...(minutes !== null ? { minutes } : {}),
+        },
+      });
+    }
     const cfg = c.guard.get(i.guildId),
       ch = c.antinuke.get(i.guildId).channelId;
     await i.editReply(
@@ -140,6 +166,9 @@ export default {
           content: t('guardConfig', {
             channel: ch ? `<#${ch}>` : t('guardNoChannel'),
             webhook: cfg.webhook.mode,
+            autolockdown: cfg.autoLockdown.enabled
+              ? `${cfg.autoLockdown.minutes || '-'} min`
+              : t('disabled'),
             prune: cfg.prune.enabled
               ? `${cfg.prune.threshold}/${cfg.prune.windowSeconds}s`
               : t('disabled'),

@@ -1214,7 +1214,7 @@
   "activityNone": "Koi custom activity saved nahi hai.",
   "guardRuntimeDisabled": "Guards audit log padhte hain, isliye bot par ENABLE_AUDIT_EVENTS chalu hona chahiye. Tab tak ye dormant rahenge.",
   "guardNoChannel": "set nahi hai (/antinuke enable use karo)",
-  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook banana: {webhook}\nDangerous permission change: {permalert}\nBot add: {botadd} (allowed bots: {allowed})\nVanity URL alert: {vanity}\nMass removal alert: {prune}",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook banana: {webhook}\nDangerous permission change: {permalert}\nBot add: {botadd} (allowed bots: {allowed})\nVanity URL alert: {vanity}\nMass removal alert: {prune}\nQuarantine par auto lockdown: {autolockdown}",
   "guardWebhook_alerted": "Untrusted user <@{actor}> ne webhook banaya. Sirf alert, kuch hataya nahi gaya.",
   "guardWebhook_deleted": "Untrusted user <@{actor}> ne webhook banaya. Emika ne use delete kar diya.",
   "guardWebhook_gone": "Untrusted user <@{actor}> ne webhook banaya, lekin wo pehle hi hat chuka tha.",
@@ -1230,5 +1230,10 @@
   "guardBot_failed": "Untrusted user <@{actor}> ne bot <@{bot}> add kiya aur Emika use kick nahi kar saka (Kick Members nahi ya bot role Emika se upar).",
   "guardVanity": "Untrusted user <@{actor}> ne vanity URL {old} se {new} kar diya. Emika ise wapas nahi badal sakta, Server Settings me theek karo.",
   "guardPrune": "Untrusted user <@{actor}> ne member prune chalaya. Hataye gaye members: {count}.",
-  "guardBurst": "Mass removal: untrusted users ne {window} second me {count} members ko kick ya ban kiya (latest: <@{actor}>)."
+  "guardBurst": "Mass removal: untrusted users ne {window} second me {count} members ko kick ya ban kiya (latest: <@{actor}>).",
+  "guardAutoLockdown_timed": "<@{actor}> par quarantine laga, isliye Emika ne server automatically lock kiya ({locked} channels, {failed} fail). Ye {minutes} minute me khud khulega, ya /unlockdown chalao.",
+  "guardAutoLockdown_manual": "<@{actor}> par quarantine laga, isliye Emika ne server automatically lock kiya ({locked} channels, {failed} fail). Safe hone par /unlockdown chalao.",
+  "guardAutoLockdown_failed": "<@{actor}> par quarantine laga, lekin auto lockdown nahi chal saka (Emika ko Manage Channels chahiye).",
+  "guardAutoLockdown_unlocked": "Auto lockdown khatam. Restore hue channels: {restored}.",
+  "guardAutoLockdown_unlockPartial": "Auto lockdown khatam, {failed} channels restore nahi hue. /unlockdown phir chalao."
 }
