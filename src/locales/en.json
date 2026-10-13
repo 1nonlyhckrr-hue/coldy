@@ -1214,7 +1214,7 @@
   "activityNone": "No custom activity is saved.",
   "guardRuntimeDisabled": "Guards read the audit log, so ENABLE_AUDIT_EVENTS must be on for the bot. They stay dormant until then.",
   "guardNoChannel": "not set (use /antinuke enable)",
-  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}\nDangerous permission change: {permalert}\nBot add: {botadd} (allowed bots: {allowed})\nVanity URL alert: {vanity}",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}\nDangerous permission change: {permalert}\nBot add: {botadd} (allowed bots: {allowed})\nVanity URL alert: {vanity}\nMass removal alert: {prune}",
   "guardWebhook_alerted": "Untrusted user <@{actor}> created a webhook. Alert only, nothing was removed.",
   "guardWebhook_deleted": "Untrusted user <@{actor}> created a webhook. Emika deleted it.",
   "guardWebhook_gone": "Untrusted user <@{actor}> created a webhook, but it was already gone.",
@@ -1228,5 +1228,7 @@
   "guardBot_kicked": "Untrusted user <@{actor}> added bot <@{bot}>. Emika kicked it.",
   "guardBot_gone": "Untrusted user <@{actor}> added bot <@{bot}>, but it already left.",
   "guardBot_failed": "Untrusted user <@{actor}> added bot <@{bot}> and Emika could not kick it (Kick Members missing or the bot role is above Emika).",
-  "guardVanity": "Untrusted user <@{actor}> changed the vanity URL from {old} to {new}. Emika cannot change it back, so fix it in Server Settings."
+  "guardVanity": "Untrusted user <@{actor}> changed the vanity URL from {old} to {new}. Emika cannot change it back, so fix it in Server Settings.",
+  "guardPrune": "Untrusted user <@{actor}> ran a member prune. Members removed: {count}.",
+  "guardBurst": "Mass removal: {count} members were kicked or banned in {window}s by untrusted users (latest: <@{actor}>)."
 }

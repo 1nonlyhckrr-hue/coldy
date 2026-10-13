@@ -1214,7 +1214,7 @@
   "activityNone": "कोई कस्टम एक्टिविटी सेव नहीं है।",
   "guardRuntimeDisabled": "गार्ड ऑडिट लॉग पढ़ते हैं, इसलिए बॉट पर ENABLE_AUDIT_EVENTS चालू होना चाहिए। तब तक ये निष्क्रिय रहेंगे।",
   "guardNoChannel": "सेट नहीं है (/antinuke enable इस्तेमाल करें)",
-  "guardConfig": "गार्ड सेटिंग्स\nअलर्ट चैनल: {channel}\nवेबहुक बनाना: {webhook}\nखतरनाक परमिशन बदलाव: {permalert}\nबॉट जोड़ना: {botadd} (अनुमत बॉट: {allowed})\nवैनिटी URL अलर्ट: {vanity}",
+  "guardConfig": "गार्ड सेटिंग्स\nअलर्ट चैनल: {channel}\nवेबहुक बनाना: {webhook}\nखतरनाक परमिशन बदलाव: {permalert}\nबॉट जोड़ना: {botadd} (अनुमत बॉट: {allowed})\nवैनिटी URL अलर्ट: {vanity}\nसामूहिक हटाव अलर्ट: {prune}",
   "guardWebhook_alerted": "अविश्वसनीय यूज़र <@{actor}> ने वेबहुक बनाया। सिर्फ अलर्ट, कुछ हटाया नहीं गया।",
   "guardWebhook_deleted": "अविश्वसनीय यूज़र <@{actor}> ने वेबहुक बनाया। Emika ने उसे हटा दिया।",
   "guardWebhook_gone": "अविश्वसनीय यूज़र <@{actor}> ने वेबहुक बनाया, लेकिन वह पहले ही हट चुका था।",
@@ -1228,5 +1228,7 @@
   "guardBot_kicked": "अविश्वसनीय यूज़र <@{actor}> ने बॉट <@{bot}> जोड़ा। Emika ने उसे किक कर दिया।",
   "guardBot_gone": "अविश्वसनीय यूज़र <@{actor}> ने बॉट <@{bot}> जोड़ा, लेकिन वह पहले ही जा चुका था।",
   "guardBot_failed": "अविश्वसनीय यूज़र <@{actor}> ने बॉट <@{bot}> जोड़ा और Emika उसे किक नहीं कर सका (Kick Members नहीं या बॉट रोल Emika से ऊपर)।",
-  "guardVanity": "अविश्वसनीय यूज़र <@{actor}> ने वैनिटी URL {old} से {new} कर दिया। Emika इसे वापस नहीं बदल सकता, Server Settings में ठीक करें।"
+  "guardVanity": "अविश्वसनीय यूज़र <@{actor}> ने वैनिटी URL {old} से {new} कर दिया। Emika इसे वापस नहीं बदल सकता, Server Settings में ठीक करें।",
+  "guardPrune": "अविश्वसनीय यूज़र <@{actor}> ने मेंबर प्रून चलाया। हटाए गए सदस्य: {count}।",
+  "guardBurst": "सामूहिक हटाव: अविश्वसनीय यूज़र्स ने {window} सेकंड में {count} सदस्यों को किक या बैन किया (ताज़ा: <@{actor}>)।"
 }

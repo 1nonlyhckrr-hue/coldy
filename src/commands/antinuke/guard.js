@@ -65,6 +65,31 @@ const data = new SlashCommandBuilder()
         o.setName('enabled').setDescription('Turn the vanity alert on or off').setRequired(true),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('prune')
+      .setDescription('Alert on member prunes and bursts of kicks/bans by untrusted users.')
+      .addBooleanOption((o) =>
+        o
+          .setName('enabled')
+          .setDescription('Turn prune and burst alerts on or off')
+          .setRequired(true),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('count')
+          .setDescription('Removals that count as a burst, 2-50 (default 5)')
+          .setMinValue(2)
+          .setMaxValue(50),
+      )
+      .addIntegerOption((o) =>
+        o
+          .setName('seconds')
+          .setDescription('Burst window, 10-600 (default 60)')
+          .setMinValue(10)
+          .setMaxValue(600),
+      ),
+  )
   .addSubcommand((s) => s.setName('config').setDescription('Show all guard settings.'));
 export default {
   category: 'antinuke',
@@ -96,6 +121,17 @@ export default {
     }
     if (sub === 'vanity')
       c.guard.patch(i.guildId, { vanity: { enabled: i.options.getBoolean('enabled', true) } });
+    if (sub === 'prune') {
+      const count = i.options.getInteger('count'),
+        seconds = i.options.getInteger('seconds');
+      c.guard.patch(i.guildId, {
+        prune: {
+          enabled: i.options.getBoolean('enabled', true),
+          ...(count ? { threshold: count } : {}),
+          ...(seconds ? { windowSeconds: seconds } : {}),
+        },
+      });
+    }
     const cfg = c.guard.get(i.guildId),
       ch = c.antinuke.get(i.guildId).channelId;
     await i.editReply(
@@ -104,6 +140,9 @@ export default {
           content: t('guardConfig', {
             channel: ch ? `<#${ch}>` : t('guardNoChannel'),
             webhook: cfg.webhook.mode,
+            prune: cfg.prune.enabled
+              ? `${cfg.prune.threshold}/${cfg.prune.windowSeconds}s`
+              : t('disabled'),
             vanity: t(cfg.vanity.enabled ? 'enabled' : 'disabled'),
             botadd: cfg.botAdd.mode,
             allowed: cfg.botAdd.allow.map((x) => `<@${x}>`).join(' ') || '-',

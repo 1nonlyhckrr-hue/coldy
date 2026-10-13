@@ -27,6 +27,14 @@ const schema = z
       .object({ enabled: z.boolean().default(false) })
       .strict()
       .prefault({}),
+    prune: z
+      .object({
+        enabled: z.boolean().default(false),
+        threshold: z.number().int().min(2).max(50).default(5),
+        windowSeconds: z.number().int().min(10).max(600).default(60),
+      })
+      .strict()
+      .prefault({}),
   })
   .strict();
 export class Guard {
@@ -34,6 +42,24 @@ export class Guard {
     this.db = db;
     this.now = now;
     this.seen = new Map();
+    this.removals = new Map();
+    this.lastBurstAlert = new Map();
+  }
+  /** Records one member removal and returns how many happened in the window (all actors). */
+  removal(guildId, windowSeconds) {
+    const now = this.now(),
+      list = (this.removals.get(guildId) ?? []).filter((t) => t > now - windowSeconds * 1000);
+    list.push(now);
+    this.removals.set(guildId, list);
+    return list.length;
+  }
+  /** One burst alert per window per guild. */
+  burstDue(guildId, windowSeconds) {
+    const now = this.now(),
+      last = this.lastBurstAlert.get(guildId) ?? 0;
+    if (now - last < windowSeconds * 1000) return false;
+    this.lastBurstAlert.set(guildId, now);
+    return true;
   }
   get(guildId) {
     const r = this.db
@@ -203,7 +229,27 @@ async function vanityRule(c, guild, entry, cfg) {
     new: show(ch.new),
   });
 }
-const RULES = [webhookRule, permRule, botAddRule, vanityRule];
+async function pruneRule(c, guild, entry, cfg) {
+  const p = cfg.prune;
+  if (!p.enabled) return;
+  if (entry.action === AuditLogEvent.MemberPrune) {
+    const removed = Number(entry.extra?.removed ?? 0);
+    await alert(c, guild, 'guardPrune', {
+      actor: entry.executorId,
+      count: Number.isSafeInteger(removed) ? removed : 0,
+    });
+    return;
+  }
+  if (![AuditLogEvent.MemberKick, AuditLogEvent.MemberBanAdd].includes(entry.action)) return;
+  const count = c.guard.removal(guild.id, p.windowSeconds);
+  if (count >= p.threshold && c.guard.burstDue(guild.id, p.windowSeconds))
+    await alert(c, guild, 'guardBurst', {
+      actor: entry.executorId,
+      count,
+      window: p.windowSeconds,
+    });
+}
+const RULES = [webhookRule, permRule, botAddRule, vanityRule, pruneRule];
 export function createGuardHandler(c) {
   return async (entry, guild) => {
     try {

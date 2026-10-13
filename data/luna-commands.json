@@ -938,6 +938,44 @@
     "source": "src/commands/antinuke/guard.js"
   },
   {
+    "name": "guard prune",
+    "category": "antinuke",
+    "syntax": "/guard prune (enabled) [count] [seconds]",
+    "description": "Alert on member prunes and bursts of kicks/bans by untrusted users.",
+    "parameters": [
+      {
+        "name": "enabled",
+        "required": true,
+        "type": 5
+      },
+      {
+        "name": "count",
+        "required": false,
+        "type": 4,
+        "min": 2,
+        "max": 50
+      },
+      {
+        "name": "seconds",
+        "required": false,
+        "type": 4,
+        "min": 10,
+        "max": 600
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/guard.js"
+  },
+  {
     "name": "guard vanity",
     "category": "antinuke",
     "syntax": "/guard vanity (enabled)",

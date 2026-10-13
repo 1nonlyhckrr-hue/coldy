@@ -203,3 +203,25 @@ test('vanity: alerts only on a vanity code change by an untrusted user', async (
     f.db.close();
   }
 });
+test('prune: any untrusted prune alerts; kick/ban bursts alert once per window', async () => {
+  const f = setup();
+  try {
+    const run = (e) => createGuardHandler(f.c)(e, f.guild);
+    await run(entry(BAD, AuditLogEvent.MemberPrune, { extra: { removed: 40 } }));
+    assert.equal(f.sent.length, 0);
+    f.c.guard.patch(G, { prune: { enabled: true, threshold: 3, windowSeconds: 60 } });
+    await run(entry(TRUSTED, AuditLogEvent.MemberPrune, { extra: { removed: 9 } }));
+    assert.equal(f.sent.length, 0);
+    await run(entry(BAD, AuditLogEvent.MemberPrune, { extra: { removed: 40 } }));
+    assert.match(f.sent[0], /guardPrune.*"count":40/);
+    await run(entry(BAD, AuditLogEvent.MemberKick));
+    await run(entry('888888888888888888', AuditLogEvent.MemberBanAdd));
+    assert.equal(f.sent.length, 1);
+    await run(entry(BAD, AuditLogEvent.MemberKick));
+    assert.match(f.sent[1], /guardBurst.*"count":3/);
+    await run(entry(BAD, AuditLogEvent.MemberKick));
+    assert.equal(f.sent.length, 2);
+  } finally {
+    f.db.close();
+  }
+});

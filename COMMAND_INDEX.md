@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-75 top-level commands, 615 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+75 top-level commands, 616 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -40,6 +40,7 @@
 | /guard botadd | Act when an untrusted user adds a bot. Trusted users may add any bot. | Local mock/unit only |
 | /guard config | Show all guard settings. | Local mock/unit only |
 | /guard permalert | Act when an untrusted user gives a role dangerous permissions. | Local mock/unit only |
+| /guard prune | Alert on member prunes and bursts of kicks/bans by untrusted users. | Local mock/unit only |
 | /guard vanity | Alert when an untrusted user changes the server vanity URL. | Local mock/unit only |
 | /guard webhook | Act when an untrusted user creates a webhook. | Local mock/unit only |
 | /joinraid config | Show the current settings. | Local mock/unit only |
