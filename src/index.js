@@ -44,6 +44,7 @@ import { ModCase, createAppealDmHandler } from './services/modCase.js';
 import { Sticky, createStickyHandler } from './services/stickyTools.js';
 import { startAutoBackup } from './services/autoBackup.js';
 import { Templates } from './services/templates.js';
+import { createWelcomeEditHandler } from './services/welcomeEdit.js';
 import { Watch, createWatchHandlers } from './services/watch.js';
 import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
@@ -263,6 +264,7 @@ if (config.memberEventsEnabled) {
 }
 context.helpNavigation = new HelpNavigation();
 client.on(Events.InteractionCreate, createHelpNavigationHandler(context));
+client.on(Events.InteractionCreate, createWelcomeEditHandler(context));
 client.on(Events.InteractionCreate, createInteractionHandler(context));
 for (const [event, kind] of [
   [Events.GuildRoleCreate, 'rolecreate'],

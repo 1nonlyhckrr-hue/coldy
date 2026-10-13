@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-88 top-level commands, 684 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+88 top-level commands, 685 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -674,6 +674,7 @@
 | /welcome config | Show current settings. | Local mock/unit only |
 | /welcome copy | Copy the look of any message (link) into your welcome or goodbye template. | Local mock/unit only |
 | /welcome disable | Disable welcome messages. | Local mock/unit only |
+| /welcome edit | Edit the welcome or goodbye text in a pop-up form (multi-line). | Local mock/unit only |
 | /welcome enable | Enable welcome messages. | Local mock/unit only |
 | /welcome export | Private welcome/goodbye template/style JSON; no channel IDs or enable flags. | Local mock/unit only |
 | /welcome exportconfig | Private complete stored welcome/goodbye config including destination, not runtime/history. | Local mock/unit only |

@@ -1425,7 +1425,7 @@
   "welcomeCopyNote_truncated": "Text was cut to 1800 characters.",
   "welcomeCopyNote_expiring": "An image link has an expiry stamp and may stop working: re-host the image for a permanent link.",
   "welcomeCopyNote_badAsset": "An image was skipped because its link is not a valid public HTTPS link.",
-  "tpTooBig": "This server has more than 500 roles and channels together, too many for a template.",
+  "tpTooBig": "This server has more than 800 roles and channels together, too many for a template.",
   "tpBadName": "Template names use only a-z, 0-9, _ and - (max 20 characters).",
   "tpNotYours": "A template with that name belongs to someone else. Pick another name.",
   "tpLimit": "The bot already holds 25 templates. Delete one first.",
@@ -1437,5 +1437,10 @@
   "tpDeleted": "Template {name} deleted.",
   "tpStarted": "Applying template {name} ({total} items, about 2 per second). Existing roles and channels with the same name are skipped and nothing is deleted. I will post the result here.",
   "tpDone": "Template {name} applied: {roles} roles and {channels} channels created, {skipped} already existed, {failed} failed.",
-  "tpFailed": "Applying template {name} stopped on an error after {roles} roles and {channels} channels. Check my Manage Roles and Manage Channels permissions."
+  "tpFailed": "Applying template {name} stopped on an error after {roles} roles and {channels} channels. Check my Manage Roles and Manage Channels permissions.",
+  "welcomeEditTitle": "Edit message text",
+  "welcomeEditLabelWelcome": "Welcome text",
+  "welcomeEditLabelGoodbye": "Goodbye text",
+  "welcomeEditSavedGoodbye": "Goodbye template saved.",
+  "welcomeEditInvalid": "The text must be 1 to 1800 characters."
 }

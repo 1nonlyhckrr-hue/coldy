@@ -63,11 +63,11 @@ export default {
     const nm = i.options.getString('name', true).toLowerCase();
     if (sub === 'save') {
       c.templates.save(nm, templateOf(i.guild), i.user.id, i.guild.name);
-      const d = c.templates.get(nm).data;
+      const d = c.templates.use(nm, i.user.id, owner);
       return say(i, c, 'tpSaved', {
         name: nm,
-        roles: d.roles.filter((r) => !r.everyone).length,
-        channels: d.channels.length,
+        roles: d.roles,
+        channels: d.channels,
       });
     }
     if (sub === 'delete') {

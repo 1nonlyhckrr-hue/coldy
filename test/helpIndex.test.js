@@ -7,14 +7,14 @@ const commands = await loadCommands();
 test('help pages expose all586 installed paths exactly once with complete sorted lines', () => {
   const first = helpPage(commands),
     lines = [];
-  assert.equal(first.total, 684);
+  assert.equal(first.total, 685);
   for (let page = 1; page <= first.pages; page++) {
     const result = helpPage(commands, { page });
     assert(result.lines.length <= 8);
     lines.push(...result.lines);
   }
-  assert.equal(lines.length, 684);
-  assert.equal(new Set(lines).size, 684);
+  assert.equal(lines.length, 685);
+  assert.equal(new Set(lines).size, 685);
   assert.deepEqual(lines, [...lines].sort());
 });
 test('help category and case-insensitive literal search combine without changing registry', () => {

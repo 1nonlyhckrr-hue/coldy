@@ -1,3 +1,4 @@
+import { buildModal } from '../../services/welcomeEdit.js';
 import { convertMessage, loadLinkedMessage } from '../../services/welcomeCopy.js';
 import { exportWelcome, importWelcome, resetWelcome } from '../../services/welcomeLibrary.js';
 import { validateWelcomeAsset, welcomeStyle } from '../../services/welcomeAssets.js';
@@ -287,6 +288,18 @@ data.addSubcommand((s) =>
         .addChoices({ name: 'welcome', value: 'welcome' }, { name: 'goodbye', value: 'goodbye' }),
     ),
 );
+data.addSubcommand((s) =>
+  s
+    .setName('edit')
+    .setDescription('Edit the welcome or goodbye text in a pop-up form (multi-line).')
+    .addStringOption((o) =>
+      o
+        .setName('kind')
+        .setDescription('Which text')
+        .setRequired(true)
+        .addChoices({ name: 'welcome', value: 'welcome' }, { name: 'goodbye', value: 'goodbye' }),
+    ),
+);
 export default {
   category: 'welcomer',
   data,
@@ -295,6 +308,17 @@ export default {
     const locale = c.guildConfig.get(i.guildId).language;
     const t = (key, params) => translate(locale, key, params);
     const status = (v) => t(v ? 'enabled' : 'disabled');
+    if (i.options.getSubcommand() === 'edit') {
+      if (!i.memberPermissions?.has(P.ManageGuild)) throw new UserError('userPermission');
+      return i.showModal(
+        buildModal(
+          i.options.getString('kind', true),
+          i.user.id,
+          c.guildConfig.get(i.guildId).welcome,
+          locale,
+        ),
+      );
+    }
     await i.deferReply({ flags: MessageFlags.Ephemeral });
     const authorize = async () => {
       const member = await i.guild.members.fetch({ user: i.user.id, force: true });

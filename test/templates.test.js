@@ -96,3 +96,48 @@ test('apply creates roles highest first, then categories before channels, never 
   assert.equal(out.rolesCreated, 1);
   assert.equal(out.channelsCreated, 2);
 });
+test('a large server template is compressed and chunked, round-trips, and cleans up', () => {
+  const { db, c } = env();
+  const rnd = (n) => Array.from({ length: n }, () => Math.random().toString(36).slice(2)).join('');
+  const data = {
+    version: 1,
+    guildId: 'A',
+    guildName: 'Big',
+    roles: Array.from({ length: 200 }, (_, n) => ({
+      id: 'r' + n,
+      name: 'role ' + rnd(2),
+      color: n,
+      hoist: false,
+      mentionable: false,
+      permissions: '1071698660929',
+      position: n,
+      everyone: false,
+    })),
+    channels: Array.from({ length: 500 }, (_, n) => ({
+      id: 'c' + n,
+      name: 'chan-' + rnd(1),
+      type: 0,
+      parentId: null,
+      position: n,
+      topic: rnd(4),
+      overwrites: Array.from({ length: 3 }, (_, k) => ({
+        id: 'r' + k,
+        type: 0,
+        allow: '1024',
+        deny: '2048',
+      })),
+    })),
+  };
+  assert.ok(JSON.stringify(data).length > 100000);
+  c.templates.save('big', data, 'u1', 'Big');
+  assert.deepEqual(c.templates.get('big').data, data);
+  assert.equal(c.templates.list('u1', false)[0].channels, 500);
+  const rows = () => c.features.list('0', 'template', '', 1000).length;
+  const before = rows();
+  assert.ok(before >= 2);
+  c.templates.save('big', templateOf(src()), 'u1', 'Big');
+  assert.ok(rows() < before);
+  assert.equal(c.templates.remove('big', 'u1', false), true);
+  assert.equal(rows(), 0);
+  db.close();
+});
