@@ -1424,5 +1424,18 @@
   "welcomeCopied": "Copied into your template. Saved: {saved}. Placeholders I did not recognise (left as written): {unknown}. Notes: {notes}. Sending stays as it was: use /welcome preview to check and /welcome enable to turn it on.",
   "welcomeCopyNote_truncated": "Text was cut to 1800 characters.",
   "welcomeCopyNote_expiring": "An image link has an expiry stamp and may stop working: re-host the image for a permanent link.",
-  "welcomeCopyNote_badAsset": "An image was skipped because its link is not a valid public HTTPS link."
+  "welcomeCopyNote_badAsset": "An image was skipped because its link is not a valid public HTTPS link.",
+  "tpTooBig": "This server has more than 500 roles and channels together, too many for a template.",
+  "tpBadName": "Template names use only a-z, 0-9, _ and - (max 20 characters).",
+  "tpNotYours": "A template with that name belongs to someone else. Pick another name.",
+  "tpLimit": "The bot already holds 25 templates. Delete one first.",
+  "tpNotFound": "No template with that name that you can use. See /template list.",
+  "tpSameServer": "That template was saved from this server. Apply it in a different server.",
+  "tpBusy": "A template is already being applied in this server.",
+  "tpSaved": "Template {name} saved: {roles} roles and {channels} channels with their permissions. No messages or members are stored.",
+  "tpList": "Your templates:\n{list}",
+  "tpDeleted": "Template {name} deleted.",
+  "tpStarted": "Applying template {name} ({total} items, about 2 per second). Existing roles and channels with the same name are skipped and nothing is deleted. I will post the result here.",
+  "tpDone": "Template {name} applied: {roles} roles and {channels} channels created, {skipped} already existed, {failed} failed.",
+  "tpFailed": "Applying template {name} stopped on an error after {roles} roles and {channels} channels. Check my Manage Roles and Manage Channels permissions."
 }

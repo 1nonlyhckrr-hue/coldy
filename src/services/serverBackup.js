@@ -97,12 +97,16 @@ export class ServerBackups {
   }
 }
 /** Recreates missing roles then missing channels (by name, type and category). Returns counts. */
-export async function restoreGuild(guild, data) {
+export async function restoreGuild(guild, data, opts = {}) {
+  const pause = async () => opts.sleep && opts.pace && (await opts.sleep(opts.pace));
   if (data?.version !== BACKUP_VERSION) throw new UserError('backupNotFound');
   await Promise.all([guild.roles.fetch(), guild.channels.fetch()]);
   const out = { rolesCreated: 0, channelsCreated: 0, skipped: 0, failed: 0 };
   const roleMap = new Map([[data.guildId, guild.id]]);
-  for (const r of data.roles) {
+  const roleList = opts.ordered
+    ? [...data.roles].sort((a, b) => b.position - a.position)
+    : data.roles;
+  for (const r of roleList) {
     if (r.everyone) continue;
     const existing = [...guild.roles.cache.values()].find((x) => !x.managed && x.name === r.name);
     if (existing) {
@@ -124,6 +128,7 @@ export async function restoreGuild(guild, data) {
     } catch {
       out.failed++;
     }
+    await pause();
   }
   const chanMap = new Map();
   const find = (c, parentId) =>
@@ -147,7 +152,7 @@ export async function restoreGuild(guild, data) {
       continue;
     }
     const overwrites = c.overwrites
-      .filter((o) => o.type === 1 || roleMap.has(o.id))
+      .filter((o) => (o.type === 1 && !opts.dropMembers) || roleMap.has(o.id))
       .map((o) => ({
         id: o.type === 0 ? roleMap.get(o.id) : o.id,
         type: o.type,
@@ -177,6 +182,7 @@ export async function restoreGuild(guild, data) {
     } catch {
       out.failed++;
     }
+    await pause();
   }
   return out;
 }

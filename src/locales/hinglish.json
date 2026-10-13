@@ -1424,5 +1424,18 @@
   "welcomeCopied": "Aapke template me copy hua. Save: {saved}. Jo placeholders pehchane nahi (jaise likhe hain waise rakhe): {unknown}. Notes: {notes}. Bhejna pehle jaisa hai: /welcome preview se check karo aur /welcome enable se on karo.",
   "welcomeCopyNote_truncated": "Text 1800 characters par kata gaya.",
   "welcomeCopyNote_expiring": "Ek image link par expiry hai aur band ho sakta hai: permanent link ke liye image dobara host karo.",
-  "welcomeCopyNote_badAsset": "Ek image skip hui kyunki uska link valid public HTTPS link nahi hai."
+  "welcomeCopyNote_badAsset": "Ek image skip hui kyunki uska link valid public HTTPS link nahi hai.",
+  "tpTooBig": "Is server me 500 se zyada roles aur channels hain, template ke liye bahut zyada.",
+  "tpBadName": "Template naam me sirf a-z, 0-9, _ aur - (maximum 20 characters).",
+  "tpNotYours": "Us naam ka template kisi aur ka hai. Dusra naam chuno.",
+  "tpLimit": "Bot ke paas pehle se 25 templates hain. Pehle ek hatao.",
+  "tpNotFound": "Us naam ka koi template nahi jo aap use kar sako. /template list dekho.",
+  "tpSameServer": "Wo template isi server se save hua tha. Kisi dusre server me lagao.",
+  "tpBusy": "Is server me template pehle se lag raha hai.",
+  "tpSaved": "Template {name} save hua: {roles} roles aur {channels} channels, permissions ke saath. Koi message ya member save nahi hota.",
+  "tpList": "Aapke templates:\n{list}",
+  "tpDeleted": "Template {name} hataya.",
+  "tpStarted": "Template {name} lag raha hai ({total} items, lagbhag 2 per second). Usi naam ke maujooda roles/channels chhode jaate hain aur kuch delete nahi hota. Result yahin bataunga.",
+  "tpDone": "Template {name} laga: {roles} roles aur {channels} channels bane, {skipped} pehle se the, {failed} fail.",
+  "tpFailed": "Template {name} ek error par ruk gaya ({roles} roles, {channels} channels ke baad). Meri Manage Roles aur Manage Channels permission check karo."
 }

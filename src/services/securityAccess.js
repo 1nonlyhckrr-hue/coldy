@@ -18,6 +18,7 @@ export const SECURITY_FEATURES = [
   'raid',
   'emergency',
   'massunban',
+  'template',
 ];
 export class SecurityAccess {
   constructor(db) {

@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-87 top-level commands, 680 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+88 top-level commands, 684 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -60,6 +60,10 @@
 | /raid invites | Invite tracking: turn on, see who invited a member or an inviter's numbers. | Local mock/unit only |
 | /raid joingate | Owner/delegate: kick new members whose account is younger than N days. | Local mock/unit only |
 | /raid raidmode | Owner/delegate: while on, every new member is kicked or held (timed out). | Local mock/unit only |
+| /template apply | Create the missing roles and channels of a template here. Deletes nothing. | Local mock/unit only |
+| /template delete | Delete one of your templates. | Local mock/unit only |
+| /template list | Show your saved templates. | Local mock/unit only |
+| /template save | Save roles, categories, channels and permissions (no messages). | Local mock/unit only |
 | /unlockdown | End /lockdown and restore the exact previous channel permissions. | Local mock/unit only |
 | /verification config | Show the current settings. | Local mock/unit only |
 | /verification disable | Turn verification off (roles and channel hiding are kept). | Local mock/unit only |
