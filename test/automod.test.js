@@ -1,3 +1,4 @@
+import { PermissionFlagsBits as P } from 'discord.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { openDatabase, GuildSettings } from '../src/database/index.js';
@@ -220,6 +221,7 @@ test('timeout action uses bounded until time,fresh native hierarchy and never sh
     const before = Date.now();
     await h(x.m);
     assert.equal(effects.length, 1);
+    assert.equal(x.deleted.length, 1);
     assert(effects[0][0] >= before + 5 * 60000 && effects[0][0] <= Date.now() + 5 * 60000);
     await h(x.m);
     assert.equal(effects.length, 1);
@@ -229,6 +231,40 @@ test('timeout action uses bounded until time,fresh native hierarchy and never sh
     assert.equal(x.automod.incidents('g')[0].status, 'completed');
   } finally {
     x.db.close();
+  }
+});
+test('timeout also deletes the message, and a failed or impossible delete never blocks the timeout', async () => {
+  for (const mode of ['refused', 'nopermission', 'longer']) {
+    const x = setup();
+    try {
+      const effects = [];
+      x.member.user = { bot: false };
+      x.member.moderatable = true;
+      x.member.roles.highest = {};
+      x.member.disableCommunicationUntil = async (...a) => effects.push(a);
+      x.bot.roles = { highest: { comparePositionTo: () => 1 } };
+      if (mode === 'refused')
+        x.m.delete = async () => {
+          throw new Error('unknown message');
+        };
+      if (mode === 'nopermission')
+        x.m.channel = { permissionsFor: () => ({ has: (p) => p !== P.ManageMessages }) };
+      if (mode === 'longer') x.member.communicationDisabledUntilTimestamp = Date.now() + 3600000;
+      x.automod.patch('g', {
+        enabled: true,
+        action: 'warn',
+        ruleActions: { words: 'timeout' },
+        timeoutMinutes: 5,
+        rules: { words: true },
+        words: ['bad'],
+      });
+      await createAutoModHandler(x.c)(x.m);
+      assert.equal(effects.length, mode === 'longer' ? 0 : 1, mode);
+      assert.equal(x.deleted.length, mode === 'longer' ? 1 : mode === 'refused' ? 0 : 0, mode);
+      assert.equal(x.automod.incidents('g')[0].status, 'completed', mode);
+    } finally {
+      x.db.close();
+    }
   }
 });
 test('timeout protected targets,current permission/hierarchy,changed config and native uncertainty fail safely', async () => {
@@ -1983,13 +2019,13 @@ test('per-rule actions override the global action only for that rule and survive
     await h(x.m);
     assert.equal(effects.length, 1);
     assert.equal(x.automod.incidents('g').find((r) => r.message_id === 'msg').action, 'timeout');
-    assert.equal(x.deleted.length, 0);
+    assert.equal(x.deleted.length, 1);
     await h({ ...x.m, id: 'caps', content: 'THIS IS ALL CAPITAL LETTERS HERE NOW' });
     assert.equal(effects.length, 1);
     assert.equal(x.automod.incidents('g').find((r) => r.message_id === 'caps').action, 'warn');
     x.automod.patch('g', { ruleActions: { words: 'delete' } });
     await h({ ...x.m, id: 'del' });
-    assert.equal(x.deleted.length, 1);
+    assert.equal(x.deleted.length, 2);
     const exported = JSON.stringify(x.automod.get('g'));
     x.automod.resetPolicy('g');
     assert.deepEqual(x.automod.get('g').ruleActions, {});

@@ -471,11 +471,21 @@ export function createAutoModHandler(c) {
           return true;
         }
         const until = Date.now() + settings.timeoutMinutes * 60000;
+        // The offending message is removed too. A failed delete never undoes or blocks the timeout.
+        const dropMessage = async () => {
+          try {
+            if (message.channel.permissionsFor(bot)?.has(P.ManageMessages)) await message.delete();
+          } catch {
+            // message already gone or Discord refused: the timeout still stands
+          }
+        };
         if (existingUntil !== null && existingUntil >= until) {
+          await dropMessage();
           c.automod.finish(message.id, 'completed');
           return true;
         }
         await target.disableCommunicationUntil(until, 'Emika AutoMod: ' + rule);
+        await dropMessage();
       } else {
         const bot = await message.guild.members.fetchMe({ force: true });
         if (
