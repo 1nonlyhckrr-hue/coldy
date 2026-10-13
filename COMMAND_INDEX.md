@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-79 top-level commands, 645 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+81 top-level commands, 653 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -32,6 +32,8 @@
 | /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
 | /antinuke trustlist | Private stored trusteduser IDs only,no native membership/permission claim. | Local mock/unit only |
 | /antinuke unresolved | Privately inspect stored unresolved alert metadata;no retry or punishment. | Local mock/unit only |
+| /audit perms | List every role holding dangerous permissions and its members. | Local mock/unit only |
+| /audit securityscore | Score the server out of 100 with what to fix. | Local mock/unit only |
 | /backup create | Save roles, channels and permissions as a backup (keeps the latest 5). | Local mock/unit only |
 | /backup delete | Delete one saved backup. | Local mock/unit only |
 | /backup export | Download one backup as JSON. | Local mock/unit only |
@@ -51,6 +53,12 @@
 | /owner allow | Let a member use a security feature (default: nobody is delegated). | Local mock/unit only |
 | /owner list | Show delegated users in this server. | Local mock/unit only |
 | /owner revoke | Remove a delegation (one feature, or everything if feature is empty). | Local mock/unit only |
+| /raid altcheck | Account age and signals that hint at an alt account (a score, not proof). | Local mock/unit only |
+| /raid emergency | Owner/delegate: lockdown + raid mode (kick) + alert the server owner. | Local mock/unit only |
+| /raid emergencyoff | Owner/delegate: undo the lockdown and raid mode, release held members. | Local mock/unit only |
+| /raid invites | Invite tracking: turn on, see who invited a member or an inviter's numbers. | Local mock/unit only |
+| /raid joingate | Owner/delegate: kick new members whose account is younger than N days. | Local mock/unit only |
+| /raid raidmode | Owner/delegate: while on, every new member is kicked or held (timed out). | Local mock/unit only |
 | /unlockdown | End /lockdown and restore the exact previous channel permissions. | Local mock/unit only |
 | /verification config | Show the current settings. | Local mock/unit only |
 | /verification disable | Turn verification off (roles and channel hiding are kept). | Local mock/unit only |

@@ -718,6 +718,46 @@
     "source": "src/commands/antinuke/antinuke.js"
   },
   {
+    "name": "audit perms",
+    "category": "antinuke",
+    "syntax": "/audit perms",
+    "description": "List every role holding dangerous permissions and its members.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/audit.js"
+  },
+  {
+    "name": "audit securityscore",
+    "category": "antinuke",
+    "syntax": "/audit securityscore",
+    "description": "Score the server out of 100 with what to fix.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [
+      "ManageGuild"
+    ],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 5000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/audit.js"
+  },
+  {
     "name": "backup create",
     "category": "antinuke",
     "syntax": "/backup create",
@@ -1262,6 +1302,14 @@
           {
             "name": "roleall",
             "value": "roleall"
+          },
+          {
+            "name": "raid",
+            "value": "raid"
+          },
+          {
+            "name": "emergency",
+            "value": "emergency"
           }
         ]
       }
@@ -1363,6 +1411,14 @@
           {
             "name": "roleall",
             "value": "roleall"
+          },
+          {
+            "name": "raid",
+            "value": "raid"
+          },
+          {
+            "name": "emergency",
+            "value": "emergency"
           }
         ]
       }
@@ -1378,6 +1434,182 @@
     "cooldownMs": 3000,
     "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
     "source": "src/commands/antinuke/owner.js"
+  },
+  {
+    "name": "raid altcheck",
+    "category": "antinuke",
+    "syntax": "/raid altcheck (member)",
+    "description": "Account age and signals that hint at an alt account (a score, not proof).",
+    "parameters": [
+      {
+        "name": "member",
+        "required": true,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/raid.js"
+  },
+  {
+    "name": "raid emergency",
+    "category": "antinuke",
+    "syntax": "/raid emergency (confirm)",
+    "description": "Owner/delegate: lockdown + raid mode (kick) + alert the server owner.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/raid.js"
+  },
+  {
+    "name": "raid emergencyoff",
+    "category": "antinuke",
+    "syntax": "/raid emergencyoff (confirm)",
+    "description": "Owner/delegate: undo the lockdown and raid mode, release held members.",
+    "parameters": [
+      {
+        "name": "confirm",
+        "required": true,
+        "type": 5
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/raid.js"
+  },
+  {
+    "name": "raid invites",
+    "category": "antinuke",
+    "syntax": "/raid invites [enabled] [inviter] [who]",
+    "description": "Invite tracking: turn on, see who invited a member or an inviter's numbers.",
+    "parameters": [
+      {
+        "name": "enabled",
+        "required": false,
+        "type": 5
+      },
+      {
+        "name": "inviter",
+        "required": false,
+        "type": 6
+      },
+      {
+        "name": "who",
+        "required": false,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/raid.js"
+  },
+  {
+    "name": "raid joingate",
+    "category": "antinuke",
+    "syntax": "/raid joingate (enabled) [days]",
+    "description": "Owner/delegate: kick new members whose account is younger than N days.",
+    "parameters": [
+      {
+        "name": "enabled",
+        "required": true,
+        "type": 5
+      },
+      {
+        "name": "days",
+        "required": false,
+        "type": 4,
+        "min": 1,
+        "max": 365
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/raid.js"
+  },
+  {
+    "name": "raid raidmode",
+    "category": "antinuke",
+    "syntax": "/raid raidmode (enabled) [action]",
+    "description": "Owner/delegate: while on, every new member is kicked or held (timed out).",
+    "parameters": [
+      {
+        "name": "enabled",
+        "required": true,
+        "type": 5
+      },
+      {
+        "name": "action",
+        "required": false,
+        "type": 3,
+        "choices": [
+          {
+            "name": "kick",
+            "value": "kick"
+          },
+          {
+            "name": "hold",
+            "value": "hold"
+          }
+        ]
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/antinuke/raid.js"
   },
   {
     "name": "unlockdown",

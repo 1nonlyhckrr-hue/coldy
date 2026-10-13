@@ -37,6 +37,7 @@ import {
 } from './services/verification.js';
 import { BotActivity } from './services/botActivity.js';
 import { FeatureStore } from './services/featureStore.js';
+import { InviteTracker, createRaidHandlers } from './services/raidTools.js';
 import { Watch, createWatchHandlers } from './services/watch.js';
 import { LogHub, createLogHandlers } from './services/logHub.js';
 import { Guard, createGuardHandler, resumeAutoUnlocks } from './services/guard.js';
@@ -80,7 +81,9 @@ const client = new Client({
     ...(config.messageEventsEnabled
       ? [GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
       : []),
-    ...(config.memberEventsEnabled ? [GatewayIntentBits.GuildMembers] : []),
+    ...(config.memberEventsEnabled
+      ? [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildInvites]
+      : []),
   ],
   allowedMentions: { parse: [], repliedUser: false },
 });
@@ -280,6 +283,18 @@ context.logHub = new LogHub(context);
     client.on(Events.GuildMemberUpdate, logs.memberUpdate);
   }
   if (config.voiceEventsEnabled) client.on(Events.VoiceStateUpdate, logs.voice);
+  context.invites = new InviteTracker(context);
+  const raid = createRaidHandlers(context);
+  if (config.memberEventsEnabled) {
+    client.on(Events.GuildMemberAdd, raid.join);
+    client.on(Events.GuildMemberAdd, (m) => context.invites.join(m).catch(() => {}));
+    client.on(Events.GuildMemberRemove, (m) => context.invites.leave(m));
+    for (const ev of [Events.InviteCreate, Events.InviteDelete])
+      client.on(ev, (inv) => {
+        if (inv.guild && context.invites.enabled(inv.guild.id))
+          context.invites.snapshot(inv.guild).catch(() => {});
+      });
+  }
   context.watch = new Watch(context);
   const watch = createWatchHandlers(context);
   if (config.messageEventsEnabled) client.on(Events.MessageCreate, watch.message);
@@ -294,6 +309,8 @@ client.once(Events.ClientReady, (ready) => {
   context.voiceReadiness.initialReady();
   context.botActivity.apply(ready);
   resumeAutoUnlocks(context, client);
+  for (const g of ready.guilds.cache.values())
+    if (context.invites.enabled(g.id)) context.invites.snapshot(g).catch(() => {});
   logger.info({ botId: ready.user.id, commands: commands.size }, 'Emika ready');
   context.giveawayRunner.start();
   context.automationRunner.start();
