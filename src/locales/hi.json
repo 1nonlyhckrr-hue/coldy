@@ -1443,5 +1443,11 @@
   "welcomeEditLabelGoodbye": "गुडबाय टेक्स्ट",
   "welcomeEditSavedGoodbye": "गुडबाय टेम्पलेट सेव हुआ।",
   "welcomeEditInvalid": "टेक्स्ट 1 से 1800 अक्षरों का होना चाहिए।",
-  "tpProgress": "टेम्पलेट {name} चल रहा है: {total} में से {done} आइटम हो गए ({roles} रोल, {channels} चैनल बने, {failed} विफल)। काम जारी है।"
+  "tpProgress": "टेम्पलेट {name} चल रहा है: {total} में से {done} आइटम हो गए ({roles} रोल, {channels} चैनल बने, {failed} विफल)। काम जारी है।",
+  "stealInvalid": "Give one command name, 1 to 3 plain words, for example ban or music play.",
+  "stealWired": "Wired: Emika already has this. {name} works as /{path} right now.",
+  "stealQueued": "Queued, not working yet: Emika does not have {name}. It is saved in the steal queue and is not available until it is built.",
+  "stealQueuedAgain": "Already queued, not working yet: {name} is in the steal queue and is not available until it is built.",
+  "stealQueueEmpty": "The steal queue is empty.",
+  "stealQueueFull": "The steal queue is full. Ask a bot owner to clear it."
 }

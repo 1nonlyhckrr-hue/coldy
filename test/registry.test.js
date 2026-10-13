@@ -73,6 +73,8 @@ test('installed command names and option limits validate', async () => {
     'slowmode',
     'snipe',
     'stats',
+    'steal',
+    'stealqueue',
     'stickerinfo',
     'sticky',
     'template',
@@ -190,6 +192,8 @@ test('foundation and utility commands execute mock replies', async () => {
         'event',
         'fun',
         'config',
+        'steal',
+        'stealqueue',
       ].includes(c.data.name)
     )
       continue;

@@ -37,6 +37,7 @@ import {
 } from './services/verification.js';
 import { BotActivity } from './services/botActivity.js';
 import { FeatureStore } from './services/featureStore.js';
+import { StealQueue, createStealPrefixHandler } from './services/steal.js';
 import { InviteTracker, createRaidHandlers } from './services/raidTools.js';
 import { SnipeCache, createSnipeHandlers } from './services/snipe.js';
 import { TempRoles } from './services/tempRole.js';
@@ -173,6 +174,7 @@ if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
 context.guard = new Guard(db);
 context.features = new FeatureStore(db);
+context.steal = new StealQueue(context.features);
 if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createGuardHandler(context));
 context.lockdown = new Lockdown(db);
@@ -224,8 +226,10 @@ if (config.messageEventsEnabled) {
     autoMod = createAutoModHandler(context),
     respond = createAutoresponderHandler(context),
     rank = createMessageRankHandler(context),
-    afk = createAfkHandler(context);
+    afk = createAfkHandler(context),
+    stealPrefix = createStealPrefixHandler(context);
   client.on(Events.MessageCreate, async (message) => {
+    if (await stealPrefix(message)) return;
     if (await antibot(message)) return;
     if (await media(message)) return;
     if (await mentionGuard(message)) return;

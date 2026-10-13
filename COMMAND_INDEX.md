@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-88 top-level commands, 685 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+90 top-level commands, 687 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -564,6 +564,8 @@
 | /servericon | Fetch current server icon link, no member enumeration. | Local mock/unit only |
 | /serverinfo | Fresh server name/ID and approximate count, no member enumeration. | Local mock/unit only |
 | /stats | Show build command counts and process memory usage. | Local mock/unit only |
+| /steal | Name a command you saw another bot use. Emika wires it or queues it honestly. | Local mock/unit only |
+| /stealqueue | Owner-only list of /steal requests Emika does not have yet. | Local mock/unit only |
 | /stickerinfo | Read current server sticker metadata, no uploader or file download. | Local mock/unit only |
 | /text csvdecode | Strict single CSV record to JSON array, 1-50 fields; quoted newlines kept, no formula execution. | Local mock/unit only |
 | /text csvencode | JSON array of 1-50 strings to quoted single CSV record; not spreadsheet formula sanitization. | Local mock/unit only |

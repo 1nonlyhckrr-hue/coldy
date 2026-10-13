@@ -1443,5 +1443,11 @@
   "welcomeEditLabelGoodbye": "Goodbye text",
   "welcomeEditSavedGoodbye": "Goodbye template saved.",
   "welcomeEditInvalid": "The text must be 1 to 1800 characters.",
-  "tpProgress": "Template {name} in progress: {done} of {total} items done ({roles} roles and {channels} channels created, {failed} failed). Still working."
+  "tpProgress": "Template {name} in progress: {done} of {total} items done ({roles} roles and {channels} channels created, {failed} failed). Still working.",
+  "stealInvalid": "Give one command name, 1 to 3 plain words, for example ban or music play.",
+  "stealWired": "Wired: Emika already has this. {name} works as /{path} right now.",
+  "stealQueued": "Queued, not working yet: Emika does not have {name}. It is saved in the steal queue and is not available until it is built.",
+  "stealQueuedAgain": "Already queued, not working yet: {name} is in the steal queue and is not available until it is built.",
+  "stealQueueEmpty": "The steal queue is empty.",
+  "stealQueueFull": "The steal queue is full. Ask a bot owner to clear it."
 }

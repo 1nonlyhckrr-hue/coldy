@@ -16186,6 +16186,55 @@
     "source": "src/commands/utility/stats.js"
   },
   {
+    "name": "steal",
+    "category": "utility",
+    "syntax": "/steal (command) [bot]",
+    "description": "Name a command you saw another bot use. Emika wires it or queues it honestly.",
+    "parameters": [
+      {
+        "name": "command",
+        "required": true,
+        "type": 3,
+        "minLength": 1,
+        "maxLength": 60
+      },
+      {
+        "name": "bot",
+        "required": false,
+        "type": 6
+      }
+    ],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/steal.js"
+  },
+  {
+    "name": "stealqueue",
+    "category": "utility",
+    "syntax": "/stealqueue",
+    "description": "Owner-only list of /steal requests Emika does not have yet.",
+    "parameters": [],
+    "userPermissions": [],
+    "botPermissions": [],
+    "defaultMemberPermissions": [],
+    "aliases": [],
+    "referenceVerified": false,
+    "implemented": true,
+    "tested": false,
+    "testStatus": "Local unit/mock coverage only. Live gateway/API/visual test unverified.",
+    "cooldownMs": 3000,
+    "notes": "Original installed Emika slash path,not claimed exact reference equivalence. Permission arrays include static dispatcher requirements only;action-specific native channel/hierarchy/config checks live in the implementation and linked module guide. Empty static array does not mean no permission checks. Tested flag requires live acceptance and stays false.",
+    "source": "src/commands/utility/stealqueue.js"
+  },
+  {
     "name": "stickerinfo",
     "category": "utility",
     "syntax": "/stickerinfo (sticker-id)",
