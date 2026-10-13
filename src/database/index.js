@@ -290,6 +290,10 @@ export function openDatabase(path) {
       );
       db.prepare('INSERT INTO schema_migrations VALUES (47, ?)').run(Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version=48').get()) {
+      db.exec('CREATE TABLE guard_config(guild_id TEXT PRIMARY KEY,settings_json TEXT NOT NULL);');
+      db.prepare('INSERT INTO schema_migrations VALUES (48, ?)').run(Date.now());
+    }
   })();
   return db;
 }

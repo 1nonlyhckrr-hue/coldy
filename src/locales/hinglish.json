@@ -1211,5 +1211,12 @@
   "activitySet": "Bot activity set: {type} {text}. Ye save hai aur restart ke baad bhi lagu hogi.",
   "activityCleared": "Bot activity hata di gayi.",
   "activityShow": "Saved activity: {type} {text}",
-  "activityNone": "Koi custom activity saved nahi hai."
+  "activityNone": "Koi custom activity saved nahi hai.",
+  "guardRuntimeDisabled": "Guards audit log padhte hain, isliye bot par ENABLE_AUDIT_EVENTS chalu hona chahiye. Tab tak ye dormant rahenge.",
+  "guardNoChannel": "set nahi hai (/antinuke enable use karo)",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook banana: {webhook}",
+  "guardWebhook_alerted": "Untrusted user <@{actor}> ne webhook banaya. Sirf alert, kuch hataya nahi gaya.",
+  "guardWebhook_deleted": "Untrusted user <@{actor}> ne webhook banaya. Emika ne use delete kar diya.",
+  "guardWebhook_gone": "Untrusted user <@{actor}> ne webhook banaya, lekin wo pehle hi hat chuka tha.",
+  "guardWebhook_failed": "Untrusted user <@{actor}> ne webhook banaya aur Emika use delete nahi kar saka. Manage Webhooks check karo."
 }

@@ -1211,5 +1211,12 @@
   "activitySet": "Bot activity set: {type} {text}. It is saved and re-applied after restarts.",
   "activityCleared": "Bot activity cleared.",
   "activityShow": "Saved activity: {type} {text}",
-  "activityNone": "No custom activity is saved."
+  "activityNone": "No custom activity is saved.",
+  "guardRuntimeDisabled": "Guards read the audit log, so ENABLE_AUDIT_EVENTS must be on for the bot. They stay dormant until then.",
+  "guardNoChannel": "not set (use /antinuke enable)",
+  "guardConfig": "Guard settings\nAlert channel: {channel}\nWebhook creation: {webhook}",
+  "guardWebhook_alerted": "Untrusted user <@{actor}> created a webhook. Alert only, nothing was removed.",
+  "guardWebhook_deleted": "Untrusted user <@{actor}> created a webhook. Emika deleted it.",
+  "guardWebhook_gone": "Untrusted user <@{actor}> created a webhook, but it was already gone.",
+  "guardWebhook_failed": "Untrusted user <@{actor}> created a webhook and Emika could not delete it. Check Manage Webhooks."
 }

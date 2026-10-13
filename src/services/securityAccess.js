@@ -10,6 +10,7 @@ export const SECURITY_FEATURES = [
   'antinuke',
   'verification',
   'activity',
+  'guard',
 ];
 export class SecurityAccess {
   constructor(db) {

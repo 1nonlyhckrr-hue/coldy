@@ -36,6 +36,7 @@ import {
   createVerificationJoinHandler,
 } from './services/verification.js';
 import { BotActivity } from './services/botActivity.js';
+import { Guard, createGuardHandler } from './services/guard.js';
 import { Lockdown } from './services/lockdown.js';
 import { AntinukeAlerts, createAntinukeHandler } from './services/antinuke.js';
 import { MessageRanks, createMessageRankHandler } from './services/leaderboard.js';
@@ -149,6 +150,9 @@ context.antinuke = new AntinukeAlerts(db);
 context.antinuke.cleanup();
 if (config.auditEventsEnabled)
   client.on(Events.GuildAuditLogEntryCreate, createAntinukeHandler(context));
+context.guard = new Guard(db);
+if (config.auditEventsEnabled)
+  client.on(Events.GuildAuditLogEntryCreate, createGuardHandler(context));
 context.lockdown = new Lockdown(db);
 context.verification = new Verification(db);
 context.botActivity = new BotActivity(db);
