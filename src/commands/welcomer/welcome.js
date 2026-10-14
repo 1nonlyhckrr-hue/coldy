@@ -61,7 +61,7 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('title')
-      .setDescription('Set static welcome/goodbye title; omit text to restore Emika title.')
+      .setDescription('Set welcome/goodbye title with placeholders; omit text for member name.')
       .addStringOption((o) =>
         o
           .setName('kind')

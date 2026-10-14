@@ -13,9 +13,9 @@ test('goodbye exposes edit copy preview test with no kind selector', () => {
   assert.equal(json.name, 'goodbye');
   assert.deepEqual(
     json.options.map((s) => s.name),
-    ['set', 'edit', 'copy', 'preview', 'test'],
+    ['set', 'title', 'edit', 'copy', 'preview', 'test'],
   );
-  assert.equal(json.options[2].options[0].name, 'link');
+  assert.equal(json.options[3].options[0].name, 'link');
 });
 test('goodbye edit prefills its own text and GIF in all locales; never welcome assets', async () => {
   for (const locale of ['en', 'hi', 'hinglish']) {
@@ -58,7 +58,12 @@ test('goodbye modal clears only goodbye image and rejects unsafe URLs', async ()
     user: { id: '9' },
     guildId: 'g',
     guild: { members: { fetch: async () => ({ permissions: { has: () => true } }) } },
-    fields: { getTextInputValue: (key) => (key === 'image' ? url : 'Bye') },
+    fields: {
+      getTextInputValue: (key) => {
+        if (key === 'title') throw new Error('legacy');
+        return key === 'image' ? url : 'Bye';
+      },
+    },
     reply: async () => {},
   });
   await createWelcomeEditHandler(c)(i(''));

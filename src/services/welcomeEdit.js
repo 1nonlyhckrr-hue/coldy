@@ -47,6 +47,15 @@ export function buildModal(kind, userId, settings, locale) {
           .setMaxLength(1000)
           .setValue(currentImage(settings, kind).slice(0, 1000)),
       ),
+      new ActionRowBuilder().addComponents(
+        new TextInputBuilder()
+          .setCustomId('title')
+          .setLabel(t('welcomeEditLabelTitle').slice(0, 45))
+          .setStyle(TextInputStyle.Short)
+          .setRequired(false)
+          .setMaxLength(120)
+          .setValue((kind === 'goodbye' ? settings.goodbyeTitle : settings.title) ?? ''),
+      ),
     );
 }
 export function createWelcomeEditHandler(c) {
@@ -62,6 +71,19 @@ export function createWelcomeEditHandler(c) {
       if (!member?.permissions?.has(P.ManageGuild)) throw new UserError('userPermission');
       const text = String(i.fields.getTextInputValue('text') ?? '').trim();
       if (!text || text.length > MAX) throw new UserError('welcomeEditInvalid');
+      let rawTitle;
+      try {
+        rawTitle = i.fields.getTextInputValue('title');
+      } catch {
+        rawTitle = undefined;
+      }
+      rawTitle = typeof rawTitle === 'string' ? rawTitle.trim() : undefined;
+      if (rawTitle && (rawTitle.length > 120 || /[\u0000-\u001f\u007f@]/u.test(rawTitle)))
+        throw new UserError('welcomeTitleInvalid');
+      const title =
+        rawTitle === undefined
+          ? {}
+          : { [kind === 'goodbye' ? 'goodbyeTitle' : 'title']: rawTitle || undefined };
       let rawImage;
       try {
         rawImage = i.fields.getTextInputValue('image');
@@ -79,6 +101,7 @@ export function createWelcomeEditHandler(c) {
           ? { goodbyeMessage: text, goodbyeCustom: true }
           : { message: text, messageCustom: true }),
         ...image,
+        ...title,
       });
       const locale = c.guildConfig.get(i.guildId).language;
       await i.reply(

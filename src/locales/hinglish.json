@@ -1457,5 +1457,6 @@
   "antinukeQuarantineReason_roleDelete": "roles delete karna",
   "antinukeQuarantineReason_botAdd": "bots add karna",
   "antinukeQuarantineReason_webhookCreate": "webhooks banana",
-  "goodbyeChannelSaved": "Goodbye channel save ho gaya. Welcome channel nahi badla. /welcome goodbye enabled:true se goodbye ON karo."
+  "goodbyeChannelSaved": "Goodbye channel save ho gaya. Welcome channel nahi badla. /welcome goodbye enabled:true se goodbye ON karo.",
+  "welcomeEditLabelTitle": "Title (khali = member naam)"
 }

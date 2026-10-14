@@ -4,7 +4,7 @@ Professional multipurpose Discord bot project. Repository name: `coldy`. Node.js
 
 ## Honest status
 
-**This is not a finished 541-command bot.** 91 top-level slash commands provide 692 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message/sampled-voice Leaderboards. Antinuke is opt-in audit monitoring with automatic quarantine for repeated channel/role deletes, bans, kicks, bot additions and webhook creation; it cannot roll back damage or act above its role, GuildTag uses manual refresh, and VoiceMaster creates private channels explicitly or from an opt-in existing lobby. Music has18 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
+**This is not a finished 541-command bot.** 91 top-level slash commands provide 693 executable paths. Built scope includes moderation, welcome/goodbye settings, case logs, button roles, utilities, autoresponders, giveaways, private tickets, scheduled messages, AutoMod, solo Fun, Permit restrictions, single-member Voice, CustomRole mappings and message/sampled-voice Leaderboards. Antinuke is opt-in audit monitoring with automatic quarantine for repeated channel/role deletes, bans, kicks, bot additions and webhook creation; it cannot roll back damage or act above its role, GuildTag uses manual refresh, and VoiceMaster creates private channels explicitly or from an opt-in existing lobby. Music has18 experimental opt-in paths,off by default;live playback/client compatibility remain unverified;one stable4.2.2 node metadata candidate verified,not configured. See [module scope and remaining work](docs/MODULE_STATUS.md) and docs/PHASE3_STATUS.md. Empty category directories are not implemented modules.
 
 The official Zynrax documentation yields 319 distinct documented command paths after shortcut deduplication. These are reference-only rows, not Emika implementations. The reference inventory is not advertised as the complete 541-command list. Aliases do not count as separate commands. Examples and parameter values do not count as new commands.
 
@@ -83,3 +83,9 @@ The layout is locally previewed and mock-tested; Discord-side visual acceptance 
 ## Separate goodbye destination
 
 `/goodbye set channel:#goodbye` saves only the goodbye destination. `/welcome channel channel:#welcome` continues to set welcome's destination. Enable delivery with `/welcome goodbye enabled:true`; use `/goodbye test` or `/goodbye preview` to check the card. Until a separate goodbye destination is set, older setups still use the welcome channel for goodbye. Portable template export omits both destination IDs; import preserves them but disables delivery until explicit enable.
+
+## Dynamic welcome/goodbye titles
+
+Custom titles support the same `{user}`, `{username}`, `{server}`, `{count}` placeholders as message text. Example: `/welcome title kind:goodbye text:🕊{username} has moved on. Wishing them the best.` Titles without placeholders stay unchanged; copied hardcoded names are not guessed or rewritten. Omit text on `/welcome title kind:goodbye` to restore member-name fallback. Expanded titles are bounded to Discord's 256-character limit. No mention permissions are added by title rendering.
+
+`/goodbye title text:...` sets the goodbye title directly. Both edit modals include an optional title field; empty restores member-name fallback.

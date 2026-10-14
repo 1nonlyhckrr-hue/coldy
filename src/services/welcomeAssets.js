@@ -1,3 +1,4 @@
+import { renderTemplate } from './memberTemplate.js';
 import { isIP } from 'node:net';
 import { UserError } from '../utils/errors.js';
 export function validateWelcomeAsset(value) {
@@ -28,10 +29,14 @@ export function memberTitle(member) {
   return member?.displayName || member?.user?.username || member?.username || undefined;
 }
 export function welcomeStyle(settings, kind, member) {
+  const customTitle = kind === 'goodbye' ? settings.goodbyeTitle : settings.title;
+  const title =
+    customTitle && member && /\{(user|username|server|count)\}/.test(customTitle)
+      ? renderTemplate(customTitle, member).slice(0, 256)
+      : customTitle;
   return {
     color: settings.color,
-    title:
-      (kind === 'goodbye' ? settings.goodbyeTitle : settings.title) || memberTitle(member) || false,
+    title: title || memberTitle(member) || false,
     image: kind === 'goodbye' ? settings.goodbyeImage : settings.image,
     thumbnail: kind === 'goodbye' ? settings.goodbyeThumbnail : settings.thumbnail,
   };

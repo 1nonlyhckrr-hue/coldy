@@ -1457,5 +1457,6 @@
   "antinukeQuarantineReason_roleDelete": "रोल हटाना",
   "antinukeQuarantineReason_botAdd": "बॉट जोड़ना",
   "antinukeQuarantineReason_webhookCreate": "वेबहुक बनाना",
-  "goodbyeChannelSaved": "विदाई का चैनल सहेजा। स्वागत का चैनल नहीं बदला। /welcome goodbye enabled:true से विदाई चालू करें।"
+  "goodbyeChannelSaved": "विदाई का चैनल सहेजा। स्वागत का चैनल नहीं बदला। /welcome goodbye enabled:true से विदाई चालू करें।",
+  "welcomeEditLabelTitle": "शीर्षक (खाली = सदस्य का नाम)"
 }

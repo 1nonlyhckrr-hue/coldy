@@ -1,3 +1,5 @@
+import { renderTemplate } from './memberTemplate.js';
+export { renderTemplate } from './memberTemplate.js';
 import { z } from 'zod';
 import { ChannelType, PermissionFlagsBits as P } from 'discord.js';
 import { translate } from './localization.js';
@@ -152,17 +154,6 @@ export async function validateOutputChannel(guild, channelId) {
   )
     throw new UserError('channelPermissionMissing');
   return channel;
-}
-export function renderTemplate(template, member) {
-  const vars = {
-    user: `<@${member.id}>`,
-    username: member.user.username,
-    server: member.guild.name,
-    count: String(member.guild.memberCount),
-  };
-  return template
-    .replace(/\{(user|username|server|count)\}/g, (_, key) => vars[key])
-    .slice(0, 1900);
 }
 
 export function renderGuildTemplate(settings, kind, member, locale = 'en') {

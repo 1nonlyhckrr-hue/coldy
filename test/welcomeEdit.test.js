@@ -37,7 +37,8 @@ function env(perm = true) {
     },
     fields: {
       getTextInputValue: (id) => {
-        if (id !== 'image') return text;
+        if (id === 'text') return text;
+        if (id === 'title') throw new Error('legacy modal');
         if (image === undefined) throw new Error('no such field');
         return image;
       },

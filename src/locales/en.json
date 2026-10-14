@@ -1457,5 +1457,6 @@
   "antinukeQuarantineReason_roleDelete": "role deletion",
   "antinukeQuarantineReason_botAdd": "bot additions",
   "antinukeQuarantineReason_webhookCreate": "webhook creation",
-  "goodbyeChannelSaved": "Goodbye destination saved. Welcome destination unchanged. Enable goodbye with /welcome goodbye enabled:true."
+  "goodbyeChannelSaved": "Goodbye destination saved. Welcome destination unchanged. Enable goodbye with /welcome goodbye enabled:true.",
+  "welcomeEditLabelTitle": "Title (empty = member name)"
 }

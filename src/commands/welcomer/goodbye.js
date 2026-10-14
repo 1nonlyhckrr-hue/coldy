@@ -23,6 +23,18 @@ const data = new SlashCommandBuilder()
           .setRequired(true),
       ),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('title')
+      .setDescription('Set title with placeholders; omit text to restore member name.')
+      .addStringOption((o) =>
+        o
+          .setName('text')
+          .setDescription('Supports {user}, {username}, {server}, {count}')
+          .setMinLength(1)
+          .setMaxLength(120),
+      ),
+  )
   .addSubcommand((s) => s.setName('edit').setDescription('Edit goodbye text and image/GIF.'))
   .addSubcommand((s) =>
     s

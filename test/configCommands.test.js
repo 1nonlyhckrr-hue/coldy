@@ -470,7 +470,7 @@ test('welcome static titles persist separately,preview verbatim and reset withou
       assert.equal(x.replies.at(-1).embeds[0].data.title, 'See you');
       kind = 'welcome';
       await welcome.execute(x.i, x.c);
-      assert.equal(x.replies.at(-1).embeds[0].data.title, 'Our {server} title');
+      assert.equal(x.replies.at(-1).embeds[0].data.title, 'Our Guild title');
       x.setSub('title');
       for (const bad of [' ', '@everyone', 'a\nb', 'x'.repeat(121)]) {
         title = bad;
