@@ -1451,5 +1451,7 @@
   "stealQueueEmpty": "The steal queue is empty.",
   "stealQueueFull": "The steal queue is full. Ask a bot owner to clear it.",
   "tpBuiltin": "Built-in templates cannot be overwritten or deleted. Apply it with /template apply.",
-  "welcomeEditLabelImage": "इमेज / GIF URL (खाली = हटाएं)"
+  "welcomeEditLabelImage": "इमेज / GIF URL (खाली = हटाएं)",
+  "goodbyeEditTitle": "विदाई संदेश बदलें",
+  "goodbyeTestSent": "आपके लिए विदाई टेस्ट भेजा गया।"
 }

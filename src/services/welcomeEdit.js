@@ -35,7 +35,7 @@ export function buildModal(kind, userId, settings, locale) {
     .setValue(currentText(settings, kind).slice(0, MAX));
   return new ModalBuilder()
     .setCustomId(`${PREFIX}:${kind}:${userId}`)
-    .setTitle(t('welcomeEditTitle').slice(0, 45))
+    .setTitle(t(kind === 'goodbye' ? 'goodbyeEditTitle' : 'welcomeEditTitle').slice(0, 45))
     .addComponents(
       new ActionRowBuilder().addComponents(input),
       new ActionRowBuilder().addComponents(

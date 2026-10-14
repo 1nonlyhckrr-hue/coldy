@@ -7,14 +7,14 @@ const commands = await loadCommands();
 test('help pages expose all586 installed paths exactly once with complete sorted lines', () => {
   const first = helpPage(commands),
     lines = [];
-  assert.equal(first.total, 687);
+  assert.equal(first.total, 691);
   for (let page = 1; page <= first.pages; page++) {
     const result = helpPage(commands, { page });
     assert(result.lines.length <= 8);
     lines.push(...result.lines);
   }
-  assert.equal(lines.length, 687);
-  assert.equal(new Set(lines).size, 687);
+  assert.equal(lines.length, 691);
+  assert.equal(new Set(lines).size, 691);
   assert.deepEqual(lines, [...lines].sort());
 });
 test('help category and case-insensitive literal search combine without changing registry', () => {
@@ -25,7 +25,7 @@ test('help category and case-insensitive literal search combine without changing
   );
   assert.equal(helpPage(commands, { search: '.*' }).total, 0);
   assert.equal(helpPage(commands, { category: 'music', search: 'ban' }).total, 0);
-  assert.equal(commands.size, 90);
+  assert.equal(commands.size, 91);
 });
 test('help refuses malformed/out-of-range pages/categories/search without clamping', () => {
   for (const page of [0, -1, 101, 1.5, '1', NaN]) assert.throws(() => helpPage(commands, { page }));

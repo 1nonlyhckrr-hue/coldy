@@ -304,7 +304,7 @@ export default {
   category: 'welcomer',
   data,
   userPermissions: [P.ManageGuild],
-  async execute(i, c) {
+  async execute(i, c, testKind = 'welcome') {
     const locale = c.guildConfig.get(i.guildId).language;
     const t = (key, params) => translate(locale, key, params);
     const status = (v) => t(v ? 'enabled' : 'disabled');
@@ -565,13 +565,16 @@ export default {
       await channel.send(
         lunaPayload(
           {
-            content: renderGuildTemplate(latest.welcome, 'welcome', member, latest.language),
-            allowedMentions: { parse: [], users: latest.welcome.mentionMember ? [i.user.id] : [] },
+            content: renderGuildTemplate(latest.welcome, testKind, member, latest.language),
+            allowedMentions: {
+              parse: [],
+              users: testKind === 'welcome' && latest.welcome.mentionMember ? [i.user.id] : [],
+            },
           },
-          { locale: latest.language, ...welcomeStyle(latest.welcome, 'welcome', member) },
+          { locale: latest.language, ...welcomeStyle(latest.welcome, testKind, member) },
         ),
       );
-      text = t('welcomeTestSent');
+      text = t(testKind === 'goodbye' ? 'goodbyeTestSent' : 'welcomeTestSent');
     }
     await i.editReply(
       lunaPayload(

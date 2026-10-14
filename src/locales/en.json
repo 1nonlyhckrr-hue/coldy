@@ -1451,5 +1451,7 @@
   "stealQueueEmpty": "The steal queue is empty.",
   "stealQueueFull": "The steal queue is full. Ask a bot owner to clear it.",
   "tpBuiltin": "Built-in templates cannot be overwritten or deleted. Apply it with /template apply.",
-  "welcomeEditLabelImage": "Image / GIF URL (empty = none)"
+  "welcomeEditLabelImage": "Image / GIF URL (empty = none)",
+  "goodbyeEditTitle": "Edit goodbye",
+  "goodbyeTestSent": "Goodbye test sent for you."
 }

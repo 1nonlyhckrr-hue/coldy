@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-90 top-level commands, 687 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+91 top-level commands, 691 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -669,6 +669,10 @@
 | /voicemaster status | Privately inspect your stored voice ownership record, not live channel state. | Local mock/unit only |
 | /voicemaster summary | Manage Channels: private stored state/public flag counts, no owners/native access claim. | Local mock/unit only |
 | /voicemaster unlock | Empty tracked channel: explicitly allow all server members view/connect. | Local mock/unit only |
+| /goodbye copy | Copy a message into your goodbye template. | Local mock/unit only |
+| /goodbye edit | Edit goodbye text and image/GIF. | Local mock/unit only |
+| /goodbye preview | Privately preview your goodbye card. | Local mock/unit only |
+| /goodbye test | Send a goodbye test to the configured channel. | Local mock/unit only |
 | /welcome channel | Choose the destination. | Local mock/unit only |
 | /welcome clearassets | Clear welcome or goodbye image/thumbnail only; title/color/template/delivery kept. | Local mock/unit only |
 | /welcome clearchannel | Disable welcome/goodbye and remove stored destination; templates kept. | Local mock/unit only |
