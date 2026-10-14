@@ -2,7 +2,7 @@
 
 ## Installed Emika commands
 
-91 top-level commands, 691 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
+91 top-level commands, 692 executable paths. Registry-derived original Emika behavior. Local mock/unit coverage only;no live Discord acceptance or deployment. Reference equivalence is separate. See docs/MODULE_STATUS.md for current verification and limitations.
 
 | Slash path | Behavior | Tested |
 | --- | --- | --- |
@@ -672,6 +672,7 @@
 | /goodbye copy | Copy a message into your goodbye template. | Local mock/unit only |
 | /goodbye edit | Edit goodbye text and image/GIF. | Local mock/unit only |
 | /goodbye preview | Privately preview your goodbye card. | Local mock/unit only |
+| /goodbye set | Set a separate goodbye destination; welcome stays unchanged. | Local mock/unit only |
 | /goodbye test | Send a goodbye test to the configured channel. | Local mock/unit only |
 | /welcome channel | Choose the destination. | Local mock/unit only |
 | /welcome clearassets | Clear welcome or goodbye image/thumbnail only; title/color/template/delivery kept. | Local mock/unit only |

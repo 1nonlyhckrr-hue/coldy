@@ -14,7 +14,7 @@ test('offline preflight reports registry/counts with explicit unverified live ga
   const text = JSON.stringify(result);
   assert(!text.includes(env.DISCORD_TOKEN));
   assert(!text.includes(env.DATABASE_PATH));
-  assert(text.includes('691 executable'));
+  assert(text.includes('692 executable'));
   assert(text.includes('NOT live readiness'));
   assert(text.includes('Music off'));
   assert(text.includes('ownership and backup policy NOT checked'));

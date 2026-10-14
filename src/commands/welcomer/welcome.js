@@ -1,7 +1,12 @@
 import { buildModal } from '../../services/welcomeEdit.js';
 import { convertMessage, loadLinkedMessage } from '../../services/welcomeCopy.js';
 import { exportWelcome, importWelcome, resetWelcome } from '../../services/welcomeLibrary.js';
-import { memberTitle, validateWelcomeAsset, welcomeStyle } from '../../services/welcomeAssets.js';
+import {
+  memberTitle,
+  validateWelcomeAsset,
+  welcomeStyle,
+  memberMessageChannel,
+} from '../../services/welcomeAssets.js';
 import { translate } from '../../services/localization.js';
 import { lunaPayload } from '../../utils/embeds.js';
 import {
@@ -408,6 +413,13 @@ export default {
       });
       text = t('welcomeStyleReset');
     }
+    if (sub === 'goodbyechannel') {
+      const id = i.options.getChannel('channel', true).id;
+      await validateOutputChannel(i.guild, id);
+      await authorize();
+      c.guildConfig.patch(i.guildId, 'welcome', { goodbyeChannelId: id });
+      text = t('goodbyeChannelSaved');
+    }
     if (sub === 'channel') {
       const id = i.options.getChannel('channel', true).id;
       await validateOutputChannel(i.guild, id);
@@ -480,6 +492,7 @@ export default {
         enabled: false,
         goodbyeEnabled: false,
         channelId: undefined,
+        goodbyeChannelId: undefined,
       });
       text = t('welcomeChannelCleared');
     }
@@ -496,10 +509,11 @@ export default {
       if (enabled && !c.config.memberEventsEnabled) throw new UserError('memberEventsDisabled');
       const s = c.guildConfig.get(i.guildId).welcome;
       if (enabled) {
-        if (!s.channelId) throw new UserError('welcomeChannelRequired');
-        await validateOutputChannel(i.guild, s.channelId);
+        const channelId = memberMessageChannel(s, 'goodbye');
+        if (!channelId) throw new UserError('welcomeChannelRequired');
+        await validateOutputChannel(i.guild, channelId);
         await authorize();
-        if (c.guildConfig.get(i.guildId).welcome.channelId !== s.channelId)
+        if (memberMessageChannel(c.guildConfig.get(i.guildId).welcome, 'goodbye') !== channelId)
           throw new UserError('welcomeChannelRequired');
         if (!c.config.memberEventsEnabled) throw new UserError('memberEventsDisabled');
       }
@@ -557,11 +571,13 @@ export default {
     }
     if (sub === 'test') {
       const s = c.guildConfig.get(i.guildId).welcome;
-      if (!s.channelId) throw new UserError('welcomeChannelRequired');
-      const channel = await validateOutputChannel(i.guild, s.channelId);
+      const channelId = memberMessageChannel(s, testKind);
+      if (!channelId) throw new UserError('welcomeChannelRequired');
+      const channel = await validateOutputChannel(i.guild, channelId);
       const member = await authorize();
       const latest = c.guildConfig.get(i.guildId);
-      if (latest.welcome.channelId !== s.channelId) throw new UserError('welcomeChannelRequired');
+      if (memberMessageChannel(latest.welcome, testKind) !== channelId)
+        throw new UserError('welcomeChannelRequired');
       await channel.send(
         lunaPayload(
           {

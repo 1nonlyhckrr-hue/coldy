@@ -13,9 +13,9 @@ test('goodbye exposes edit copy preview test with no kind selector', () => {
   assert.equal(json.name, 'goodbye');
   assert.deepEqual(
     json.options.map((s) => s.name),
-    ['edit', 'copy', 'preview', 'test'],
+    ['set', 'edit', 'copy', 'preview', 'test'],
   );
-  assert.equal(json.options[1].options[0].name, 'link');
+  assert.equal(json.options[2].options[0].name, 'link');
 });
 test('goodbye edit prefills its own text and GIF in all locales; never welcome assets', async () => {
   for (const locale of ['en', 'hi', 'hinglish']) {

@@ -36,3 +36,9 @@ export function welcomeStyle(settings, kind, member) {
     thumbnail: kind === 'goodbye' ? settings.goodbyeThumbnail : settings.thumbnail,
   };
 }
+
+export function memberMessageChannel(settings, kind) {
+  return kind === 'goodbye'
+    ? (settings.goodbyeChannelId ?? settings.channelId)
+    : settings.channelId;
+}

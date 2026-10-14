@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, InteractionContextType, PermissionFlagsBits as P } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  InteractionContextType,
+  PermissionFlagsBits as P,
+  ChannelType,
+} from 'discord.js';
 import welcome from './welcome.js';
 // Reuse the same authorization, copy validation, modal and preview pipeline.
 const data = new SlashCommandBuilder()
@@ -6,6 +11,18 @@ const data = new SlashCommandBuilder()
   .setDescription('Copy, edit and preview goodbye messages.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
+  .addSubcommand((s) =>
+    s
+      .setName('set')
+      .setDescription('Set a separate goodbye destination; welcome stays unchanged.')
+      .addChannelOption((o) =>
+        o
+          .setName('channel')
+          .setDescription('Goodbye destination')
+          .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+          .setRequired(true),
+      ),
+  )
   .addSubcommand((s) => s.setName('edit').setDescription('Edit goodbye text and image/GIF.'))
   .addSubcommand((s) =>
     s
@@ -30,6 +47,9 @@ export default {
   async execute(i, c) {
     const options = new Proxy(i.options, {
       get(target, key) {
+        if (key === 'getSubcommand')
+          return () =>
+            target.getSubcommand() === 'set' ? 'goodbyechannel' : target.getSubcommand();
         if (key === 'getString')
           return (name, required) =>
             ['kind', 'type'].includes(name) ? 'goodbye' : target.getString(name, required);

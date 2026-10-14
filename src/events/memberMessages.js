@@ -1,4 +1,4 @@
-import { welcomeStyle } from '../services/welcomeAssets.js';
+import { welcomeStyle, memberMessageChannel } from '../services/welcomeAssets.js';
 import { lunaPayload } from '../utils/embeds.js';
 import { renderGuildTemplate, validateOutputChannel } from '../services/guildConfig.js';
 export function createMemberMessageHandler(context, kind) {
@@ -7,13 +7,14 @@ export function createMemberMessageHandler(context, kind) {
       const settings = context.guildConfig.get(member.guild.id);
       const config = settings.welcome;
       const enabled = kind === 'welcome' ? config.enabled : config.goodbyeEnabled;
-      if (!enabled || !config.channelId) return;
-      const channel = await validateOutputChannel(member.guild, config.channelId);
+      const channelId = memberMessageChannel(config, kind);
+      if (!enabled || !channelId) return;
+      const channel = await validateOutputChannel(member.guild, channelId);
       const latest = context.guildConfig.get(member.guild.id);
       const current = latest.welcome;
       if (
         !(kind === 'welcome' ? current.enabled : current.goodbyeEnabled) ||
-        current.channelId !== config.channelId
+        memberMessageChannel(current, kind) !== channelId
       )
         return;
       const content = renderGuildTemplate(current, kind, member, latest.language);

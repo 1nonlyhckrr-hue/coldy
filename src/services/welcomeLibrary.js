@@ -2,12 +2,13 @@ import { guildConfigSchema } from './guildConfig.js';
 import { UserError } from '../utils/errors.js';
 const portable = guildConfigSchema.shape.welcome
   .removeDefault()
-  .omit({ enabled: true, goodbyeEnabled: true, channelId: true });
+  .omit({ enabled: true, goodbyeEnabled: true, channelId: true, goodbyeChannelId: true });
 export function exportWelcome(c, guildId) {
   const {
     enabled: _enabled,
     goodbyeEnabled: _goodbyeEnabled,
     channelId: _channelId,
+    goodbyeChannelId: _goodbyeChannelId,
     ...library
   } = c.get(guildId).welcome;
   return portable.parse(library);
@@ -27,6 +28,7 @@ export function importWelcome(c, guildId, text) {
       welcome: {
         ...library,
         channelId: current.welcome.channelId,
+        goodbyeChannelId: current.welcome.goodbyeChannelId,
         enabled: false,
         goodbyeEnabled: false,
       },

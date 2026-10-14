@@ -41,6 +41,7 @@ export const guildConfigSchema = z
       .object({
         enabled: z.boolean().default(false),
         channelId: id.optional(),
+        goodbyeChannelId: id.optional(),
         title: z
           .string()
           .min(1)

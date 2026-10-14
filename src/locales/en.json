@@ -1456,5 +1456,6 @@
   "goodbyeTestSent": "Goodbye test sent for you.",
   "antinukeQuarantineReason_roleDelete": "role deletion",
   "antinukeQuarantineReason_botAdd": "bot additions",
-  "antinukeQuarantineReason_webhookCreate": "webhook creation"
+  "antinukeQuarantineReason_webhookCreate": "webhook creation",
+  "goodbyeChannelSaved": "Goodbye destination saved. Welcome destination unchanged. Enable goodbye with /welcome goodbye enabled:true."
 }
