@@ -1,3 +1,7 @@
+## Current anti-nuke scope (October 14, 2026)
+
+Earlier alert-only entries below are historical checkpoints, not current behavior. Anti-nuke is disabled per guild by default. With ENABLE_AUDIT_EVENTS=true and /antinuke enable, channel deletion, role deletion, bot additions and webhook creation quarantine at 3 events per actor/type in 60 seconds; bans and kicks at 3 in 300 seconds. Thresholds/windows are persisted policy keys. Quarantine strips removable roles, applies a safe punish role and channel hiding, and requests auto-lockdown. Tamper-hold is separately opt-in. No automatic rollback. Owner, bot and trusted actors are exempt. Role hierarchy and bot permissions limit containment. Live Discord intervention still needs acceptance testing.
+
 # Module status: local checkpoint
 
 90 top-level slash commands,687 executable paths,1302 distinct automated tests passing. These are local mock/unit tests and SQLite persistence tests, not live Discord integration or visual tests. Full541 reference target remains unverified;319 documented reference paths are separate from these original Emika paths. No deployment/release.

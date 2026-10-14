@@ -1,3 +1,9 @@
+# Current anti-nuke behavior
+
+Disabled per guild by default. Runtime ENABLE_AUDIT_EVENTS=true enables GuildModeration and audit routing. /antinuke enable turns on detection and quarantine. Repeated channel deletion, role deletion, bot additions (Discord BotAdd audit action) and webhook creation each trigger at 3/60 seconds; bans and kicks each at 3/300 seconds. Types are counted separately. Policy keys use channelDelete/roleDelete/botAdd/webhookCreate Threshold and WindowSeconds, plus banThreshold/kickThreshold/windowSeconds. Schema validates bounds; existing saved policy receives defaults. Owner, bot and trusted users are exempt. Missing permissions or an actor at/above Emika's role prevent containment. Quarantine strips non-managed roles, applies a safe quarantine/punish role, hides channels and requests auto-lockdown. Tamper-hold is opt-in. No automatic rollback or guarantee against all attacks. Actual Discord containment is not proven by local mocks.
+
+## Historical alert-only foundation (superseded)
+
 # Antinuke: audit alerts only
 
 Six paths: `/antinuke enable channel`, `disable`, `threshold count seconds`, `trust member trusted`, `config`, `incidents`. This is a detection/alert foundation, not complete automatic protection or recovery. It never kicks, bans, strips roles, changes server settings, restores channels or reverses changes. Manual review is required, and alerts can describe legitimate staff work. Do not advertise this as prevention.

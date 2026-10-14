@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { AuditLogEvent, PermissionFlagsBits as P } from 'discord.js';
@@ -398,5 +401,117 @@ test('release gives back removed roles that still exist and drops the punish rol
     });
   } finally {
     db.close();
+  }
+});
+
+test('role deletes, bot adds and webhook creates each quarantine at 3/60s, never mixed', async () => {
+  for (const action of [
+    AuditLogEvent.RoleDelete,
+    AuditLogEvent.BotAdd,
+    AuditLogEvent.WebhookCreate,
+  ]) {
+    const { db, handler } = setup();
+    try {
+      const guild = fakeGuild();
+      await fire(handler, guild, action, 2);
+      assert.equal(guild.added.length, 0);
+      await fire(handler, guild, action, 1);
+      assert.equal(guild.added.length, 1);
+      assert.deepEqual(guild.sets[0], [guild.integrationRole.id, '900000000000000001']);
+    } finally {
+      db.close();
+    }
+  }
+  const { db, handler } = setup();
+  try {
+    const guild = fakeGuild();
+    for (const action of [
+      AuditLogEvent.RoleDelete,
+      AuditLogEvent.BotAdd,
+      AuditLogEvent.WebhookCreate,
+    ])
+      await fire(handler, guild, action, 2);
+    assert.equal(guild.added.length, 0);
+  } finally {
+    db.close();
+  }
+});
+test('new quarantine rules honor disabled, trusted, owner, self, hierarchy and runtime gates', async () => {
+  for (const action of [
+    AuditLogEvent.RoleDelete,
+    AuditLogEvent.BotAdd,
+    AuditLogEvent.WebhookCreate,
+  ]) {
+    const { db, antinuke, handler, c } = setup();
+    try {
+      const guild = fakeGuild();
+      antinuke.trust('g', ids.trusted, true);
+      for (const who of [ids.owner, ids.bot, ids.trusted])
+        await fire(handler, guild, action, 3, who);
+      antinuke.patch('g', { enabled: false });
+      await fire(handler, guild, action, 3);
+      antinuke.patch('g', { enabled: true });
+      c.config.auditEventsEnabled = false;
+      await fire(handler, guild, action, 3);
+      assert.equal(guild.added.length, 0);
+      c.config.auditEventsEnabled = true;
+      await fire(handler, fakeGuild({ actorPosition: 10 }), action, 3);
+      assert.equal(guild.added.length, 0);
+    } finally {
+      db.close();
+    }
+  }
+});
+test('new quarantine policy defaults disabled per guild, validates bounds, expires windows and survives SQLite reopen', () => {
+  const db = openDatabase(':memory:');
+  try {
+    const a = new AntinukeAlerts(db),
+      guild = fakeGuild(),
+      now = Date.now();
+    assert.equal(a.get('g').enabled, false);
+    for (const key of ['roleDelete', 'botAdd', 'webhookCreate']) {
+      assert.equal(a.get('g').quarantine[key + 'Threshold'], 3);
+      assert.equal(a.get('g').quarantine[key + 'WindowSeconds'], 60);
+      assert.throws(() => a.patch('g', { quarantine: { [key + 'Threshold']: 1 } }));
+      assert.throws(() => a.patch('g', { quarantine: { [key + 'WindowSeconds']: 301 } }));
+    }
+    a.patch('g', {
+      enabled: true,
+      quarantine: { roleDeleteThreshold: 2, roleDeleteWindowSeconds: 30 },
+    });
+    for (let i = 0; i < 2; i++) a.record(entry(AuditLogEvent.RoleDelete), guild, now);
+    assert.equal(a.quarantineTrigger(entry(AuditLogEvent.RoleDelete), guild, now).count, 2);
+    const reopened = new AntinukeAlerts(db);
+    assert.equal(reopened.get('g').quarantine.roleDeleteThreshold, 2);
+    assert.equal(
+      reopened.quarantineTrigger(entry(AuditLogEvent.RoleDelete), guild, now + 31000),
+      null,
+    );
+    assert.equal(reopened.get('other').enabled, false);
+  } finally {
+    db.close();
+  }
+});
+
+test('new category policy and event counts survive actual database close/reopen', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'emika-antinuke-'));
+  let db = openDatabase(join(dir, 'test.sqlite'));
+  try {
+    const a = new AntinukeAlerts(db),
+      guild = fakeGuild(),
+      now = Date.now();
+    a.patch('g', { enabled: true, quarantine: { botAddThreshold: 2, botAddWindowSeconds: 60 } });
+    a.record(entry(AuditLogEvent.BotAdd), guild, now);
+    db.close();
+    db = openDatabase(join(dir, 'test.sqlite'));
+    const b = new AntinukeAlerts(db);
+    assert.equal(b.get('g').enabled, true);
+    assert.equal(b.get('g').quarantine.botAddThreshold, 2);
+    b.record(entry(AuditLogEvent.BotAdd), guild, now + 1000);
+    assert.equal(b.quarantineTrigger(entry(AuditLogEvent.BotAdd), guild, now + 1000).count, 2);
+    assert.equal(b.get('other').enabled, false);
+  } finally {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
   }
 });

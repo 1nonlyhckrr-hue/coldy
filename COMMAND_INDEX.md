@@ -14,8 +14,8 @@
 | /antinuke clearchannel | Stop monitoring and forget alert destination;threshold/trust/history kept. | Local mock/unit only |
 | /antinuke cleartrust | Clear all stored user exemptions;owner/bot exemptions kept,alert-only. | Local mock/unit only |
 | /antinuke config | Show alert settings and limitations. | Local mock/unit only |
-| /antinuke disable | Stop alert-only audit monitoring. | Local mock/unit only |
-| /antinuke enable | Enable alert-only detection for supported audit actions. | Local mock/unit only |
+| /antinuke disable | Stop audit monitoring and automatic quarantine. | Local mock/unit only |
+| /antinuke enable | Enable audit detection and supported automatic quarantine. | Local mock/unit only |
 | /antinuke exportincidents | Private latest100 minimalincidentmetadata JSON,total/truncation,no actor/sourceIDs. | Local mock/unit only |
 | /antinuke exportpolicy | Private storedalert config/trustedIDs JSON,not audit history/preventionproof. | Local mock/unit only |
 | /antinuke exportunresolved | Latest100recorded/uncertain/unavailable metadataJSON;not replay,retry or prevention. | Local mock/unit only |
@@ -29,7 +29,7 @@
 | /antinuke summary | Private retained incident counts by state,no actor/source IDs or protection claim. | Local mock/unit only |
 | /antinuke tamperhold | Opt in or out: re-apply quarantine if it is removed or edited (default off). | Local mock/unit only |
 | /antinuke threshold | Set mixed-action count and observation window. | Local mock/unit only |
-| /antinuke trust | Exempt a current member from audit alerts only. | Local mock/unit only |
+| /antinuke trust | Exempt a current member from audit alerts and quarantine. | Local mock/unit only |
 | /antinuke trustlist | Private stored trusteduser IDs only,no native membership/permission claim. | Local mock/unit only |
 | /antinuke unresolved | Privately inspect stored unresolved alert metadata;no retry or punishment. | Local mock/unit only |
 | /audit perms | List every role holding dangerous permissions and its members. | Local mock/unit only |

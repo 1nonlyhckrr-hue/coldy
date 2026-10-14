@@ -12,18 +12,20 @@ import { UserError } from '../../utils/errors.js';
 import { lunaPayload } from '../../utils/embeds.js';
 const data = new SlashCommandBuilder()
   .setName('antinuke')
-  .setDescription('Opt-in audit burst alerts; no automatic punishment or rollback.')
+  .setDescription('Opt-in audit alerts and automatic quarantine; no rollback.')
   .setContexts(InteractionContextType.Guild)
   .setDefaultMemberPermissions(P.ManageGuild)
   .addSubcommand((s) =>
     s
       .setName('enable')
-      .setDescription('Enable alert-only detection for supported audit actions.')
+      .setDescription('Enable audit detection and supported automatic quarantine.')
       .addChannelOption((o) =>
         o.setName('channel').setDescription('Moderator alert channel').setRequired(true),
       ),
   )
-  .addSubcommand((s) => s.setName('disable').setDescription('Stop alert-only audit monitoring.'))
+  .addSubcommand((s) =>
+    s.setName('disable').setDescription('Stop audit monitoring and automatic quarantine.'),
+  )
   .addSubcommand((s) =>
     s
       .setName('threshold')
@@ -48,12 +50,12 @@ const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('trust')
-      .setDescription('Exempt a current member from audit alerts only.')
+      .setDescription('Exempt a current member from audit alerts and quarantine.')
       .addUserOption((o) =>
         o.setName('member').setDescription('Current server member').setRequired(true),
       )
       .addBooleanOption((o) =>
-        o.setName('trusted').setDescription('Alert exemption').setRequired(true),
+        o.setName('trusted').setDescription('Audit and quarantine exemption').setRequired(true),
       ),
   )
   .addSubcommand((s) =>

@@ -227,7 +227,7 @@
     "name": "antinuke disable",
     "category": "antinuke",
     "syntax": "/antinuke disable",
-    "description": "Stop alert-only audit monitoring.",
+    "description": "Stop audit monitoring and automatic quarantine.",
     "parameters": [],
     "userPermissions": [
       "ManageGuild"
@@ -249,7 +249,7 @@
     "name": "antinuke enable",
     "category": "antinuke",
     "syntax": "/antinuke enable (channel)",
-    "description": "Enable alert-only detection for supported audit actions.",
+    "description": "Enable audit detection and supported automatic quarantine.",
     "parameters": [
       {
         "name": "channel",
@@ -636,7 +636,7 @@
     "name": "antinuke trust",
     "category": "antinuke",
     "syntax": "/antinuke trust (member) (trusted)",
-    "description": "Exempt a current member from audit alerts only.",
+    "description": "Exempt a current member from audit alerts and quarantine.",
     "parameters": [
       {
         "name": "member",
